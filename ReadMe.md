@@ -4,8 +4,8 @@
 ![Commit Activity](https://img.shields.io/github/commit-activity/y/realtimechris/discordcoreapi?color=green&label=Commits&style=plastic)
 ![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?&style=plastic&label=Lines%20of%20Code)
 
-Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L375),
-[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L441), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L277) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
+Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L367),
+[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketClient.cpp#L425), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L280) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 <p align="center"><a href="http://discordcoreapi.com" target="_blank"><img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true" 
 alt="DiscordCoreAPI WebSite" width="500"/></p>
@@ -16,7 +16,7 @@ alt="DiscordCoreAPI WebSite" width="500"/></p>
 ![CLANG_17](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_17.yml?color=00ff90&label=CLANG_17)
 
 # Documentation/Examples
-[Documentation/Examples](https://discordcoreapi.com/d8/d3d/a08569.html)
+[Documentation/Examples](https://discordcoreapi.com/df/d26/a08445.html)
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)
@@ -27,7 +27,7 @@ alt="DiscordCoreAPI WebSite" width="500"/></p>
 # Features   
 
 ## Performant
-- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/Etf.hpp) for websocket transfer, and a pool of [kept-alive HTTPS connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Https.hpp#L143) - this library offers the snappiest responses to your interactions and user input.
+- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/Etf.hpp) for websocket transfer, and a pool of [kept-alive HTTPS connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/HttpsClient.hpp#L212) - this library offers the snappiest responses to your interactions and user input.
 
 ## Audio-Bridge
 - Connect multiple voice-channels to one-another using the `StreamInfo` member of the `VoiceConnectInitData` structure, with the `VoiceConnection` class.
@@ -39,7 +39,8 @@ alt="DiscordCoreAPI WebSite" width="500"/></p>
 - All of the Discord API endpoints are covered in this library, including voice communication.
 
 ## Concurrent Discord API Access   
-- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/ThreadPool.hpp#L146), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.  
+- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/CoRoutineThreadPool.hpp#L59), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.    
+
 ## Advanced Rate-Limiting System
 - Guarantees that the order in which HTTPS requests are executed is the same that they were submitted in - despite being launched across different threads, while never infracting on any of the Discord API's rate-limits and while running concurrently across all of the endpoints.
 <p align="left">
@@ -59,14 +60,14 @@ alt="DiscordCoreAPI WebSite" width="500"/></p>
  	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Select-Menu-02.png?raw=true"  width="700">   
 </p>
    
-## User Commands   
+## UserData Commands   
 <p align="left">
- 	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/User-Command.png?raw=true"  width="700">   
+ 	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/UserData-Command.png?raw=true"  width="700">   
 </p>
    
 ## Message Commands   
 <p align="left">
- 	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Message-Command.png?raw=true"  width="700">   
+ 	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/MessageData-Command.png?raw=true"  width="700">   
 </p>
    
 ## Modal Text Inputs
@@ -76,7 +77,7 @@ alt="DiscordCoreAPI WebSite" width="500"/></p>
 </p>
    
 ## A Unified "Input-Event" System
-- User interactions (Application Commands, Message Commands, User Commands) are accepted via the `EventManager::onInputEventCreation` event.
+- UserData interactions (Application Commands, Message Commands, UserData Commands) are accepted via the `EventManager::onInputEventCreation` event.
 - They can all be responded to using the `InputEvents::respondToInputEventAsync()` function.
 - Alternatively you can implement your own input-event handling by using the raw `EventManager::onInteractionCreation` or `EventManager::onMessageCreation` events.
 ```cpp

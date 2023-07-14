@@ -45,11 +45,11 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll InteractionResponseBase {
 	  public:
-		friend struct Jsonifier::Core<InteractionResponseBase>;
+		friend struct Jsonifier::Core<DiscordCoreAPI::InteractionResponseBase>;
 
 		std::unordered_set<std::string_view> excludedKeys{};
 
-		/// \brief Adds a button to the response Message.
+		/// \brief Adds a button to the response MessageData.
 		/// \param disabled Whether the button is active or not.
 		/// \param customIdNew A custom id to give for identifying the button.
 		/// \param buttonLabel A visible label for the button.
@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 		InteractionResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
 			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
-		/// \brief Adds a select-menu to the response Message.
+		/// \brief Adds a select-menu to the response MessageData.
 		/// \param disabled Whether the select-menu is active or not.
 		/// \param customIdNew A custom id to give for identifying the select-menu.
 		/// \param options A vector of select-menu-options to offer.
@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
 			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
 
-		/// \brief Adds a modal to the response Message.
+		/// \brief Adds a modal to the response MessageData.
 		/// \param topTitleNew A title for the modal.
 		/// \param topCustomIdNew A custom id to give for the modal.
 		/// \param titleNew A title for the modal's individual input.
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage An ActionRowData structure.
 		InteractionResponseBase& addComponentRow(const ActionRowData& dataPackage);
 
-		/// \brief Sets the response type of the current Message.
+		/// \brief Sets the response type of the current MessageData.
 		/// \param type Interaction callback type.
 		InteractionResponseBase& setResponseType(InteractionCallbackType type);
 
@@ -120,9 +120,9 @@ namespace DiscordCoreAPI {
 
 		InteractionResponseData getInteractionResponseData();
 
-		void generateExcludedKeys() noexcept;
+		void generateExcludedKeys();
 
-		virtual ~InteractionResponseBase() noexcept = default;
+		virtual ~InteractionResponseBase() = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 
 		CreateEphemeralInteractionResponseData(const RespondToInputEventData& dataPackage);
 
-		virtual ~CreateEphemeralInteractionResponseData() noexcept = default;
+		virtual ~CreateEphemeralInteractionResponseData() = default;
 	};
 
 	/// \brief For creating a deferred Interaction response.
@@ -152,13 +152,13 @@ namespace DiscordCoreAPI {
 
 		CreateDeferredInteractionResponseData(const RespondToInputEventData& dataPackage);
 
-		virtual ~CreateDeferredInteractionResponseData() noexcept = default;
+		virtual ~CreateDeferredInteractionResponseData() = default;
 	};
 
 	/// \brief For creating an Interaction response.
 	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponseBase {
 	  public:
-		friend struct Jsonifier::Core<CreateInteractionResponseData>;
+		friend struct Jsonifier::Core<DiscordCoreAPI::CreateInteractionResponseData>;
 		friend class SelectMenuCollector;
 		friend class ButtonCollector;
 		friend class ModalCollector;
@@ -173,9 +173,9 @@ namespace DiscordCoreAPI {
 
 		CreateInteractionResponseData(const InteractionData& dataPackage);
 
-		CreateInteractionResponseData() noexcept = default;
+		CreateInteractionResponseData() = default;
 
-		virtual ~CreateInteractionResponseData() noexcept = default;
+		virtual ~CreateInteractionResponseData() = default;
 	};
 
 	/// \brief For getting an Interaction response.
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 	/// \brief For editing an Interaction response.
 	class DiscordCoreAPI_Dll EditInteractionResponseData : public EditWebHookData {
 	  public:
-		friend struct Jsonifier::Core<EditInteractionResponseData>;
+		friend struct Jsonifier::Core<DiscordCoreAPI::EditInteractionResponseData>;
 		friend class Interactions;
 		friend class InputEvents;
 
@@ -195,9 +195,9 @@ namespace DiscordCoreAPI {
 
 		EditInteractionResponseData(const RespondToInputEventData& dataPackage);
 
-		void generateExcludedKeys() noexcept;
+		void generateExcludedKeys();
 
-		virtual ~EditInteractionResponseData() noexcept = default;
+		virtual ~EditInteractionResponseData() = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -215,7 +215,7 @@ namespace DiscordCoreAPI {
 		uint32_t timeDelay{};
 	};
 
-	/// \brief For creating an ephemeral follow up Message.
+	/// \brief For creating an ephemeral follow up MessageData.
 	class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public ExecuteWebHookData {
 	  public:
 		friend class CreateFollowUpMessageData;
@@ -224,16 +224,16 @@ namespace DiscordCoreAPI {
 
 		CreateEphemeralFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
-		virtual ~CreateEphemeralFollowUpMessageData() noexcept = default;
+		virtual ~CreateEphemeralFollowUpMessageData() = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
 	};
 
-	/// \brief For creating a follow up Message.
+	/// \brief For creating a follow up MessageData.
 	class DiscordCoreAPI_Dll CreateFollowUpMessageData : public ExecuteWebHookData {
 	  public:
-		friend struct Jsonifier::Core<CreateFollowUpMessageData>;
+		friend struct Jsonifier::Core<DiscordCoreAPI::CreateFollowUpMessageData>;
 		friend class SelectMenuCollector;
 		friend class ButtonCollector;
 		friend class Interactions;
@@ -245,25 +245,25 @@ namespace DiscordCoreAPI {
 
 		CreateFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
-		void generateExcludedKeys() noexcept;
+		void generateExcludedKeys();
 
-		virtual ~CreateFollowUpMessageData() noexcept = default;
+		virtual ~CreateFollowUpMessageData() = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
 	};
 
-	/// \brief For getting a follow-up Message.
+	/// \brief For getting a follow-up MessageData.
 	struct DiscordCoreAPI_Dll GetFollowUpMessageData {
 		std::string interactionToken{};///< Interaction token.
 		Snowflake applicationId{};///< application id.
 		Snowflake messageId{};///< Message id.
 	};
 
-	/// \brief For editing a follow up Message.
+	/// \brief For editing a follow up MessageData.
 	class DiscordCoreAPI_Dll EditFollowUpMessageData : public EditWebHookData {
 	  public:
-		friend struct Jsonifier::Core<EditFollowUpMessageData>;
+		friend struct Jsonifier::Core<DiscordCoreAPI::EditFollowUpMessageData>;
 		friend class Interactions;
 		friend class InputEvents;
 
@@ -271,14 +271,14 @@ namespace DiscordCoreAPI {
 
 		EditFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
-		virtual ~EditFollowUpMessageData() noexcept = default;
+		virtual ~EditFollowUpMessageData() = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
 	};
 
-	/// \brief For deleting a follow up Message.
+	/// \brief For deleting a follow up MessageData.
 	struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
 		friend class Interactions;
 		friend class InputEvents;
@@ -294,9 +294,9 @@ namespace DiscordCoreAPI {
 	/// \brief A single Interaction.
 	struct DiscordCoreAPI_Dll Interaction : public InteractionData {
 	  public:
-		Interaction() noexcept = default;
+		Interaction() = default;
 
-		virtual ~Interaction() noexcept = default;
+		virtual ~Interaction() = default;
 	};
 
 	/**@}*/
@@ -317,22 +317,22 @@ namespace DiscordCoreAPI {
 
 		/// \brief Creates a response to an input Interaction.
 		/// \param dataPackage A CreateInteractionResponseData structure.
-		/// \returns A CoRoutine containing a MessageData.
-		static CoRoutine<Message> createInteractionResponseAsync(CreateInteractionResponseData dataPackage);
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage);
 
-		static Message createInteractionResponse(CreateInteractionResponseData dataPackage);
+		static MessageData createInteractionResponse(CreateInteractionResponseData dataPackage);
 
 		/// \brief Collects an Interaction response.
 		/// \param dataPackage A GetInteractionResponseData structure.
 		/// \returns A CoRoutine containing an InteractionResponseData.
-		static CoRoutine<Message> getInteractionResponseAsync(GetInteractionResponseData dataPackage);
+		static CoRoutine<MessageData> getInteractionResponseAsync(GetInteractionResponseData dataPackage);
 
 		/// \brief Edits an Interaction response.
 		/// \param dataPackage A EditInteractionResponseData structure.
-		/// \returns A CoRoutine containing a MessageData.
-		static CoRoutine<Message> editInteractionResponseAsync(EditInteractionResponseData dataPackage);
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage);
 
-		static Message editInteractionResponse(EditInteractionResponseData dataPackage);
+		static MessageData editInteractionResponse(EditInteractionResponseData dataPackage);
 
 		/// \brief Deletes an Interaction respnose.
 		/// \param dataPackage A DeleteInteractionResponseData structure.
@@ -341,24 +341,24 @@ namespace DiscordCoreAPI {
 
 		/// \brief Creates a follow up Message to an input Interaction.
 		/// \param dataPackage A CreateFollowUpMessageData structure.
-		/// \returns A CoRoutine containing a MessageData.
-		static CoRoutine<Message> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
 
-		static Message createFollowUpMessage(CreateFollowUpMessageData dataPackage);
+		static MessageData createFollowUpMessage(CreateFollowUpMessageData dataPackage);
 
 		/// \brief Creates a follow up Message to an input Interaction.
 		/// \param dataPackage A CreateFollowUpMessageData structure.
-		/// \returns A CoRoutine containing a MessageData.
-		static CoRoutine<Message> getFollowUpMessageAsync(GetFollowUpMessageData dataPackage);
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<MessageData> getFollowUpMessageAsync(GetFollowUpMessageData dataPackage);
 
-		/// \brief Edits a follow up Message.
+		/// \brief Edits a follow up MessageData.
 		/// \param dataPackage A EditFollowUpMessageData structure.
-		/// \returns A CoRoutine containing a MessageData.
-		static CoRoutine<Message> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage);
+		/// \returns A CoRoutine containing a Message.
+		static CoRoutine<MessageData> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage);
 
-		static Message editFollowUpMessage(EditFollowUpMessageData dataPackage);
+		static MessageData editFollowUpMessage(EditFollowUpMessageData dataPackage);
 
-		/// \brief Deletes a follow up Message.
+		/// \brief Deletes a follow up MessageData.
 		/// \param dataPackage A DeleteFollowUpMessageData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
@@ -412,14 +412,14 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		SelectMenuResponseData() noexcept = default;
+		SelectMenuResponseData() = default;
 
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
 		std::vector<std::string> values{};///< A vector of the chosen values.
 		std::string selectionId{};///< Selection id.
-		Snowflake channelId{};///< The Channel id where it took place.
+		Snowflake channelId{};///< The ChannelData id where it took place.
 		Snowflake messageId{};///< The Message id where it took place.
-		Snowflake userId{};///< The User id who selected the menu options.
+		Snowflake userId{};///< The UserData id who selected the menu options.
 	};
 
 	/// SelectMenuCollector, for collecting select-menu input from one or more
@@ -437,11 +437,11 @@ namespace DiscordCoreAPI {
 		SelectMenuCollector(InputEventData& dataPackage);
 
 		/// \brief Used to collect the select-menu inputs from one or more users.
-		/// \param getSelectMenuDataForAllNew Whether or not to collect select-menu input from a single target User or all potential users.
+		/// \param getSelectMenuDataForAllNew Whether or not to collect select-menu input from a single target UserData or all potential users.
 		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
 		/// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping.
 		/// \param errorMessageDataNew The message-data for when an individual other than the selected individual attemps to use this interaction.
-		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
+		/// \param targetUserId The id of the single UserData to collect inputs from, if getSelectMenuDataForAllNew is set to false.
 		/// \returns A vector of SelectMenuResponseData.
 		CoRoutine<std::vector<SelectMenuResponseData>, false> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
 			int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
@@ -512,14 +512,14 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		ButtonResponseData() noexcept = default;
+		ButtonResponseData() = default;
 
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
 		std::string emojiName{};///< The emoji name, if applicable.
 		std::string buttonId{};///< The id of the button, for identification.
-		Snowflake channelId{};///< The Channel id where it took place.
+		Snowflake channelId{};///< The ChannelData id where it took place.
 		Snowflake messageId{};///< The Message id where it took place.
-		Snowflake userId{};///< The User id who selected the menu options.
+		Snowflake userId{};///< The UserData id who selected the menu options.
 	};
 
 	/// \brief ButtonCollector, for collecting button input from one or more Users.
@@ -535,11 +535,11 @@ namespace DiscordCoreAPI {
 		ButtonCollector(InputEventData& dataPackage);
 
 		/// \brief Used to collect the button inputs from one or more users.
-		/// \param getButtonDataForAllNew Whether or not to collect input from a single target User or all potential users.
+		/// \param getButtonDataForAllNew Whether or not to collect input from a single target UserData or all potential users.
 		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
 		/// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
 		/// \param errorMessageDataNew The message-data for when an individual other than the selected individual attemps to use this interaction.
-		/// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
+		/// \param targetUserId The id of the single UserData to collect inputs from, if getButtonDataForAllNew is set to false.
 		/// \returns A vector of ButtonResponseData.
 		CoRoutine<std::vector<ButtonResponseData>, false> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
 			int32_t maxNumberOfPressesNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
@@ -594,14 +594,14 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		ModalResponseData() noexcept = default;
+		ModalResponseData() = default;
 
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
 		std::string customIdSmall{};///< The customId of the particular input.
 		std::string customId{};///< The customId of the modal component.
-		Snowflake channelId{};///< The Channel id where it took place.
+		Snowflake channelId{};///< The ChannelData id where it took place.
 		std::string value{};/// The input value of the modal component.
-		Snowflake userId{};///< The User id who selected the menu options.
+		Snowflake userId{};///< The UserData id who selected the menu options.
 	};
 
 	/// \brief ModalCollector, for collecting modal text input from one or more Users.

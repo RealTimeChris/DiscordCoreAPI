@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// UserEntities.hpp - Header for User related classes and structs.
+/// UserEntities.hpp - Header for UserData related classes and structs.
 /// May 13, 2021
 /// https://discordcoreapi.com
 /// \file UserEntities.hpp
@@ -31,7 +31,7 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/WebSocketEntities.hpp>
+#include <discordcoreapi/Utilities/WebSocketClient.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -42,42 +42,42 @@ namespace DiscordCoreAPI {
 
 	/// \brief For adding a user to a group DM.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
-		Snowflake channelId{};///< The Channel Snowflake of the DM.
+		Snowflake channelId{};///< The ChannelData Snowflake of the DM.
 		std::string token{};///< The user's access token.
 		std::string nick{};///< The user's nickname.
 		Snowflake userId{};///< The user's Snowflake.
 	};
 
-	/// \brief For removing a User from a group DM.
+	/// \brief For removing a UserData from a group DM.
 	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
-		Snowflake channelId{};///< The Channel Snowflake of the DM.
+		Snowflake channelId{};///< The ChannelData Snowflake of the DM.
 		Snowflake userId{};///< The user's Snowflake.
 	};
 
 	/// \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
 		std::string requestToSpeakTimestamp{};///< ISO8601 timeStamp.
-		Snowflake channelId{};///< The id of the Channel the user is currently in.
+		Snowflake channelId{};///< The id of the ChannelData the user is currently in.
 		Snowflake guildId{};///< The Guild within which to update the bot's voice state.
 		bool suppress{};///< Toggles the user's suppress state.
 	};
 
-	/// \brief For modifying a User's voice state.
+	/// \brief For modifying a UserData's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
-		Snowflake channelId{};///< The id of the Channel the user is currently in.
+		Snowflake channelId{};///< The id of the ChannelData the user is currently in.
 		Snowflake guildId{};///< The Guild within which you would like to modify their voice state.
 		Snowflake userId{};///< The user for which you would like to modify the voice state of.
 		bool suppress{};///< Toggles the user's suppress state.
 	};
 
-	/// \brief For getting User responseData from the library's cache or the Discord server.
+	/// \brief For getting UserData responseData from the library's cache or the Discord server.
 	struct DiscordCoreAPI_Dll GetUserData {
-		Snowflake userId{};///< The id of the desired User.
+		Snowflake userId{};///< The id of the desired UserData.
 	};
 
-	/// \brief For modifying the Bot's User responseData.
+	/// \brief For modifying the Bot's UserData responseData.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
-		std::string userName{};///< User's userName, if changed may cause the user's discriminator to be randomized.
+		std::string userName{};///< UserData's username, if changed may cause the user's discriminator to be randomized.
 		std::string avatar{};///< If passed, modifies the user's avatar.
 	};
 
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the User related Discord endpoints.
+	/// \brief An interface class for the UserData related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	  public:
 		friend class DiscordCoreInternal::WebSocketClient;
@@ -118,28 +118,28 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage);
 
-		/// \brief Collects the Bot's current User responseData.
-		/// \returns A CoRoutine containing a User.
-		static CoRoutine<User> getCurrentUserAsync();
+		/// \brief Collects the Bot's current UserData responseData.
+		/// \returns A CoRoutine containing a UserData.
+		static CoRoutine<UserData> getCurrentUserAsync();
 
 		/// \brief Collects a given User from the library's cache.
 		/// \param dataPackage A GetUserData structure.
-		/// \returns A CoRoutine containing a User.
-		static UserData getCachedUser(GetUserData dataPackage);
+		/// \returns A CoRoutine containing a UserData.
+		static UserCacheData getCachedUser(GetUserData dataPackage);
 
 		/// \brief Collects a given User from the Discord servers.
 		/// \param dataPackage A GetUserData structure.
-		/// \returns A CoRoutine containing a User.
-		static CoRoutine<User> getUserAsync(GetUserData dataPackage);
+		/// \returns A CoRoutine containing a UserData.
+		static CoRoutine<UserData> getUserAsync(GetUserData dataPackage);
 
-		/// \brief Modifies the Bot's User responseData.
+		/// \brief Modifies the Bot's UserData responseData.
 		/// \param dataPackage A ModifyCurrentUserData structure.
-		/// \returns A CoRoutine containing a User.
-		static CoRoutine<User> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);
+		/// \returns A CoRoutine containing a UserData.
+		static CoRoutine<UserData> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);
 
-		/// \brief Collects the User's Connections.
+		/// \brief Collects the UserData's Connections.
 		/// \returns A CoRoutine containing a vector<ConnectionData>.
-		static CoRoutine<ConnectionDataVector> getUserConnectionsAsync();
+		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
 
 		/// \brief Collects the Application responseData associated with the current Bot.
 		/// \returns A CoRoutine containing an ApplicationData.
@@ -149,13 +149,13 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing an AuthorizationInfoData.
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
-		static UserData& insertUser(UserData&& user);
+		static void insertUser(const UserData& user);
 
 		static bool doWeCacheUsers();
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<Snowflake, UserData> cache;
+		static ObjectCache<Snowflake, UserCacheData> cache;
 		static bool doWeCacheUsersBool;
 	};
 	/**@}*/

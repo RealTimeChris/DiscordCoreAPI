@@ -33,8 +33,8 @@ namespace DiscordCoreAPI {
 					userCount += value.memberCount;
 				}
 				EmbedData messageEmbed;
-				messageEmbed.setAuthor(argsNew.getUserData().userName, argsNew.getUserData().getAvatarUrl());
-				messageEmbed.setImage(argsNew.discordCoreClient->getBotUser().getAvatarUrl());
+				messageEmbed.setAuthor(argsNew.getUserData().userName, argsNew.getUserData().getUserImageUrl(UserImageTypes::Avatar));
+				messageEmbed.setImage(argsNew.discordCoreClient->getBotUser().getUserImageUrl(UserImageTypes::Avatar));
 				messageEmbed.setColor("FEFEFE");
 				messageEmbed.setTitle("__**Bot Info:**__");
 				messageEmbed.setTimeStamp(getTimeAndDate());
@@ -42,10 +42,9 @@ namespace DiscordCoreAPI {
 					std::string{ argsNew.discordCoreClient->getBotUser().userName } + "#" +
 						std::string{ argsNew.discordCoreClient->getBotUser().discriminator },
 					true);
-				messageEmbed.addField("__Bot ID:__", std::to_string(argsNew.discordCoreClient->getBotUser().id.operator size_t()), true);
+				messageEmbed.addField("__Bot ID:__", std::to_string(argsNew.discordCoreClient->getBotUser().id.operator uint64_t()), true);
 				messageEmbed.addField("__Guild Count:__", std::to_string(guilds.size()), true);
-				messageEmbed.addField("__Created At:__", argsNew.discordCoreClient->getBotUser().id.getCreatedAtTimeStamp(TimeFormat::LongDateTime),
-					true);
+				messageEmbed.addField("__Created At:__", argsNew.discordCoreClient->getBotUser().getCreatedAtTimeStamp(), true);
 				messageEmbed.addField("__Serving Users:__", std::to_string(userCount), true);
 				messageEmbed.addField("__Running On:__", "[DiscordCoreAPI Bot Library](https://discordcoreapi.com)", true);
 				messageEmbed.addField("__Created By:__", "<@931311002702737418>", true);
@@ -68,8 +67,8 @@ namespace DiscordCoreAPI {
 				dataPackage.addMessageEmbed(messageEmbed);
 				auto eventNew = InputEvents::respondToInputEventAsync(dataPackage).get();
 				return;
-			} catch (...) {
-				reportException("BotInfo::execute()");
+			} catch (const std::exception& error) {
+				std::cout << "BotInfo::execute()" << error.what() << std::endl;
 			}
 		}
 		~BotInfo(){};

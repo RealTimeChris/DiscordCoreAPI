@@ -237,6 +237,7 @@ namespace DiscordCoreAPI {
 				for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].channels.size(); ++x) {
 					if (Guilds::getCache()[value.guildId].channels[x] == value.id) {
 						Guilds::getCache()[value.guildId].channels.erase(Guilds::getCache()[value.guildId].channels.begin() + x);
+						break;
 					}
 				}
 			}
@@ -252,9 +253,6 @@ namespace DiscordCoreAPI {
 
 	OnThreadCreationData::OnThreadCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Guilds::getCache().contains(value.guildId)) {
-			Guilds::getCache()[value.guildId].threads.emplace_back(value.id);
-		}
 	}
 
 	OnThreadUpdateData::OnThreadUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
@@ -263,13 +261,6 @@ namespace DiscordCoreAPI {
 
 	OnThreadDeletionData::OnThreadDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Guilds::getCache().contains(value.guildId)) {
-			for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].threads.size(); ++x) {
-				if (Guilds::getCache()[value.guildId].threads[x] == value.id) {
-					Guilds::getCache()[value.guildId].threads.erase(Guilds::getCache()[value.guildId].threads.begin() + x);
-				}
-			}
-		}
 	}
 
 	OnThreadListSyncData::OnThreadListSyncData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
@@ -290,10 +281,19 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::doWeCacheGuildMembers()) {
 			for (auto& valueNew: value.members) {
 				try {
+					Users::insertUser(valueNew.user);
 					valueNew.guildId = value.id;
 					GuildMembers::insertGuildMember(valueNew);
-					Users::insertUser(std::move(valueNew.user));
 				} catch (...) {
+					MessagePrinter::printError<PrintMessageType::General>("OnGuildCreationData::OnGuildCreationData()");
+				}
+			}
+			for (auto& valueNew: value.voiceStates) {
+				try {
+					valueNew.guildId = value.id;
+					GuildMembers::insertVoiceState(std::move(valueNew));
+				} catch (...) {
+					MessagePrinter::printError<PrintMessageType::General>("OnGuildCreationData::OnGuildCreationData()");
 				}
 			}
 		}
@@ -301,31 +301,24 @@ namespace DiscordCoreAPI {
 			for (auto& valueNew: value.channels) {
 				try {
 					valueNew.guildId = value.id;
-					Channels::insertChannel(std::move(valueNew));
+					Channels::insertChannel(valueNew);
 				} catch (...) {
+					MessagePrinter::printError<PrintMessageType::General>("OnGuildCreationData::OnGuildCreationData()");
 				}
 			}
 		}
 		if (Roles::doWeCacheRoles()) {
 			for (auto& valueNew: value.roles) {
 				try {
-					valueNew.guildId = value.id;
-					Roles::insertRole(std::move(valueNew));
+					Roles::insertRole(valueNew);
 				} catch (...) {
+					MessagePrinter::printError<PrintMessageType::General>("OnGuildCreationData::OnGuildCreationData()");
 				}
 			}
 		}
-		for (auto& valueNew: value.voiceStates) {
-			try {
-				valueNew.guildId = value.id;
-				GuildMembers::insertVoiceState(std::move(valueNew));
-			} catch (...) {
-			}
-		}
 		if (Guilds::doWeCacheGuilds()) {
-			if (Guilds::doWeCacheGuilds()) {
-				Guilds::insertGuild(value);
-			}
+			value.discordCoreClient = client;
+			Guilds::insertGuild(value);
 		}
 	}
 
@@ -333,18 +326,18 @@ namespace DiscordCoreAPI {
 		parser.parseJson<true, true>(*static_cast<UpdatedEventData*>(this), dataToParse);
 		value.discordCoreClient = clientNew;
 		if (Guilds::doWeCacheGuilds()) {
-			Guilds::insertGuild(value);
+			Guilds::insertGuild(std::move(value));
 		}
 	}
 
-	OnGuildDeletionData::OnGuildDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* clientNew) {
+	OnGuildDeletionData::OnGuildDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::doWeCacheGuilds()) {
 			Guilds::removeGuild(value.id);
 		}
 		for (auto& valueNew: value.members) {
-			GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = valueNew.user.id, .guildId = value.id });
-			GuildMembers::removeGuildMember(GuildMemberKey{ .guildId = guildMember.guildId, .userId = guildMember.user.id });
+			GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = valueNew.guildId, .guildId = value.id });
+			GuildMembers::removeGuildMember(GuildMemberKey{ guildMember });
 		}
 		for (auto& valueNew: value.channels) {
 			Channels::removeChannel(valueNew.id);
@@ -374,21 +367,14 @@ namespace DiscordCoreAPI {
 
 	OnGuildStickersUpdateData::OnGuildStickersUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Guilds::getCache().contains(value.guildId)) {
-			Guilds::getCache()[value.guildId].stickers.clear();
-			for (auto& valueNew: value.stickers) {
-				Guilds::getCache()[value.guildId].stickers.emplace_back(valueNew.id);
-			}
-		}
 	}
 
 	OnGuildIntegrationsUpdateData::OnGuildIntegrationsUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnGuildMemberAddData::OnGuildMemberAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
+	OnGuildMemberAddData::OnGuildMemberAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		discordCoreClient = client;
 		if (GuildMembers::doWeCacheGuildMembers()) {
 			GuildMembers::insertGuildMember(value);
 			if (Guilds::getCache().contains(value.guildId)) {
@@ -397,24 +383,24 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	OnGuildMemberRemoveData::OnGuildMemberRemoveData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
-		discordCoreClient = client;
+	OnGuildMemberRemoveData::OnGuildMemberRemoveData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		GuildMember guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
+		GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 		if (GuildMembers::doWeCacheGuildMembers()) {
-			GuildMembers::removeGuildMember(GuildMemberKey{ .guildId = guildMember.guildId, .userId = guildMember.user.id });
+			GuildMembers::removeGuildMember(GuildMemberKey{ guildMember });
 			if (Guilds::getCache().contains(value.guildId)) {
 				for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].members.size(); ++x) {
 					if (Guilds::getCache()[value.guildId].members[x] == value.user.id) {
 						--Guilds::getCache()[value.guildId].memberCount;
 						Guilds::getCache()[value.guildId].members.erase(Guilds::getCache()[value.guildId].members.begin() + x);
+						break;
 					}
 				}
 			}
 		}
 	}
 
-	OnGuildMemberUpdateData::OnGuildMemberUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
+	OnGuildMemberUpdateData::OnGuildMemberUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<UpdatedEventData*>(this), dataToParse);
 		oldValue = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 		if (GuildMembers::doWeCacheGuildMembers()) {
@@ -452,6 +438,7 @@ namespace DiscordCoreAPI {
 				for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].roles.size(); ++x) {
 					if (Guilds::getCache()[value.guildId].roles[x] == value.role.id) {
 						Guilds::getCache()[value.guildId].roles.erase(Guilds::getCache()[value.guildId].roles.begin() + x);
+						break;
 					}
 				}
 			}
@@ -480,9 +467,6 @@ namespace DiscordCoreAPI {
 
 	OnGuildScheduledEventCreationData::OnGuildScheduledEventCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Guilds::getCache().contains(value.guildId)) {
-			Guilds::getCache()[value.guildId].guildScheduledEvents.emplace_back(value.id);
-		}
 	}
 
 	OnGuildScheduledEventUpdateData::OnGuildScheduledEventUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
@@ -491,13 +475,6 @@ namespace DiscordCoreAPI {
 
 	OnGuildScheduledEventDeletionData::OnGuildScheduledEventDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Guilds::getCache().contains(value.guildId)) {
-			for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].guildScheduledEvents.size(); ++x) {
-				if (Guilds::getCache()[value.guildId].guildScheduledEvents[x] == value.id) {
-					Guilds::getCache()[value.guildId].guildScheduledEvents.erase(Guilds::getCache()[value.guildId].guildScheduledEvents.begin() + x);
-				}
-			}
-		}
 	}
 
 	OnGuildScheduledEventUserAddData::OnGuildScheduledEventUserAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
@@ -648,9 +625,6 @@ namespace DiscordCoreAPI {
 
 	OnStageInstanceCreationData::OnStageInstanceCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Guilds::getCache().contains(value.guildId)) {
-			Guilds::getCache()[value.guildId].stageInstances.emplace_back(value.id);
-		}
 	}
 
 	OnStageInstanceUpdateData::OnStageInstanceUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
@@ -659,13 +633,6 @@ namespace DiscordCoreAPI {
 
 	OnStageInstanceDeletionData::OnStageInstanceDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
 		parser.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Guilds::getCache().contains(value.guildId)) {
-			for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].stageInstances.size(); ++x) {
-				if (Guilds::getCache()[value.guildId].stageInstances[x] == value.id) {
-					Guilds::getCache()[value.guildId].stageInstances.erase(Guilds::getCache()[value.guildId].stageInstances.begin() + x);
-				}
-			}
-		}
 	}
 
 	OnTypingStartData::OnTypingStartData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {

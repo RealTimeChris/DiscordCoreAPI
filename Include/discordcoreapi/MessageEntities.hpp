@@ -31,7 +31,7 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/Utilities/HttpsClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
@@ -51,12 +51,12 @@ namespace DiscordCoreAPI {
 		std::vector<ReactionData> objects{};///< A vector of collected Objects.
 	};
 
-	/// \brief Object collector, for collecting Objects from a Channel.
+	/// \brief Object collector, for collecting Objects from a ChannelData.
 	class DiscordCoreAPI_Dll MessageCollector {
 	  public:
 		inline static std::unordered_map<std::string, UnboundedMessageBlock<MessageData>*> objectsBuffersMap{};
 
-		inline MessageCollector() noexcept {
+		inline MessageCollector() {
 			collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 			MessageCollector::objectsBuffersMap[collectorId] = &objectsBuffer;
 		};
@@ -81,8 +81,8 @@ namespace DiscordCoreAPI {
 			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 			int64_t elapsedTime{};
 			while (elapsedTime < msToCollectFor) {
-				Message message{};
-				waitForTimeToPass<MessageData>(objectsBuffer, message, static_cast<int32_t>(msToCollectFor - elapsedTime));
+				MessageData message{};
+				waitForTimeToPass<MessageData>(objectsBuffer, message, static_cast<uint64_t>(msToCollectFor - static_cast<uint64_t>(elapsedTime)));
 				if (filteringFunction(message)) {
 					objectReturnData.objects.emplace_back(message);
 				}
@@ -109,12 +109,12 @@ namespace DiscordCoreAPI {
 		int32_t msToCollectFor{};
 	};
 
-	/// \brief Object collector, for collecting Objects from a Channel.
+	/// \brief Object collector, for collecting Objects from a ChannelData.
 	class DiscordCoreAPI_Dll ReactionCollector {
 	  public:
 		inline static std::unordered_map<std::string, UnboundedMessageBlock<ReactionData>*> objectsBuffersMap{};
 
-		inline ReactionCollector() noexcept {
+		inline ReactionCollector() {
 			collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 			ReactionCollector::objectsBuffersMap[collectorId] = &objectsBuffer;
 		};
@@ -139,10 +139,11 @@ namespace DiscordCoreAPI {
 			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 			int64_t elapsedTime{};
 			while (elapsedTime < msToCollectFor) {
-				Reaction Reaction{};
-				waitForTimeToPass<ReactionData>(objectsBuffer, Reaction, static_cast<int32_t>(msToCollectFor - elapsedTime));
-				if (filteringFunction(Reaction)) {
-					objectReturnData.objects.emplace_back(Reaction);
+				ReactionData reactionData{};
+				waitForTimeToPass<ReactionData>(objectsBuffer, reactionData,
+					static_cast<uint64_t>(msToCollectFor - static_cast<uint64_t>(elapsedTime)));
+				if (filteringFunction(reactionData)) {
+					objectReturnData.objects.emplace_back(reactionData);
 				}
 				if (static_cast<int32_t>(objectReturnData.objects.size()) >= quantityOfObjectsToCollect) {
 					break;
@@ -172,20 +173,20 @@ namespace DiscordCoreAPI {
 		Snowflake beforeThisId{};///< Before this id.
 		uint64_t aroundThisId{};///< Around this id.
 		Snowflake afterThisId{};///< After this id.
-		Snowflake channelId{};///< Channel from which to collect the Messages.
+		Snowflake channelId{};///< ChannelData from which to collect the Messages.
 		int32_t limit{};///< Limit of Messages to collect.
 	};
 
 	/// \brief For getting a Message.
 	struct DiscordCoreAPI_Dll GetMessageData {
-		Snowflake channelId{};///< The Channel from which to collect the Message.
+		Snowflake channelId{};///< The ChannelData from which to collect the MessageData.
 		Snowflake id{};///< The id of the Message to collect.
 	};
 
 	/// \brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
-		friend struct Jsonifier::Core<CreateMessageData>;
+		friend struct Jsonifier::Core<DiscordCoreAPI::CreateMessageData>;
 		friend class InputEvents;
 		friend class Messages;
 
@@ -199,7 +200,7 @@ namespace DiscordCoreAPI {
 
 		Snowflake channelId{};
 
-		CreateMessageData() noexcept = default;
+		CreateMessageData() = default;
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
@@ -221,13 +222,13 @@ namespace DiscordCoreAPI {
 	/// \brief For crossposting a Message.
 	struct DiscordCoreAPI_Dll CrosspostMessageData {
 		Snowflake messageId{};///< Snowflake of the message to be crossposted.
-		Snowflake channelId{};///< Channel within which to crosspost the Message from.
+		Snowflake channelId{};///< ChannelData within which to crosspost the Message from.
 	};
 
 	/// \brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
-		friend struct Jsonifier::Core<EditMessageData>;
+		friend struct Jsonifier::Core<DiscordCoreAPI::EditMessageData>;
 		friend class InputEvents;
 		friend class Messages;
 
@@ -241,43 +242,43 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};
 		int32_t flags{};
 
-		EditMessageData() noexcept = default;
+		EditMessageData() = default;
 	};
 
 	/// \brief For deleting a Message.
 	struct DiscordCoreAPI_Dll DeleteMessageData {
 	  public:
-		TimeStamp timeStamp{};///< The created-at timeStamp of the original message.
+		TimeStampParse timeStamp{};///< The created-at timeStamp of the original message.
 		Snowflake channelId{};///< The channel Snowflake of the Message to delete.
 		Snowflake messageId{};///< The message Snowflake of the Message to delete.
-		std::string reason{};///< The reason for deleting the Message.
-		int32_t timeDelay{};///< Number of Milliseconds to wait before deleting the Message.
+		std::string reason{};///< The reason for deleting the MessageData.
+		int32_t timeDelay{};///< Number of Milliseconds to wait before deleting the MessageData.
 	};
 
 	/// \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
 		std::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
-		Snowflake channelId{};///< Channel within which to delete the Messages.
+		Snowflake channelId{};///< ChannelData within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
 	};
 
 	/// \brief For getting a collection of pinned Messages.
 	struct DiscordCoreAPI_Dll GetPinnedMessagesData {
-		Snowflake channelId{};///< The Channel from which to collect pinned Messages.
+		Snowflake channelId{};///< The ChannelData from which to collect pinned Messages.
 	};
 
-	/// \brief For pinning a single Message.
+	/// \brief For pinning a single MessageData.
 	struct DiscordCoreAPI_Dll PinMessageData {
-		Snowflake channelId{};///< The Channel within which to pin the Message.
+		Snowflake channelId{};///< The ChannelData within which to pin the MessageData.
 		Snowflake messageId{};///< The Message which you would like to pin.
-		std::string reason{};///< Reason for pinning this Message.
+		std::string reason{};///< Reason for pinning this MessageData.
 	};
 
-	/// \brief For unpinning a single Message.
+	/// \brief For unpinning a single MessageData.
 	struct DiscordCoreAPI_Dll UnpinMessageData {
-		Snowflake channelId{};///< The Channel within which to unpin the Message.
+		Snowflake channelId{};///< The ChannelData within which to unpin the MessageData.
 		Snowflake messageId{};///< The Message which you would like to unpin.
-		std::string reason{};///< Reason for pinning this Message.
+		std::string reason{};///< Reason for pinning this MessageData.
 	};
 
 	/**@}*/
@@ -300,28 +301,28 @@ namespace DiscordCoreAPI {
 
 		/// \brief Collects a collection of Message from the Discord servers
 		/// \param dataPackage A GetMessagesData structure.
-		/// \returns A CoRoutine containing a MessageVector.
-		static CoRoutine<MessageVector> getMessagesAsync(GetMessagesData dataPackage);
+		/// \returns A CoRoutine containing a std::vector<MessageData>.
+		static CoRoutine<std::vector<MessageData>> getMessagesAsync(GetMessagesData dataPackage);
 
 		/// \brief Collects a Message from the Discord servers.
 		/// \param dataPackage A GetMessageData structure.
 		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<Message> getMessageAsync(GetMessageData dataPackage);
+		static CoRoutine<MessageData> getMessageAsync(GetMessageData dataPackage);
 
-		/// \brief Creates a new Message.
+		/// \brief Creates a new MessageData.
 		/// \param dataPackage A CreateMessageData structure.
 		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<Message> createMessageAsync(CreateMessageData dataPackage);
+		static CoRoutine<MessageData> createMessageAsync(CreateMessageData dataPackage);
 
-		/// \brief Crossposts a message from a News Channel to the following Channels.
+		/// \brief Crossposts a message from a News ChannelData to the following Channels.
 		/// \param dataPackage A CrosspostMessageData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<Message> crosspostMessageAsync(CrosspostMessageData dataPackage);
+		static CoRoutine<MessageData> crosspostMessageAsync(CrosspostMessageData dataPackage);
 
 		/// \brief Edit a Message.
 		/// \param dataPackage An EditMessageData structure.
 		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<Message> editMessageAsync(EditMessageData dataPackage);
+		static CoRoutine<MessageData> editMessageAsync(EditMessageData dataPackage);
 
 		/// \brief Deletes a Message.
 		/// \param dataPackage A DeleteMessageData structure.
@@ -335,8 +336,8 @@ namespace DiscordCoreAPI {
 
 		/// \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.
-		/// \returns A CoRoutine containing a MessageVector.
-		static CoRoutine<MessageVector> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
+		/// \returns A CoRoutine containing a std::vector<MessageData>.
+		static CoRoutine<std::vector<MessageData>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
 
 		/// \brief Pins a Message to a given Channel.
 		/// \param dataPackage A PinMessageData structure.

@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// ReactionEntities.hpp - Header for the Reaction related classes and structs.
+/// ReactionEntities.hpp - Header for the ReactionData related classes and structs.
 /// May 13, 2021
 /// https://discordcoreapi.com
 /// \file ReactionEntities.hpp
@@ -39,50 +39,50 @@ namespace DiscordCoreAPI {
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
-	/// \brief For creating a single Reaction.
+	/// \brief For creating a single ReactionData.
 	struct DiscordCoreAPI_Dll CreateReactionData {
-		std::string emojiName{};///< The emoji name of the Reaction to add.
-		Snowflake channelId{};///< The Channel for which to add the Reaction.
-		Snowflake messageId{};///< The Message on which to add the Reaction.
-		Snowflake emojiId{};///< The emoji id of the Reaction to add.
+		std::string emojiName{};///< The emoji name of the ReactionData to add.
+		Snowflake channelId{};///< The ChannelData for which to add the ReactionData.
+		Snowflake messageId{};///< The Message on which to add the ReactionData.
+		Snowflake emojiId{};///< The emoji id of the ReactionData to add.
 	};
 
-	/// \brief For deleting one's own Reaction.
+	/// \brief For deleting one's own ReactionData.
 	struct DiscordCoreAPI_Dll DeleteOwnReactionData {
 		std::string emojiName{};///< The emoji name for which to remove the emoji.
-		Snowflake channelId{};///< The Channel from which to remove the Reaction.
-		Snowflake messageId{};///< The Message from which to remove the Reaction.
+		Snowflake channelId{};///< The ChannelData from which to remove the ReactionData.
+		Snowflake messageId{};///< The Message from which to remove the ReactionData.
 		Snowflake emojiId{};///< The emoji id for which to remove the emoji.
 	};
 
-	/// \brief For deleting a reaction, by User.
+	/// \brief For deleting a reaction, by UserData.
 	struct DiscordCoreAPI_Dll DeleteUserReactionData {
 		std::string emojiName{};///< The name of which emoji to remove.
-		Snowflake channelId{};///< The Channel from which to remove the Reaction.
-		Snowflake messageId{};///< The Message from which to remove the Reaction.
+		Snowflake channelId{};///< The ChannelData from which to remove the ReactionData.
+		Snowflake messageId{};///< The Message from which to remove the ReactionData.
 		Snowflake emojiId{};///< The id of which emoji to remove.
-		Snowflake userId{};///< The User id for whom to remove their emoji.
+		Snowflake userId{};///< The UserData id for whom to remove their emoji.
 	};
 
 	/// \brief For getting all of the Reactions.
 	struct DiscordCoreAPI_Dll GetReactionsData {
-		Snowflake channelId{};///< The Channel from which to acquire the reactors.
+		Snowflake channelId{};///< The ChannelData from which to acquire the reactors.
 		Snowflake messageId{};///< The Message from which to acquire the reactors.
 		Snowflake afterId{};///< Get users after this user ID.
 		std::string emoji{};///< The emoji name for which to acquire the reactors.
 		int32_t limit{};///< The maximum number of reactors to collect.
 	};
 
-	/// \brief For deleting all of the Reactions on a particular Message.
+	/// \brief For deleting all of the Reactions on a particular MessageData.
 	struct DiscordCoreAPI_Dll DeleteAllReactionsData {
-		Snowflake channelId{};///< The Channel from which you would like to remove the emoji.
+		Snowflake channelId{};///< The ChannelData from which you would like to remove the emoji.
 		Snowflake messageId{};///< The Message from which you would like to remove the emoji.
 	};
 
 	/// \brief For deleting all of the Reactions of a particular Emoji.
 	struct DiscordCoreAPI_Dll DeleteReactionsByEmojiData {
 		std::string emojiName{};///< The name of which emoji to remove.
-		Snowflake channelId{};///< The Channel from which you would like to remove the emoji.
+		Snowflake channelId{};///< The ChannelData from which you would like to remove the emoji.
 		Snowflake messageId{};///< The Message from which you would like to remove the emoji.
 		Snowflake emojiId{};///< The id of which emoji to remove.
 	};
@@ -141,45 +141,45 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the Reaction related Discord endpoints.
+	/// \brief An interface class for the ReactionData related Discord endpoints.
 	class DiscordCoreAPI_Dll Reactions {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		/// \brief Creates a Reaction on a Message.
+		/// \brief Creates a ReactionData on a Message.
 		/// \param dataPackage A CreateReactionData structure.
-		/// \returns A CoRoutine containing a Reaction.
-		static CoRoutine<Reaction> createReactionAsync(CreateReactionData dataPackage);
+		/// \returns A CoRoutine containing a ReactionData.
+		static CoRoutine<ReactionData> createReactionAsync(CreateReactionData dataPackage);
 
-		/// \brief Deletes your own Reactions from a given Message.
+		/// \brief Deletes your own Reactions from a given MessageData.
 		/// \param dataPackage A DeleteOwnReactionData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteOwnReactionAsync(DeleteOwnReactionData dataPackage);
 
-		/// \brief Deletes all of the Reactions by a specific User from a given Message.
+		/// \brief Deletes all of the Reactions by a specific UserData from a given MessageData.
 		/// \param dataPackage A DeleteUserReactionData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteUserReactionAsync(DeleteUserReactionData dataPackage);
 
 		/// \brief Get a list of users that reacted with this emoji. Returns an array of user objects on success.
 		/// \param dataPackage A GetReactionsData structure.
-		/// \returns A CoRoutine containing a UserVector.
-		static CoRoutine<UserVector> getReactionsAsync(GetReactionsData dataPackage);
+		/// \returns A CoRoutine containing a std::vector<UserData>.
+		static CoRoutine<std::vector<UserData>> getReactionsAsync(GetReactionsData dataPackage);
 
-		/// \brief Deletes all of the Reactions from a given Message.
+		/// \brief Deletes all of the Reactions from a given MessageData.
 		/// \param dataPackage A DeleteAllReactionsData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteAllReactionsAsync(DeleteAllReactionsData dataPackage);
 
-		/// \brief Deletes all of the Reactions by a specific emoji from a given Message.
+		/// \brief Deletes all of the Reactions by a specific emoji from a given MessageData.
 		/// \param dataPackage A DeleteReactionsByEmojiData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage);
 
 		/// \brief Collects a list of Guild Emoji from a chosen Guild.
 		/// \param dataPackage A GetEmojiListData structure.
-		/// \returns A CoRoutine containing a EmojiDataVector.
-		static CoRoutine<EmojiDataVector> getEmojiListAsync(GetEmojiListData dataPackage);
+		/// \returns A CoRoutine containing a std::vector<EmojiData>.
+		static CoRoutine<std::vector<EmojiData>> getEmojiListAsync(GetEmojiListData dataPackage);
 
 		/// \brief Collects a single Guild Emoji from a chosen Guild.
 		/// \param dataPackage A GetGuildEmojiData structure.

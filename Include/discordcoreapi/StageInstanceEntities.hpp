@@ -31,62 +31,62 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/Utilities/HttpsClient.hpp>
 
 namespace DiscordCoreAPI {
 
-	/// \brief For creating a StageInstance.
+	/// \brief For creating a StageInstanceData.
 	struct DiscordCoreAPI_Dll CreateStageInstanceData {
 		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance(default Guild_Only).
-		Snowflake channelId{};///< The id of the Stage Channel.
+		Snowflake channelId{};///< The id of the Stage ChannelData.
 		std::string reason{};///< The reason for starting it.
 		std::string topic{};///< The topic of the Stage instance(1 - 120 characters).
 	};
 
-	/// \brief For collecting a single StageInstance.
+	/// \brief For collecting a single StageInstanceData.
 	struct DiscordCoreAPI_Dll GetStageInstanceData {
-		Snowflake channelId{};///< The Channel id from which you would like to collect the StageInstance.
+		Snowflake channelId{};///< The ChannelData id from which you would like to collect the StageInstanceData.
 	};
 
-	/// \brief For modifying a single StageInstance.
+	/// \brief For modifying a single StageInstanceData.
 	struct DiscordCoreAPI_Dll ModifyStageInstanceData {
 		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance.
-		Snowflake channelId{};///< The Channel Snowflake of the StageInstance.
-		std::string reason{};///< Reason for modifying the StageInstance.
+		Snowflake channelId{};///< The ChannelData Snowflake of the StageInstanceData.
+		std::string reason{};///< Reason for modifying the StageInstanceData.
 		std::string topic{};///< The topic of the Stage instance(1 - 120 characters).
 	};
 
-	/// \brief For deleting a single StageInstance.
+	/// \brief For deleting a single StageInstanceData.
 	struct DiscordCoreAPI_Dll DeleteStageInstanceData {
-		Snowflake channelId{};///< The Channel Snowflake of the StageInstance.
-		std::string reason{};///< Reason for deleting the StageInstance.
+		Snowflake channelId{};///< The ChannelData Snowflake of the StageInstanceData.
+		std::string reason{};///< Reason for deleting the StageInstanceData.
 	};
 
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the StageInstance related Discord endpoints.
+	/// \brief An interface class for the StageInstanceData related Discord endpoints.
 	class DiscordCoreAPI_Dll StageInstances {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		/// \brief Creates a StageInstance.
+		/// \brief Creates a StageInstanceData.
 		/// \param dataPackage A CreateStageInstanceData structure.
-		/// \returns A CoRoutine containing a StageInstance.
-		static CoRoutine<StageInstance> createStageInstanceAsync(CreateStageInstanceData dataPackage);
+		/// \returns A CoRoutine containing a StageInstanceData.
+		static CoRoutine<StageInstanceData> createStageInstanceAsync(CreateStageInstanceData dataPackage);
 
-		/// \brief Collects a StageInstance.
+		/// \brief Collects a StageInstanceData.
 		/// \param dataPackage A GetStageInstanceData structure.
-		/// \returns A CoRoutine containing a StageInstance.
-		static CoRoutine<StageInstance> getStageInstanceAsync(GetStageInstanceData dataPackage);
+		/// \returns A CoRoutine containing a StageInstanceData.
+		static CoRoutine<StageInstanceData> getStageInstanceAsync(GetStageInstanceData dataPackage);
 
-		/// \brief Modifies a StageInstance.
+		/// \brief Modifies a StageInstanceData.
 		/// \param dataPackage A ModifyStageInstanceData structure.
-		/// \returns A CoRoutine containing a StageInstance.
-		static CoRoutine<StageInstance> modifyStageInstanceAsync(ModifyStageInstanceData dataPackage);
+		/// \returns A CoRoutine containing a StageInstanceData.
+		static CoRoutine<StageInstanceData> modifyStageInstanceAsync(ModifyStageInstanceData dataPackage);
 
-		/// \brief Deletes a StageInstance.
+		/// \brief Deletes a StageInstanceData.
 		/// \param dataPackage A DeleteStageInstanceData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteStageInstanceAsync(DeleteStageInstanceData dataPackage);

@@ -38,68 +38,12 @@
 #include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
-#include <discordcoreapi/Utilities.hpp>
+#include <discordcoreapi/Utilities/Utilities.hpp>
 #include <fstream>
 
 namespace DiscordCoreAPI {
 
-	namespace DiscordCoreInternal {
-
-		WebSocketClose& WebSocketClose::operator=(uint16_t valueNew) {
-			value = static_cast<WebSocketCloseCode>(valueNew);
-			return *this;
-		};
-
-		WebSocketClose::WebSocketClose(uint16_t valueNew) {
-			*this = valueNew;
-		};
-
-		WebSocketClose::operator std::string_view() {
-			return WebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(value)]];
-		}
-
-		WebSocketClose::operator bool() {
-			return static_cast<std::underlying_type_t<decltype(value)>>(value) &
-				static_cast<std::underlying_type_t<decltype(value)>>(WebSocketCloseCode::We_Do_Reconnect);
-		}
-
-		VoiceWebSocketClose& VoiceWebSocketClose::operator=(uint16_t valueNew) {
-			value = static_cast<VoiceWebSocketCloseCode>(valueNew);
-			return *this;
-		};
-
-		VoiceWebSocketClose::VoiceWebSocketClose(uint16_t value) {
-			*this = value;
-		};
-
-		VoiceWebSocketClose::operator std::string_view() {
-			return VoiceWebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(value)]];
-		}
-
-		VoiceWebSocketClose::operator bool() {
-			return true;
-		}
-
-		HttpsResponseCode& HttpsResponseCode::operator=(uint32_t valueNew) {
-			value = static_cast<HttpsResponseCodes>(valueNew);
-			return *this;
-		}
-
-		HttpsResponseCode::HttpsResponseCode(uint32_t value) {
-			*this = value;
-		}
-
-		HttpsResponseCode::operator std::string() {
-			return std::string{ "Code: " + std::to_string(static_cast<uint32_t>(value)) + std::string{ ", Message: " } +
-				static_cast<std::string>(HttpsResponseCode::outputErrorValues[value]) };
-		}
-
-		HttpsResponseCode::operator uint32_t() {
-			return static_cast<uint32_t>(value);
-		}
-	}
-
-	UpdatePresenceData::UpdatePresenceData(PresenceUpdateState state) noexcept {
+	UpdatePresenceData::UpdatePresenceData(PresenceUpdateState state) {
 		status = state;
 		switch (status) {
 			case PresenceUpdateState::Online: {
@@ -125,15 +69,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	DCAException::DCAException(const std::string& error, std::source_location location) noexcept : std::runtime_error(error) {
-		std::stringstream stream{};
-		stream << "Thrown From: " << location.file_name() << " (" << std::to_string(location.line()) << ":" << std::to_string(location.column())
-			   << ")\n"
-			   << error << std::endl
-			   << std::endl;
-		*static_cast<std::runtime_error*>(this) = std::runtime_error{ stream.str() };
-	}
-
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void )) {
 		outputSttream << function();
 		return outputSttream;
@@ -143,67 +78,71 @@ namespace DiscordCoreAPI {
 		config = configNew;
 	}
 
-	const bool ConfigManager::doWePrintWebSocketSuccessMessages() const {
+	bool ConfigManager::doWePrintWebSocketSuccessMessages() const {
 		return config.logOptions.logWebSocketSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintWebSocketErrorMessages() const {
+	bool ConfigManager::doWePrintWebSocketErrorMessages() const {
 		return config.logOptions.logWebSocketErrorMessages;
 	}
 
-	const bool ConfigManager::doWePrintHttpsSuccessMessages() const {
+	bool ConfigManager::doWePrintHttpsSuccessMessages() const {
 		return config.logOptions.logHttpsSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintHttpsErrorMessages() const {
+	bool ConfigManager::doWePrintHttpsErrorMessages() const {
 		return config.logOptions.logHttpsErrorMessages;
 	}
 
-	const bool ConfigManager::doWePrintGeneralSuccessMessages() const {
+	bool ConfigManager::doWePrintGeneralSuccessMessages() const {
 		return config.logOptions.logGeneralSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintGeneralErrorMessages() const {
+	bool ConfigManager::doWePrintGeneralErrorMessages() const {
 		return config.logOptions.logGeneralErrorMessages;
 	}
 
-	const bool ConfigManager::doWeCacheChannels() const {
+	bool ConfigManager::doWeCacheGuildMembers() const {
+		return config.cacheOptions.cacheGuildMembers;
+	}
+
+	bool ConfigManager::doWeCacheChannels() const {
 		return config.cacheOptions.cacheChannels;
 	}
 
-	const bool ConfigManager::doWeCacheUsers() const {
+	bool ConfigManager::doWeCacheUsers() const {
 		return config.cacheOptions.cacheUsers;
 	}
 
-	const bool ConfigManager::doWeCacheGuilds() const {
+	bool ConfigManager::doWeCacheGuilds() const {
 		return config.cacheOptions.cacheGuilds;
 	}
 
-	const bool ConfigManager::doWeCacheRoles() const {
+	bool ConfigManager::doWeCacheRoles() const {
 		return config.cacheOptions.cacheRoles;
 	}
 
-	const UpdatePresenceData ConfigManager::getPresenceData() const {
+	UpdatePresenceData ConfigManager::getPresenceData() const {
 		return config.presenceData;
 	}
 
-	const std::string ConfigManager::getBotToken() const {
+	std::string ConfigManager::getBotToken() const {
 		return config.botToken;
 	}
 
-	const uint32_t ConfigManager::getTotalShardCount() const {
+	uint32_t ConfigManager::getTotalShardCount() const {
 		return config.shardOptions.totalNumberOfShards;
 	}
 
-	const uint32_t ConfigManager::getStartingShard() const {
+	uint32_t ConfigManager::getStartingShard() const {
 		return config.shardOptions.startingShard;
 	}
 
-	const uint32_t ConfigManager::getShardCountForThisProcess() const {
+	uint32_t ConfigManager::getShardCountForThisProcess() const {
 		return config.shardOptions.numberOfShardsForThisProcess;
 	}
 
-	const std::string ConfigManager::getConnectionAddress() const {
+	std::string ConfigManager::getConnectionAddress() const {
 		return config.connectionAddress;
 	}
 
@@ -211,7 +150,7 @@ namespace DiscordCoreAPI {
 		config.connectionAddress = connectionAddressNew;
 	}
 
-	const uint16_t ConfigManager::getConnectionPort() const {
+	uint16_t ConfigManager::getConnectionPort() const {
 		return config.connectionPort;
 	}
 
@@ -219,23 +158,23 @@ namespace DiscordCoreAPI {
 		config.connectionPort = connectionPortNew;
 	}
 
-	const std::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
+	std::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
 		return config.functionsToExecute;
 	}
 
-	const TextFormat ConfigManager::getTextFormat() const {
+	TextFormat ConfigManager::getTextFormat() const {
 		return config.textFormat;
 	}
 
-	const GatewayIntents ConfigManager::getGatewayIntents() {
+	GatewayIntents ConfigManager::getGatewayIntents() {
 		return config.intents;
 	}
 
-	AudioFrameData::AudioFrameData(AudioFrameType frameTypeNew) noexcept {
+	AudioFrameData::AudioFrameData(AudioFrameType frameTypeNew) {
 		type = frameTypeNew;
 	}
 
-	AudioFrameData& AudioFrameData::operator+=(std::basic_string_view<uint8_t> other) noexcept {
+	AudioFrameData& AudioFrameData::operator+=(std::basic_string_view<uint8_t> other) {
 		if (other.size() > 0) {
 			if (data.size() < other.size()) {
 				data.resize(other.size());
@@ -246,7 +185,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	void AudioFrameData::clearData() noexcept {
+	void AudioFrameData::clearData() {
 		type = AudioFrameType::Unset;
 		guildMemberId = 0;
 		currentSize = 0;
@@ -268,11 +207,11 @@ namespace DiscordCoreAPI {
 		uint8_t red = static_cast<uint8_t>(color >> 16);
 		uint8_t green = static_cast<uint8_t>(color >> 8);
 		uint8_t blue = static_cast<uint8_t>(color);
-		RGBColorValue color{};
-		color.green = green;
-		color.blue = blue;
-		color.red = red;
-		return color;
+		RGBColorValue colorNew{};
+		colorNew.green = green;
+		colorNew.blue = blue;
+		colorNew.red = red;
+		return colorNew;
 	}
 
 	HexColorValue ColorValue::getHexColorValue() {
@@ -292,23 +231,22 @@ namespace DiscordCoreAPI {
 			lowBits = 0;
 			return *this;
 		}
-		if (newHash.length() == 34 && newHash.substr(0, 2) == "a_") {
-			newHash = newHash.substr(2);
+		if (newHash.length() >= 32 && newHash.find("a_") != std::string::npos) {
+			newHash = newHash.substr(newHash.find("a_") + 2);
 		}
-		if (newHash.length() != 32 && newHash.length() != 33) {
-			throw std::length_error(
-				"IconHash must be exactly 32 characters in length, passed value is: '" + std::to_string(newHash.size()) + "', in length.");
+		if (newHash.length() != 32) {
+			throw DCAException{ "Sorry, but that is an incorrect IconHash length, it must be 32 characters long." };
 		}
 		lowBits = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
 		highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
 		return *this;
 	}
 
-	IconHash::IconHash(const std::string& string) noexcept {
+	IconHash::IconHash(const std::string& string) {
 		*this = string;
 	}
 
-	IconHash::operator std::string() noexcept {
+	IconHash::operator std::string() const {
 		if (highBits == 0 || lowBits == 0) {
 			return {};
 		} else {
@@ -316,277 +254,45 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	std::string operator+(const IconHash& lhs, const std::string& rhs) {
+		std::string newString = lhs.operator std::string() += rhs;
+		return newString;
+	}
+
+	bool IconHash::operator==(const IconHash& rhs) const {
+		return highBits == rhs.highBits && lowBits == rhs.lowBits;
+	}
+
+	bool IconHash::operator==(const std::string& rhs) const {
+		return this->operator std::string() == rhs;
+	}
+
 	uint64_t strtoull(std::string_view string) {
 		return stoull(std::string{ string });
 	}
 
-	Permissions& Permissions::operator=(Permission&& other) {
-		permissions = static_cast<uint64_t>(other);
-		return *this;
-	}
-
-	Permissions& Permissions::operator=(const Permission& other) {
-		permissions = static_cast<uint64_t>(other);
-		return *this;
-	}
-
-	Permissions::Permissions(const Permission& permsNew) {
-		*this = permsNew;
-	}
-
-	Permissions& Permissions::operator=(std::string&& other) {
-		if (other.size() == 0 || other == "") {
-			permissions = 0;
-		} else {
-			permissions = stoull(other);
-		}
-		other = "";
-		return *this;
-	}
-
-	Permissions::Permissions(std::string&& permsNew) {
-		*this = std::move(permsNew);
-	}
-
-	Permissions& Permissions::operator=(const std::string& other) {
-		if (other.size() == 0 || other == "") {
-			permissions = 0;
-		} else {
-			permissions = stoull(other);
-		}
-		return *this;
-	}
-
-	Permissions::Permissions(const std::string& permsNew) {
-		*this = permsNew;
-	}
-
-	Permissions& Permissions::operator=(uint64_t other) {
-		permissions = other;
-		return *this;
-	}
-
-	Permissions::Permissions(uint64_t permsNew) {
-		*this = permsNew;
-	}
-
-	Permissions::operator uint64_t() {
-		return permissions;
-	}
-
-	Permissions::operator std::string() {
-		return std::to_string(permissions);
-	}
-
-	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, const ChannelData& channel) {
-		std::string permsString = Permissions::computePermissions(guildMember, channel);
-		return permsString;
-	}
-
-	bool Permissions::checkForPermission(const GuildMember& guildMember, const ChannelData& channel, Permission permission) {
-		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
-		if ((stoull(permissionsString) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	std::string Permissions::getCurrentGuildPermissions(const GuildMember& guildMember) {
-		std::string permissions = Permissions::computeBasePermissions(guildMember);
-		return permissions;
-	}
-
-	void Permissions::removePermissions(const std::vector<Permission>& permissionsToRemove) {
-		uint64_t permissionsInteger = permissions;
-		for (auto value: permissionsToRemove) {
-			permissionsInteger &= ~static_cast<uint64_t>(value);
-		}
-		std::stringstream sstream{};
-		sstream << permissionsInteger;
-		*this = sstream.str();
-	}
-
-	void Permissions::addPermissions(const std::vector<Permission>& permissionsToAdd) {
-		uint64_t permissionsInteger = permissions;
-		for (auto value: permissionsToAdd) {
-			permissionsInteger |= static_cast<uint64_t>(value);
-		}
-		std::stringstream sstream{};
-		sstream << permissionsInteger;
-		*this = sstream.str();
-	}
-
-	std::vector<std::string> Permissions::displayPermissions() {
-		std::vector<std::string> returnVector{};
-		uint64_t permissionsInteger = permissions;
-		if (permissionsInteger & (1ll << 3)) {
-			for (int64_t x = 0; x < 41; ++x) {
-				permissionsInteger |= 1ll << x;
-			}
-		}
-		if (permissionsInteger & (1ll << 0)) {
-			returnVector.emplace_back("Create Instant Invite");
-		}
-		if (permissionsInteger & (1ll << 1)) {
-			returnVector.emplace_back("Kick Members");
-		}
-		if (permissionsInteger & (1ll << 2)) {
-			returnVector.emplace_back("Ban Members");
-		}
-		if (permissionsInteger & (1ll << 3)) {
-			returnVector.emplace_back("Administrator");
-		}
-		if (permissionsInteger & (1ll << 4)) {
-			returnVector.emplace_back("Manage Channels");
-		}
-		if (permissionsInteger & (1ll << 5)) {
-			returnVector.emplace_back("Manage Guild");
-		}
-		if (permissionsInteger & (1ll << 6)) {
-			returnVector.emplace_back("Add Reactions");
-		}
-		if (permissionsInteger & (1ll << 7)) {
-			returnVector.emplace_back("View Audit Log");
-		}
-		if (permissionsInteger & (1ll << 8)) {
-			returnVector.emplace_back("Priority Speaker");
-		}
-		if (permissionsInteger & (1ll << 9)) {
-			returnVector.emplace_back("Stream");
-		}
-		if (permissionsInteger & (1ll << 10)) {
-			returnVector.emplace_back("View Channel");
-		}
-		if (permissionsInteger & (1ll << 11)) {
-			returnVector.emplace_back("Send Messages");
-		}
-		if (permissionsInteger & (1ll << 12)) {
-			returnVector.emplace_back("Send TTS Messages");
-		}
-		if (permissionsInteger & (1ll << 13)) {
-			returnVector.emplace_back("Manage Messages");
-		}
-		if (permissionsInteger & (1ll << 14)) {
-			returnVector.emplace_back("Embed Links");
-		}
-		if (permissionsInteger & (1ll << 15)) {
-			returnVector.emplace_back("Attach Files");
-		}
-		if (permissionsInteger & (1ll << 16)) {
-			returnVector.emplace_back("Read Message History");
-		}
-		if (permissionsInteger & (1ll << 17)) {
-			returnVector.emplace_back("Mention Everyone");
-		}
-		if (permissionsInteger & (1ll << 18)) {
-			returnVector.emplace_back("Use External Emoji");
-		}
-		if (permissionsInteger & (1ll << 19)) {
-			returnVector.emplace_back("View Guild Insights");
-		}
-		if (permissionsInteger & (1ll << 20)) {
-			returnVector.emplace_back("Connect");
-		}
-		if (permissionsInteger & (1ll << 21)) {
-			returnVector.emplace_back("Speak");
-		}
-		if (permissionsInteger & (1ll << 22)) {
-			returnVector.emplace_back("Mute Members");
-		}
-		if (permissionsInteger & (1ll << 23)) {
-			returnVector.emplace_back("Deafen Members");
-		}
-		if (permissionsInteger & (1ll << 24)) {
-			returnVector.emplace_back("Move Members");
-		}
-		if (permissionsInteger & (1ll << 25)) {
-			returnVector.emplace_back("Use VAD");
-		}
-		if (permissionsInteger & (1ll << 26)) {
-			returnVector.emplace_back("Change Nickname");
-		}
-		if (permissionsInteger & (1ll << 27)) {
-			returnVector.emplace_back("Manage Nicknames");
-		}
-		if (permissionsInteger & (1ll << 28)) {
-			returnVector.emplace_back("Manage Roles");
-		}
-		if (permissionsInteger & (1ll << 29)) {
-			returnVector.emplace_back("Manage Webhooks");
-		}
-		if (permissionsInteger & (1ll << 30)) {
-			returnVector.emplace_back("Manage Emojis And Stickers");
-		}
-		if (permissionsInteger & (1ll << 31)) {
-			returnVector.emplace_back("Use Application Commands");
-		}
-		if (permissionsInteger & (1ll << 32)) {
-			returnVector.emplace_back("Request To Speak");
-		}
-		if (permissionsInteger & (1ll << 33)) {
-			returnVector.emplace_back("Manage Events");
-		}
-		if (permissionsInteger & (1ll << 34)) {
-			returnVector.emplace_back("Manage Threads");
-		}
-		if (permissionsInteger & (1ll << 35)) {
-			returnVector.emplace_back("Create Public Threads");
-		}
-		if (permissionsInteger & (1ll << 36)) {
-			returnVector.emplace_back("Create Private Threads");
-		}
-		if (permissionsInteger & (1ll << 37)) {
-			returnVector.emplace_back("Use External Stickers");
-		}
-		if (permissionsInteger & (1ll << 38)) {
-			returnVector.emplace_back("Send Messages In Threads");
-		}
-		if (permissionsInteger & (1ll << 39)) {
-			returnVector.emplace_back("Start Embedded Activities");
-		}
-		if (permissionsInteger & (1ll << 40)) {
-			returnVector.emplace_back("Moderate Members");
-		}
-		return returnVector;
-	}
-
-	std::string Permissions::getCurrentPermissionString() {
-		std::string returnString = std::to_string(permissions);
-		return returnString;
-	}
-
-	std::string Permissions::getAllPermissions() {
-		uint64_t allPerms{};
-		for (int64_t x = 0; x < 41; ++x) {
-			allPerms |= 1ll << x;
-		}
-		std::stringstream stream{};
-		stream << allPerms;
-		return stream.str();
-	}
-
-	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, const ChannelData& channel) {
+	template<> std::string PermissionsBase<Permissions>::computeOverwrites(const std::string& basePermissions, const GuildMemberData& guildMember,
+		const ChannelData& channel) {
 		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) & static_cast<uint64_t>(Permission::Administrator)) {
-			return Permissions::getAllPermissions();
+			return getAllPermissions();
 		}
 
 		uint64_t permissions = stoull(basePermissions);
-		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
 			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
 				permissions &= ~channel.permissionOverwrites[x].deny;
 				permissions |= channel.permissionOverwrites[x].allow;
 				break;
 			}
 		}
-		RoleDataVector guildMemberRoles{};
+		std::vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
 		}
 		uint64_t allow{};
 		uint64_t deny{};
 		for (auto& value: guildMemberRoles) {
-			for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+			for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
 				if (value.id == channel.permissionOverwrites[x].id) {
 					allow |= channel.permissionOverwrites[x].allow;
 					deny |= channel.permissionOverwrites[x].deny;
@@ -595,7 +301,7 @@ namespace DiscordCoreAPI {
 		}
 		permissions &= ~deny;
 		permissions |= allow;
-		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
 			if (channel.permissionOverwrites[x].id == guildMember.user.id) {
 				permissions &= ~channel.permissionOverwrites[x].deny;
 				permissions |= channel.permissionOverwrites[x].allow;
@@ -605,18 +311,12 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	std::string Permissions::computePermissions(const GuildMember& guildMember, const ChannelData& channel) {
-		std::string permissions = Permissions::computeBasePermissions(guildMember);
-		permissions = Permissions::computeOverwrites(permissions, guildMember, channel);
-		return permissions;
-	}
-
-	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
+	template<> std::string PermissionsBase<Permissions>::computeBasePermissions(const GuildMemberData& guildMember) {
 		const GuildData guild = Guilds::getCachedGuild({ .guildId = guildMember.guildId });
 		if (guild.ownerId == guildMember.user.id) {
-			return Permissions::getAllPermissions();
+			return getAllPermissions();
 		}
-		RoleDataVector guildRoles{};
+		std::vector<RoleData> guildRoles{};
 		for (auto& value: guild.roles) {
 			guildRoles.emplace_back(Roles::getCachedRole({ .guildId = guild.id, .roleId = value.id }));
 		}
@@ -627,51 +327,104 @@ namespace DiscordCoreAPI {
 			}
 		}
 		uint64_t permissions{};
-		if (roleEveryone.permissions.operator uint64_t() != 0) {
-			permissions = roleEveryone.permissions.operator uint64_t();
+		if (roleEveryone.permissions != "0") {
+			permissions = roleEveryone.permissions;
 		}
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId = guildMember.guildId;
-		RoleDataVector guildMemberRoles{};
+		std::vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			auto valueNew = Roles::getCachedRole({ .guildId = guild.id, .roleId = value });
 			guildMemberRoles.emplace_back(valueNew);
 		}
 		for (auto& value: guildMemberRoles) {
-			permissions |= value.permissions.operator uint64_t();
+			permissions |= value.permissions.operator int64_t();
 		}
 
 		if (permissions & static_cast<uint64_t>(Permission::Administrator)) {
-			return Permissions::getAllPermissions();
+			return getAllPermissions();
 		}
 
 		return std::to_string(permissions);
 	}
 
-	void reportException(const std::string& currentFunctionName, std::source_location location) {
-		try {
-			auto exception = std::current_exception();
-			if (exception) {
-				std::rethrow_exception(exception);
-			}
-		} catch (const std::exception& e) {
-			MessagePrinter::printError<PrintMessageType::General>(e.what(), location);
+	template<> std::string PermissionsBase<PermissionsParse>::computeOverwrites(const std::string& basePermissions,
+		const GuildMemberData& guildMember, const ChannelData& channel) {
+		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) & static_cast<uint64_t>(Permission::Administrator)) {
+			return getAllPermissions();
 		}
+
+		uint64_t permissions = stoull(basePermissions);
+		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
+				permissions &= ~channel.permissionOverwrites[x].deny;
+				permissions |= channel.permissionOverwrites[x].allow;
+				break;
+			}
+		}
+		std::vector<RoleData> guildMemberRoles{};
+		for (auto& value: guildMember.roles) {
+			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
+		}
+		uint64_t allow{};
+		uint64_t deny{};
+		for (auto& value: guildMemberRoles) {
+			for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+				if (value.id == channel.permissionOverwrites[x].id) {
+					allow |= channel.permissionOverwrites[x].allow;
+					deny |= channel.permissionOverwrites[x].deny;
+				}
+			}
+		}
+		permissions &= ~deny;
+		permissions |= allow;
+		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+			if (channel.permissionOverwrites[x].id == guildMember.user.id) {
+				permissions &= ~channel.permissionOverwrites[x].deny;
+				permissions |= channel.permissionOverwrites[x].allow;
+				break;
+			}
+		}
+		return std::to_string(permissions);
 	}
 
-	void rethrowException(const std::string& currentFunctionName, std::source_location location) {
-		try {
-			auto currentException = std::current_exception();
-			if (currentException) {
-				std::rethrow_exception(currentException);
-			}
-		} catch (const std::exception& e) {
-			MessagePrinter::printError<PrintMessageType::General>(e.what(), location);
-			if (std::current_exception()) {
-				std::rethrow_exception(std::current_exception());
+	template<> std::string PermissionsBase<PermissionsParse>::computeBasePermissions(const GuildMemberData& guildMember) {
+		const GuildData guild = Guilds::getCachedGuild({ .guildId = guildMember.guildId });
+		if (guild.ownerId == guildMember.user.id) {
+			return getAllPermissions();
+		}
+		std::vector<RoleData> guildRoles{};
+		for (auto& value: guild.roles) {
+			guildRoles.emplace_back(Roles::getCachedRole({ .guildId = guild.id, .roleId = value.id }));
+		}
+		RoleData roleEveryone{};
+		for (auto& value: guildRoles) {
+			if (value.id == guild.id) {
+				roleEveryone = value;
 			}
 		}
+		uint64_t permissions{};
+		if (roleEveryone.permissions != "0") {
+			permissions = roleEveryone.permissions;
+		}
+		GetGuildMemberRolesData getRolesData{};
+		getRolesData.guildMember = guildMember;
+		getRolesData.guildId = guildMember.guildId;
+		std::vector<RoleData> guildMemberRoles{};
+		for (auto& value: guildMember.roles) {
+			auto valueNew = Roles::getCachedRole({ .guildId = guild.id, .roleId = value });
+			guildMemberRoles.emplace_back(valueNew);
+		}
+		for (auto& value: guildMemberRoles) {
+			permissions |= value.permissions.operator int64_t();
+		}
+
+		if (permissions & static_cast<uint64_t>(Permission::Administrator)) {
+			return getAllPermissions();
+		}
+
+		return std::to_string(permissions);
 	}
 
 	std::string constructMultiPartData(const std::string& data, const std::vector<File>& files) {
@@ -687,7 +440,7 @@ namespace DiscordCoreAPI {
 			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
 			content += files[0].data;
 		} else {
-			for (int8_t x = 0; x < files.size(); ++x) {
+			for (uint64_t x = 0; x < files.size(); ++x) {
 				content += partStart + "name=\"files[" + std::to_string(x) + "]\"; filename=\"" + files[x].fileName + "\"\r\n\r\n";
 				content += files[x].data;
 				content += "\r\n";
@@ -771,7 +524,7 @@ namespace DiscordCoreAPI {
 		std::string returnString{};
 		for (auto& value: inputString) {
 			if (static_cast<uint8_t>(value) >= 128 || value < 0) {
-				int32_t difference = 0 - value;
+				uint64_t difference = 0ull - value;
 				if (value + difference == '\0') {
 					continue;
 				} else {
@@ -798,7 +551,7 @@ namespace DiscordCoreAPI {
 			}
 
 			escaped << std::uppercase;
-			escaped << '%' << std::setw(2) << int32_t(static_cast<uint8_t>(c));
+			escaped << '%' << std::setw(2) << uint64_t(static_cast<uint8_t>(c));
 			escaped << std::nouppercase;
 		}
 		return escaped.str();
@@ -816,7 +569,7 @@ namespace DiscordCoreAPI {
 		std::string returnString{};
 		returnString.resize(16);
 		std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
-		for (int32_t x = 0; x < 16; ++x) {
+		for (uint64_t x = 0; x < 16; ++x) {
 			returnString[x] = static_cast<uint8_t>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
 		}
 		returnString = base64Encode(returnString, false);
@@ -844,8 +597,8 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string getTimeAndDate() {
-		const time_t now = std::time(nullptr);
-		tm time = *std::localtime(&now);
+		time_t now = std::time(nullptr);
+		std::tm time{ getCurrentTimeVal(now) };
 		std::string timeStamp{};
 		timeStamp.resize(48);
 		if (time.tm_isdst) {

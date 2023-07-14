@@ -46,15 +46,15 @@ namespace DiscordCoreAPI {
 		  public:
 			using value_type = ValueType;
 			using pointer = value_type*;
-			using size_type = size_t;
+			using size_type = uint64_t;
 
-			inline RingBufferInterface() noexcept {
+			inline RingBufferInterface() {
 				arrayValue.resize(Size);
 			}
 
 			template<typename ValueType2, size_type SliceCount> friend class RingBuffer;
 
-			inline void modifyReadOrWritePosition(RingBufferAccessType type, size_type size) noexcept {
+			inline void modifyReadOrWritePosition(RingBufferAccessType type, size_type size) {
 				if (type == RingBufferAccessType::Read) {
 					tail += size;
 				} else {
@@ -62,27 +62,27 @@ namespace DiscordCoreAPI {
 				}
 			}
 
-			inline size_type getUsedSpace() noexcept {
+			inline size_type getUsedSpace() {
 				return head - tail;
 			}
 
-			inline pointer getCurrentTail() noexcept {
+			inline pointer getCurrentTail() {
 				return arrayValue.data() + (tail % Size);
 			}
 
-			inline pointer getCurrentHead() noexcept {
+			inline pointer getCurrentHead() {
 				return arrayValue.data() + (head % Size);
 			}
 
-			inline bool isItEmpty() noexcept {
+			inline bool isItEmpty() {
 				return tail == head;
 			}
 
-			inline bool isItFull() noexcept {
+			inline bool isItFull() {
 				return getUsedSpace() == Size;
 			}
 
-			inline void clear() noexcept {
+			inline void clear() {
 				tail = 0;
 				head = 0;
 			}
@@ -99,9 +99,9 @@ namespace DiscordCoreAPI {
 			using value_type = RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>::value_type;
 			using const_pointer = const value_type*;
 			using pointer = value_type*;
-			using size_type = size_t;
+			using size_type = uint64_t;
 
-			inline void writeData(const_pointer data, size_type size) noexcept {
+			inline void writeData(const_pointer data, size_type size) {
 				if (RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::isItFull() ||
 					size > 16384 -
 							RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead()
@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 					RingBufferAccessType::Write, 1);
 			}
 
-			inline std::basic_string_view<std::decay_t<value_type>> readData() noexcept {
+			inline std::basic_string_view<std::decay_t<value_type>> readData() {
 				std::basic_string_view<std::decay_t<value_type>> returnData{};
 				if (RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->getUsedSpace() > 0) {
 					returnData = std::basic_string_view<std::decay_t<value_type>>{

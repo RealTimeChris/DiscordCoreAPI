@@ -35,10 +35,13 @@ generate_product_version(
 	VERSION_REVISION "0"
 )
 
+set(CMAKE_CXX_STANDARD 20)
+
 if (NOT DEFINED BUILD_SHARED_LIBS)
 	set(BUILD_SHARED_LIBS TRUE)
 endif()
 
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/Utilities/*.hpp")
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Source/*.cpp")
 
 if (WIN32)
@@ -53,15 +56,6 @@ elseif (UNIX)
 endif()
 
 add_library("${PROJECT_NAME}::${LIB_NAME}" ALIAS "${LIB_NAME}")
-
-file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/Utilities/*.hpp")
-
-set_target_properties(
-	"${LIB_NAME}" PROPERTIES
-	OUTPUT_NAME "discordcoreapi"
-	CXX_STANDARD_REQUIRED ON
-	CXX_EXTENSIONS OFF
-)
 
 if("${DEV}")
 	include(FetchContent)
@@ -81,8 +75,8 @@ find_package(unofficial-sodium CONFIG REQUIRED)
 
 target_include_directories(
 	"${LIB_NAME}" PUBLIC
-	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Include>"
+	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 )
 
 target_link_libraries(
@@ -108,13 +102,19 @@ target_compile_options(
 	"${LIB_NAME}" PUBLIC
 	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:/fsanitize=address>>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/MP${THREAD_COUNT}>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-Wextra>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-Wall>"
+	"$<$<CXX_COMPILER_ID:GNU>:-Wextra>"
+	"$<$<CXX_COMPILER_ID:GNU>:-Wall>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/W4>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/std:c++latest>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
 	"$<$<CXX_COMPILER_ID:GNU>:-march=core-avx2>"
 	"$<$<CXX_COMPILER_ID:CLANG>:-march=core-avx2>"
+	"$<$<CXX_COMPILER_ID:GNU>:-fcoroutines>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-fcoroutines>"
 )
 
 target_link_options(
@@ -128,6 +128,7 @@ set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")
 set(EXPORTED_TARGETS_NAME "${PROJECT_NAME}Targets")
 set(EXPORTED_TARGETS_FILE_NAME "${EXPORTED_TARGETS_NAME}.cmake")
 set(EXPORTED_TARGETS_FILE_PATH "share/discordcoreapi/${EXPORTED_TARGETS_FILE_NAME}")
+set(VERSION_FILE_NAME "${PROJECT_NAME}ConfigVersion.cmake")
 set(RELEASE_PDB_FILE_PATH "bin/discordcoreapi.pdb")
 set(DEBUG_PDB_FILE_PATH "debug/bin/discordcoreapi.pdb")
 
@@ -141,8 +142,6 @@ configure_package_config_file(
 	RELEASE_PDB_FILE_PATH
 	DEBUG_PDB_FILE_PATH
 )
-
-set(VERSION_FILE_NAME "${PROJECT_NAME}ConfigVersion.cmake")
 
 write_basic_package_version_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}"

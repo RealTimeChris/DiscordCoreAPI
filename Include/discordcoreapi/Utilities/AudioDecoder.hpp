@@ -37,9 +37,9 @@ namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
 
-		struct OpusDecoderWrapper {
-			struct OpusDecoderDeleter {
-				inline void operator()(OpusDecoder* other) noexcept {
+		struct DiscordCoreAPI_Dll OpusDecoderWrapper {
+			struct DiscordCoreAPI_Dll OpusDecoderDeleter {
+				inline void operator()(OpusDecoder* other) {
 					if (other) {
 						opus_decoder_destroy(other);
 						other = nullptr;
@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 				const int64_t sampleCount =
 					opus_decode(ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
 				if (sampleCount > 0) {
-					return std::basic_string_view<opus_int16>{ data.data(), static_cast<size_t>(sampleCount * 2ull) };
+					return std::basic_string_view<opus_int16>{ data.data(), static_cast<uint64_t>(sampleCount * 2ull) };
 				} else {
 					throw DCAException{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) },
 						std::source_location::current() };

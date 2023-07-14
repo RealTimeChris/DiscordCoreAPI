@@ -32,15 +32,15 @@
 
 #include <discordcoreapi/Utilities/AudioDecoder.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/Utilities/HttpsClient.hpp>
 
 namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
 
-		class SoundCloudRequestBuilder : public HttpsClientCore {
+		class DiscordCoreAPI_Dll SoundCloudRequestBuilder : public HttpsClientCore {
 		  public:
-			SoundCloudRequestBuilder(ConfigManager* configManagerNew) noexcept;
+			SoundCloudRequestBuilder(ConfigManager* configManagerNew);
 
 		  protected:
 			static std::string clientId;
@@ -57,49 +57,50 @@ namespace DiscordCoreAPI {
 			std::string collectClientId();
 		};
 
-		class SoundCloudAPI : public SoundCloudRequestBuilder {
+		class DiscordCoreAPI_Dll SoundCloudAPI : public SoundCloudRequestBuilder {
 		  public:
 			SoundCloudAPI(ConfigManager* configManagerNew, const Snowflake guildId);
 
-			void weFailedToDownloadOrDecode(const Song& songNew, std::stop_token stopToken, int32_t currentRetries);
+			CoRoutine<void, false> downloadAndStreamAudio(const Song songNew,
+				NewThreadAwaiter<void, false> threadHandle = NewThreadAwaiter<void, false>{}, uint64_t currentReconnectTries = 0);
 
-			void downloadAndStreamAudio(const Song& songNew, std::stop_token token, int32_t currentReconnectTries);
+			void weFailedToDownloadOrDecode(const Song& songNew, NewThreadAwaiter<void, false> threadHandle, uint64_t currentRetries);
 
 			Song collectFinalSong(const Song& songNew) override;
 
 			std::vector<Song> searchForSong(const std::string& searchQuery);
 
-			bool areWeWorking() noexcept;
+			bool areWeWorking();
 
 		  protected:
 			std::atomic_bool areWeWorkingBool{ false };
 			Snowflake guildId{};
 		};
 
-		struct Transcoding {
+		struct DiscordCoreAPI_Dll Transcoding {
 			std::string preset{};
 			std::string url{};
 		};
 
-		struct Media {
+		struct DiscordCoreAPI_Dll Media {
 			std::vector<Transcoding> transcodings{};
 		};
 
-		struct SecondDownloadUrl {
+		struct DiscordCoreAPI_Dll SecondDownloadUrl {
 			std::string url{};
 		};
 
-		struct RawSoundCloudSong {
+		struct DiscordCoreAPI_Dll RawSoundCloudSong {
 			std::string trackAuthorization{};
 			std::string description{};
 			std::string artworkUrl{};
 			std::string viewUrl{};
 			std::string title{};
-			int32_t duration{};
+			uint64_t duration{};
 			Media media{};
 		};
 
-		struct SoundCloudSearchResults {
+		struct DiscordCoreAPI_Dll SoundCloudSearchResults {
 			std::vector<RawSoundCloudSong> collection{};
 		};
 

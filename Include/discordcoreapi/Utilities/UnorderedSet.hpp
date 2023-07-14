@@ -30,7 +30,8 @@
 
 #pragma once
 
-#include <discordcoreapi/Base.hpp>
+#include <discordcoreapi/Utilities/UniquePtr.hpp>
+#include <discordcoreapi/Utilities/Base.hpp>
 
 #include <memory_resource>
 #include <shared_mutex>
@@ -39,109 +40,74 @@
 
 namespace DiscordCoreAPI {
 
-	template<typename ValueType = void> struct Fnv1aHash {
-		inline uint64_t operator()(const ValueType& data) const;
+	template<typename ValueType> struct Fnv1aHash;
 
-		inline uint64_t operator()(ValueType&& data) const;
-
-	  protected:
-		uint64_t internalHashFunction(const uint8_t* value, uint64_t count) const {
-			static constexpr size_t fnvOffsetBasis{ 14695981039346656037ull };
-			static constexpr size_t fnvPrime{ 1099511628211ull };
-			auto hash = fnvOffsetBasis;
+	struct DiscordCoreAPI_Dll Fnv1aHashFunction {
+		inline static uint64_t internalHashFunction(const void* value, uint64_t count) {
+			static constexpr uint64_t fnvOffsetBasis{ 14695981039346656037ull };
+			static constexpr uint64_t fnvPrime{ 1099511628211ull };
+			uint64_t hash = fnvOffsetBasis;
 			for (uint64_t x = 0; x < count; ++x) {
-				hash ^= value[x];
+				hash ^= static_cast<const uint8_t*>(value)[x];
 				hash *= fnvPrime;
 			}
 			return hash;
 		}
 	};
 
-	template<> struct Fnv1aHash<std::string> {
-		inline uint64_t operator()(const std::string& data) const {
+	template<> struct Fnv1aHash<std::string> : public Fnv1aHashFunction {
+		inline static uint64_t getHash(const std::string& data) {
 			return internalHashFunction(data.data(), data.size());
-		}
-
-		inline uint64_t operator()(std::string&& data) {
-			return internalHashFunction(data.data(), data.size());
-		}
-
-	  protected:
-		uint64_t internalHashFunction(const char* value, uint64_t count) const {
-			static constexpr size_t fnvOffsetBasis{ 14695981039346656037ull };
-			static constexpr size_t fnvPrime{ 1099511628211ull };
-			auto hash = fnvOffsetBasis;
-			for (uint64_t x = 0; x < count; ++x) {
-				hash ^= value[x];
-				hash *= fnvPrime;
-			}
-			return hash;
 		}
 	};
 
-	template<> struct Fnv1aHash<int64_t> {
-		inline uint64_t operator()(const int64_t& data) const {
+	template<> struct Fnv1aHash<uint64_t> : public Fnv1aHashFunction {
+		inline static uint64_t getHash(const uint64_t& data) {
 			return internalHashFunction(&data, sizeof(data));
 		}
+	};
 
-		inline uint64_t operator()(int64_t&& data) {
-			return internalHashFunction(&data, sizeof(data));
-		}
-
-	  protected:
-		uint64_t internalHashFunction(const void* value, uint64_t count) const {
-			static constexpr size_t fnvOffsetBasis{ 14695981039346656037ull };
-			static constexpr size_t fnvPrime{ 1099511628211ull };
-			auto hash = fnvOffsetBasis;
-			for (uint64_t x = 0; x < count; ++x) {
-				hash ^= static_cast<const char*>(value)[x];
-				hash *= fnvPrime;
-			}
-			return hash;
+	template<> struct Fnv1aHash<Snowflake> : public Fnv1aHashFunction {
+		inline static uint64_t getHash(const Snowflake& data) {
+			auto newValue = data.operator uint64_t();
+			return internalHashFunction(&newValue, sizeof(newValue));
 		}
 	};
 
 	template<typename KeyType, typename ValueType> struct KeyAccessor {
-		inline const KeyType& operator()(const ValueType& other);
-
-		inline KeyType& operator()(ValueType&& other);
+		inline static const KeyType& getKey(const ValueType& value) {
+			return value.id;
+		}
 	};
 
-	template<typename KeyType, typename ValueType, typename KATy = KeyAccessor<KeyType, ValueType>> class MemoryCore {
+	template<typename KeyType, typename ValueType> class UnorderedSet {
 	  public:
 		using key_type = KeyType;
 		using value_type = ValueType;
-		using key_accessor = KATy;
+		using key_accessor = KeyAccessor<key_type, value_type>;
 		using reference = value_type&;
-		using const_reference = const value_type&;
-		using size_type = size_t;
+		using size_type = uint64_t;
 		using key_hasher = Fnv1aHash<key_type>;
 
-		class MemoryCoreIterator {
+		class Iterator {
 		  public:
 			using iterator_category = std::forward_iterator_tag;
-			using reference = typename MemoryCore::reference;
 
-			inline MemoryCoreIterator(const MemoryCore* core, size_type index) : core(core), index(index) {
+			inline Iterator(const UnorderedSet* core, size_type index) : core(core), index(index) {
 			}
 
-			inline MemoryCoreIterator& operator++() {
-				index++;
-				while (index < core->capacityVal && !core->data[index].operator bool()) {
+			inline Iterator& operator++() {
+				do {
 					index++;
-				}
+				} while (index < core->capacityVal && !core->data[index].operator bool());
 				return *this;
 			}
 
-			inline bool operator==(const MemoryCoreIterator& other) const {
+			inline bool operator==(const Iterator& other) const {
 				return core == other.core && index == other.index;
 			}
 
-			inline bool operator!=(const MemoryCoreIterator& other) const {
-				return !(*this == other);
-			}
-
-			inline const_reference operator*() const {
+			inline reference operator*() const {
 				return core->data[index];
 			}
 
@@ -150,40 +116,36 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			const MemoryCore* core;
+			const UnorderedSet* core;
 			size_type index;
 		};
 
-		using iterator = MemoryCoreIterator;
+		using iterator = Iterator;
 		using const_iterator = const iterator;
 
 		class SentinelHolder {
 		  public:
-			inline SentinelHolder() noexcept = default;
+			inline SentinelHolder() = default;
 
 			inline SentinelHolder& operator=(SentinelHolder&& other) = delete;
 			inline SentinelHolder(SentinelHolder&& other) = delete;
 			inline SentinelHolder& operator=(const SentinelHolder& other) = delete;
 			inline SentinelHolder(const SentinelHolder& other) = delete;
 
-			inline operator bool() const noexcept {
+			inline operator bool() const {
 				return areWeActive;
 			}
 
-			inline operator const_reference() const noexcept {
+			inline operator reference() {
 				return object;
 			}
 
-			inline operator reference() noexcept {
-				return object;
-			}
-
-			inline void activate(value_type&& data) noexcept {
+			inline void activate(value_type&& data) {
 				object = std::move(data);
 				areWeActive = true;
 			}
 
-			inline value_type&& disable() noexcept {
+			inline value_type disable() {
 				areWeActive = false;
 				return std::move(object);
 			}
@@ -195,11 +157,15 @@ namespace DiscordCoreAPI {
 
 		using allocator = AllocWrapper<SentinelHolder>;
 
-		inline MemoryCore(size_type capacityNew) : capacityVal(capacityNew), sizeVal(0), data(allocator{}.allocate(capacityNew)) {
+		inline UnorderedSet() : capacityVal(5), data(allocator{}.allocate(5)), sizeVal(0) {
+			std::uninitialized_default_construct_n(data, 5);
+		};
+
+		inline UnorderedSet(size_type capacityNew) : capacityVal(capacityNew), data(allocator{}.allocate(capacityNew)), sizeVal(0) {
 			std::uninitialized_default_construct_n(data, capacityNew);
 		};
 
-		inline MemoryCore& operator=(MemoryCore&& other) noexcept {
+		inline UnorderedSet& operator=(UnorderedSet&& other) {
 			if (this != &other) {
 				std::swap(capacityVal, other.capacityVal);
 				std::swap(data, other.data);
@@ -208,29 +174,17 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline MemoryCore& operator=(const MemoryCore& other) noexcept = delete;
-		inline MemoryCore(const MemoryCore& other) noexcept = delete;
+		inline UnorderedSet& operator=(const UnorderedSet& other) = delete;
+		inline UnorderedSet(const UnorderedSet& other) = delete;
 
-		inline void emplace(value_type&& value) noexcept {
+		inline void emplace(value_type&& value) {
 			emplaceInternal(std::move(value));
 		}
 
-		inline iterator find(key_type&& key) noexcept {
-			size_type index = key_hasher{}(key) % capacityVal;
+		inline const_iterator find(const key_type& key) const {
+			size_type index = key_hasher::getHash(key) % capacityVal;
 			for (size_type currentIndex{ 0 }; currentIndex < capacityVal; ++currentIndex) {
-				if (data[index].operator bool() && key_accessor{}(data[index].operator reference()) == key) {
-					return iterator{ this, index };
-				}
-				index = (index + 1) % capacityVal;
-			}
-
-			return end();
-		}
-
-		inline const_iterator find(const key_type& key) const noexcept {
-			size_type index = key_hasher{}(key) % capacityVal;
-			for (size_type currentIndex{ 0 }; currentIndex < capacityVal; ++currentIndex) {
-				if (data[index].operator bool() && key_accessor{}(data[index].operator const_reference()) == key) {
+				if (data[index].operator bool() && key_accessor::getKey(data[index].operator reference()) == key) {
 					return const_iterator{ this, index };
 				}
 				index = (index + 1) % capacityVal;
@@ -239,10 +193,22 @@ namespace DiscordCoreAPI {
 			return end();
 		}
 
-		inline bool contains(key_type&& key) noexcept {
-			size_type index = key_hasher{}(key) % capacityVal;
+		inline iterator find(key_type&& key) {
+			size_type index = key_hasher::getHash(key) % capacityVal;
 			for (size_type currentIndex{ 0 }; currentIndex < capacityVal; ++currentIndex) {
-				if (data[index].operator bool() && key_accessor{}(data[index].operator reference()) == key) {
+				if (data[index].operator bool() && key_accessor::getKey(data[index].operator reference()) == key) {
+					return iterator{ this, index };
+				}
+				index = (index + 1) % capacityVal;
+			}
+
+			return end();
+		}
+
+		inline bool contains(const key_type& key) const {
+			size_type index = key_hasher::getHash(key) % capacityVal;
+			for (size_type currentIndex{ 0 }; currentIndex < capacityVal; ++currentIndex) {
+				if (data[index].operator bool() && key_accessor::getKey(data[index].operator reference()) == key) {
 					return true;
 				}
 				index = (index + 1) % capacityVal;
@@ -251,10 +217,10 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 
-		inline bool contains(const key_type& key) const noexcept {
-			size_type index = key_hasher{}(key) % capacityVal;
+		inline bool contains(key_type&& key) {
+			size_type index = key_hasher::getHash(key) % capacityVal;
 			for (size_type currentIndex{ 0 }; currentIndex < capacityVal; ++currentIndex) {
-				if (data[index].operator bool() && key_accessor{}(data[index].operator const_reference()) == key) {
+				if (data[index].operator bool() && key_accessor::getKey(data[index].operator reference()) == key) {
 					return true;
 				}
 				index = (index + 1) % capacityVal;
@@ -263,10 +229,10 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 
-		inline void erase(key_type&& key) noexcept {
-			size_type index = key_hasher{}(key) % capacityVal;
+		inline void erase(const key_type& key) {
+			size_type index = key_hasher::getHash(key) % capacityVal;
 			for (size_type currentIndex{ 0 }; currentIndex < capacityVal; ++currentIndex) {
-				if (data[index].operator bool() && key_accessor{}(data[index].operator reference()) == key) {
+				if (data[index].operator bool() && key_accessor::getKey(data[index].operator reference()) == key) {
 					data[index].disable();
 					sizeVal--;
 					if (sizeVal < capacityVal / 4 && capacityVal > 10) {
@@ -278,10 +244,10 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		inline void erase(const key_type& key) noexcept {
-			size_type index = key_hasher{}(key) % capacityVal;
+		inline void erase(key_type&& key) {
+			size_type index = key_hasher::getHash(key) % capacityVal;
 			for (size_type currentIndex{ 0 }; currentIndex < capacityVal; ++currentIndex) {
-				if (data[index].operator bool() && key_accessor{}(data[index].operator reference()) == key) {
+				if (data[index].operator bool() && key_accessor::getKey(data[index].operator reference()) == key) {
 					data[index].disable();
 					sizeVal--;
 					if (sizeVal < capacityVal / 4 && capacityVal > 10) {
@@ -293,7 +259,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		inline iterator begin() noexcept {
+		inline const_iterator begin() const {
 			for (size_type currentIndex{ 0 }; currentIndex < capacityVal; ++currentIndex) {
 				if (data[currentIndex].operator bool()) {
 					return iterator{ this, currentIndex };
@@ -302,11 +268,11 @@ namespace DiscordCoreAPI {
 			return end();
 		}
 
-		inline iterator end() noexcept {
+		inline const_iterator end() const {
 			return iterator{ this, capacityVal };
 		}
 
-		inline const_iterator begin() const noexcept {
+		inline iterator begin() {
 			for (size_type currentIndex{ 0 }; currentIndex < capacityVal; ++currentIndex) {
 				if (data[currentIndex].operator bool()) {
 					return iterator{ this, currentIndex };
@@ -315,31 +281,31 @@ namespace DiscordCoreAPI {
 			return end();
 		}
 
-		inline const_iterator end() const noexcept {
+		inline iterator end() {
 			return iterator{ this, capacityVal };
 		}
 
-		inline size_type size() const noexcept {
+		inline bool full() const {
+			return static_cast<float>(sizeVal) >= static_cast<float>(capacityVal) * 0.70f;
+		}
+
+		inline size_type size() const {
 			return sizeVal;
 		}
 
-		inline bool empty() const noexcept {
+		inline bool empty() const {
 			return sizeVal == 0;
 		}
 
-		inline bool full() const noexcept {
-			return static_cast<float>(sizeVal) >= static_cast<float>(capacityVal) * 0.75f;
-		}
-
-		inline void reserve(size_type sizeNew) noexcept {
+		inline void reserve(size_type sizeNew) {
 			resize(sizeNew);
 		}
 
-		inline size_type capacity() const noexcept {
+		inline size_type capacity() const {
 			return capacityVal;
 		}
 
-		inline ~MemoryCore() noexcept {
+		inline ~UnorderedSet() {
 			if (data && capacityVal > 0) {
 				std::destroy_n(data, capacityVal);
 				allocator{}.deallocate(data, capacityVal);
@@ -351,11 +317,12 @@ namespace DiscordCoreAPI {
 		SentinelHolder* data{};
 		size_type sizeVal{};
 
-		inline void emplaceInternal(value_type&& value, size_type recursionLimit = 1000) noexcept {
+		inline void emplaceInternal(value_type&& value, size_type recursionLimit = 1000) {
 			if (full()) {
-				resize(roundUpToCacheLine(capacityVal * 4), recursionLimit);
+				resize(roundUpToCacheLine(static_cast<uint64_t>(static_cast<float>(capacityVal) * 2.0)), recursionLimit);
 			}
-			size_type index = key_hasher{}(key_accessor{}(value)) % capacityVal;
+			auto keyVal = key_accessor::getKey(value);
+			size_type index = key_hasher::getHash(keyVal) % capacityVal;
 			size_type currentIndex = index;
 			bool inserted = false;
 			while (!inserted) {
@@ -363,7 +330,7 @@ namespace DiscordCoreAPI {
 					data[currentIndex].activate(std::move(value));
 					sizeVal++;
 					inserted = true;
-				} else if (key_accessor{}(data[currentIndex].operator reference()) == key_accessor{}(value)) {
+				} else if (key_accessor::getKey(data[currentIndex].operator reference()) == keyVal) {
 					data[currentIndex].activate(std::move(value));
 					inserted = true;
 				} else {
@@ -382,7 +349,7 @@ namespace DiscordCoreAPI {
 			if (recursionLimit == 0) {
 				throw std::runtime_error{ "Sorry, but the max number of recursive resizes have been exceeded." };
 			}
-			MemoryCore<key_type, value_type> newData{ capacityNew };
+			UnorderedSet<key_type, value_type> newData{ capacityNew };
 			for (size_type x = 0; x < capacityVal; x++) {
 				if (data[x].operator bool()) {
 					newData.emplaceInternal(data[x].disable(), recursionLimit);
@@ -393,80 +360,9 @@ namespace DiscordCoreAPI {
 			std::swap(capacityVal, newData.capacityVal);
 		}
 
-		inline size_type roundUpToCacheLine(size_type sizeVal) {
+		inline size_type roundUpToCacheLine(size_type sizeValNew) {
 			const size_type multiple = 64 / sizeof(void*);
-			return (sizeVal + multiple - 1) / multiple * multiple;
+			return (sizeValNew + multiple - 1) / multiple * multiple;
 		}
 	};
-
-	template<typename KeyType, typename ValueType> class UnorderedSet {
-	  public:
-		using key_type = KeyType;
-		using value_type = ValueType;
-		using size_type = size_t;
-		using iterator = typename MemoryCore<key_type, value_type>::MemoryCoreIterator;
-
-		inline UnorderedSet() : data{ 5 } {};
-
-		inline UnorderedSet& operator=(UnorderedSet&& other) noexcept = default;
-		inline UnorderedSet(UnorderedSet&& other) noexcept = default;
-		inline UnorderedSet& operator=(const UnorderedSet& other) noexcept = default;
-		inline UnorderedSet(const UnorderedSet& other) noexcept = default;
-
-		inline iterator begin() noexcept {
-			return iterator(data.begin());
-		}
-
-		inline iterator end() noexcept {
-			return iterator(data.end());
-		}
-
-		inline void emplace(value_type&& value) noexcept {
-			data.emplace(std::move(value));
-		}
-
-		inline bool contains(key_type&& key) noexcept {
-			return data.contains(std::move(key));
-		}
-
-		inline bool contains(const key_type& key) const noexcept {
-			return data.contains(key);
-		}
-
-		inline void erase(key_type&& key) noexcept {
-			data.erase(std::move(key));
-		}
-
-		inline void erase(const key_type& key) noexcept {
-			data.erase(key);
-		}
-
-		inline iterator find(key_type&& key) noexcept {
-			return data.find(std::move(key));
-		}
-
-		inline iterator find(const key_type& key) const noexcept {
-			return data.find(key);
-		}
-
-		inline size_type size() const noexcept {
-			return data.size();
-		}
-
-		inline void reserve(size_type sizeNew) noexcept {
-			data.reserve(sizeNew);
-		}
-
-		inline bool empty() const noexcept {
-			return data.empty();
-		}
-
-		inline size_type capacity() const noexcept {
-			return data.capacity();
-		}
-
-	  protected:
-		MemoryCore<key_type, value_type> data{};
-	};
-
 }

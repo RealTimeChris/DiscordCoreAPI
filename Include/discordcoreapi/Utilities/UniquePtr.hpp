@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include <discordcoreapi/Base.hpp>
+#include <discordcoreapi/Utilities/Base.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -53,10 +53,10 @@ namespace DiscordCoreAPI {
 		using deleter_type = Deleter;
 		using reference = element_type&;
 
-		inline constexpr UniquePtr() noexcept = default;
+		inline constexpr UniquePtr() = default;
 
-		inline UniquePtr& operator=(const UniquePtr&) noexcept = delete;
-		inline UniquePtr(const UniquePtr&) noexcept = delete;
+		inline UniquePtr& operator=(const UniquePtr&) = delete;
+		inline UniquePtr(const UniquePtr&) = delete;
 
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02>>
 		inline UniquePtr& operator=(UniquePtr<ValueType02, OtherDeleter>&& other) {
@@ -105,49 +105,49 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline UniquePtr(pointer newPtr) noexcept {
+		inline UniquePtr(pointer newPtr) {
 			*this = newPtr;
 		}
 
-		inline pointer get() const noexcept {
+		inline pointer get() const {
 			return ptr;
 		}
 
-		inline operator bool() const noexcept {
+		inline operator bool() const {
 			return ptr != nullptr;
 		}
 
-		inline reference operator*() const noexcept {
+		inline reference operator*() const {
 			return *ptr;
 		}
 
-		inline pointer operator->() const noexcept {
+		inline pointer operator->() const {
 			return ptr;
 		}
 
-		inline pointer release() noexcept {
+		inline pointer release() {
 			pointer releasedPtr = ptr;
 			ptr = nullptr;
 			return releasedPtr;
 		}
 
-		inline void reset(pointer newPtr) noexcept {
+		inline void reset(pointer newPtr) {
 			pointer oldPtr = std::exchange(ptr, newPtr);
 			deleter_type{}(oldPtr);
 		}
 
-		inline void swap(UniquePtr& other) noexcept {
+		inline void swap(UniquePtr& other) {
 			std::swap(ptr, other.ptr);
 		}
 
-		inline ~UniquePtr() noexcept {
+		inline ~UniquePtr() {
 			reset(nullptr);
 		}
 
 	  protected:
 		pointer ptr{ nullptr };
 
-		inline void commit(pointer other) noexcept {
+		inline void commit(pointer other) {
 			pointer tempPtr = other;
 			reset(tempPtr);
 		}
@@ -160,10 +160,10 @@ namespace DiscordCoreAPI {
 		using deleter_type = Deleter;
 		using reference = element_type&;
 
-		inline constexpr UniquePtr() noexcept = default;
+		inline constexpr UniquePtr() = default;
 
-		inline UniquePtr& operator=(const UniquePtr&) noexcept = delete;
-		inline UniquePtr(const UniquePtr&) noexcept = delete;
+		inline UniquePtr& operator=(const UniquePtr&) = delete;
+		inline UniquePtr(const UniquePtr&) = delete;
 
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02[]>>
 		inline UniquePtr& operator=(UniquePtr<ValueType02[], OtherDeleter>&& other) {
@@ -212,69 +212,73 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline UniquePtr(pointer newPtr) noexcept {
+		inline UniquePtr(pointer newPtr) {
 			*this = newPtr;
 		}
 
-		inline pointer get() const noexcept {
+		inline pointer get() const {
 			return ptr;
 		}
 
 		template<typename ValueType02 = ValueType>
-		inline std::enable_if_t<std::is_array_v<ValueType02>, reference> operator[](std::ptrdiff_t index) const noexcept {
+		inline std::enable_if_t<std::is_array_v<ValueType02>, reference> operator[](std::ptrdiff_t index) const {
 			return ptr[index];
 		}
 
-		inline operator bool() const noexcept {
+		inline operator bool() const {
 			return ptr != nullptr;
 		}
 
-		inline reference operator*() const noexcept {
+		inline reference operator*() const {
 			return *ptr;
 		}
 
-		inline pointer operator->() const noexcept {
+		inline pointer operator->() const {
 			return ptr;
 		}
 
-		inline pointer release() noexcept {
+		inline pointer release() {
 			pointer releasedPtr = ptr;
 			ptr = nullptr;
 			return releasedPtr;
 		}
 
-		inline void reset(pointer newPtr) noexcept {
+		inline void reset(pointer newPtr) {
 			pointer oldPtr = std::exchange(ptr, newPtr);
 			deleter_type{}(oldPtr);
 		}
 
-		inline void swap(UniquePtr& other) noexcept {
+		inline void swap(UniquePtr& other) {
 			std::swap(ptr, other.ptr);
 		}
 
-		inline ~UniquePtr() noexcept {
+		inline ~UniquePtr() {
 			reset(nullptr);
 		}
 
 	  protected:
 		pointer ptr{ nullptr };
 
-		inline void commit(pointer other) noexcept {
+		inline void commit(pointer other) {
 			pointer tempPtr = other;
 			reset(tempPtr);
 		}
 	};
 
-	template<class ValueType, typename Deleter = std::default_delete<ValueType>, typename... Args,
+	template<typename ValueType, typename Deleter = std::default_delete<ValueType>, typename... ArgTypes,
 		std::enable_if_t<!std::is_array_v<ValueType>, int32_t> = 0>
-	inline constexpr UniquePtr<ValueType, Deleter> makeUnique(Args&&... args) {
-		return UniquePtr<ValueType, Deleter>(new ValueType(std::forward<Args>(args)...));
+	inline constexpr UniquePtr<ValueType, Deleter> makeUnique(ArgTypes&&... args) {
+		return UniquePtr<ValueType, Deleter>(new ValueType(std::forward<ArgTypes>(args)...));
 	}
 
-	template<class ValueType, typename Deleter = std::default_delete<ValueType>,
+	template<typename ValueType, typename Deleter = std::default_delete<ValueType>,
 		std::enable_if_t<std::is_array_v<ValueType> && std::extent_v<ValueType> == 0, int32_t> = 0>
-	inline constexpr UniquePtr<ValueType, Deleter> makeUnique(const size_t count) {
+	inline constexpr UniquePtr<ValueType, Deleter> makeUnique(const uint64_t size) {
 		using element_type = std::remove_extent_t<ValueType>;
-		return UniquePtr<ValueType, Deleter>(new element_type[count]());
+		return UniquePtr<ValueType, Deleter>(new element_type[size]());
 	}
+
+	template<typename ValueType, typename... ArgTypes, std::enable_if_t<std::extent_v<ValueType> != 0, int32_t> = 0>
+	inline void makeUnique(ArgTypes&&...) = delete;
+
 }

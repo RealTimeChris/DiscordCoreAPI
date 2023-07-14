@@ -18,12 +18,12 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
 	USA
 */
-/// WebSocketEntities.cpp - Source file for the webSocket related classes and structs.
+/// WebSocketClient.cpp - Source file for the webSocket related classes and structs.
 /// May 13, 2021
 /// https://discordcoreapi.com
-/// \file WebSocketEntities.cpp
+/// \file WebSocketClient.cpp
 
-#include <discordcoreapi/WebSocketEntities.hpp>
+#include <discordcoreapi/Utilities/WebSocketClient.hpp>
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/JsonSpecializations.hpp>
@@ -44,14 +44,14 @@ namespace DiscordCoreAPI {
 
 		EventConverter::EventConverter(std::string newEvent) {
 			eventValue = newEvent;
-			for (size_t x = 0; x < eventValue.size(); ++x) {
-				if (eventValue[x] == '\0') {
+			for (uint64_t x = 0; x < eventValue.size(); ++x) {
+				if (eventValue.at(x) == '\0') {
 					eventValue.erase(eventValue.begin() + x);
 				}
 			}
 		}
 
-		EventConverter::operator int32_t() {
+		EventConverter::operator uint64_t() {
 			if (eventValue == "READY") {
 				return 1;
 			} else if (eventValue == "RESUMED") {
@@ -182,15 +182,15 @@ namespace DiscordCoreAPI {
 			wsType = typeOfWebSocketNew;
 		}
 
-		WebSocketCore& WebSocketCore::operator=(WebSocketCore&& other) noexcept {
+		WebSocketCore& WebSocketCore::operator=(WebSocketCore&& other) {
 			haveWeReceivedHeartbeatAck = other.haveWeReceivedHeartbeatAck;
 			areWeCollectingData.store(other.areWeCollectingData.load());
 			heartBeatStopWatch = std::move(other.heartBeatStopWatch);
 			currentReconnectTries = other.currentReconnectTries;
 			currentMessage = std::move(other.currentMessage);
 			tcpConnection = std::move(other.tcpConnection);
-			lastNumberReceived = other.lastNumberReceived;
 			currentState.store(other.currentState.load());
+			lastNumberReceived = other.lastNumberReceived;
 			maxReconnectTries = other.maxReconnectTries;
 			areWeHeartBeating = other.areWeHeartBeating;
 			finalString = std::move(other.finalString);
@@ -198,20 +198,20 @@ namespace DiscordCoreAPI {
 			areWeResuming = other.areWeResuming;
 			configManager = other.configManager;
 			currentSize = other.currentSize;
+			shard.at(0) = other.shard.at(0);
+			shard.at(1) = other.shard.at(1);
 			dataOpCode = other.dataOpCode;
 			dataSize = other.dataSize;
-			shard[0] = other.shard[0];
-			shard[1] = other.shard[1];
-			wsType = other.wsType;
 			offSet = other.offSet;
+			wsType = other.wsType;
 			return *this;
-		};
+		}
 
-		WebSocketCore::WebSocketCore(WebSocketCore&& other) noexcept {
+		WebSocketCore::WebSocketCore(WebSocketCore&& other) {
 			*this = std::move(other);
-		};
+		}
 
-		bool WebSocketCore::connect(const std::string& baseUrlNew, const std::string& relativePath, const uint16_t portNew) noexcept {
+		bool WebSocketCore::connect(const std::string& baseUrlNew, const std::string& relativePath, const uint16_t portNew) {
 			tcpConnection = WebSocketTCPConnection{ baseUrlNew, portNew, this };
 			if (tcpConnection.currentStatus != ConnectionStatus::NO_Error) {
 				std::this_thread::sleep_for(1s);
@@ -246,19 +246,13 @@ namespace DiscordCoreAPI {
 		WebSocketTCPConnection::WebSocketTCPConnection(const std::string& baseUrlNew, uint16_t portNew, WebSocketCore* ptrNew)
 			: TCPConnection{ baseUrlNew, portNew } {
 			ptr = ptrNew;
-		};
-
-		void WebSocketTCPConnection::disconnect() noexcept {
-			socket = INVALID_SOCKET;
-			ssl = nullptr;
-			reset();
 		}
 
-		void WebSocketCore::createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept {
-			uint64_t originalSize{ outBuffer.size() };
+		void WebSocketCore::createHeader(std::string& outBuffer, WebSocketOpCode opCode) {
+			int64_t originalSize{ static_cast<int64_t>(outBuffer.size()) };
 			outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(opCode) | webSocketMaskBit);
 
-			int32_t indexCount{};
+			int64_t indexCount{};
 			if (originalSize <= webSocketMaxPayloadLengthSmall) {
 				outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(originalSize));
 				indexCount = 0;
@@ -269,34 +263,36 @@ namespace DiscordCoreAPI {
 				outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(webSocketPayloadLengthMagicHuge));
 				indexCount = 8;
 			}
-			for (int32_t x = indexCount - 1; x >= 0; x--) {
+			for (int64_t x = indexCount - 1; x >= 0; x--) {
 				outBuffer.insert(outBuffer.begin() + 1 + indexCount - x, static_cast<uint8_t>(originalSize >> (x * 8)));
 			}
 
-			outBuffer[1] |= webSocketMaskBit;
+			outBuffer.at(1) |= webSocketMaskBit;
 			outBuffer.insert(outBuffer.begin() + 2 + indexCount, 0);
 			outBuffer.insert(outBuffer.begin() + 3 + indexCount, 0);
 			outBuffer.insert(outBuffer.begin() + 4 + indexCount, 0);
 			outBuffer.insert(outBuffer.begin() + 5 + indexCount, 0);
 		}
 
-		bool WebSocketCore::sendMessage(std::string& dataToSend, bool priority) noexcept {
+		bool WebSocketCore::sendMessage(std::string& dataToSend, bool priority) {
 			if (dataToSend.size() == 0) {
 				return false;
 			}
 			std::string webSocketTitle{ wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket" };
-			MessagePrinter::printSuccess<PrintMessageType::WebSocket>("Sending " + webSocketTitle + " [" + std::to_string(shard[0]) + "," +
-				std::to_string(shard[1]) + "]" + std::string{ "'s Message: " } + static_cast<std::string>(dataToSend));
-			tcpConnection.writeData(dataToSend, true);
-			if (tcpConnection.currentStatus != ConnectionStatus::NO_Error) {
-				onClosed();
-				return false;
+			MessagePrinter::printSuccess<PrintMessageType::WebSocket>("Sending " + webSocketTitle + " [" + std::to_string(shard.at(0)) + "," +
+				std::to_string(shard.at(1)) + "]" + std::string{ "'s Message: " } + static_cast<std::string>(dataToSend));
+			if (areWeConnected()) {
+				tcpConnection.writeData(dataToSend, priority);
+				if (tcpConnection.currentStatus != ConnectionStatus::NO_Error) {
+					onClosed();
+					return false;
+				}
 			}
 			return true;
 		}
 
-		void WebSocketCore::parseConnectionHeaders(std::string_view stringNew) noexcept {
-			if (tcpConnection.areWeStillConnected() && currentState.load() == WebSocketState::Upgrading) {
+		void WebSocketCore::parseConnectionHeaders(std::string_view stringNew) {
+			if (areWeConnected() && currentState.load() == WebSocketState::Upgrading) {
 				auto theFindValue = stringNew.find("\r\n\r\n");
 				if (theFindValue != std::string::npos) {
 					currentMessage.clear();
@@ -306,7 +302,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		bool WebSocketCore::checkForAndSendHeartBeat(bool isImmediate) noexcept {
+		bool WebSocketCore::checkForAndSendHeartBeat(bool isImmediate) {
 			if ((currentState.load() == WebSocketState::Authenticated && heartBeatStopWatch.hasTimePassed() && haveWeReceivedHeartbeatAck) ||
 				isImmediate) {
 				std::string string{};
@@ -316,10 +312,10 @@ namespace DiscordCoreAPI {
 					data["op"] = 1;
 					string = data.refreshString();
 				} else {
-					WebSocketMessageData<int32_t> message{};
+					WebSocketMessageData<uint64_t> message{};
 					message.d = lastNumberReceived;
 					message.op = 1;
-					parser.serializeJson(message, string);
+					jsonifierCore.serializeJson(message, string);
 				}
 				haveWeReceivedHeartbeatAck = false;
 				heartBeatStopWatch.resetTimer();
@@ -329,18 +325,18 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 
-		bool WebSocketCore::parseMessage() noexcept {
+		bool WebSocketCore::parseMessage() {
 			if (currentMessage.size() < 4) {
 				return false;
 			} else {
-				WebSocketOpCode opcode = static_cast<WebSocketOpCode>(currentMessage[0] & ~webSocketMaskBit);
+				WebSocketOpCode opcode = static_cast<WebSocketOpCode>(currentMessage.at(0) & ~webSocketMaskBit);
 				switch (opcode) {
 					case WebSocketOpCode::Op_Continuation:
 					case WebSocketOpCode::Op_Text:
 					case WebSocketOpCode::Op_Binary:
 					case WebSocketOpCode::Op_Ping:
 					case WebSocketOpCode::Op_Pong: {
-						uint8_t length00 = currentMessage[1];
+						uint8_t length00 = currentMessage.at(1);
 						uint32_t messageOffset = 2;
 
 						if (length00 & webSocketMaskBit) {
@@ -354,9 +350,9 @@ namespace DiscordCoreAPI {
 								return false;
 							}
 
-							uint8_t length01 = static_cast<uint8_t>(currentMessage[2]);
-							uint8_t length02 = static_cast<uint8_t>(currentMessage[3]);
-							lengthFinal = (length01 << 8) | length02;
+							uint8_t length01 = static_cast<uint8_t>(currentMessage.at(2));
+							uint8_t length02 = static_cast<uint8_t>(currentMessage.at(3));
+							lengthFinal = static_cast<uint64_t>((length01 << 8ull) | length02);
 
 							messageOffset += 2;
 						} else if (length00 == webSocketPayloadLengthMagicHuge) {
@@ -364,8 +360,8 @@ namespace DiscordCoreAPI {
 								return false;
 							}
 							lengthFinal = 0;
-							for (int32_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-								uint8_t length03 = static_cast<uint8_t>(currentMessage[x]);
+							for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
+								uint8_t length03 = static_cast<uint8_t>(currentMessage.at(x));
 								lengthFinal |= static_cast<uint64_t>(length03 & 0xff) << shift;
 							}
 							messageOffset += 8;
@@ -384,9 +380,9 @@ namespace DiscordCoreAPI {
 						return true;
 					} break;
 					case WebSocketOpCode::Op_Close: {
-						uint16_t closeValue = currentMessage[2] & 0xff;
+						uint16_t closeValue = currentMessage.at(2) & 0xff;
 						closeValue <<= 8;
-						closeValue |= currentMessage[3] & 0xff;
+						closeValue |= currentMessage.at(3) & 0xff;
 						std::string closeString{};
 						if (wsType == WebSocketType::Voice) {
 							VoiceWebSocketClose voiceClose{ closeValue };
@@ -396,8 +392,8 @@ namespace DiscordCoreAPI {
 							closeString = wsClose.operator std::string_view();
 						}
 						std::string webSocketTitle = wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
-						MessagePrinter::printError<PrintMessageType::WebSocket>(webSocketTitle + " [" + std::to_string(shard[0]) + "," +
-							std::to_string(shard[1]) + "]" + " Closed; Code: " + std::to_string(closeValue) + ", " + closeString);
+						MessagePrinter::printError<PrintMessageType::WebSocket>(webSocketTitle + " [" + std::to_string(shard.at(0)) + "," +
+							std::to_string(shard.at(1)) + "]" + " Closed; Code: " + std::to_string(closeValue) + ", " + closeString);
 						return false;
 					} break;
 
@@ -406,31 +402,34 @@ namespace DiscordCoreAPI {
 					} break;
 				}
 			}
-			return false;
 		}
 
-		void WebSocketTCPConnection::handleBuffer() noexcept {
+		bool WebSocketCore::areWeConnected() {
+			return tcpConnection.areWeStillConnected();
+		}
+
+		void WebSocketTCPConnection::handleBuffer() {
 			if (ptr->currentState.load() == WebSocketState::Upgrading) {
-				auto inputBuffer = getInputBuffer();
-				ptr->parseConnectionHeaders({ reinterpret_cast<const char*>(inputBuffer.data()), inputBuffer.size() });
+				auto inputBufferNew = getInputBuffer();
+				ptr->parseConnectionHeaders({ reinterpret_cast<const char*>(inputBufferNew.data()), inputBufferNew.size() });
 			} else {
-				auto inputBuffer = getInputBuffer();
+				auto inputBufferNew = getInputBuffer();
 				auto oldSize = ptr->currentMessage.size();
-				ptr->currentMessage.resize(oldSize + inputBuffer.size());
-				std::memcpy(ptr->currentMessage.data() + oldSize, inputBuffer.data(), inputBuffer.size());
+				ptr->currentMessage.resize(oldSize + inputBufferNew.size());
+				std::memcpy(ptr->currentMessage.data() + oldSize, inputBufferNew.data(), inputBufferNew.size());
 				while (ptr->parseMessage()) {
 				};
 			}
 		}
 
-		WebSocketClient::WebSocketClient(DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew)
+		WebSocketClient::WebSocketClient(DiscordCoreClient* client, uint32_t currentShardNew, std::atomic_bool* doWeQuitNew)
 			: WebSocketCore(&client->configManager, WebSocketType::Normal) {
 			configManager = &client->configManager;
-			shard[0] = currentShardNew;
+			shard.at(0) = currentShardNew;
 			discordCoreClient = client;
 			doWeQuit = doWeQuitNew;
 			if (discordCoreClient) {
-				shard[1] = discordCoreClient->configManager.getTotalShardCount();
+				shard.at(1) = discordCoreClient->configManager.getTotalShardCount();
 				if (discordCoreClient->configManager.getTextFormat() == TextFormat::Etf) {
 					dataOpCode = WebSocketOpCode::Op_Binary;
 				} else {
@@ -439,7 +438,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void WebSocketClient::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
+		void WebSocketClient::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) {
 			while (currentState.load() != WebSocketState::Authenticated) {
 				std::this_thread::sleep_for(1ms);
 			}
@@ -466,7 +465,7 @@ namespace DiscordCoreAPI {
 			if (dataOpCode == WebSocketOpCode::Op_Binary) {
 				string = serializer.refreshString();
 			} else {
-				parser.serializeJson<true>(data01, string);
+				jsonifierCore.serializeJson<true>(data01, string);
 			}
 			createHeader(string, dataOpCode);
 			if (!sendMessage(string, true)) {
@@ -479,7 +478,7 @@ namespace DiscordCoreAPI {
 			if (dataOpCode == WebSocketOpCode::Op_Binary) {
 				string = serializer.refreshString();
 			} else {
-				parser.serializeJson<true>(data02, string);
+				jsonifierCore.serializeJson<true>(data02, string);
 			}
 			createHeader(string, dataOpCode);
 			areWeCollectingData.store(true);
@@ -495,14 +494,14 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		bool WebSocketClient::onMessageReceived(std::string_view dataNew) noexcept {
+		bool WebSocketClient::onMessageReceived(std::string_view dataNew) {
 			try {
-				if (tcpConnection.areWeStillConnected() && currentMessage.size() > 0 && dataNew.size() > 0) {
+				if (areWeConnected() && currentMessage.size() > 0 && dataNew.size() > 0) {
 					WebSocketMessage message{};
 					if (configManager->getTextFormat() == TextFormat::Etf) {
 						try {
 							dataNew = EtfParser::parseEtfToJson(dataNew);
-							parser.parseJson<true, true>(message, dataNew);
+							jsonifierCore.parseJson<true, true>(message, dataNew);
 						} catch (const DCAException& error) {
 							MessagePrinter::printError<PrintMessageType::WebSocket>(error.what());
 							tcpConnection.getInputBuffer();
@@ -510,50 +509,36 @@ namespace DiscordCoreAPI {
 							return false;
 						}
 					} else {
-						parser.parseJson<true, true>(message, dataNew);
+						jsonifierCore.parseJson<true, true>(message, dataNew);
 					}
 
 					if (message.s != 0) {
 						lastNumberReceived = message.s;
 					}
-					MessagePrinter::printSuccess<PrintMessageType::WebSocket>("Message received from WebSocket [" + std::to_string(shard[0]) + "," +
-						std::to_string(shard[1]) + std::string("]: ") + std::string{ dataNew });
+					MessagePrinter::printSuccess<PrintMessageType::WebSocket>("Message received from WebSocket [" + std::to_string(shard.at(0)) +
+						"," + std::to_string(shard.at(1)) + std::string("]: ") + std::string{ dataNew });
 					switch (static_cast<WebSocketOpCodes>(message.op)) {
 						case WebSocketOpCodes::Dispatch: {
 							if (message.t != "") {
 								switch (EventConverter{ message.t }) {
 									case 1: {
-										if (configManager->getTextFormat() == TextFormat::Etf) {
-											WebSocketMessageData<ReadyData<TextFormat::Etf>> data{};
-											currentState.store(WebSocketState::Authenticated);
-											parser.parseJson<true, true>(data, dataNew);
-											sessionId = data.d.sessionId;
-											if (data.d.resumeGatewayUrl.find("wss://") != std::string::npos) {
-												resumeUrl = data.d.resumeGatewayUrl.substr(
-													data.d.resumeGatewayUrl.find("wss://") + std::string{ "wss://" }.size());
-											}
-											discordCoreClient->currentUser = BotUser{ data.d.user,
-												discordCoreClient
-													->baseSocketAgentsMap[static_cast<int32_t>(floor(static_cast<int32_t>(shard[0]) %
-														static_cast<int32_t>(discordCoreClient->configManager.getTotalShardCount())))]
-													.get() };
-											Users::insertUser(std::move(data.d.user));
-										} else {
-											WebSocketMessageData<ReadyData<TextFormat::Json>> data{};
-											currentState.store(WebSocketState::Authenticated);
-											parser.parseJson<true, true>(data, dataNew);
-											sessionId = data.d.sessionId;
-											if (data.d.resumeGatewayUrl.find("wss://") != std::string::npos) {
-												resumeUrl = data.d.resumeGatewayUrl.substr(
-													data.d.resumeGatewayUrl.find("wss://") + std::string{ "wss://" }.size());
-											}
-											discordCoreClient->currentUser = BotUser{ data.d.user,
-												discordCoreClient
-													->baseSocketAgentsMap[static_cast<int32_t>(floor(static_cast<int32_t>(shard[0]) %
-														static_cast<int32_t>(discordCoreClient->configManager.getTotalShardCount())))]
-													.get() };
-											Users::insertUser(std::move(data.d.user));
+										WebSocketMessageData<ReadyData> data{};
+										if (this->dataOpCode == WebSocketOpCode::Op_Text) {
+											data.d.excludedKeys.emplace("shard");
 										}
+										currentState.store(WebSocketState::Authenticated);
+										jsonifierCore.parseJson<true, true, true>(data, dataNew);
+										sessionId = data.d.sessionId;
+										if (data.d.resumeGatewayUrl.find("wss://") != std::string::npos) {
+											resumeUrl = data.d.resumeGatewayUrl.substr(
+												data.d.resumeGatewayUrl.find("wss://") + std::string{ "wss://" }.size());
+										}
+										discordCoreClient->currentUser = BotUser{ data.d.user,
+											discordCoreClient->baseSocketAgentsMap
+												.at(static_cast<uint64_t>(floor(static_cast<uint64_t>(shard.at(0)) %
+													static_cast<uint64_t>(discordCoreClient->baseSocketAgentsMap.size()))))
+												.get() };
+										Users::insertUser(std::move(data.d.user));
 										currentReconnectTries = 0;
 										break;
 									}
@@ -565,7 +550,7 @@ namespace DiscordCoreAPI {
 									case 3: {
 										if (discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent.functions.size() > 0) {
 											UniquePtr<OnApplicationCommandPermissionsUpdateData> dataPackage{
-												makeUnique<OnApplicationCommandPermissionsUpdateData>(parser, dataNew)
+												makeUnique<OnApplicationCommandPermissionsUpdateData>(jsonifierCore, dataNew)
 											};
 											discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent(*dataPackage);
 										}
@@ -574,15 +559,15 @@ namespace DiscordCoreAPI {
 									case 4: {
 										if (discordCoreClient->eventManager.onAutoModerationRuleCreationEvent.functions.size() > 0) {
 											UniquePtr<OnAutoModerationRuleCreationData> dataPackage{ makeUnique<OnAutoModerationRuleCreationData>(
-												parser, dataNew) };
+												jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onAutoModerationRuleCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 5: {
 										if (discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnAutoModerationRuleUpdateData> dataPackage{ makeUnique<OnAutoModerationRuleUpdateData>(parser,
-												dataNew) };
+											UniquePtr<OnAutoModerationRuleUpdateData> dataPackage{ makeUnique<OnAutoModerationRuleUpdateData>(
+												jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent(*dataPackage);
 										}
 										break;
@@ -590,7 +575,7 @@ namespace DiscordCoreAPI {
 									case 6: {
 										if (discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent.functions.size() > 0) {
 											UniquePtr<OnAutoModerationRuleDeletionData> dataPackage{ makeUnique<OnAutoModerationRuleDeletionData>(
-												parser, dataNew) };
+												jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent(*dataPackage);
 										}
 										break;
@@ -598,28 +583,28 @@ namespace DiscordCoreAPI {
 									case 7: {
 										if (discordCoreClient->eventManager.onAutoModerationActionExecutionEvent.functions.size() > 0) {
 											UniquePtr<OnAutoModerationActionExecutionData> dataPackage{
-												makeUnique<OnAutoModerationActionExecutionData>(parser, dataNew)
+												makeUnique<OnAutoModerationActionExecutionData>(jsonifierCore, dataNew)
 											};
 											discordCoreClient->eventManager.onAutoModerationActionExecutionEvent(*dataPackage);
 										}
 										break;
 									}
 									case 8: {
-										UniquePtr<OnChannelCreationData> dataPackage{ makeUnique<OnChannelCreationData>(parser, dataNew) };
+										UniquePtr<OnChannelCreationData> dataPackage{ makeUnique<OnChannelCreationData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onChannelCreationEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onChannelCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 9: {
-										UniquePtr<OnChannelUpdateData> dataPackage{ makeUnique<OnChannelUpdateData>(parser, dataNew) };
+										UniquePtr<OnChannelUpdateData> dataPackage{ makeUnique<OnChannelUpdateData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onChannelUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onChannelUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 10: {
-										UniquePtr<OnChannelDeletionData> dataPackage{ makeUnique<OnChannelDeletionData>(parser, dataNew) };
+										UniquePtr<OnChannelDeletionData> dataPackage{ makeUnique<OnChannelDeletionData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onChannelDeletionEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onChannelDeletionEvent(*dataPackage);
 										}
@@ -627,56 +612,58 @@ namespace DiscordCoreAPI {
 									}
 									case 11: {
 										if (discordCoreClient->eventManager.onChannelPinsUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnChannelPinsUpdateData> dataPackage{ makeUnique<OnChannelPinsUpdateData>(parser, dataNew) };
+											UniquePtr<OnChannelPinsUpdateData> dataPackage{ makeUnique<OnChannelPinsUpdateData>(jsonifierCore,
+												dataNew) };
 											discordCoreClient->eventManager.onChannelPinsUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 12: {
 										if (discordCoreClient->eventManager.onThreadCreationEvent.functions.size() > 0) {
-											UniquePtr<OnThreadCreationData> dataPackage{ makeUnique<OnThreadCreationData>(parser, dataNew) };
+											UniquePtr<OnThreadCreationData> dataPackage{ makeUnique<OnThreadCreationData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onThreadCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 13: {
 										if (discordCoreClient->eventManager.onThreadUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnThreadUpdateData> dataPackage{ makeUnique<OnThreadUpdateData>(parser, dataNew) };
+											UniquePtr<OnThreadUpdateData> dataPackage{ makeUnique<OnThreadUpdateData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onThreadUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 14: {
 										if (discordCoreClient->eventManager.onThreadDeletionEvent.functions.size() > 0) {
-											UniquePtr<OnThreadDeletionData> dataPackage{ makeUnique<OnThreadDeletionData>(parser, dataNew) };
+											UniquePtr<OnThreadDeletionData> dataPackage{ makeUnique<OnThreadDeletionData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onThreadDeletionEvent(*dataPackage);
 										}
 										break;
 									}
 									case 15: {
 										if (discordCoreClient->eventManager.onThreadListSyncEvent.functions.size() > 0) {
-											UniquePtr<OnThreadListSyncData> dataPackage{ makeUnique<OnThreadListSyncData>(parser, dataNew) };
+											UniquePtr<OnThreadListSyncData> dataPackage{ makeUnique<OnThreadListSyncData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onThreadListSyncEvent(*dataPackage);
 										}
 										break;
 									}
 									case 16: {
 										if (discordCoreClient->eventManager.onThreadMemberUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnThreadMemberUpdateData> dataPackage{ makeUnique<OnThreadMemberUpdateData>(parser, dataNew) };
+											UniquePtr<OnThreadMemberUpdateData> dataPackage{ makeUnique<OnThreadMemberUpdateData>(jsonifierCore,
+												dataNew) };
 											discordCoreClient->eventManager.onThreadMemberUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 17: {
 										if (discordCoreClient->eventManager.onThreadMembersUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnThreadMembersUpdateData> dataPackage{ makeUnique<OnThreadMembersUpdateData>(parser,
+											UniquePtr<OnThreadMembersUpdateData> dataPackage{ makeUnique<OnThreadMembersUpdateData>(jsonifierCore,
 												dataNew) };
 											discordCoreClient->eventManager.onThreadMembersUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 18: {
-										UniquePtr<OnGuildCreationData> dataPackage{ makeUnique<OnGuildCreationData>(parser, dataNew,
+										UniquePtr<OnGuildCreationData> dataPackage{ makeUnique<OnGuildCreationData>(jsonifierCore, dataNew,
 											discordCoreClient) };
 										if (discordCoreClient->eventManager.onGuildCreationEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildCreationEvent(*dataPackage);
@@ -684,15 +671,15 @@ namespace DiscordCoreAPI {
 										break;
 									}
 									case 19: {
-										UniquePtr<OnGuildUpdateData> dataPackage{ makeUnique<OnGuildUpdateData>(parser, dataNew, discordCoreClient) };
+										UniquePtr<OnGuildUpdateData> dataPackage{ makeUnique<OnGuildUpdateData>(jsonifierCore, dataNew,
+											discordCoreClient) };
 										if (discordCoreClient->eventManager.onGuildUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 20: {
-										UniquePtr<OnGuildDeletionData> dataPackage{ makeUnique<OnGuildDeletionData>(parser, dataNew,
-											discordCoreClient) };
+										UniquePtr<OnGuildDeletionData> dataPackage{ makeUnique<OnGuildDeletionData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onGuildDeletionEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildDeletionEvent(*dataPackage);
 										}
@@ -700,28 +687,29 @@ namespace DiscordCoreAPI {
 									}
 									case 21: {
 										if (discordCoreClient->eventManager.onGuildBanAddEvent.functions.size() > 0) {
-											UniquePtr<OnGuildBanAddData> dataPackage{ makeUnique<OnGuildBanAddData>(parser, dataNew) };
+											UniquePtr<OnGuildBanAddData> dataPackage{ makeUnique<OnGuildBanAddData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onGuildBanAddEvent(*dataPackage);
 										}
 										break;
 									}
 									case 22: {
 										if (discordCoreClient->eventManager.onGuildBanRemoveEvent.functions.size() > 0) {
-											UniquePtr<OnGuildBanRemoveData> dataPackage{ makeUnique<OnGuildBanRemoveData>(parser, dataNew) };
+											UniquePtr<OnGuildBanRemoveData> dataPackage{ makeUnique<OnGuildBanRemoveData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onGuildBanRemoveEvent(*dataPackage);
 										}
 										break;
 									}
 									case 23: {
 										if (discordCoreClient->eventManager.onGuildEmojisUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnGuildEmojisUpdateData> dataPackage{ makeUnique<OnGuildEmojisUpdateData>(parser, dataNew) };
+											UniquePtr<OnGuildEmojisUpdateData> dataPackage{ makeUnique<OnGuildEmojisUpdateData>(jsonifierCore,
+												dataNew) };
 											discordCoreClient->eventManager.onGuildEmojisUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 24: {
 										if (discordCoreClient->eventManager.onGuildStickersUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnGuildStickersUpdateData> dataPackage{ makeUnique<OnGuildStickersUpdateData>(parser,
+											UniquePtr<OnGuildStickersUpdateData> dataPackage{ makeUnique<OnGuildStickersUpdateData>(jsonifierCore,
 												dataNew) };
 											discordCoreClient->eventManager.onGuildStickersUpdateEvent(*dataPackage);
 										}
@@ -729,31 +717,28 @@ namespace DiscordCoreAPI {
 									}
 									case 25: {
 										if (discordCoreClient->eventManager.onGuildIntegrationsUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnGuildIntegrationsUpdateData> dataPackage{ makeUnique<OnGuildIntegrationsUpdateData>(parser,
-												dataNew) };
+											UniquePtr<OnGuildIntegrationsUpdateData> dataPackage{ makeUnique<OnGuildIntegrationsUpdateData>(
+												jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onGuildIntegrationsUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 26: {
-										UniquePtr<OnGuildMemberAddData> dataPackage{ makeUnique<OnGuildMemberAddData>(parser, dataNew,
-											discordCoreClient) };
+										UniquePtr<OnGuildMemberAddData> dataPackage{ makeUnique<OnGuildMemberAddData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onGuildMemberAddEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildMemberAddEvent(*dataPackage);
 										}
 										break;
 									}
 									case 27: {
-										UniquePtr<OnGuildMemberRemoveData> dataPackage{ makeUnique<OnGuildMemberRemoveData>(parser, dataNew,
-											discordCoreClient) };
+										UniquePtr<OnGuildMemberRemoveData> dataPackage{ makeUnique<OnGuildMemberRemoveData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onGuildMemberRemoveEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildMemberRemoveEvent(*dataPackage);
 										}
 										break;
 									}
 									case 28: {
-										UniquePtr<OnGuildMemberUpdateData> dataPackage{ makeUnique<OnGuildMemberUpdateData>(parser, dataNew,
-											discordCoreClient) };
+										UniquePtr<OnGuildMemberUpdateData> dataPackage{ makeUnique<OnGuildMemberUpdateData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onGuildMemberUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
 										}
@@ -761,27 +746,28 @@ namespace DiscordCoreAPI {
 									}
 									case 29: {
 										if (discordCoreClient->eventManager.onGuildMembersChunkEvent.functions.size() > 0) {
-											UniquePtr<OnGuildMembersChunkData> dataPackage{ makeUnique<OnGuildMembersChunkData>(parser, dataNew) };
+											UniquePtr<OnGuildMembersChunkData> dataPackage{ makeUnique<OnGuildMembersChunkData>(jsonifierCore,
+												dataNew) };
 											discordCoreClient->eventManager.onGuildMembersChunkEvent(*dataPackage);
 										}
 										break;
 									}
 									case 30: {
-										UniquePtr<OnRoleCreationData> dataPackage{ makeUnique<OnRoleCreationData>(parser, dataNew) };
+										UniquePtr<OnRoleCreationData> dataPackage{ makeUnique<OnRoleCreationData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onRoleCreationEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onRoleCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 31: {
-										UniquePtr<OnRoleUpdateData> dataPackage{ makeUnique<OnRoleUpdateData>(parser, dataNew) };
+										UniquePtr<OnRoleUpdateData> dataPackage{ makeUnique<OnRoleUpdateData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onRoleUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onRoleUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 32: {
-										UniquePtr<OnRoleDeletionData> dataPackage{ makeUnique<OnRoleDeletionData>(parser, dataNew) };
+										UniquePtr<OnRoleDeletionData> dataPackage{ makeUnique<OnRoleDeletionData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onRoleDeletionEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onRoleDeletionEvent(*dataPackage);
 										}
@@ -790,7 +776,7 @@ namespace DiscordCoreAPI {
 									case 33: {
 										if (discordCoreClient->eventManager.onGuildScheduledEventCreationEvent.functions.size() > 0) {
 											UniquePtr<OnGuildScheduledEventCreationData> dataPackage{ makeUnique<OnGuildScheduledEventCreationData>(
-												parser, dataNew) };
+												jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onGuildScheduledEventCreationEvent(*dataPackage);
 										}
 										break;
@@ -798,7 +784,7 @@ namespace DiscordCoreAPI {
 									case 34: {
 										if (discordCoreClient->eventManager.onGuildScheduledEventUpdateEvent.functions.size() > 0) {
 											UniquePtr<OnGuildScheduledEventUpdateData> dataPackage{ makeUnique<OnGuildScheduledEventUpdateData>(
-												parser, dataNew) };
+												jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onGuildScheduledEventUpdateEvent(*dataPackage);
 										}
 										break;
@@ -806,7 +792,7 @@ namespace DiscordCoreAPI {
 									case 35: {
 										if (discordCoreClient->eventManager.onGuildScheduledEventDeletionEvent.functions.size() > 0) {
 											UniquePtr<OnGuildScheduledEventDeletionData> dataPackage{ makeUnique<OnGuildScheduledEventDeletionData>(
-												parser, dataNew) };
+												jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onGuildScheduledEventDeletionEvent(*dataPackage);
 										}
 										break;
@@ -814,7 +800,7 @@ namespace DiscordCoreAPI {
 									case 36: {
 										if (discordCoreClient->eventManager.onGuildScheduledEventUserAddEvent.functions.size() > 0) {
 											UniquePtr<OnGuildScheduledEventUserAddData> dataPackage{ makeUnique<OnGuildScheduledEventUserAddData>(
-												parser, dataNew) };
+												jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onGuildScheduledEventUserAddEvent(*dataPackage);
 										}
 										break;
@@ -822,7 +808,7 @@ namespace DiscordCoreAPI {
 									case 37: {
 										if (discordCoreClient->eventManager.onGuildScheduledEventUserRemoveEvent.functions.size() > 0) {
 											UniquePtr<OnGuildScheduledEventUserRemoveData> dataPackage{
-												makeUnique<OnGuildScheduledEventUserRemoveData>(parser, dataNew)
+												makeUnique<OnGuildScheduledEventUserRemoveData>(jsonifierCore, dataNew)
 											};
 											discordCoreClient->eventManager.onGuildScheduledEventUserRemoveEvent(*dataPackage);
 										}
@@ -830,7 +816,7 @@ namespace DiscordCoreAPI {
 									}
 									case 38: {
 										if (discordCoreClient->eventManager.onIntegrationCreationEvent.functions.size() > 0) {
-											UniquePtr<OnIntegrationCreationData> dataPackage{ makeUnique<OnIntegrationCreationData>(parser,
+											UniquePtr<OnIntegrationCreationData> dataPackage{ makeUnique<OnIntegrationCreationData>(jsonifierCore,
 												dataNew) };
 											discordCoreClient->eventManager.onIntegrationCreationEvent(*dataPackage);
 										}
@@ -838,22 +824,23 @@ namespace DiscordCoreAPI {
 									}
 									case 39: {
 										if (discordCoreClient->eventManager.onIntegrationUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnIntegrationUpdateData> dataPackage{ makeUnique<OnIntegrationUpdateData>(parser, dataNew) };
+											UniquePtr<OnIntegrationUpdateData> dataPackage{ makeUnique<OnIntegrationUpdateData>(jsonifierCore,
+												dataNew) };
 											discordCoreClient->eventManager.onIntegrationUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 40: {
 										if (discordCoreClient->eventManager.onIntegrationDeletionEvent.functions.size() > 0) {
-											UniquePtr<OnIntegrationDeletionData> dataPackage{ makeUnique<OnIntegrationDeletionData>(parser,
+											UniquePtr<OnIntegrationDeletionData> dataPackage{ makeUnique<OnIntegrationDeletionData>(jsonifierCore,
 												dataNew) };
 											discordCoreClient->eventManager.onIntegrationDeletionEvent(*dataPackage);
 										}
 										break;
 									}
 									case 41: {
-										UniquePtr<OnInteractionCreationData> dataPackage{ makeUnique<OnInteractionCreationData>(parser, dataNew,
-											discordCoreClient) };
+										UniquePtr<OnInteractionCreationData> dataPackage{ makeUnique<OnInteractionCreationData>(jsonifierCore,
+											dataNew, discordCoreClient) };
 										if (discordCoreClient->eventManager.onInteractionCreationEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 										}
@@ -861,27 +848,27 @@ namespace DiscordCoreAPI {
 									}
 									case 42: {
 										if (discordCoreClient->eventManager.onInviteCreationEvent.functions.size() > 0) {
-											UniquePtr<OnInviteCreationData> dataPackage{ makeUnique<OnInviteCreationData>(parser, dataNew) };
+											UniquePtr<OnInviteCreationData> dataPackage{ makeUnique<OnInviteCreationData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onInviteCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 43: {
 										if (discordCoreClient->eventManager.onInviteDeletionEvent.functions.size() > 0) {
-											UniquePtr<OnInviteDeletionData> dataPackage{ makeUnique<OnInviteDeletionData>(parser, dataNew) };
+											UniquePtr<OnInviteDeletionData> dataPackage{ makeUnique<OnInviteDeletionData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onInviteDeletionEvent(*dataPackage);
 										}
 										break;
 									}
 									case 44: {
-										UniquePtr<OnMessageCreationData> dataPackage{ makeUnique<OnMessageCreationData>(parser, dataNew) };
+										UniquePtr<OnMessageCreationData> dataPackage{ makeUnique<OnMessageCreationData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onMessageCreationEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onMessageCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 45: {
-										UniquePtr<OnMessageUpdateData> dataPackage{ makeUnique<OnMessageUpdateData>(parser, dataNew) };
+										UniquePtr<OnMessageUpdateData> dataPackage{ makeUnique<OnMessageUpdateData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onMessageUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onMessageUpdateEvent(*dataPackage);
 										}
@@ -889,49 +876,51 @@ namespace DiscordCoreAPI {
 									}
 									case 46: {
 										if (discordCoreClient->eventManager.onMessageDeletionEvent.functions.size() > 0) {
-											UniquePtr<OnMessageDeletionData> dataPackage{ makeUnique<OnMessageDeletionData>(parser, dataNew) };
+											UniquePtr<OnMessageDeletionData> dataPackage{ makeUnique<OnMessageDeletionData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onMessageDeletionEvent(*dataPackage);
 										}
 										break;
 									}
 									case 47: {
 										if (discordCoreClient->eventManager.onMessageDeleteBulkEvent.functions.size() > 0) {
-											UniquePtr<OnMessageDeleteBulkData> dataPackage{ makeUnique<OnMessageDeleteBulkData>(parser, dataNew) };
+											UniquePtr<OnMessageDeleteBulkData> dataPackage{ makeUnique<OnMessageDeleteBulkData>(jsonifierCore,
+												dataNew) };
 											discordCoreClient->eventManager.onMessageDeleteBulkEvent(*dataPackage);
 										}
 										break;
 									}
 									case 48: {
 										if (discordCoreClient->eventManager.onReactionAddEvent.functions.size() > 0) {
-											UniquePtr<OnReactionAddData> dataPackage{ makeUnique<OnReactionAddData>(parser, dataNew) };
+											UniquePtr<OnReactionAddData> dataPackage{ makeUnique<OnReactionAddData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onReactionAddEvent(*dataPackage);
 										}
 										break;
 									}
 									case 49: {
 										if (discordCoreClient->eventManager.onReactionRemoveEvent.functions.size() > 0) {
-											UniquePtr<OnReactionRemoveData> dataPackage{ makeUnique<OnReactionRemoveData>(parser, dataNew) };
+											UniquePtr<OnReactionRemoveData> dataPackage{ makeUnique<OnReactionRemoveData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onReactionRemoveEvent(*dataPackage);
 										}
 										break;
 									}
 									case 50: {
 										if (discordCoreClient->eventManager.onReactionRemoveAllEvent.functions.size() > 0) {
-											UniquePtr<OnReactionRemoveAllData> dataPackage{ makeUnique<OnReactionRemoveAllData>(parser, dataNew) };
+											UniquePtr<OnReactionRemoveAllData> dataPackage{ makeUnique<OnReactionRemoveAllData>(jsonifierCore,
+												dataNew) };
 											discordCoreClient->eventManager.onReactionRemoveAllEvent(*dataPackage);
 										}
 										break;
 									}
 									case 51: {
 										if (discordCoreClient->eventManager.onReactionRemoveEmojiEvent.functions.size() > 0) {
-											UniquePtr<OnReactionRemoveEmojiData> dataPackage{ makeUnique<OnReactionRemoveEmojiData>(parser,
+											UniquePtr<OnReactionRemoveEmojiData> dataPackage{ makeUnique<OnReactionRemoveEmojiData>(jsonifierCore,
 												dataNew) };
 											discordCoreClient->eventManager.onReactionRemoveEmojiEvent(*dataPackage);
 										}
 										break;
 									}
 									case 52: {
-										UniquePtr<OnPresenceUpdateData> dataPackage{ makeUnique<OnPresenceUpdateData>(parser, dataNew) };
+										UniquePtr<OnPresenceUpdateData> dataPackage{ makeUnique<OnPresenceUpdateData>(jsonifierCore, dataNew) };
 										if (discordCoreClient->eventManager.onPresenceUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onPresenceUpdateEvent(*dataPackage);
 										}
@@ -939,7 +928,7 @@ namespace DiscordCoreAPI {
 									}
 									case 53: {
 										if (discordCoreClient->eventManager.onStageInstanceCreationEvent.functions.size() > 0) {
-											UniquePtr<OnStageInstanceCreationData> dataPackage{ makeUnique<OnStageInstanceCreationData>(parser,
+											UniquePtr<OnStageInstanceCreationData> dataPackage{ makeUnique<OnStageInstanceCreationData>(jsonifierCore,
 												dataNew) };
 											discordCoreClient->eventManager.onStageInstanceCreationEvent(*dataPackage);
 										}
@@ -947,7 +936,7 @@ namespace DiscordCoreAPI {
 									}
 									case 54: {
 										if (discordCoreClient->eventManager.onStageInstanceUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnStageInstanceUpdateData> dataPackage{ makeUnique<OnStageInstanceUpdateData>(parser,
+											UniquePtr<OnStageInstanceUpdateData> dataPackage{ makeUnique<OnStageInstanceUpdateData>(jsonifierCore,
 												dataNew) };
 											discordCoreClient->eventManager.onStageInstanceUpdateEvent(*dataPackage);
 										}
@@ -955,7 +944,7 @@ namespace DiscordCoreAPI {
 									}
 									case 55: {
 										if (discordCoreClient->eventManager.onStageInstanceDeletionEvent.functions.size() > 0) {
-											UniquePtr<OnStageInstanceDeletionData> dataPackage{ makeUnique<OnStageInstanceDeletionData>(parser,
+											UniquePtr<OnStageInstanceDeletionData> dataPackage{ makeUnique<OnStageInstanceDeletionData>(jsonifierCore,
 												dataNew) };
 											discordCoreClient->eventManager.onStageInstanceDeletionEvent(*dataPackage);
 										}
@@ -963,27 +952,29 @@ namespace DiscordCoreAPI {
 									}
 									case 56: {
 										if (discordCoreClient->eventManager.onTypingStartEvent.functions.size() > 0) {
-											UniquePtr<OnTypingStartData> dataPackage{ makeUnique<OnTypingStartData>(parser, dataNew) };
+											UniquePtr<OnTypingStartData> dataPackage{ makeUnique<OnTypingStartData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onTypingStartEvent(*dataPackage);
 										}
 										break;
 									}
 									case 57: {
 										if (discordCoreClient->eventManager.onUserUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnUserUpdateData> dataPackage{ makeUnique<OnUserUpdateData>(parser, dataNew) };
+											UniquePtr<OnUserUpdateData> dataPackage{ makeUnique<OnUserUpdateData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onUserUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 58: {
-										UniquePtr<OnVoiceStateUpdateData> dataPackage{ makeUnique<OnVoiceStateUpdateData>(parser, dataNew, this) };
+										UniquePtr<OnVoiceStateUpdateData> dataPackage{ makeUnique<OnVoiceStateUpdateData>(jsonifierCore, dataNew,
+											this) };
 										if (discordCoreClient->eventManager.onVoiceStateUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 59: {
-										UniquePtr<OnVoiceServerUpdateData> dataPackage{ makeUnique<OnVoiceServerUpdateData>(parser, dataNew, this) };
+										UniquePtr<OnVoiceServerUpdateData> dataPackage{ makeUnique<OnVoiceServerUpdateData>(jsonifierCore, dataNew,
+											this) };
 										if (discordCoreClient->eventManager.onVoiceServerUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onVoiceServerUpdateEvent(*dataPackage);
 										}
@@ -991,7 +982,7 @@ namespace DiscordCoreAPI {
 									}
 									case 60: {
 										if (discordCoreClient->eventManager.onWebhookUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnWebhookUpdateData> dataPackage{ makeUnique<OnWebhookUpdateData>(parser, dataNew) };
+											UniquePtr<OnWebhookUpdateData> dataPackage{ makeUnique<OnWebhookUpdateData>(jsonifierCore, dataNew) };
 											discordCoreClient->eventManager.onWebhookUpdateEvent(*dataPackage);
 										}
 										break;
@@ -1008,18 +999,18 @@ namespace DiscordCoreAPI {
 						}
 						case WebSocketOpCodes::Reconnect: {
 							MessagePrinter::printError<PrintMessageType::WebSocket>(
-								"Shard [" + std::to_string(shard[0]) + "," + std::to_string(shard[1]) + "]" + " Reconnecting (Type 7)!");
+								"Shard [" + std::to_string(shard.at(0)) + "," + std::to_string(shard.at(1)) + "]" + " Reconnecting (Type 7)!");
 							areWeResuming = true;
 							tcpConnection.disconnect();
 							return true;
 						}
 						case WebSocketOpCodes::Invalid_Session: {
-							WebSocketMessageData<InvalidSessionData> data{};
-							parser.parseJson<true, true>(data, dataNew);
+							WebSocketMessageData<bool> data{};
+							jsonifierCore.parseJson<true, true>(data, dataNew);
 							MessagePrinter::printError<PrintMessageType::WebSocket>(
-								"Shard [" + std::to_string(shard[0]) + "," + std::to_string(shard[1]) + "]" + " Reconnecting (Type 9)!");
+								"Shard [" + std::to_string(shard.at(0)) + "," + std::to_string(shard.at(1)) + "]" + " Reconnecting (Type 9)!");
 							std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
-							int32_t numOfMsToWait = static_cast<int32_t>(1000.0f +
+							uint64_t numOfMsToWait = static_cast<uint64_t>(1000.0f +
 								((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * static_cast<double>(4000.0f)));
 							if (numOfMsToWait <= 5000 && numOfMsToWait > 0) {
 								std::this_thread::sleep_for(Milliseconds{ numOfMsToWait });
@@ -1034,7 +1025,7 @@ namespace DiscordCoreAPI {
 						}
 						case WebSocketOpCodes::Hello: {
 							WebSocketMessageData<HelloData> data{};
-							parser.parseJson<true, true>(data, dataNew);
+							jsonifierCore.parseJson<true, true>(data, dataNew);
 							if (data.d.heartbeatInterval != 0) {
 								areWeHeartBeating = true;
 								heartBeatStopWatch = StopWatch<Milliseconds>{ Milliseconds{ data.d.heartbeatInterval } };
@@ -1042,17 +1033,17 @@ namespace DiscordCoreAPI {
 								haveWeReceivedHeartbeatAck = true;
 							}
 							if (areWeResuming) {
-								WebSocketMessageData<WebSocketResumeData> data{};
-								data.d.botToken = configManager->getBotToken();
-								data.d.lastNumberReceived = lastNumberReceived;
-								data.d.sessionId = sessionId;
-								data.op = 6;
+								WebSocketMessageData<WebSocketResumeData> dataNewer{};
+								dataNewer.d.botToken = configManager->getBotToken();
+								dataNewer.d.lastNumberReceived = lastNumberReceived;
+								dataNewer.d.sessionId = sessionId;
+								dataNewer.op = 6;
 								std::string string{};
 								if (dataOpCode == WebSocketOpCode::Op_Binary) {
-									auto serializer = data.d.operator EtfSerializer();
+									auto serializer = dataNewer.d.operator EtfSerializer();
 									string = serializer.refreshString();
 								} else {
-									parser.serializeJson(data, string);
+									jsonifierCore.serializeJson(dataNewer, string);
 								}
 								createHeader(string, dataOpCode);
 								currentState.store(WebSocketState::Sending_Identify);
@@ -1060,19 +1051,19 @@ namespace DiscordCoreAPI {
 									return false;
 								}
 							} else {
-								WebSocketMessageData<WebSocketIdentifyData> data{};
-								data.d.botToken = configManager->getBotToken();
-								data.d.shard[0] = shard[0];
-								data.d.shard[1] = shard[1];
-								data.d.intents = static_cast<int64_t>(configManager->getGatewayIntents());
-								data.d.presence = configManager->getPresenceData();
-								data.op = 2;
+								WebSocketMessageData<WebSocketIdentifyData> dataNewer{};
+								dataNewer.d.botToken = configManager->getBotToken();
+								dataNewer.d.shard.at(0) = shard.at(0);
+								dataNewer.d.shard.at(1) = shard.at(1);
+								dataNewer.d.intents = static_cast<int64_t>(configManager->getGatewayIntents());
+								dataNewer.d.presence = configManager->getPresenceData();
+								dataNewer.op = 2;
 								std::string string{};
 								if (dataOpCode == WebSocketOpCode::Op_Binary) {
-									auto serializer = data.d.operator EtfSerializer();
+									auto serializer = dataNewer.d.operator EtfSerializer();
 									string = serializer.refreshString();
 								} else {
-									parser.serializeJson(data, string);
+									jsonifierCore.serializeJson(dataNewer, string);
 								}
 								createHeader(string, dataOpCode);
 								currentState.store(WebSocketState::Sending_Identify);
@@ -1099,8 +1090,8 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 
-		void WebSocketCore::disconnect() noexcept {
-			if (tcpConnection.areWeStillConnected()) {
+		void WebSocketCore::disconnect() {
+			if (areWeConnected()) {
 				std::string dataNew{ "\x03\xE8" };
 				createHeader(dataNew, WebSocketOpCode::Op_Close);
 				tcpConnection.writeData(dataNew, true);
@@ -1110,11 +1101,11 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void WebSocketClient::disconnect() noexcept {
+		void WebSocketClient::disconnect() {
 			WebSocketCore::disconnect();
 		}
 
-		void WebSocketClient::onClosed() noexcept {
+		void WebSocketClient::onClosed() {
 			if (maxReconnectTries > currentReconnectTries) {
 				disconnect();
 			} else {
@@ -1124,12 +1115,11 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		WebSocketClient::~WebSocketClient() noexcept {
+		WebSocketClient::~WebSocketClient() {
 			disconnect();
 		}
 
-		BaseSocketAgent::BaseSocketAgent(DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew,
-			int32_t currentBaseSocketAgentNew) noexcept {
+		BaseSocketAgent::BaseSocketAgent(DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, uint64_t currentBaseSocketAgentNew) {
 			currentBaseSocketAgent = currentBaseSocketAgentNew;
 			discordCoreClient = discordCoreClientNew;
 			doWeQuit = doWeQuitNew;
@@ -1138,37 +1128,34 @@ namespace DiscordCoreAPI {
 			});
 		}
 
-		bool BaseSocketAgent::waitForState(ConnectionPackage& packageNew, WebSocketState state) noexcept {
+		bool BaseSocketAgent::waitForState(ConnectionPackage& packageNew, WebSocketState state) {
 			StopWatch stopWatch{ 10000ms };
 			stopWatch.resetTimer();
-			while (!doWeQuit->load()) {
-				if (getClient(packageNew.currentShard).tcpConnection.processIO(10) != ConnectionStatus::NO_Error) {
-					return false;
-				}
+			if (getClient(packageNew.currentShard).areWeConnected()) {
+				while (!doWeQuit->load()) {
+					if (getClient(packageNew.currentShard).tcpConnection.processIO(10) != ConnectionStatus::NO_Error) {
+						return false;
+					}
 
-				if (getClient(packageNew.currentShard).currentState.load() != state) {
-					break;
+					if (getClient(packageNew.currentShard).currentState.load() != state) {
+						break;
+					}
+					if (stopWatch.hasTimePassed()) {
+						MessagePrinter::printError<PrintMessageType::WebSocket>("Connection failed for WebSocket [" +
+							std::to_string(packageNew.currentShard) + "," + std::to_string(discordCoreClient->configManager.getTotalShardCount()) +
+							"], while waiting for the state: " + std::to_string(static_cast<uint64_t>(state)) + "... reconnecting.");
+						getClient(packageNew.currentShard).onClosed();
+						return false;
+					}
+					std::this_thread::sleep_for(1ms);
 				}
-				if (stopWatch.hasTimePassed()) {
-					MessagePrinter::printError<PrintMessageType::WebSocket>("Connection failed for WebSocket [" +
-						std::to_string(packageNew.currentShard) + "," + std::to_string(discordCoreClient->configManager.getTotalShardCount()) +
-						"], while waiting for the state: " + std::to_string(static_cast<int32_t>(state)) + "... reconnecting.");
-					getClient(packageNew.currentShard).onClosed();
-					return false;
-				}
-				std::this_thread::sleep_for(1ms);
 			}
 			return true;
 		}
 
-		void BaseSocketAgent::connect(ConnectionPackage packageNew) noexcept {
-			while (!discordCoreClient->theSemaphore.try_acquire()) {
-				std::this_thread::sleep_for(1ms);
-			}
-			if (packageNew.currentShard != -1) {
-				if (!shardMap.contains(packageNew.currentShard)) {
-					shardMap[packageNew.currentShard] = WebSocketClient{ discordCoreClient, static_cast<int32_t>(packageNew.currentShard), doWeQuit };
-				}
+		void BaseSocketAgent::connect(ConnectionPackage packageNew) {
+			SemaphoreLock lock{ discordCoreClient->theSemaphore };
+			if (packageNew.currentShard != static_cast<uint32_t>(-1)) {
 				getClient(packageNew.currentShard).currentReconnectTries = packageNew.currentReconnectTries;
 				++getClient(packageNew.currentShard).currentReconnectTries;
 				std::string connectionUrl{ packageNew.areWeResuming ? getClient(packageNew.currentShard).resumeUrl
@@ -1188,55 +1175,51 @@ namespace DiscordCoreAPI {
 						std::to_string(packageNew.currentShard) + "," + std::to_string(discordCoreClient->configManager.getTotalShardCount()) + "]" +
 						" reconnecting in 5 seconds.");
 					getClient(packageNew.currentShard).onClosed();
-					discordCoreClient->theSemaphore.release();
 				}
 				if (!waitForState(packageNew, WebSocketState::Collecting_Hello)) {
 					getClient(packageNew.currentShard).onClosed();
-					discordCoreClient->theSemaphore.release();
 					return;
 				}
 			}
 			getClient(packageNew.currentShard).areWeResuming = false;
-			discordCoreClient->theSemaphore.release();
 		}
 
-		WebSocketClient& BaseSocketAgent::getClient(uint32_t index) noexcept {
-			return shardMap[index];
+		WebSocketClient& BaseSocketAgent::getClient(uint32_t index) {
+			return shardMap.at(index);
 		}
 
-		void BaseSocketAgent::run(std::stop_token token) noexcept {
-			std::unordered_map<uint32_t, WebSocketTCPConnection*> processIOMapNew{};
+		void BaseSocketAgent::run(std::stop_token token) {
+			std::unordered_map<uint32_t, WebSocketTCPConnection&> processIOMapNew{};
 			while (!token.stop_requested() && !doWeQuit->load()) {
 				try {
 					for (auto& [key, value]: shardMap) {
-						if (value.tcpConnection.areWeStillConnected()) {
-							processIOMapNew.emplace(key, &value.tcpConnection);
+						if (value.areWeConnected()) {
+							processIOMapNew.emplace(key, std::ref(value.tcpConnection));
 						}
 					}
 					auto result = TCPConnection<WebSocketTCPConnection>::processIO(processIOMapNew);
 					processIOMapNew.clear();
 					for (auto& [key, value]: result) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>("Connection lost for WebSocket [" +
-							std::to_string(shardMap[key].shard[0]) + "," + std::to_string(discordCoreClient->configManager.getTotalShardCount()) +
-							"]... reconnecting.");
-						shardMap[key].onClosed();
+							std::to_string(shardMap.at(key).shard.at(0)) + "," +
+							std::to_string(discordCoreClient->configManager.getTotalShardCount()) + "]... reconnecting.");
+						shardMap.at(key).onClosed();
 					}
 					bool areWeConnected{};
 					for (auto& [key, dValueNew]: shardMap) {
-						auto dValue = static_cast<WebSocketClient*>(&dValueNew);
-						if (dValue->tcpConnection.areWeStillConnected()) {
-							if (dValue->checkForAndSendHeartBeat()) {
+						if (dValueNew.areWeConnected()) {
+							if (dValueNew.checkForAndSendHeartBeat()) {
 								OnGatewayPingData dataNew{};
-								dataNew.timeUntilNextPing = dValue->heartBeatStopWatch.getTotalWaitTime().count();
+								dataNew.timeUntilNextPing = dValueNew.heartBeatStopWatch.getTotalWaitTime().count();
 								discordCoreClient->eventManager.onGatewayPingEvent(dataNew);
 							}
 							areWeConnected = true;
 						} else {
 							ConnectionPackage connectionPackage{};
-							++dValue->currentReconnectTries;
-							connectionPackage.currentReconnectTries = dValue->currentReconnectTries;
-							connectionPackage.areWeResuming = dValue->areWeResuming;
-							connectionPackage.currentShard = dValue->shard[0];
+							++dValueNew.currentReconnectTries;
+							connectionPackage.currentReconnectTries = dValueNew.currentReconnectTries;
+							connectionPackage.areWeResuming = dValueNew.areWeResuming;
+							connectionPackage.currentShard = dValueNew.shard.at(0);
 							connect(connectionPackage);
 						}
 					}
@@ -1249,7 +1232,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		BaseSocketAgent::~BaseSocketAgent() noexcept {
+		BaseSocketAgent::~BaseSocketAgent() {
 			if (taskThread) {
 				taskThread->request_stop();
 				if (taskThread->joinable()) {

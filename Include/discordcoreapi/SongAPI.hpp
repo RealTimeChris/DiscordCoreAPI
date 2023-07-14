@@ -48,9 +48,10 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
 		friend class VoiceConnection;
+		friend class GuildCacheData;
 		friend class GuildData;
 
-		DiscordCoreInternal::Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
+		DiscordCoreInternal::Event<CoRoutine<void, false>, SongCompletionEventData> onSongCompletionEvent{};
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
 		DiscordCoreInternal::EventDelegateToken eventToken{};
 
@@ -58,51 +59,49 @@ namespace DiscordCoreAPI {
 
 		/// \brief For setting up behavior in response to a completed song
 		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.
-		/// \param guildId The id of the Guild for which you would like to instantiate this event.
-		void onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake guildId) noexcept;
+		void onSongCompletion(std::function<CoRoutine<void, false>(SongCompletionEventData)> handler);
 
 		/// \brief Skips to the next Song in the queue, if applicable.
-		/// \param guildMember The GuildMember structure of the individual who is skipping the Song.
-		/// \param wasItAFail A bool representing whether or not this skip is due to a playing failure.
+		/// \param guildMember The GuildMemberData structure of the individual who is skipping the Song.
+		/// \param wasItAfail A bool representing whether or not this skip is due to a playing failure.
 		/// \returns A bool suggesting the success or failure of the skip command.
-		bool skip(const GuildMember& guildMember, bool wasItAfail = false) noexcept;
+		bool skip(const GuildMemberData& guildMember, bool wasItAfail = false);
 
 		/// \brief Search for a Song to play.
 		/// \param searchQuery The Song to search for.
 		/// \returns A vector of Song objects representing the search results.
-		std::vector<Song> searchForSong(const std::string& searchQuery) noexcept;
+		std::vector<Song> searchForSong(const std::string& searchQuery);
 
 		/// \brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
 		/// \param songNew The song to play.
-		/// \param guildMember The GuildMember that is running this song.
+		/// \param guildMember The GuildMemberData that is running this song.
 		/// \returns A bool suggesting the success or failure of the play command.
-		bool play(Song songNew, const GuildMember& guildMember) noexcept;
+		bool play(Song songNew, const GuildMemberData& guildMember);
 
 		/// \brief Checks if there is currently playing music for the current Guild.
 		/// \returns A bool representing the currently playing status.
-		bool areWeCurrentlyPlaying() const noexcept;
-
-		/// \brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
-		/// \param guildId The id of the guild that the VoiceConnection belongs to.
-		/// \returns A bool suggesting the success or failure of the play command.
-		bool play(Snowflake guildId) noexcept;
+		bool areWeCurrentlyPlaying() const;
 
 		/// \brief Toggles pausing on and off.
 		/// \returns A bool suggesting the success or failure of the pauseToggle command.
-		bool pauseToggle() noexcept;
+		bool pauseToggle();
+
+		/// \brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
+		/// \returns A bool suggesting the success or failure of the play command.
+		bool play();
 
 		/// \brief Stops the currently playing Song.
 		/// \returns A bool suggesting the success or failure of the stop command.
-		bool stop() noexcept;
+		bool stop();
 
-		~SongAPI() noexcept;
+		~SongAPI();
 
 	  protected:
-		UniquePtr<std::jthread> taskThread{};
+		CoRoutine<void, false> taskThread{};
 		std::recursive_mutex accessMutex{};
 		Snowflake guildId{};
 
-		void disconnect() noexcept;
+		void disconnect();
 	};
 	/**@}*/
 };

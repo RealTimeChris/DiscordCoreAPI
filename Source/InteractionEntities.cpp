@@ -30,9 +30,8 @@
 
 #include <discordcoreapi/InteractionEntities.hpp>
 #include <discordcoreapi/Utilities/EventEntities.hpp>
-#include <discordcoreapi/Utilities/ThreadPool.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/Utilities/HttpsClient.hpp>
 
 namespace Jsonifier {
 
@@ -105,7 +104,7 @@ namespace DiscordCoreAPI {
 	}
 
 	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew,
-		std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
+		std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType typeNew,
 		std::vector<ChannelType> channelTypes) {
 		if (data.components.size() == 0) {
 			ActionRowData actionRowData;
@@ -114,7 +113,7 @@ namespace DiscordCoreAPI {
 		if (data.components.size() < 5) {
 			if (data.components[data.components.size() - 1].components.size() < 5) {
 				ComponentData componentData;
-				componentData.type = static_cast<ComponentType>(type);
+				componentData.type = static_cast<ComponentType>(typeNew);
 				componentData.channelTypes = channelTypes;
 				componentData.placeholder = placeholder;
 				componentData.customId = customIdNew;
@@ -176,18 +175,18 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::setResponseType(InteractionCallbackType type) {
-		type = type;
+	InteractionResponseBase& InteractionResponseBase::setResponseType(InteractionCallbackType typeNew) {
+		type = typeNew;
 		return *this;
 	}
 
-	void InteractionResponseBase::generateExcludedKeys() noexcept {
+	void InteractionResponseBase::generateExcludedKeys() {
 		data.excludedKeys.clear();
 		data.generateExcludedKeys();
 		return;
 	}
 
-	void EditInteractionResponseData::generateExcludedKeys() noexcept {
+	void EditInteractionResponseData::generateExcludedKeys() {
 		if (attachments.size() == 0) {
 			excludedKeys.emplace("attachments");
 		}
@@ -382,7 +381,7 @@ namespace DiscordCoreAPI {
 		tts = dataPackage.tts;
 	}
 
-	void CreateFollowUpMessageData::generateExcludedKeys() noexcept {
+	void CreateFollowUpMessageData::generateExcludedKeys() {
 		if (attachments.size() == 0) {
 			excludedKeys.emplace("attachments");
 		}
@@ -452,21 +451,21 @@ namespace DiscordCoreAPI {
 		interactionPackage.interactionId = dataPackage.interactionId;
 	}
 
-	CoRoutine<Message> Interactions::createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
+	CoRoutine<MessageData> Interactions::createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Interaction_Response };
-		co_await NewThreadAwaitable<Message>();
+		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath =
 			"/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		} else {
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		}
 		workload.callStack = "Interactions::createInteractionResponseAsync()";
-		Interactions::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		GetInteractionResponseData dataPackage01{};
 		dataPackage01.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -477,7 +476,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	Message Interactions::createInteractionResponse(CreateInteractionResponseData dataPackage) {
+	MessageData Interactions::createInteractionResponse(CreateInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Interaction_Response };
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath =
@@ -485,12 +484,12 @@ namespace DiscordCoreAPI {
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		} else {
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		}
 		workload.callStack = "Interactions::createInteractionResponseAsync()";
-		Interactions::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		GetInteractionResponseData dataPackage01{};
 		dataPackage01.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -501,37 +500,37 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CoRoutine<Message> Interactions::getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
+	CoRoutine<MessageData> Interactions::getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Interaction_Response };
-		co_await NewThreadAwaitable<Message>();
+		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::getInteractionResponseAsync()";
-		Message returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		MessageData returnData{};
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<Message> Interactions::editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
+	CoRoutine<MessageData> Interactions::editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Interaction_Response };
-		co_await NewThreadAwaitable<Message>();
+		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
 			"/messages/@original";
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		} else {
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		}
 		workload.callStack = "Interactions::editInteractionResponseAsync()";
-		Message returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		MessageData returnData{};
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	Message Interactions::editInteractionResponse(EditInteractionResponseData dataPackage) {
+	MessageData Interactions::editInteractionResponse(EditInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Interaction_Response };
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
@@ -539,14 +538,14 @@ namespace DiscordCoreAPI {
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		} else {
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		}
 		workload.callStack = "Interactions::editInteractionResponseAsync()";
-		Message returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		return std::move(returnData);
+		MessageData returnData{};
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		return returnData;
 	}
 
 	CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
@@ -557,89 +556,89 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
 			"/messages/@original";
 		workload.callStack = "Interactions::deleteInteractionResponseAsync()";
-		Interactions::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
-	CoRoutine<Message> Interactions::createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
+	CoRoutine<MessageData> Interactions::createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Followup_Message };
-		co_await NewThreadAwaitable<Message>();
+		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		} else {
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		}
 		workload.callStack = "Interactions::createFollowUpMessageAsync()";
-		Message returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		MessageData returnData{};
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	Message Interactions::createFollowUpMessage(CreateFollowUpMessageData dataPackage) {
+	MessageData Interactions::createFollowUpMessage(CreateFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Followup_Message };
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		} else {
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		}
 		workload.callStack = "Interactions::createFollowUpMessageAsync()";
-		Message returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		return std::move(returnData);
+		MessageData returnData{};
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		return returnData;
 	}
 
-	CoRoutine<Message> Interactions::getFollowUpMessageAsync(GetFollowUpMessageData dataPackage) {
+	CoRoutine<MessageData> Interactions::getFollowUpMessageAsync(GetFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Followup_Message };
-		co_await NewThreadAwaitable<Message>();
+		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
 		workload.callStack = "Interactions::getFollowUpMessageAsync()";
-		Message returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		MessageData returnData{};
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<Message> Interactions::editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
+	CoRoutine<MessageData> Interactions::editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Followup_Message };
-		co_await NewThreadAwaitable<Message>();
+		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
 			"/messages/" + dataPackage.messagePackage.messageId;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		} else {
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		}
 		workload.callStack = "Interactions::editFollowUpMessageAsync()";
-		Message returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		MessageData returnData{};
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	Message Interactions::editFollowUpMessage(EditFollowUpMessageData dataPackage) {
+	MessageData Interactions::editFollowUpMessage(EditFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Followup_Message };
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
 			"/messages/" + dataPackage.messagePackage.messageId;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		} else {
-			parser.serializeJson<true>(dataPackage, workload.content);
+			jsonifierCore.serializeJson<true>(dataPackage, workload.content);
 		}
 		workload.callStack = "Interactions::editFollowUpMessageAsync()";
-		Message returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		return std::move(returnData);
+		MessageData returnData{};
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		return returnData;
 	}
 
 	CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
@@ -650,7 +649,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
 			"/messages/" + dataPackage.messagePackage.messageId;
 		workload.callStack = "Interactions::deleteFollowUpMessageToBeWrappe()";
-		Interactions::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
@@ -694,7 +693,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void SelectMenuCollector::run() {
-		int32_t currentCollectedSelectMenuCount{};
 		StopWatch stopWatch{ Milliseconds{ maxTimeInMs } };
 		while (!doWeQuit && !stopWatch.hasTimePassed()) {
 			if (!getSelectMenuDataForAll) {
@@ -826,7 +824,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void ButtonCollector::run() {
-		int64_t currentCollectedButtonCount{};
 		StopWatch stopWatch{ Milliseconds{ maxTimeInMs } };
 		while (!doWeQuit && !stopWatch.hasTimePassed()) {
 			if (!getButtonDataForAll) {
@@ -960,7 +957,6 @@ namespace DiscordCoreAPI {
 				responseData.value = buttonInteractionData->data.value;
 				break;
 			}
-			std::this_thread::sleep_for(1ms);
 		}
 
 		ModalCollector::modalInteractionBuffersMap.erase(channelId);

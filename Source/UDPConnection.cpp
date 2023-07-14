@@ -28,15 +28,15 @@
 /// https://discordcoreapi.com
 /// \file UDPConnection.cpp
 
-#include <discordcoreapi/UDPConnection.hpp>
-#include <discordcoreapi/TCPConnection.hpp>
-#include <discordcoreapi/WebSocketEntities.hpp>
+#include <discordcoreapi/Utilities/UDPConnection.hpp>
+#include <discordcoreapi/Utilities/TCPConnection.hpp>
+#include <discordcoreapi/Utilities/WebSocketClient.hpp>
 
 namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
 
-		UDPConnection& UDPConnection::operator=(UDPConnection&& other) noexcept {
+		UDPConnection& UDPConnection::operator=(UDPConnection&& other) {
 			outputBuffer = std::move(other.outputBuffer);
 			inputBuffer = std::move(other.inputBuffer);
 			currentStatus = other.currentStatus;
@@ -49,11 +49,11 @@ namespace DiscordCoreAPI {
 			return *this;
 		};
 
-		UDPConnection::UDPConnection(UDPConnection&& other) noexcept {
+		UDPConnection::UDPConnection(UDPConnection&& other) {
 			*this = std::move(other);
 		};
 
-		UDPConnection::UDPConnection(const std::string& baseUrlNew, uint16_t portNew, StreamType streamTypeNew, std::stop_token token) {
+		UDPConnection::UDPConnection(const std::string& baseUrlNew, uint16_t portNew, StreamType streamTypeNew, std::stop_token* token) {
 			streamType = streamTypeNew;
 			baseUrl = baseUrlNew;
 			port = portNew;
@@ -116,13 +116,13 @@ namespace DiscordCoreAPI {
 				}
 				std::string connectionString{ "connecting" };
 				int32_t result{};
-				while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
+				while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->stop_requested()) {
 					result = sendto(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr,
 						static_cast<int32_t>(address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
 				}
 				result = 0;
-				while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
+				while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->stop_requested()) {
 					result = recvfrom(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr,
 						reinterpret_cast<socklen_t*>(&address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
@@ -144,14 +144,14 @@ namespace DiscordCoreAPI {
 				std::string connectionString{};
 				int32_t result{};
 				connectionString.resize(10);
-				while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
+				while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->stop_requested()) {
 					result = recvfrom(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr,
 						reinterpret_cast<socklen_t*>(&address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
 				}
 				connectionString = "connected1";
 				result = 0;
-				while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
+				while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->stop_requested()) {
 					result = sendto(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr,
 						static_cast<int32_t>(address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
@@ -159,11 +159,12 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		ConnectionStatus UDPConnection::processIO() noexcept {
+		ConnectionStatus UDPConnection::processIO() {
 			if (!areWeStillConnected()) {
 				return currentStatus;
 			};
-			pollfd readWriteSet{ .fd = static_cast<SOCKET>(socket) };
+			pollfd readWriteSet{};
+			readWriteSet.fd = static_cast<SOCKET>(socket);
 			if (outputBuffer.getUsedSpace() > 0) {
 				readWriteSet.events = POLLIN | POLLOUT;
 			} else {
@@ -233,12 +234,20 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		std::basic_string_view<uint8_t> UDPConnection::getInputBuffer() noexcept {
+		std::basic_string_view<uint8_t> UDPConnection::getInputBuffer() {
 			return inputBuffer.readData();
 		}
 
-		bool UDPConnection::areWeStillConnected() noexcept {
+		bool UDPConnection::areWeStillConnected() {
 			if (socket.operator SOCKET() != INVALID_SOCKET) {
+				pollfd fdEvent = {};
+				fdEvent.fd = socket;
+				fdEvent.events = POLLOUT;
+				int32_t result = poll(&fdEvent, 1, 1);
+				if (result == SOCKET_ERROR || fdEvent.revents & POLLHUP || fdEvent.revents & POLLNVAL || fdEvent.revents & POLLERR) {
+					socket = INVALID_SOCKET;
+					return false;
+				}
 				return true;
 			} else {
 				return false;
@@ -279,7 +288,7 @@ namespace DiscordCoreAPI {
 			return true;
 		}
 
-		void UDPConnection::disconnect() noexcept {
+		void UDPConnection::disconnect() {
 			if (streamType != StreamType::None) {
 				outputBuffer.clear();
 				writeData(std::basic_string_view<uint8_t>{ reinterpret_cast<const uint8_t*>("goodbye") });
@@ -294,9 +303,8 @@ namespace DiscordCoreAPI {
 			inputBuffer.clear();
 		}
 
-		UDPConnection::~UDPConnection() noexcept {
+		UDPConnection::~UDPConnection() {
 			disconnect();
 		}
-
 	}
 }

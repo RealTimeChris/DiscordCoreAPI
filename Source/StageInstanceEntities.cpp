@@ -49,51 +49,49 @@ namespace Jsonifier {
 
 namespace DiscordCoreAPI {
 
-
-
 	void StageInstances::initialize(DiscordCoreInternal::HttpsClient* client) {
 		StageInstances::httpsClient = client;
 	}
 
-	CoRoutine<StageInstance> StageInstances::createStageInstanceAsync(CreateStageInstanceData dataPackage) {
+	CoRoutine<StageInstanceData> StageInstances::createStageInstanceAsync(CreateStageInstanceData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Stage_Instance };
-		co_await NewThreadAwaitable<StageInstance>();
+		co_await NewThreadAwaitable<StageInstanceData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/stage-instances";
 		workload.callStack = "StageInstances::createStageInstanceAsync()";
-		parser.serializeJson(dataPackage, workload.content);
+		jsonifierCore.serializeJson(dataPackage, workload.content);
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		StageInstance returnData{};
-		StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		StageInstanceData returnData{};
+		StageInstances::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<StageInstance> StageInstances::getStageInstanceAsync(GetStageInstanceData dataPackage) {
+	CoRoutine<StageInstanceData> StageInstances::getStageInstanceAsync(GetStageInstanceData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Stage_Instance };
-		co_await NewThreadAwaitable<StageInstance>();
+		co_await NewThreadAwaitable<StageInstanceData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
 		workload.callStack = "StageInstances::getStageInstanceAsync()";
-		StageInstance returnData{};
-		StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		StageInstanceData returnData{};
+		StageInstances::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<StageInstance> StageInstances::modifyStageInstanceAsync(ModifyStageInstanceData dataPackage) {
+	CoRoutine<StageInstanceData> StageInstances::modifyStageInstanceAsync(ModifyStageInstanceData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Stage_Instance };
-		co_await NewThreadAwaitable<StageInstance>();
+		co_await NewThreadAwaitable<StageInstanceData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
-		parser.serializeJson(dataPackage, workload.content);
+		jsonifierCore.serializeJson(dataPackage, workload.content);
 		workload.callStack = "StageInstances::modifyStageInstanceAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		StageInstance returnData{};
-		StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		StageInstanceData returnData{};
+		StageInstances::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<void> StageInstances::deleteStageInstanceAsync(DeleteStageInstanceData dataPackage) {
@@ -105,7 +103,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		StageInstances::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
+		StageInstances::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 	DiscordCoreInternal::HttpsClient* StageInstances::httpsClient{};

@@ -1,4 +1,4 @@
-/*
+/*	
 	MIT License
 
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
@@ -30,12 +30,10 @@
 
 #pragma once
 
-#pragma once
-#pragma warning(push)
-#pragma warning(disable : 4275)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4251)
-#pragma warning(disable : 4996)
+#ifndef __GNUC__
+	#pragma warning(push)
+	#pragma warning(disable : 4251)
+#endif
 
 #ifndef NO_UNIQUE_ADDRESS
 	#ifdef __has_cpp_attribute
@@ -73,6 +71,12 @@
 	#ifndef WINRT_LEAN_AND_MEAN
 		#define WINRT_LEAN_AND_MEAN
 	#endif
+	#include <chrono>
+inline std::tm getCurrentTimeVal(time_t& result) {
+	std::tm resultTwo{};
+	localtime_s(&resultTwo, &result);
+	return resultTwo;
+}
 	#include <WinSock2.h>
 #elif __linux__
 	#ifndef DiscordCoreAPI_Dll
@@ -95,6 +99,7 @@
 #include <shared_mutex>
 #include <immintrin.h>
 #include <functional>
+#include <semaphore>
 #include <concepts>
 #include <iostream>
 #include <sstream>
@@ -110,6 +115,13 @@
 #include <map>
 #include <set>
 
+#ifdef __linux__
+inline std::tm getCurrentTimeVal(time_t& result) {
+	std::tm resultTwo{ *localtime(&result) };
+	return resultTwo;
+}
+#endif
+
 #ifdef max
 	#undef max
 #endif
@@ -122,34 +134,14 @@ using namespace std::literals;
 
 namespace DiscordCoreAPI {
 
-	inline thread_local Jsonifier::JsonifierCore parser{};
+	inline thread_local Jsonifier::JsonifierCore jsonifierCore{};
 
+	using SysClock = std::chrono::system_clock;
 	using HRClock = std::chrono::high_resolution_clock;
 	using Milliseconds = std::chrono::milliseconds;
 	using Microseconds = std::chrono::microseconds;
 	using Nanoseconds = std::chrono::nanoseconds;
 	using Seconds = std::chrono::seconds;
-
-	template<typename Derived> struct Relational {
-		inline friend bool operator>(const Derived& data1, const Derived& data2) {
-			return data2 < data1;
-		}
-		inline friend bool operator==(const Derived& data1, const Derived& data2) {
-			return !(data1 < data2) && !(data2 < data1);
-		}
-		inline friend bool operator!=(const Derived& data1, const Derived& data2) {
-			return !(data1 == data2);
-		}
-		inline friend bool operator<=(const Derived& data1, const Derived& data2) {
-			return (data1 < data2) || (data1 == data2);
-		}
-		inline friend bool operator>=(const Derived& data1, const Derived& data2) {
-			return (data1 > data2) || (data1 == data2);
-		}
-
-	  protected:
-		inline Relational() noexcept = default;
-	};
 
 	template<typename ValueType> class AllocWrapper {
 	  public:
@@ -158,33 +150,33 @@ namespace DiscordCoreAPI {
 		using allocator = std::pmr::polymorphic_allocator<value_type>;
 		using allocator_traits = std::allocator_traits<allocator>;
 
-		inline constexpr AllocWrapper() noexcept = default;
+		inline constexpr AllocWrapper() = default;
 
-		inline constexpr AllocWrapper& operator=(AllocWrapper&& other) noexcept {
+		inline constexpr AllocWrapper& operator=(AllocWrapper&& other) {
 			return *this;
 		};
 
-		inline constexpr AllocWrapper(AllocWrapper&& other) noexcept {};
+		inline constexpr AllocWrapper(AllocWrapper&& other){};
 
-		inline constexpr AllocWrapper& operator=(const AllocWrapper& other) noexcept {
+		inline constexpr AllocWrapper& operator=(const AllocWrapper& other) {
 			return *this;
 		};
 
-		inline constexpr AllocWrapper(const AllocWrapper& other) noexcept {};
+		inline constexpr AllocWrapper(const AllocWrapper& other){};
 
-		inline constexpr pointer allocate(size_t count) noexcept {
+		inline constexpr pointer allocate(uint64_t count) {
 			return allocTraits.allocate(alloc, count);
 		}
 
-		inline constexpr void deallocate(pointer ptr, size_t count) noexcept {
+		inline constexpr void deallocate(pointer ptr, uint64_t count) {
 			allocTraits.deallocate(alloc, ptr, count);
 		}
 
-		template<typename... Args> inline constexpr void construct(pointer ptr, Args... args) noexcept {
+		template<typename... Args> inline constexpr void construct(pointer ptr, Args... args) {
 			allocTraits.construct(alloc, ptr, args...);
 		}
 
-		inline constexpr void destroy(pointer ptr) noexcept {
+		inline constexpr void destroy(pointer ptr) {
 			allocTraits.destroy(alloc, ptr);
 		}
 
@@ -215,13 +207,13 @@ namespace DiscordCoreAPI {
 		return std::string("\033[0m");
 	}
 
-	class MessagePrinter {
+	class DiscordCoreAPI_Dll MessagePrinter {
 	  public:
-		inline MessagePrinter() noexcept = default;
+		inline MessagePrinter() = default;
 
-		template<typename ValueType> inline static void initialize(const ValueType& other, std::ostream& outputStreamNew = std::cout,
-			std::ostream& errorStreamNew = std::cerr) noexcept {
-			doWePrintGeneralErrors.store(other.doWePrintHttpsSuccessMessages());
+		template<typename ValueType>
+		inline static void initialize(const ValueType& other, std::ostream& outputStreamNew = std::cout, std::ostream& errorStreamNew = std::cerr) {
+			doWePrintGeneralErrors.store(other.doWePrintGeneralErrorMessages());
 			doWePrintGeneralSuccesses.store(other.doWePrintGeneralSuccessMessages());
 			doWePrintHttpsErrors.store(other.doWePrintHttpsErrorMessages());
 			doWePrintHttpsSuccesses.store(other.doWePrintHttpsSuccessMessages());
@@ -239,7 +231,8 @@ namespace DiscordCoreAPI {
 						std::unique_lock lock{ accessMutex };
 						*errorStream << shiftToBrightRed() << "General Error, caught at: " << where.file_name() << ", " << where.line() << ":"
 									 << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
-									 << reset() << std::endl;
+									 << reset() << std::endl
+									 << std::endl;
 					}
 					break;
 				}
@@ -248,7 +241,8 @@ namespace DiscordCoreAPI {
 						std::unique_lock lock{ accessMutex };
 						*errorStream << shiftToBrightRed() << "Https Error, caught at: " << where.file_name() << ", " << where.line() << ":"
 									 << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
-									 << reset() << std::endl;
+									 << reset() << std::endl
+									 << std::endl;
 					}
 					break;
 				}
@@ -257,7 +251,8 @@ namespace DiscordCoreAPI {
 						std::unique_lock lock{ accessMutex };
 						*errorStream << shiftToBrightRed() << "WebSocket Error, caught at: " << where.file_name() << ", " << where.line() << ":"
 									 << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
-									 << reset() << std::endl;
+									 << reset() << std::endl
+									 << std::endl;
 					}
 					break;
 				}
@@ -272,7 +267,8 @@ namespace DiscordCoreAPI {
 						std::unique_lock lock{ accessMutex };
 						*outputStream << shiftToBrightBlue() << "General Success, caught at: " << where.file_name() << ", " << where.line() << ":"
 									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
-									  << reset() << std::endl;
+									  << reset() << std::endl
+									  << std::endl;
 					}
 					break;
 				}
@@ -281,7 +277,8 @@ namespace DiscordCoreAPI {
 						std::unique_lock lock{ accessMutex };
 						*outputStream << shiftToBrightGreen() << "Https Success, caught at: " << where.file_name() << ", " << where.line() << ":"
 									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
-									  << reset() << std::endl;
+									  << reset() << std::endl
+									  << std::endl;
 					}
 					break;
 				}
@@ -290,7 +287,8 @@ namespace DiscordCoreAPI {
 						std::unique_lock lock{ accessMutex };
 						*outputStream << shiftToBrightGreen() << "WebSocket Success, caught at: " << where.file_name() << ", " << where.line() << ":"
 									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
-									  << reset() << std::endl;
+									  << reset() << std::endl
+									  << std::endl;
 					}
 					break;
 				}
@@ -324,40 +322,40 @@ namespace DiscordCoreAPI {
 
 	template<typename TimeType> class StopWatch {
 	  public:
-		inline StopWatch() noexcept = default;
+		inline StopWatch() = default;
 
-		inline StopWatch& operator=(StopWatch<TimeType>&& data) noexcept {
+		inline StopWatch& operator=(StopWatch<TimeType>&& data) {
 			maxNumberOfTimeUnits.store(data.maxNumberOfTimeUnits.load());
 			startTime.store(data.startTime.load());
 			return *this;
 		}
 
-		inline StopWatch(StopWatch<TimeType>&& other) noexcept {
+		inline StopWatch(StopWatch<TimeType>&& other) {
 			*this = std::move(other);
 		}
 
-		inline StopWatch<TimeType>& operator=(const StopWatch<TimeType>& data) noexcept = delete;
-		inline StopWatch(const StopWatch<TimeType>& other) noexcept = delete;
+		inline StopWatch<TimeType>& operator=(const StopWatch<TimeType>& data) = delete;
+		inline StopWatch(const StopWatch<TimeType>& other) = delete;
 
-		inline StopWatch(TimeType maxNumberOfMsNew) noexcept {
+		inline StopWatch(TimeType maxNumberOfMsNew) {
 			maxNumberOfTimeUnits.store(maxNumberOfMsNew);
 			resetTimer();
 		}
 
-		inline StopWatch(int64_t maxNumberOfMsNew) noexcept {
+		inline StopWatch(int64_t maxNumberOfMsNew) {
 			maxNumberOfTimeUnits.store(TimeType{ maxNumberOfMsNew });
 			resetTimer();
 		}
 
-		inline TimeType totalTimePassed() noexcept {
+		inline TimeType totalTimePassed() {
 			return std::chrono::duration_cast<TimeType>(HRClock::now().time_since_epoch()) - startTime.load();
 		}
 
-		inline TimeType getTotalWaitTime() noexcept {
+		inline TimeType getTotalWaitTime() {
 			return maxNumberOfTimeUnits.load();
 		}
 
-		inline bool hasTimePassed() noexcept {
+		inline bool hasTimePassed() {
 			if (std::chrono::duration_cast<TimeType>(HRClock::now().time_since_epoch()) - startTime.load() >= maxNumberOfTimeUnits.load()) {
 				return true;
 			} else {
@@ -365,7 +363,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		inline void resetTimer() noexcept {
+		inline void resetTimer() {
 			startTime.store(std::chrono::duration_cast<TimeType>(HRClock::now().time_since_epoch()));
 		}
 
@@ -374,71 +372,14 @@ namespace DiscordCoreAPI {
 		std::atomic<TimeType> startTime{ TimeType{ 0 } };
 	};
 
-	/// \brief Class for representing a timeStamp, as well as working with time-related values.
-	class DiscordCoreAPI_Dll TimeStamp {
+	template<class ValueType> class TimeStampBase {
 	  public:
-		inline TimeStamp() noexcept = default;
-
-		inline TimeStamp& operator=(const TimeStamp& other) {
-			timeStampInTimeUnits = other.timeStampInTimeUnits;
-			return *this;
-		}
-
-		inline TimeStamp(const TimeStamp& other) {
-			*this = other;
-		}
-
-		inline TimeStamp(TimeFormat formatNew) {
-			timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count();
-		}
-
-		inline TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second,
-			TimeFormat formatNew) {
-			getTimeSinceEpoch(stoull(year), stoull(month), stoull(day), stoull(hour), stoull(minute), stoull(second));
-		}
-
-		inline operator std::string() {
-			return getISO8601TimeStamp(TimeFormat::LongDateTime);
-		}
-
-		inline operator uint64_t() {
-			if (timeStampInTimeUnits == 0) {
-				timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count();
-			}
-			return timeStampInTimeUnits;
-		}
-
-		inline TimeStamp& operator=(std::string&& originalTimeStampNew) {
-			convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
-			return *this;
-		}
-
-		inline TimeStamp(std::string&& originalTimeStampNew) {
-			*this = std::move(originalTimeStampNew);
-			if (timeStampInTimeUnits == 0) {
-				timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count();
-			}
-		}
-
-		inline TimeStamp& operator=(std::string& originalTimeStampNew) {
-			convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
-			return *this;
-		}
-
-		inline TimeStamp(std::string& originalTimeStampNew) {
-			*this = originalTimeStampNew;
-		}
-
-		inline TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat formatNew) {
-			getTimeSinceEpoch(year, month, day, hour, minute, second);
-		};
-
-		inline TimeStamp(uint64_t timeInTimeUnits, TimeFormat formatNew) {
-			timeStampInTimeUnits = timeInTimeUnits;
+		inline bool operator==(const std::string& other) const {
+			return *static_cast<const ValueType*>(this) == other;
 		}
 
 		inline std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
-			int32_t yearsToAdd, TimeFormat formatNew) {
+			int32_t yearsToAdd, TimeFormat timeFormat) {
 			std::time_t result = std::time(nullptr);
 			int32_t secondsPerMinute{ 60 };
 			int32_t minutesPerHour{ 60 };
@@ -452,64 +393,66 @@ namespace DiscordCoreAPI {
 			int32_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) +
 				((hoursToAdd + 8) * secondsPerHour) + (minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
-			auto resultTwo = std::localtime(&result);
+			std::tm resultTwo{ getCurrentTimeVal(result) };
 			std::string returnString{};
-			if (resultTwo->tm_isdst) {
-				if (resultTwo->tm_hour + 4 >= 24) {
-					resultTwo->tm_hour = resultTwo->tm_hour - 24;
-					++resultTwo->tm_mday;
+			if (resultTwo.tm_isdst) {
+				if (resultTwo.tm_hour + 4 >= 24) {
+					resultTwo.tm_hour = resultTwo.tm_hour - 24;
+					++resultTwo.tm_mday;
 				}
-				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
-					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
-					std::to_string(resultTwo->tm_sec), formatNew };
-				timeStamp.getISO8601TimeStamp(formatNew);
-				returnString = static_cast<std::string>(timeStamp);
+				TimeStampBase timeStamp{};
+				timeStamp.getTimeSinceEpoch(static_cast<int64_t>(resultTwo.tm_year) + 1900, static_cast<int64_t>(resultTwo.tm_mon) + 1,
+					resultTwo.tm_mday, static_cast<int64_t>(resultTwo.tm_hour) + 4, resultTwo.tm_min, resultTwo.tm_sec);
+				timeStamp.getISO8601TimeStamp(timeFormat);
+				returnString = static_cast<std::string>(*static_cast<ValueType*>(&timeStamp));
 			} else {
-				if (resultTwo->tm_hour + 5 >= 24) {
-					resultTwo->tm_hour = resultTwo->tm_hour - 24;
-					++resultTwo->tm_mday;
+				if (resultTwo.tm_hour + 5 >= 24) {
+					resultTwo.tm_hour = resultTwo.tm_hour - 24;
+					++resultTwo.tm_mday;
 				}
-				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
-					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),
-					std::to_string(resultTwo->tm_sec), formatNew };
-				timeStamp.getISO8601TimeStamp(formatNew);
-				returnString = static_cast<std::string>(timeStamp);
+				TimeStampBase timeStamp{};
+				timeStamp.getTimeSinceEpoch(resultTwo.tm_year + 1900, resultTwo.tm_mon + 1, resultTwo.tm_mday, resultTwo.tm_hour + 5,
+					resultTwo.tm_min, resultTwo.tm_sec);
+				timeStamp.getISO8601TimeStamp(timeFormat);
+				returnString = static_cast<std::string>(*static_cast<ValueType*>(&timeStamp));
 			}
 			return returnString;
 		}
 
 		inline std::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
 			std::time_t result = std::time(nullptr);
-			auto resultTwo = std::localtime(&result);
+			std::tm resultTwo{ getCurrentTimeVal(result) };
 			std::string returnString{};
-			if (resultTwo->tm_isdst) {
-				if (resultTwo->tm_hour + 4 >= 24) {
-					resultTwo->tm_hour = resultTwo->tm_hour - 24;
-					++resultTwo->tm_mday;
+			if (resultTwo.tm_isdst) {
+				if (resultTwo.tm_hour + 4 >= 24) {
+					resultTwo.tm_hour = resultTwo.tm_hour - 24;
+					++resultTwo.tm_mday;
 				}
-				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
-					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
-					std::to_string(resultTwo->tm_sec), timeFormat };
-				returnString = timeStamp.getISO8601TimeStamp(timeFormat);
+				TimeStampBase timeStamp{};
+				timeStamp.getTimeSinceEpoch(static_cast<int64_t>(resultTwo.tm_year) + 1900, static_cast<int64_t>(resultTwo.tm_mon) + 1,
+					resultTwo.tm_mday, static_cast<int64_t>(resultTwo.tm_hour) + 4, resultTwo.tm_min, resultTwo.tm_sec);
+				timeStamp.getISO8601TimeStamp(timeFormat);
+				returnString = static_cast<std::string>(*static_cast<ValueType*>(&timeStamp));
 			} else {
-				if (resultTwo->tm_hour + 5 >= 24) {
-					resultTwo->tm_hour = resultTwo->tm_hour - 24;
-					++resultTwo->tm_mday;
+				if (resultTwo.tm_hour + 5 >= 24) {
+					resultTwo.tm_hour = resultTwo.tm_hour - 24;
+					++resultTwo.tm_mday;
 				}
-				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
-					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),
-					std::to_string(resultTwo->tm_sec), timeFormat };
-				returnString = timeStamp.getISO8601TimeStamp(timeFormat);
+				TimeStampBase timeStamp{};
+				timeStamp.getTimeSinceEpoch(resultTwo.tm_year + 1900, resultTwo.tm_mon + 1, resultTwo.tm_mday, resultTwo.tm_hour + 5,
+					resultTwo.tm_min, resultTwo.tm_sec);
+				timeStamp.getISO8601TimeStamp(timeFormat);
+				returnString = static_cast<std::string>(*static_cast<ValueType*>(&timeStamp));
 			}
 			return returnString;
 		}
 
 		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
-			if (timeStampInTimeUnits <= 0) {
-				timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count();
+			if (static_cast<int64_t>(*static_cast<ValueType*>(this)) <= 0) {
+				*static_cast<ValueType*>(this) = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
-			int64_t startTimeRaw = timeStampInTimeUnits;
-			auto currentTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count();
+			int64_t startTimeRaw = *static_cast<ValueType*>(this);
+			auto currentTime = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			int64_t secondsPerMinute = 60;
 			int64_t secondsPerHour = secondsPerMinute * 60;
 			int64_t secondsPerDay = secondsPerHour * 24;
@@ -549,9 +492,6 @@ namespace DiscordCoreAPI {
 			}
 			return newString;
 		}
-
-	  protected:
-		uint64_t timeStampInTimeUnits{};
 
 		inline void getTimeSinceEpoch(int64_t year, int64_t month, int64_t day, int64_t hour, int64_t minute, int64_t second) {
 			const uint32_t secondsInJan{ 31 * 24 * 60 * 60 };
@@ -626,57 +566,58 @@ namespace DiscordCoreAPI {
 			if (month > 11) {
 				value += Seconds{ secondsInNov };
 			}
-			timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(value).count();
+			*static_cast<ValueType*>(this) = std::chrono::duration_cast<Milliseconds>(value).count();
 		}
 
-		inline void convertTimeStampToTimeUnits(TimeFormat formatNew, std::string originalTimeStamp) {
+		inline void convertTimeStampToTimeUnits(std::string originalTimeStamp) {
 			if (originalTimeStamp != "" && originalTimeStamp != "0") {
-				TimeStamp timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
+				TimeStampBase timeValue{};
+				timeValue.getTimeSinceEpoch(stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
 					stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),
-					stoi(originalTimeStamp.substr(17, 18)), formatNew };
-				timeStampInTimeUnits = static_cast<uint64_t>(timeValue);
+					stoi(originalTimeStamp.substr(17, 18)));
+				*static_cast<ValueType*>(this) = static_cast<uint64_t>(timeValue);
 			} else {
-				timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count();
+				*static_cast<ValueType*>(this) = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
 		}
 
 		inline std::string getISO8601TimeStamp(TimeFormat timeFormat) {
-			if (timeStampInTimeUnits <= 0) {
-				timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count();
+			if (static_cast<int64_t>(*static_cast<ValueType*>(this)) <= 0) {
+				*static_cast<ValueType*>(this) = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
-			uint64_t timeValue = timeStampInTimeUnits / 1000;
+			uint64_t timeValue = static_cast<int64_t>(*static_cast<ValueType*>(this)) / 1000;
 			time_t rawTime(timeValue);
-			tm timeInfo = *localtime(&rawTime);
+			std::tm resultTwo{ getCurrentTimeVal(rawTime) };
 			std::string timeStamp{};
 			timeStamp.resize(48);
 			switch (timeFormat) {
 				case TimeFormat::LongDate: {
-					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G", &timeInfo);
+					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
 				case TimeFormat::LongDateTime: {
-					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%T", &timeInfo);
+					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%T", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
 				case TimeFormat::LongTime: {
-					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
+					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
 				case TimeFormat::ShortDate: {
-					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d/%m/%g", &timeInfo);
+					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d/%m/%g", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
 				case TimeFormat::ShortDateTime: {
-					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G %R", &timeInfo);
+					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G %R", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
 				case TimeFormat::ShortTime: {
-					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%R", &timeInfo);
+					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%R", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
@@ -686,13 +627,126 @@ namespace DiscordCoreAPI {
 			}
 			return timeStamp;
 		}
+
+	  protected:
+		inline ~TimeStampBase() = default;
+		inline TimeStampBase() = default;
 	};
 
-	class DiscordCoreAPI_Dll Snowflake : public Relational<Snowflake> {
+	class TimeStampParse : public TimeStampBase<TimeStampParse>, public std::string {
 	  public:
-		inline Snowflake() noexcept = default;
+		template<typename ValueType> friend class TimeStampBase;
 
-		inline Snowflake& operator=(const std::string& other) noexcept {
+		inline TimeStampParse() = default;
+
+		inline TimeStampParse& operator=(const std::string& valueNew) {
+			this->resize(valueNew.size());
+			std::memcpy(data(), valueNew.data(), size());
+			return *this;
+		}
+
+		inline TimeStampParse(const std::string& valueNew) {
+			*this = valueNew;
+		}
+
+		inline TimeStampParse& operator=(std::string&& valueNew) {
+			this->resize(valueNew.size());
+			std::memcpy(data(), valueNew.data(), size());
+			return *this;
+		}
+
+		inline TimeStampParse(std::string&& valueNew) {
+			*this = std::move(valueNew);
+		}
+
+		inline TimeStampParse& operator=(int64_t valueNew) {
+			*this = std::to_string(valueNew);
+			return *this;
+		}
+
+		inline TimeStampParse(int64_t valueNew) {
+			*this = valueNew;
+		}
+
+		inline TimeStampParse substr(size_t offset, size_t count) {
+			return this->substr(offset, count);
+		}
+
+		inline size_t size() {
+			return std::string::size();
+		}
+
+		inline char* data() {
+			return std::string::data();
+		}
+
+		inline operator int64_t() const {
+			return std::stoll(*this);
+		}
+	};
+
+	class TimeStamp : public TimeStampBase<TimeStamp> {
+	  public:
+		template<typename ValueType> friend class TimeStampBase;
+
+		inline TimeStamp() = default;
+
+		inline TimeStamp& operator=(const TimeStampParse& other) {
+			value = other.operator int64_t();
+			return *this;
+		}
+
+		inline TimeStamp(const TimeStampParse& other) {
+			*this = other;
+		}
+
+		inline TimeStamp& operator=(const std::string& valueNew) {
+			value = stoull(valueNew);
+			return *this;
+		}
+
+		inline TimeStamp(const std::string& valueNew) {
+			*this = valueNew;
+		}
+
+		inline TimeStamp& operator=(std::string&& valueNew) {
+			value = stoull(valueNew);
+			return *this;
+		}
+
+		inline TimeStamp(std::string&& valueNew) {
+			*this = std::move(valueNew);
+		}
+
+		inline TimeStamp& operator=(int64_t valueNew) {
+			value = valueNew;
+			return *this;
+		}
+
+		inline TimeStamp(int64_t valueNew) {
+			*this = valueNew;
+		}
+
+		inline operator int64_t() const {
+			return value;
+		}
+
+		inline operator std::string() const {
+			return std::to_string(value);
+		}
+
+	  protected:
+		int64_t value{};
+	};
+
+	template<typename ValueType>
+	concept StringT = std::convertible_to<ValueType, std::string>;
+
+	class DiscordCoreAPI_Dll Snowflake {
+	  public:
+		inline Snowflake() = default;
+
+		inline Snowflake& operator=(const std::string& other) {
 			for (auto& value: other) {
 				if (!std::isdigit(static_cast<uint8_t>(value))) {
 					return *this;
@@ -705,43 +759,58 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline Snowflake(const std::string& other) noexcept {
+		inline Snowflake(const std::string& other) {
 			*this = other;
 		}
 
-		inline Snowflake& operator=(uint64_t other) noexcept {
+		inline Snowflake& operator=(uint64_t other) {
 			id = other;
 			return *this;
 		}
 
-		inline Snowflake(uint64_t other) noexcept {
+		inline Snowflake(uint64_t other) {
 			*this = other;
 		}
 
-		inline operator std::string() const noexcept {
+		inline operator std::string() const {
 			return std::to_string(id);
 		}
 
-		inline explicit operator uint64_t() const noexcept {
+		inline explicit operator uint64_t() const {
 			return id;
 		}
 
-		/// \brief Converts the
-		/// snowflake-id into a time and date stamp. \returns std::string A
-		/// std::string containing the timeStamp.
-		std::string getCreatedAtTimeStamp(TimeFormat timeFormat) {
-			TimeStamp timeStamp{ (id >> 22) + 1420070400000, timeFormat };
-			return timeStamp.operator std::string();
+		inline bool operator==(const Snowflake& rhs) const {
+			return id == rhs.id;
 		}
 
-		inline friend bool operator<(const Snowflake& lhs, const Snowflake& rhs) noexcept {
-			return lhs.id < rhs.id;
+		template<StringT ValueType> inline std::string operator+(const std::string& rhs) const {
+			std::string newString{ this->operator std::string() };
+			newString += rhs;
+			return newString;
 		}
 
-		friend inline std::string operator+(const std::string&, const Snowflake&) noexcept;
+		inline friend std::string operator+(const Snowflake& lhs, const std::string& other) {
+			std::string lhsNew{ lhs };
+			lhsNew += other;
+			return lhsNew;
+		}
+
+		template<StringT ValueType01, typename ValueType02> friend inline std::string operator+(const ValueType01& lhs, const ValueType02& rhs) {
+			std::string newString{ lhs };
+			newString += rhs;
+			return newString;
+		}
 
 	  protected:
 		uint64_t id{};
+
+		/// \brief Converts the snowflake-id into a time and date stamp.
+		/// \returns std::string A std::string containing the timeStamp.
+		inline std::string getCreatedAtTimeStamp() {
+			TimeStamp timeStamp{ static_cast<int64_t>((id >> 22) + 1420070400000) };
+			return timeStamp.getISO8601TimeStamp(TimeFormat::LongDateTime);
+		}
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, Snowflake sf) {
@@ -749,10 +818,19 @@ namespace DiscordCoreAPI {
 		return os;
 	}
 
-	inline std::string operator+(const std::string& lhs, const Snowflake& rhs) noexcept {
-		std::string string{};
-		string += lhs;
-		string += std::to_string(rhs.id);
-		return string;
-	}
+	class SemaphoreLock {
+	  public:
+		inline SemaphoreLock(std::counting_semaphore<1>& semaphoreNew) : semaphore{ semaphoreNew } {
+			semaphore.acquire();
+		};
+		inline ~SemaphoreLock() {
+			semaphore.release();
+		}
+
+	  protected:
+		std::counting_semaphore<1>& semaphore;
+	};
+
+	/// \brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
+	enum class StreamType { None = 0, Client = 1, Server = 2 };
 }

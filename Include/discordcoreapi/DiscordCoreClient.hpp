@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include <discordcoreapi/Utilities/WebSocketClient.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
 #include <discordcoreapi/AutoModerationEntities.hpp>
@@ -41,56 +42,60 @@
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>
-#include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/Utilities/HttpsClient.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/InteractionEntities.hpp>
 #include <discordcoreapi/MessageEntities.hpp>
 #include <discordcoreapi/ReactionEntities.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
-#include <discordcoreapi/TCPConnection.hpp>
+#include <discordcoreapi/Utilities/TCPConnection.hpp>
 #include <discordcoreapi/SongAPI.hpp>
 #include <discordcoreapi/SoundCloudAPI.hpp>
 #include <discordcoreapi/StageInstanceEntities.hpp>
 #include <discordcoreapi/StickerEntities.hpp>
 #include <discordcoreapi/ThreadEntities.hpp>
-#include <discordcoreapi/Utilities/ThreadPool.hpp>
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
 #include <discordcoreapi/WebHookEntities.hpp>
-#include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/YouTubeAPI.hpp>
 #include <discordcoreapi/JsonSpecializations.hpp>
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreAPI_Dll SIGTERMError : public DCAException {
+	class SIGTERMError : public DCAException {
 	  public:
-		SIGTERMError(const std::string& message, std::source_location location = std::source_location::current());
+		inline SIGTERMError(const std::string& message, std::source_location location = std::source_location::current())
+			: DCAException(message, location){};
 	};
 
-	class DiscordCoreAPI_Dll SIGSEGVError : public DCAException {
+	class SIGSEGVError : public DCAException {
 	  public:
-		SIGSEGVError(const std::string& message, std::source_location location = std::source_location::current());
+		inline SIGSEGVError(const std::string& message, std::source_location location = std::source_location::current())
+			: DCAException(message, location){};
 	};
 
-	class DiscordCoreAPI_Dll SIGINTError : public DCAException {
+	class SIGINTError : public DCAException {
 	  public:
-		SIGINTError(const std::string& message, std::source_location location = std::source_location::current());
+		inline SIGINTError(const std::string& message, std::source_location location = std::source_location::current())
+			: DCAException(message, location){};
 	};
 
-	class DiscordCoreAPI_Dll SIGILLError : public DCAException {
+	class SIGILLError : public DCAException {
 	  public:
-		SIGILLError(const std::string& message, std::source_location location = std::source_location::current());
+		inline SIGILLError(const std::string& message, std::source_location location = std::source_location::current())
+			: DCAException(message, location){};
 	};
 
-	class DiscordCoreAPI_Dll SIGABRTError : public DCAException {
+	class SIGABRTError : public DCAException {
 	  public:
-		SIGABRTError(const std::string& message, std::source_location location = std::source_location::current());
+		inline SIGABRTError(const std::string& message, std::source_location location = std::source_location::current())
+			: DCAException(message, location){};
 	};
 
-	class DiscordCoreAPI_Dll SIGFPEError : public DCAException {
+	class SIGFPEError : public DCAException {
 	  public:
-		SIGFPEError(const std::string& message, std::source_location location = std::source_location::current());
+		inline SIGFPEError(const std::string& message, std::source_location location = std::source_location::current())
+			: DCAException(message, location){};
 	};
 
 	using SoundCloudAPIMap = std::unordered_map<uint64_t, UniquePtr<DiscordCoreInternal::SoundCloudAPI>>;
@@ -100,6 +105,38 @@ namespace DiscordCoreAPI {
 	using VoiceConnectionsMap = std::unordered_map<uint64_t, UniquePtr<VoiceConnection>>;
 
 	using SongAPIMap = std::unordered_map<uint64_t, UniquePtr<SongAPI>>;
+
+	template<typename... ArgTypes> using TimeElapsedHandler = std::function<void(ArgTypes...)>;
+
+	template<typename... ArgTypes> inline static CoRoutine<void, false> threadFunction(TimeElapsedHandler<ArgTypes...> timeElapsedHandler,
+		bool repeated, int64_t timeInterval, ArgTypes... args) {
+		auto threadHandle = co_await NewThreadAwaitable<void, false>();
+		StopWatch stopWatch{ Milliseconds{ timeInterval } };
+		do {
+			stopWatch.resetTimer();
+			std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<double>(timeInterval) * 10.0f / 100.0f)) });
+			while (!stopWatch.hasTimePassed() && !threadHandle.promise().areWeStopped()) {
+				std::this_thread::sleep_for(1ms);
+			}
+			if (threadHandle.promise().areWeStopped()) {
+				co_return;
+			}
+			timeElapsedHandler(args...);
+			if (threadHandle.promise().areWeStopped()) {
+				co_return;
+			}
+			std::this_thread::sleep_for(1ms);
+		} while (repeated);
+		co_return;
+	};
+
+	template<typename... ArgTypes> inline static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler,
+		int64_t timeDelay, bool repeated, bool blockForCompletion, ArgTypes... args) {
+		auto newThread = threadFunction<ArgTypes...>(timeElapsedHandler, repeated, timeDelay, args...);
+		if (blockForCompletion) {
+			newThread.get();
+		}
+	}
 
 	/**
 	 * \addtogroup main_endpoints
@@ -152,14 +189,14 @@ namespace DiscordCoreAPI {
 		/// \returns Milliseconds A count, in milliseconds, since the bot has come online.
 		Milliseconds getTotalUpTime();
 
-		/// \brief For collecting a copy of the current bot's User.
+		/// \brief For collecting a copy of the current bot's UserData.
 		/// \returns BotUser An instance of BotUser.
 		static BotUser getBotUser();
 
 		/// \brief Executes the library, and waits for completion.
 		void runBot();
 
-		~DiscordCoreClient() noexcept;
+		~DiscordCoreClient();
 
 	  protected:
 		static BotUser currentUser;

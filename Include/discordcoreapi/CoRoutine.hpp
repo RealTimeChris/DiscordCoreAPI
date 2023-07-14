@@ -31,8 +31,9 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/Utilities/ThreadPool.hpp>
-#include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/Utilities/CoRoutineThreadPool.hpp>
+#include <discordcoreapi/Utilities/UnboundedMessageBlock.hpp>
+#include <discordcoreapi/Utilities/HttpsClient.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -50,15 +51,16 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief An error type for CoRoutines.
-	struct DiscordCoreAPI_Dll CoRoutineError : public DCAException {
-		explicit CoRoutineError(const std::string& message);
+	struct CoRoutineError : public DCAException {
+		inline CoRoutineError(const std::string& message, std::source_location location = std::source_location::current())
+			: DCAException(message, location){};
 	};
 
 	/// \brief A CoRoutine - representing a potentially asynchronous operation/function.
 	/// \tparam ReturnType The type of parameter that is returned by the CoRoutine.
 	template<typename ReturnType, bool timeOut> class CoRoutine {
 	  public:
-		class promise_type {
+		class DiscordCoreAPI_Dll promise_type {
 		  public:
 			template<typename ReturnType02, bool timeOut02> friend class CoRoutine;
 
@@ -70,11 +72,15 @@ namespace DiscordCoreAPI {
 				return areWeStoppedBool.load();
 			}
 
-			inline void return_value(ReturnType&& at) {
-				result = std::move(at);
+			inline void return_value(ReturnType& returnValue) {
+				result = returnValue;
 			}
 
-			inline CoRoutine<ReturnType, timeOut> get_return_object() {
+			inline void return_value(ReturnType&& returnValue) {
+				result = std::move(returnValue);
+			}
+
+			inline auto get_return_object() {
 				return CoRoutine<ReturnType, timeOut>{ std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type>::from_promise(*this) };
 			}
 
@@ -98,7 +104,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 
-			inline ~promise_type() noexcept {
+			inline ~promise_type() {
 				exceptionBuffer = nullptr;
 				resultBuffer = nullptr;
 			}
@@ -110,7 +116,7 @@ namespace DiscordCoreAPI {
 			ReturnType result{};
 		};
 
-		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) noexcept {
+		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) {
 			if (this != &other) {
 				coroutineHandle = other.coroutineHandle;
 				other.coroutineHandle = nullptr;
@@ -160,13 +166,12 @@ namespace DiscordCoreAPI {
 		/// \brief Gets the resulting value of the CoRoutine.
 		inline ReturnType get() {
 			if (coroutineHandle) {
-				DiscordCoreAPI::Milliseconds startTime{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
-					DiscordCoreAPI::HRClock::now().time_since_epoch()) };
+				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
 					while (!resultBuffer.tryReceive(result)) {
-						DiscordCoreAPI::Milliseconds now{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
-							DiscordCoreAPI::HRClock::now().time_since_epoch()) };
-						if (timeOut && (now - startTime).count() >= 15000) {
+						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+						uint64_t timeOutNew{ timeOut };
+						if (timeOutNew && (now - startTime).count() >= 15000) {
 							return std::move(result);
 						}
 						std::this_thread::sleep_for(1ms);
@@ -176,26 +181,24 @@ namespace DiscordCoreAPI {
 				std::exception_ptr exception{};
 				while (exceptionBuffer.tryReceive(exception)) {
 					std::rethrow_exception(exception);
-					std::this_thread::sleep_for(1ms);
 				}
 				return std::move(result);
 			} else {
-				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is "
-									 "not in a valid state.");
+				throw CoRoutineError{ "CoRoutine::get(), You called get() on a CoRoutine that is "
+									  "not in a valid state." };
 			}
 		}
 
 		/// \brief Cancels the currently executing CoRoutine and returns the current result.
 		inline ReturnType cancel() {
 			if (coroutineHandle) {
-				DiscordCoreAPI::Milliseconds startTime{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
-					DiscordCoreAPI::HRClock::now().time_since_epoch()) };
+				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
 					coroutineHandle.promise().requestStop();
 					while (!resultBuffer.tryReceive(result)) {
-						DiscordCoreAPI::Milliseconds now{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
-							DiscordCoreAPI::HRClock::now().time_since_epoch()) };
-						if (timeOut && (now - startTime).count() >= 15000) {
+						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+						uint64_t timeOutNew{ timeOut };
+						if (timeOutNew && (now - startTime).count() >= 15000) {
 							return std::move(result);
 						}
 						std::this_thread::sleep_for(1ms);
@@ -209,8 +212,8 @@ namespace DiscordCoreAPI {
 				}
 				return std::move(result);
 			} else {
-				throw CoRoutineError("CoRoutine::cancel(), You called cancel() on a CoRoutine that is "
-									 "not in a valid state.");
+				throw CoRoutineError{ "CoRoutine::cancel(), You called cancel() on a CoRoutine that is "
+									  "not in a valid state." };
 			}
 		}
 
@@ -226,11 +229,11 @@ namespace DiscordCoreAPI {
 	/// \tparam void The type of parameter that is returned by the CoRoutine.
 	template<DiscordCoreInternal::VoidT ReturnType, bool timeOut> class CoRoutine<ReturnType, timeOut> {
 	  public:
-		class promise_type {
+		class DiscordCoreAPI_Dll promise_type {
 		  public:
 			template<typename ReturnType02, bool timeOut02> friend class CoRoutine;
 
-			inline ReturnType requestStop() {
+			inline void requestStop() {
 				areWeStoppedBool.store(true);
 			}
 
@@ -240,7 +243,7 @@ namespace DiscordCoreAPI {
 
 			inline void return_void(){};
 
-			inline CoRoutine<ReturnType, timeOut> get_return_object() {
+			inline auto get_return_object() {
 				return CoRoutine<ReturnType, timeOut>{ std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type>::from_promise(*this) };
 			}
 
@@ -258,13 +261,13 @@ namespace DiscordCoreAPI {
 				return {};
 			}
 
-			inline ReturnType unhandled_exception() {
+			inline void unhandled_exception() {
 				if (exceptionBuffer) {
 					exceptionBuffer->send(std::current_exception());
 				}
 			}
 
-			inline ~promise_type() noexcept {
+			inline ~promise_type() {
 				exceptionBuffer = nullptr;
 				resultBuffer = nullptr;
 			}
@@ -275,7 +278,9 @@ namespace DiscordCoreAPI {
 			std::atomic_bool areWeStoppedBool{};
 		};
 
-		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) noexcept {
+		inline CoRoutine() = default;
+
+		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) {
 			if (this != &other) {
 				coroutineHandle = other.coroutineHandle;
 				other.coroutineHandle = nullptr;
@@ -325,14 +330,13 @@ namespace DiscordCoreAPI {
 		/// \brief Gets the resulting value of the CoRoutine.
 		inline void get() {
 			if (coroutineHandle) {
-				DiscordCoreAPI::Milliseconds startTime{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
-					DiscordCoreAPI::HRClock::now().time_since_epoch()) };
+				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
 					bool result{};
 					while (!resultBuffer.tryReceive(result)) {
-						DiscordCoreAPI::Milliseconds now{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
-							DiscordCoreAPI::HRClock::now().time_since_epoch()) };
-						if (timeOut && (now - startTime).count() >= 15000) {
+						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+						uint64_t timeOutNew{ timeOut };
+						if (timeOutNew && (now - startTime).count() >= 15000) {
 							return;
 						}
 						std::this_thread::sleep_for(1ms);
@@ -342,27 +346,25 @@ namespace DiscordCoreAPI {
 				std::exception_ptr exception{};
 				while (exceptionBuffer.tryReceive(exception)) {
 					std::rethrow_exception(exception);
-					std::this_thread::sleep_for(1ms);
 				}
 				return;
 			} else {
-				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is "
-									 "not in a valid state.");
+				throw CoRoutineError{ "CoRoutine::get(), You called get() on a CoRoutine that is "
+									  "not in a valid state." };
 			}
 		}
 
 		/// \brief Cancels the currently executing CoRoutine and returns the current result.
 		inline void cancel() {
 			if (coroutineHandle) {
-				DiscordCoreAPI::Milliseconds startTime{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
-					DiscordCoreAPI::HRClock::now().time_since_epoch()) };
+				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
 					coroutineHandle.promise().requestStop();
 					bool result{};
 					while (!resultBuffer.tryReceive(result)) {
-						DiscordCoreAPI::Milliseconds now{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
-							DiscordCoreAPI::HRClock::now().time_since_epoch()) };
-						if (timeOut && (now - startTime).count() >= 15000) {
+						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+						uint64_t timeOutNew{ timeOut };
+						if (timeOutNew && (now - startTime).count() >= 15000) {
 							return;
 						}
 						std::this_thread::sleep_for(1ms);
@@ -372,12 +374,11 @@ namespace DiscordCoreAPI {
 				std::exception_ptr exception{};
 				while (exceptionBuffer.tryReceive(exception)) {
 					std::rethrow_exception(exception);
-					std::this_thread::sleep_for(1ms);
 				}
 				return;
 			} else {
-				throw CoRoutineError("CoRoutine::cancel(), You called cancel() on a CoRoutine that is "
-									 "not in a valid state.");
+				throw CoRoutineError{ "CoRoutine::cancel(), You called cancel() on a CoRoutine that is "
+									  "not in a valid state." };
 			}
 		}
 
@@ -390,23 +391,23 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll NewThreadAwaiterBase {
 	  public:
-		static DiscordCoreInternal::CoRoutineThreadPool threadPool;
+		inline static DiscordCoreInternal::CoRoutineThreadPool threadPool{};
 	};
 
 	/// \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
 	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
 	template<typename ReturnType, bool timeOut> class NewThreadAwaiter : public NewThreadAwaiterBase {
 	  public:
-		bool await_ready() const noexcept {
+		inline bool await_ready() const {
 			return false;
 		}
 
-		void await_suspend(std::coroutine_handle<typename CoRoutine<ReturnType, timeOut>::promise_type> coroHandleNew) noexcept {
+		inline void await_suspend(std::coroutine_handle<typename CoRoutine<ReturnType, timeOut>::promise_type> coroHandleNew) {
 			NewThreadAwaiterBase::threadPool.submitTask(coroHandleNew);
 			coroHandle = coroHandleNew;
 		}
 
-		auto await_resume() noexcept {
+		inline auto await_resume() {
 			return coroHandle;
 		}
 

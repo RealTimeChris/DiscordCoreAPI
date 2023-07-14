@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// GuildMemberEntities.cpp - Source file for the GuildMember related classes and structs.
+/// GuildMemberEntities.cpp - Source file for the GuildMemberData related classes and structs.
 /// May 13, 2021
 /// https://discordcoreapi.com
 /// \file GuildMemberEntities.cpp
@@ -55,113 +55,134 @@ namespace Jsonifier {
 
 namespace DiscordCoreAPI {
 
-	GuildMemberData& GuildMemberData::operator=(GuildMemberCacheData&& other) noexcept {
-		permissions = std::move(other.permissions);
-		joinedAt = std::move(other.joinedAt);
-		avatar = std::move(other.avatar);
-		roles = std::move(other.roles);
-		nick = std::move(other.nick);
-		guildId = other.guildId;
-		user.id = other.user.id;
-		flags = other.flags;
-		return *this;
-	};
-
-	GuildMemberData::GuildMemberData(GuildMemberCacheData&& other) noexcept {
-		*this = std::move(other);
-	}
-
-	GuildMemberData& GuildMemberData::operator=(const GuildMemberCacheData& other) noexcept {
-		permissions = other.permissions;
-		joinedAt = other.joinedAt;
-		guildId = other.guildId;
-		user.id = other.user.id;
-		avatar = other.avatar;
-		flags = other.flags;
-		roles = other.roles;
-		nick = other.nick;
-		return *this;
-	};
-
-	GuildMemberData::GuildMemberData(const GuildMemberCacheData& other) noexcept {
-		*this = other;
-	}
-
-	GuildMember& GuildMember::operator=(GuildMemberData&& other) noexcept {
-		if (this != &other) {
-			permissions = std::move(other.permissions);
-			joinedAt = std::move(other.joinedAt);
-			avatar = std::move(other.avatar);
-			roles = std::move(other.roles);
-			nick = std::move(other.nick);
-			user.id = other.user.id;
-			guildId = other.guildId;
+	GuildMemberCacheData& GuildMemberCacheData::operator=(const GuildMemberData& other) {
+		setFlagValue(GuildMemberFlags::Pending, other.pending);
+		setFlagValue(GuildMemberFlags::Deaf, other.deaf);
+		setFlagValue(GuildMemberFlags::Mute, other.mute);
+		if (static_cast<int64_t>(other.flags) != 0) {
 			flags = other.flags;
 		}
-		return *this;
-	};
-
-	GuildMember::GuildMember(GuildMemberData&& other) noexcept {
-		*this = std::move(other);
-	}
-
-	GuildMember& GuildMember::operator=(const GuildMemberData& other) noexcept {
-		if (this != &other) {
+		if (other.permissions != "") {
 			permissions = other.permissions;
+		}
+		if (other.joinedAt != "") {
 			joinedAt = other.joinedAt;
+		}
+		if (other.user.id != 0) {
 			user.id = other.user.id;
+		}
+		if (other.guildId != 0) {
 			guildId = other.guildId;
+		}
+		if (other.avatar != "") {
 			avatar = other.avatar;
+		}
+		if (other.roles.size() > 0) {
 			roles = other.roles;
-			flags = other.flags;
+		}
+		if (other.nick != "") {
 			nick = other.nick;
 		}
 		return *this;
 	};
 
-	GuildMember::GuildMember(const GuildMemberData& other) noexcept {
+	GuildMemberCacheData::GuildMemberCacheData(const GuildMemberData& other) {
 		*this = other;
 	}
 
+	GuildMemberCacheData& GuildMemberCacheData::operator=(GuildMemberData&& other) {
+		setFlagValue(GuildMemberFlags::Pending, other.pending);
+		setFlagValue(GuildMemberFlags::Deaf, other.deaf);
+		setFlagValue(GuildMemberFlags::Mute, other.mute);
+		if (static_cast<int64_t>(other.flags) != 0) {
+			flags = other.flags;
+		}
+		if (other.permissions != "") {
+			permissions = std::move(other.permissions);
+		}
+		if (other.joinedAt != "") {
+			joinedAt = std::move(other.joinedAt);
+		}
+		if (other.avatar != "") {
+			avatar = std::move(other.avatar);
+		}
+		if (other.roles.size() > 0) {
+			roles = std::move(other.roles);
+		}
+		if (other.nick != "") {
+			nick = std::move(other.nick);
+		}
+		if (other.user.id != 0) {
+			user.id = other.user.id;
+		}
+		if (other.guildId != 0) {
+			guildId = other.guildId;
+		}
+		return *this;
+	};
 
+	GuildMemberCacheData::operator DiscordCoreAPI::GuildMemberData() {
+		GuildMemberData returnData{};
+		returnData.pending = getFlagValue(GuildMemberFlags::Pending);
+		returnData.permissions = permissions.operator std::string();
+		returnData.deaf = getFlagValue(GuildMemberFlags::Deaf);
+		returnData.mute = getFlagValue(GuildMemberFlags::Mute);
+		returnData.joinedAt = joinedAt.operator std::string();
+		returnData.nick = nick.operator std::string();
+		returnData.guildId = guildId;
+		returnData.user.id = user.id;
+		returnData.avatar = avatar;
+		returnData.roles = roles;
+		returnData.flags = flags;
+		return returnData;
+	}
+
+	GuildMemberCacheData::GuildMemberCacheData(GuildMemberData&& other) {
+		*this = std::move(other);
+	}
+
+	GuildMemberData::GuildMemberData(Snowflake newId) {
+		user.id = newId;
+	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
-		GuildMembers::doWeCacheGuildMembersBool = configManagerNew->doWeCacheUsers();
+		GuildMembers::doWeCacheGuildMembersBool = configManagerNew->doWeCacheGuildMembers();
 		GuildMembers::httpsClient = client;
 	}
 
-	CoRoutine<GuildMember> GuildMembers::getGuildMemberAsync(GetGuildMemberData dataPackage) {
+	CoRoutine<GuildMemberData> GuildMembers::getGuildMemberAsync(GetGuildMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Member };
-		co_await NewThreadAwaitable<GuildMember>();
+		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 		workload.callStack = "GuildMembers::getGuildMemberAsync()";
-		GuildMember data{};
-		data.guildId = dataPackage.guildId;
+		GuildMemberData data{ dataPackage.guildId };
 		data.user.id = dataPackage.guildMemberId;
-		GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(std::move(workload), data);
-		if (cache.contains(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId })) {
-			data = cache.find(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId });
-		} else {
-			data = GuildMembers::insertGuildMember(std::move(data));
+		GuildMemberKey key{ data };
+		if (cache.contains(key)) {
+			data = cache[key];
 		}
-		co_return std::move(data);
+		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
+		if (doWeCacheGuildMembersBool) {
+			insertGuildMember(data);
+		}
+		co_return data;
 	}
 
-	GuildMemberData GuildMembers::getCachedGuildMember(GetGuildMemberData dataPackage) {
-		GuildMemberData key{};
-		key.user.id = dataPackage.guildMemberId;
+	GuildMemberCacheData GuildMembers::getCachedGuildMember(GetGuildMemberData dataPackage) {
+		GuildMemberKey key{};
+		key.userId = dataPackage.guildMemberId;
 		key.guildId = dataPackage.guildId;
-		if (cache.contains(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId })) {
-			return cache.find(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId });
+		if (cache.contains(key)) {
+			return cache[key];
 		} else {
 		}
 		return GuildMembers::getGuildMemberAsync(dataPackage).get();
 	}
 
-	CoRoutine<std::vector<GuildMember>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
+	CoRoutine<std::vector<GuildMemberData>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Members };
-		co_await NewThreadAwaitable<std::vector<GuildMember>>();
+		co_await NewThreadAwaitable<std::vector<GuildMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members";
 		if (dataPackage.after != 0) {
@@ -173,14 +194,14 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::listGuildMembersAsync()";
-		GuildMemberVector returnData{};
-		GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMemberVector>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		std::vector<GuildMemberData> returnData{};
+		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<std::vector<GuildMember>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
+	CoRoutine<std::vector<GuildMemberData>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Search_Guild_Members };
-		co_await NewThreadAwaitable<std::vector<GuildMember>>();
+		co_await NewThreadAwaitable<std::vector<GuildMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/search";
 		if (dataPackage.query != "") {
@@ -192,58 +213,59 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::searchGuildMembersAsync()";
-		GuildMemberVector returnData{};
-		GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMemberVector>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		std::vector<GuildMemberData> returnData{};
+		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<GuildMember> GuildMembers::addGuildMemberAsync(AddGuildMemberData dataPackage) {
+	CoRoutine<GuildMemberData> GuildMembers::addGuildMemberAsync(AddGuildMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Member };
-		co_await NewThreadAwaitable<GuildMember>();
+		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId;
-		parser.serializeJson(dataPackage, workload.content);
+		jsonifierCore.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildMembers::addGuildMemberAsync()";
-		GuildMember returnData{};
-		GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		GuildMemberData returnData{};
+		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<GuildMember> GuildMembers::modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage) {
+	CoRoutine<GuildMemberData> GuildMembers::modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Current_Guild_Member };
-		co_await NewThreadAwaitable<GuildMember>();
+		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/@me";
-		parser.serializeJson(dataPackage, workload.content);
+		jsonifierCore.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildMembers::modifyCurrentGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		GuildMember returnData{};
-		GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		GuildMemberData returnData{};
+		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<GuildMember> GuildMembers::modifyGuildMemberAsync(ModifyGuildMemberData dataPackage) {
+	CoRoutine<GuildMemberData> GuildMembers::modifyGuildMemberAsync(ModifyGuildMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Member };
-		co_await NewThreadAwaitable<GuildMember>();
+		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
-		parser.serializeJson(dataPackage, workload.content);
+		jsonifierCore.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildMembers::modifyGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		GuildMember data{};
-		data.guildId = dataPackage.guildId;
+		GuildMemberData data{ dataPackage.guildId };
 		data.user.id = dataPackage.guildMemberId;
-		GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(std::move(workload), data);
-		if (cache.contains(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId })) {
-			data = cache.find(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId });
-		} else {
-			data = GuildMembers::insertGuildMember(std::move(data));
+		GuildMemberKey key{ data };
+		if (cache.contains(key)) {
+			data = cache[key];
 		}
-		co_return std::move(data);
+		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
+		if (doWeCacheGuildMembersBool) {
+			insertGuildMember(data);
+		}
+		co_return data;
 	}
 
 	CoRoutine<void> GuildMembers::removeGuildMemberAsync(RemoveGuildMemberData dataPackage) {
@@ -255,20 +277,19 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		auto guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId });
-		GuildMembers::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
+		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
-	CoRoutine<GuildMember> GuildMembers::timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage) {
-		co_await NewThreadAwaitable<GuildMember>();
+	CoRoutine<GuildMemberData> GuildMembers::timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage) {
+		co_await NewThreadAwaitable<GuildMemberData>();
 		GuildMemberData guildMember =
 			GuildMembers::getCachedGuildMember({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId });
 		ModifyGuildMemberData dataPackage01{};
-		dataPackage01.deaf = getBool<GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf);
+		dataPackage01.deaf = guildMember.getFlagValue(GuildMemberFlags::Deaf);
 		dataPackage01.guildId = guildMember.guildId;
 		dataPackage01.guildMemberId = guildMember.user.id;
-		dataPackage01.mute = getBool<GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Mute);
+		dataPackage01.mute = guildMember.getFlagValue(GuildMemberFlags::Mute);
 		for (auto& value: guildMember.roles) {
 			dataPackage01.roleIds.emplace_back(value);
 		}
@@ -320,10 +341,9 @@ namespace DiscordCoreAPI {
 		if (voiceState.id == 0) {
 			throw DCAException{ "Sorry, but there was no id set for that voice state.", std::source_location::current() };
 		}
-		auto id = voiceState.id;
-		auto guildId = voiceState.guildId;
+		GuildMemberKey key{ voiceState };
 		vsCache.emplace(std::move(voiceState));
-		return vsCache.find(GuildMemberKey{ .guildId = guildId, .userId = id });
+		return vsCache[key];
 	}
 
 	void GuildMembers::removeVoiceState(const GuildMemberKey& key) {
@@ -332,25 +352,22 @@ namespace DiscordCoreAPI {
 
 	VoiceStateDataLight GuildMembers::getVoiceStateData(const GuildMemberKey& key) {
 		if (vsCache.contains(key)) {
-			return vsCache.find(key);
+			return vsCache[key];
 		} else {
 			return {};
 		}
 	}
 
-	ObjectCache<GuildMemberKey, GuildMemberData>& GuildMembers::getCache() {
-		return cache;
-	}
-
-	GuildMemberData& GuildMembers::insertGuildMember(GuildMemberData&& guildMember) {
-		if (guildMember.guildId == 0 || guildMember.user.id == 0) {
-			throw DCAException{ "Sorry, but there was no id set for that guildmember.", std::source_location::current() };
+	void GuildMembers::insertGuildMember(const GuildMemberData& guildMember) {
+		if (doWeCacheGuildMembersBool) {
+			if (guildMember.guildId == 0 || guildMember.user.id == 0) {
+				throw DCAException{ "Sorry, but there was no id set for that guildmember.", std::source_location::current() };
+			}
+			cache.emplace(guildMember);
+			if (GuildMembers::cache.count() % 1000 == 0) {
+				std::cout << "GUILDMEMBERS COUNT: " << GuildMembers::cache.count() << std::endl;
+			}
 		}
-		GuildMemberKey key{ .guildId = guildMember.guildId, .userId = guildMember.user.id };
-		if (GuildMembers::doWeCacheGuildMembersBool) {
-			cache.emplace(std::move(guildMember));
-		}
-		return cache.find(key);
 	}
 
 	void GuildMembers::removeGuildMember(const GuildMemberKey& key) {
@@ -362,7 +379,7 @@ namespace DiscordCoreAPI {
 	}
 
 	ObjectCache<GuildMemberKey, VoiceStateDataLight> GuildMembers::vsCache{};
-	ObjectCache<GuildMemberKey, GuildMemberData> GuildMembers::cache{};
+	ObjectCache<GuildMemberKey, GuildMemberCacheData> GuildMembers::cache{};
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{};
 	bool GuildMembers::doWeCacheGuildMembersBool{};
 };

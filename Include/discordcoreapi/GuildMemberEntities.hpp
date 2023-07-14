@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// GuildMemberEntities.hpp - Header for the GuildMember related classes and
+/// GuildMemberEntities.hpp - Header for the GuildMemberData related classes and
 /// structs. May 13, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file GuildMemberEntities.hpp
@@ -33,7 +33,7 @@
 #include <discordcoreapi/JsonSpecializations.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
-#include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/Utilities/HttpsClient.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -42,9 +42,9 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// \brief For getting a GuildMember, from the library's cache or Discord server.
+	/// \brief For getting a GuildMemberData, from the library's cache or Discord server.
 	struct DiscordCoreAPI_Dll GetGuildMemberData {
-		Snowflake guildMemberId{};///< The user id of the desired GuildMember.
+		Snowflake guildMemberId{};///< The user id of the desired GuildMemberData.
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire a member.
 	};
 
@@ -58,53 +58,53 @@ namespace DiscordCoreAPI {
 	/// \brief For searching for one or more GuildMembers within a chosen Guild.
 	struct DiscordCoreAPI_Dll SearchGuildMembersData {
 		Snowflake guildId{};///< Guild within which to search for the GuildMembers.
-		std::string query{};///< Query std::string to match userName(s) and nickname(s) against.
+		std::string query{};///< Query std::string to match username(s) and nickname(s) against.
 		int32_t limit{};///< Max number of members to return (1 - 1000).
 	};
 
-	/// \brief For adding a new GuildMember to a chosen Guild.
+	/// \brief For adding a new GuildMemberData to a chosen Guild.
 	struct DiscordCoreAPI_Dll AddGuildMemberData {
-		std::vector<Snowflake> roles{};///< Array of Role ids the member is assigned.
+		std::vector<Snowflake> roles{};///< Array of RoleData ids the member is assigned.
 		std::string accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
-		Snowflake guildId{};///< The Guild to add the new GuildMember to.
-		Snowflake userId{};///< The User id of the user you wish to add.
+		Snowflake guildId{};///< The Guild to add the new GuildMemberData to.
+		Snowflake userId{};///< The UserData id of the user you wish to add.
 		std::string nick{};///< Value to set users nickname to.
 		bool mute{};///< Whether the user is muted in voice channels.
 		bool deaf{};///< Whether the user is deafened in voice channels.
 	};
 
-	/// \brief For modifying the current GuildMember's values.
+	/// \brief For modifying the current GuildMemberData's values.
 	struct DiscordCoreAPI_Dll ModifyCurrentGuildMemberData {
 		std::string reason{};///< A reason for modifying the current user's values.
 		Snowflake guildId{};///< The Guild within which to modify the current user's values.
 		std::string nick{};///< A new nickname for the current user.
 	};
 
-	/// \brief For modifying a GuildMember's values.
+	/// \brief For modifying a GuildMemberData's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
-		TimeStamp communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		std::vector<Snowflake> roleIds{};///< A collection of Role id's to be applied to them.
-		Snowflake newVoiceChannelId{};///< The new voice Channel to move them into.
-		Snowflake currentChannelId{};///< The current voice Channel, if applicaple.
+		std::string communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
+		std::vector<Snowflake> roleIds{};///< A collection of RoleData id's to be applied to them.
+		Snowflake newVoiceChannelId{};///< The new voice ChannelData to move them into.
+		Snowflake currentChannelId{};///< The current voice ChannelData, if applicaple.
 		Snowflake guildMemberId{};///< The user id of the desired Guild memeber.
 		Snowflake guildId{};///< The id of the Guild for which you would like to modify a member.
-		std::string reason{};///< Reason for modifying this GuildMember.
+		std::string reason{};///< Reason for modifying this GuildMemberData.
 		std::string nick{};///< Their new display/nick name.
 		bool mute{};///< Whether or not to mute them in voice.
 		bool deaf{};///< Whether or not to deafen them, in voice.
 	};
 
-	/// \brief For removing a GuildMember from a chosen Guild.
+	/// \brief For removing a GuildMemberData from a chosen Guild.
 	struct DiscordCoreAPI_Dll RemoveGuildMemberData {
-		Snowflake guildMemberId{};///< Snowflake of the chosen GuildMember to kick.
-		std::string reason{};///< Reason for kicking the GuildMember.
-		Snowflake guildId{};///< Guild from which to kick the chosen GuildMember.
+		Snowflake guildMemberId{};///< Snowflake of the chosen GuildMemberData to kick.
+		std::string reason{};///< Reason for kicking the GuildMemberData.
+		Snowflake guildId{};///< Guild from which to kick the chosen GuildMemberData.
 	};
 
-	/// \brief For timing out a GuildMember.
+	/// \brief For timing out a GuildMemberData.
 	struct DiscordCoreAPI_Dll TimeoutGuildMemberData {
-		TimeoutDurations numOfMinutesToTimeoutFor{};///< The number of minutes to time-out the GuildMember for.
-		Snowflake guildMemberId{};///< The id of the GuildMember to be timed-out.
+		TimeoutDurations numOfMinutesToTimeoutFor{};///< The number of minutes to time-out the GuildMemberData for.
+		Snowflake guildMemberId{};///< The id of the GuildMemberData to be timed-out.
 		std::string reason{};///< Reason for timing them out.
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire a member.
 	};
@@ -112,15 +112,11 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 
-	inline bool operator==(const GuildMemberKey& lhs, const GuildMemberKey& rhs) noexcept {
-		return lhs.guildId == rhs.guildId && lhs.userId == rhs.userId;
-	}
-
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the GuildMember related Discord endpoints.
+	/// \brief An interface class for the GuildMemberData related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
 		friend class DiscordCoreInternal::WebSocketClient;
@@ -131,68 +127,66 @@ namespace DiscordCoreAPI {
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
-		/// \brief Collects a GuildMember from the Discord servers.
+		/// \brief Collects a GuildMemberData from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
-		/// \returns A CoRoutine containing a GuildMember.
-		static CoRoutine<GuildMember> getGuildMemberAsync(GetGuildMemberData dataPackage);
+		/// \returns A CoRoutine containing a GuildMemberData.
+		static CoRoutine<GuildMemberData> getGuildMemberAsync(GetGuildMemberData dataPackage);
 
-		/// \brief Collects a GuildMember from the library's cache.
+		/// \brief Collects a GuildMemberData from the library's cache.
 		/// \param dataPackage A GetGuildMemberData structure.
-		/// \returns A CoRoutine containing a GuildMember.
-		static GuildMemberData getCachedGuildMember(GetGuildMemberData dataPackage);
+		/// \returns A CoRoutine containing a GuildMemberData.
+		static GuildMemberCacheData getCachedGuildMember(GetGuildMemberData dataPackage);
 
 		/// \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.
 		/// \returns A CoRoutine containing a vector<GuildMembers>.
-		static CoRoutine<std::vector<GuildMember>> listGuildMembersAsync(ListGuildMembersData dataPackage);
+		static CoRoutine<std::vector<GuildMemberData>> listGuildMembersAsync(ListGuildMembersData dataPackage);
 
 		/// \brief Searches for a list of GuildMembers of a chosen Guild.
 		/// \param dataPackage A SearchGuildMembersData structure.
 		/// \returns A CoRoutine containing a vector<GuildMembers>.
-		static CoRoutine<std::vector<GuildMember>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
+		static CoRoutine<std::vector<GuildMemberData>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
 
-		/// \brief Adds a GuildMember to a chosen Guild.
+		/// \brief Adds a GuildMemberData to a chosen Guild.
 		/// \param dataPackage An AddGuildMemberData structure.
 		/// \returns A CoRoutine containing a vector<GuildMembers>.
-		static CoRoutine<GuildMember> addGuildMemberAsync(AddGuildMemberData dataPackage);
+		static CoRoutine<GuildMemberData> addGuildMemberAsync(AddGuildMemberData dataPackage);
 
-		/// \brief Modifies a GuildMember's properties.
+		/// \brief Modifies a GuildMemberData's properties.
 		/// \param dataPackage A ModifyGuildMemberData structure.
-		/// \returns A CoRoutine containing a GuildMember.
-		static CoRoutine<GuildMember> modifyGuildMemberAsync(ModifyGuildMemberData dataPackage);
+		/// \returns A CoRoutine containing a GuildMemberData.
+		static CoRoutine<GuildMemberData> modifyGuildMemberAsync(ModifyGuildMemberData dataPackage);
 
-		/// \brief Modifies the current GuildMember's properties.
+		/// \brief Modifies the current GuildMemberData's properties.
 		/// \param dataPackage A ModifyCurrentGuildMemberData structure.
-		/// \returns A CoRoutine containing a GuildMember.
-		static CoRoutine<GuildMember> modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage);
+		/// \returns A CoRoutine containing a GuildMemberData.
+		static CoRoutine<GuildMemberData> modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage);
 
-		/// \brief Removes a chosen GuildMember from a chosen Guild.
+		/// \brief Removes a chosen GuildMemberData from a chosen Guild.
 		/// \param dataPackage A RemoveGuildMemberData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
 
-		/// \brief Times-out a chosen GuildMember from a chosen Guild.
+		/// \brief Times-out a chosen GuildMemberData from a chosen Guild.
 		/// \param dataPackage A TimeoutGuildMemberData structure.
-		/// \returns A CoRoutine containing GuildMember.
-		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
-
-		static VoiceStateDataLight getVoiceStateData(const GuildMemberKey& voiceState);
+		/// \returns A CoRoutine containing GuildMemberData.
+		static CoRoutine<GuildMemberData> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
 		static VoiceStateDataLight& insertVoiceState(VoiceStateDataLight&& voiceState);
 
-		static ObjectCache<GuildMemberKey, GuildMemberData>& getCache();
-
-		static void removeVoiceState(const GuildMemberKey& voiceState);
-
-		static GuildMemberData& insertGuildMember(GuildMemberData&& guildMember);
+		static VoiceStateDataLight getVoiceStateData(const GuildMemberKey& voiceState);
 
 		static void removeGuildMember(const GuildMemberKey& guildMemberId);
+
+		static void insertGuildMember(const GuildMemberData& guildMember);
+
+		static void removeVoiceState(const GuildMemberKey& voiceState);
 
 		static bool doWeCacheGuildMembers();
 
 	  protected:
 		static ObjectCache<GuildMemberKey, VoiceStateDataLight> vsCache;
-		static ObjectCache<GuildMemberKey, GuildMemberData> cache;
+		static ObjectCache<GuildMemberKey, GuildMemberCacheData> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static bool doWeCacheGuildMembersBool;
 	};

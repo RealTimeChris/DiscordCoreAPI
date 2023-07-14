@@ -131,9 +131,9 @@ namespace DiscordCoreAPI {
 		Messages::httpsClient = client;
 	}
 
-	CoRoutine<MessageVector> Messages::getMessagesAsync(GetMessagesData dataPackage) {
+	CoRoutine<std::vector<MessageData>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Messages };
-		co_await NewThreadAwaitable<MessageVector>();
+		co_await NewThreadAwaitable<std::vector<MessageData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 		if (dataPackage.aroundThisId != 0) {
@@ -165,65 +165,65 @@ namespace DiscordCoreAPI {
 			}
 		}
 		workload.callStack = "Messages::getMessagesAsync()";
-		MessageVector returnData{};
-		Messages::httpsClient->submitWorkloadAndGetResult<MessageVector>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		std::vector<MessageData> returnData{};
+		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<Message> Messages::getMessageAsync(GetMessageData dataPackage) {
+	CoRoutine<MessageData> Messages::getMessageAsync(GetMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Message };
-		co_await NewThreadAwaitable<Message>();
+		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.id;
 		workload.callStack = "Messages::getMessageAsync()";
-		Message returnData{};
-		Messages::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		MessageData returnData{};
+		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<Message> Messages::createMessageAsync(CreateMessageData dataPackage) {
+	CoRoutine<MessageData> Messages::createMessageAsync(CreateMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Message };
-		co_await NewThreadAwaitable<Message>();
+		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			parser.serializeJson(dataPackage, workload.content);
+			jsonifierCore.serializeJson(dataPackage, workload.content);
 		} else {
-			parser.serializeJson(dataPackage, workload.content);
+			jsonifierCore.serializeJson(dataPackage, workload.content);
 		}
 		workload.callStack = "Messages::createMessageAsync()";
-		Message returnData{};
-		Messages::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		MessageData returnData{};
+		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<Message> Messages::crosspostMessageAsync(CrosspostMessageData dataPackage) {
+	CoRoutine<MessageData> Messages::crosspostMessageAsync(CrosspostMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Crosspost_Message };
-		co_await NewThreadAwaitable<Message>();
+		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/crosspost";
 		workload.callStack = "Messages::crosspostMessageAsync()";
-		Message returnData{};
-		Messages::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		MessageData returnData{};
+		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
-	CoRoutine<Message> Messages::editMessageAsync(EditMessageData dataPackage) {
+	CoRoutine<MessageData> Messages::editMessageAsync(EditMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Message };
-		co_await NewThreadAwaitable<Message>();
+		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			parser.serializeJson(dataPackage, workload.content);
+			jsonifierCore.serializeJson(dataPackage, workload.content);
 		} else {
-			parser.serializeJson(dataPackage, workload.content);
+			jsonifierCore.serializeJson(dataPackage, workload.content);
 		}
 		workload.callStack = "Messages::editMessageAsync()";
-		Message returnData{};
-		Messages::httpsClient->submitWorkloadAndGetResult<Message>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		MessageData returnData{};
+		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Messages::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
+		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
@@ -253,23 +253,23 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
-		parser.serializeJson(dataPackage, workload.content);
+		jsonifierCore.serializeJson(dataPackage, workload.content);
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Messages::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
+		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
-	CoRoutine<MessageVector> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
+	CoRoutine<std::vector<MessageData>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Pinned_Messages };
-		co_await NewThreadAwaitable<MessageVector>();
+		co_await NewThreadAwaitable<std::vector<MessageData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/pins";
 		workload.callStack = "Messages::getPinnedMessagesAsync()";
-		MessageVector returnData{};
-		Messages::httpsClient->submitWorkloadAndGetResult<MessageVector>(std::move(workload), returnData);
-		co_return std::move(returnData);
+		std::vector<MessageData> returnData{};
+		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<void> Messages::pinMessageAsync(PinMessageData dataPackage) {
@@ -281,7 +281,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Messages::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
+		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
@@ -294,7 +294,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Messages::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
+		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 

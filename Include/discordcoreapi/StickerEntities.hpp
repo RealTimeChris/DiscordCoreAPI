@@ -39,9 +39,10 @@ namespace DiscordCoreAPI {
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
-	/// \brief For getting a Sticker object for the given sticker ID.
+
+	/// \brief For getting a StickerData object for the given sticker ID.
 	struct DiscordCoreAPI_Dll GetStickerData {
-		Snowflake stickerId{};///< The chosen Sticker's Snowflake.
+		Snowflake stickerId{};///< The chosen StickerData's Snowflake.
 	};
 
 	/// \brief For collecting a list of Stickers from a chosen Guild.
@@ -49,31 +50,31 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The chosen Guild from which you would like to collect the Stickers from.
 	};
 
-	/// \brief For creating a single Sticker.
+	/// \brief For creating a single StickerData.
 	struct DiscordCoreAPI_Dll CreateGuildStickerData {
-		std::string description{};///< Description of the Sticker.
-		std::string reason{};///< The reason for creating the Sticker.
-		Snowflake guildId{};///< The Guild within which to create the Sticker.
+		std::string description{};///< Description of the StickerData.
+		std::string reason{};///< The reason for creating the StickerData.
+		Snowflake guildId{};///< The Guild within which to create the StickerData.
 		std::string file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
-		std::string name{};///< Name of the Sticker.
+		std::string name{};///< Name of the StickerData.
 		std::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
-	/// \brief For modifying a single Sticker.
+	/// \brief For modifying a single StickerData.
 	struct DiscordCoreAPI_Dll ModifyGuildStickerData {
-		std::string description{};///< Description of the Sticker.
-		Snowflake stickerId{};///< The Sticker you wish to modify.
-		std::string reason{};///< The reason for modifying the Sticker.
-		Snowflake guildId{};///< The Guild within which to modify the Sticker.
-		std::string name{};///< Name of the Sticker.
+		std::string description{};///< Description of the StickerData.
+		Snowflake stickerId{};///< The StickerData you wish to modify.
+		std::string reason{};///< The reason for modifying the StickerData.
+		Snowflake guildId{};///< The Guild within which to modify the StickerData.
+		std::string name{};///< Name of the StickerData.
 		std::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
-	/// \brief For deleting a single Sticker.
+	/// \brief For deleting a single StickerData.
 	struct DiscordCoreAPI_Dll DeleteGuildStickerData {
-		Snowflake stickerId{};///< The Sticker you wish to delete.
-		std::string reason{};///< The reason for deleting the Sticker.
-		Snowflake guildId{};///< The Guild within which to delete the Sticker.
+		Snowflake stickerId{};///< The StickerData you wish to delete.
+		std::string reason{};///< The reason for deleting the StickerData.
+		Snowflake guildId{};///< The Guild within which to delete the StickerData.
 	};
 
 	/**@}*/
@@ -82,36 +83,37 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the Sticker related Discord endpoints.
+
+	/// \brief An interface class for the StickerData related Discord endpoints.
 	class DiscordCoreAPI_Dll Stickers {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		/// \brief Gets a single Sticker item.
+		/// \brief Gets a single StickerData item.
 		/// \param dataPackage A GetStickerData structure.
-		/// \returns A CoRoutine containing a Sticker.
-		static CoRoutine<Sticker> getStickerAsync(GetStickerData dataPackage);
+		/// \returns A CoRoutine containing a StickerData.
+		static CoRoutine<StickerData> getStickerAsync(GetStickerData dataPackage);
 
-		/// \brief Gets a list of nitro-available Sticker packs
-		/// \returns A CoRoutine containing a StickerPackDataVector.
+		/// \brief Gets a list of nitro-available StickerData packs
+		/// \returns A CoRoutine containing a StickerPackData
 		static CoRoutine<std::vector<StickerPackData>> getNitroStickerPacksAsync();
 
 		/// \brief Gets a list of Stickers from a Guild.
 		/// \param dataPackage A GetGuildStickersData structure.
-		/// \returns A CoRoutine containing a StickerVector.
-		static CoRoutine<std::vector<Sticker>> getGuildStickersAsync(GetGuildStickersData dataPackage);
+		/// \returns A CoRoutine containing a std::vector<StickerData>.
+		static CoRoutine<std::vector<StickerData>> getGuildStickersAsync(GetGuildStickersData dataPackage);
 
-		/// \brief Creates a new Sticker within a chosen Guild.
+		/// \brief Creates a new StickerData within a chosen Guild.
 		/// \param dataPackage A CreateGuildStickerData structure.
-		/// \returns A CoRoutine containing a Sticker.
-		static CoRoutine<Sticker> createGuildStickerAsync(CreateGuildStickerData dataPackage);
+		/// \returns A CoRoutine containing a StickerData.
+		static CoRoutine<StickerData> createGuildStickerAsync(CreateGuildStickerData dataPackage);
 
-		/// \brief Modifies a Sticker within a chosen Guild.
+		/// \brief Modifies a StickerData within a chosen Guild.
 		/// \param dataPackage A ModifyGuildStickerData structure.
-		/// \returns A CoRoutine containing a Sticker.
-		static CoRoutine<Sticker> modifyGuildStickerAsync(ModifyGuildStickerData dataPackage);
+		/// \returns A CoRoutine containing a StickerData.
+		static CoRoutine<StickerData> modifyGuildStickerAsync(ModifyGuildStickerData dataPackage);
 
-		/// \brief Deletes a Sticker within a chosen Guild.
+		/// \brief Deletes a StickerData within a chosen Guild.
 		/// \param dataPackage A DeleteGuildStickerData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteGuildStickerAsync(DeleteGuildStickerData dataPackage);

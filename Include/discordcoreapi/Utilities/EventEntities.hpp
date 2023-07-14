@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		 */
 
 		/// \brief Event-delegate token, representing an event.
-		struct EventDelegateToken : public Relational<EventDelegateToken> {
+		struct DiscordCoreAPI_Dll EventDelegateToken {
 			template<typename ReturnType, typename... ArgTypes> friend class EventDelegate;
 
 			template<typename ReturnType, typename... ArgTypes> friend class Event;
@@ -51,11 +51,15 @@ namespace DiscordCoreAPI {
 
 			template<typename ReturnType, typename... ArgTypes> friend class TriggerEvent;
 
-			friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) noexcept {
-				return stoll(lhs.handlerId) < stoll(rhs.handlerId);
+			inline bool operator==(const EventDelegateToken& rhs) const {
+				return stoll(handlerId) == stoll(rhs.handlerId) && stoll(eventId) == stoll(rhs.eventId);
 			}
 
-			EventDelegateToken() noexcept = default;
+			inline bool operator<(const EventDelegateToken& rhs) const {
+				return stoll(handlerId) < stoll(rhs.handlerId);
+			}
+
+			EventDelegateToken() = default;
 
 			std::string handlerId{};
 			std::string eventId{};
@@ -102,7 +106,7 @@ namespace DiscordCoreAPI {
 				*this = functionNew;
 			}
 
-			EventDelegate() noexcept = default;
+			EventDelegate() = default;
 
 		  protected:
 			std::function<ReturnType(ArgTypes...)> function{};
@@ -156,7 +160,11 @@ namespace DiscordCoreAPI {
 			void operator()(const ArgTypes... args) {
 				std::unique_lock lock{ accessMutex };
 				for (auto& [key, value]: functions) {
-					value.function(args...).get();
+					try {
+						value.function(args...).get();
+					} catch (const DCAException& error) {
+						MessagePrinter::printError<PrintMessageType::General>(error.what());
+					}
 				}
 				return;
 			}
@@ -171,7 +179,7 @@ namespace DiscordCoreAPI {
 		  public:
 			template<typename RTy02, typename... ArgTypes02> friend class TriggerEvent;
 
-			TriggerEventDelegate<ReturnType, ArgTypes...>& operator=(TriggerEventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
+			TriggerEventDelegate<ReturnType, ArgTypes...>& operator=(TriggerEventDelegate<ReturnType, ArgTypes...>&& other) {
 				if (this != &other) {
 					function.swap(other.function);
 					other.function = std::function<ReturnType(ArgTypes...)>{};
@@ -181,7 +189,7 @@ namespace DiscordCoreAPI {
 				return *this;
 			}
 
-			TriggerEventDelegate(TriggerEventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
+			TriggerEventDelegate(TriggerEventDelegate<ReturnType, ArgTypes...>&& other) {
 				*this = std::move(other);
 			}
 
@@ -217,7 +225,7 @@ namespace DiscordCoreAPI {
 				*this = functionNew;
 			}
 
-			TriggerEventDelegate() noexcept = default;
+			TriggerEventDelegate() = default;
 
 		  protected:
 			std::function<bool(ArgTypes...)> testFunction{};
@@ -230,7 +238,7 @@ namespace DiscordCoreAPI {
 		  public:
 			std::map<EventDelegateToken, TriggerEventDelegate<ReturnType, ArgTypes...>> functions{};
 
-			TriggerEvent<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) noexcept {
+			TriggerEvent<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) {
 				if (this != &other) {
 					functions = std::move(other.functions);
 					other.functions = std::map<EventDelegateToken, TriggerEventDelegate<ReturnType, ArgTypes...>>{};
@@ -240,7 +248,7 @@ namespace DiscordCoreAPI {
 				return *this;
 			}
 
-			TriggerEvent(Event<ReturnType, ArgTypes...>&& other) noexcept {
+			TriggerEvent(Event<ReturnType, ArgTypes...>&& other) {
 				*this = std::move(other);
 			}
 

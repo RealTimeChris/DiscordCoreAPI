@@ -30,50 +30,51 @@
 
 #pragma once
 
+#include <discordcoreapi/Utilities/TCPConnection.hpp>
 #include <discordcoreapi/Utilities/RingBuffer.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/TCPConnection.hpp>
+#include <discordcoreapi/Utilities/Base.hpp>
 
 namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
 
-		class UDPConnection {
+		class DiscordCoreAPI_Dll UDPConnection {
 		  public:
 			friend class VoiceConnection;
 
-			UDPConnection() noexcept = default;
+			UDPConnection() = default;
 
-			UDPConnection& operator=(UDPConnection&& other) noexcept;
-			UDPConnection(UDPConnection&& other) noexcept;
+			UDPConnection& operator=(UDPConnection&& other);
+			UDPConnection(UDPConnection&& other);
 
-			UDPConnection(const std::string& baseUrlNew, uint16_t portNew, StreamType streamType, std::stop_token token = std::stop_token{});
+			UDPConnection(const std::string& baseUrlNew, uint16_t portNew, StreamType streamType, std::stop_token* token = nullptr);
 
 			void writeData(std::basic_string_view<uint8_t> dataToWrite);
 
-			std::basic_string_view<uint8_t> getInputBuffer() noexcept;
+			std::basic_string_view<uint8_t> getInputBuffer();
 
-			virtual void handleAudioBuffer() noexcept = 0;
+			virtual void handleAudioBuffer() = 0;
 
-			ConnectionStatus processIO() noexcept;
+			ConnectionStatus processIO();
 
-			bool areWeStillConnected() noexcept;
+			bool areWeStillConnected();
 
-			void disconnect() noexcept;
+			void disconnect();
 
 			bool processWriteData();
 
 			bool processReadData();
 
-			~UDPConnection() noexcept;
+			~UDPConnection();
 
 		  protected:
 			const uint64_t maxBufferSize{ (1024 * 16) };
-			StreamType streamType{};
 			RingBuffer<uint8_t, 16> outputBuffer{};
 			RingBuffer<uint8_t, 16> inputBuffer{};
 			ConnectionStatus currentStatus{};
 			addrinfoWrapper address{};
+			StreamType streamType{};
 			SOCKETWrapper socket{};
 			std::string baseUrl{};
 			int64_t bytesRead{};

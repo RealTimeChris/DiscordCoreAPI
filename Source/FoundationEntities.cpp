@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 			return serializer;
 		}
 
-		HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadData&& other) noexcept {
+		HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadData&& other) {
 			if (this != &other) {
 				headersToInsert = std::move(other.headersToInsert);
 				relativePath = std::move(other.relativePath);
@@ -101,11 +101,11 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadData&& other) noexcept {
+		HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadData&& other) {
 			*this = std::move(other);
 		}
 
-		HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadType type) noexcept {
+		HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadType type) {
 			if (!HttpsWorkloadData::workloadIdsExternal.contains(type)) {
 				HttpsWorkloadData::workloadIdsExternal[type] = makeUnique<std::atomic_int64_t>();
 				HttpsWorkloadData::workloadIdsInternal[type] = makeUnique<std::atomic_int64_t>();
@@ -115,15 +115,15 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		const HttpsWorkloadType HttpsWorkloadData::getWorkloadType() const noexcept {
+		HttpsWorkloadType HttpsWorkloadData::getWorkloadType() const {
 			return workloadType;
 		}
 
-		HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadType type) noexcept {
+		HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadType type) {
 			*this = type;
 		}
 
-		int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept {
+		int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) {
 			int64_t value{ HttpsWorkloadData::workloadIdsExternal[workloadType]->load() };
 			HttpsWorkloadData::workloadIdsExternal[workloadType]->store(value + 1);
 			return value;
@@ -131,10 +131,6 @@ namespace DiscordCoreAPI {
 
 		std::unordered_map<HttpsWorkloadType, UniquePtr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsExternal{};
 		std::unordered_map<HttpsWorkloadType, UniquePtr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsInternal{};
-	}
-
-	DiscordEntity::DiscordEntity(Snowflake value) {
-		id = value;
 	}
 
 	UpdatePresenceData::operator DiscordCoreInternal::EtfSerializer() {
@@ -202,30 +198,53 @@ namespace DiscordCoreAPI {
 		return data;
 	}
 
-	std::string GuildMemberData::getAvatarUrl() noexcept {
-		if (avatar.operator std::string() != "") {
-			std::string stringNew{ "https://cdn.discordapp.com/" };
-			stringNew += "guilds/" + guildId + "/users/" + user.id + "/avatars/" + avatar.operator std::string();
-			return stringNew;
-		} else {
-			return getUserData().getAvatarUrl();
-		}
+	VoiceStateDataLight GuildMemberData::getVoiceStateData() {
+		return GuildMembers::getVoiceStateData(GuildMemberKey{ *this });
 	}
 
-	UserData GuildMemberData::getUserData() {
-		if (user.id.operator uint64_t() != 0) {
+	UserCacheData GuildMemberData::getUserData() {
+		if (user.id != 0) {
 			return Users::getCachedUser(GetUserData{ .userId = user.id });
 		} else {
 			return {};
 		}
 	}
 
-	VoiceConnection& GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute,
+	VoiceStateDataLight GuildMemberCacheData::getVoiceStateData() {
+		return GuildMembers::getVoiceStateData(GuildMemberKey{ *this });
+	}
+
+	UserCacheData GuildMemberCacheData::getUserData() {
+		if (user.id != 0) {
+			return Users::getCachedUser(GetUserData{ .userId = user.id });
+		} else {
+			return {};
+		}
+	}
+
+	bool GuildCacheData::areWeConnected() {
+		return discordCoreClient->getVoiceConnection(id).areWeConnected();
+	}
+
+	void GuildCacheData::disconnect() {
+		DiscordCoreInternal::WebSocketMessageData<UpdateVoiceStateData> data{};
+		data.excludedKeys.emplace("t");
+		data.excludedKeys.emplace("s");
+		data.d.channelId = 0;
+		data.d.selfDeaf = false;
+		data.d.selfMute = false;
+		data.d.guildId = id;
+		DiscordCoreClient::getSongAPI(id).disconnect();
+		DiscordCoreClient::getBotUser().updateVoiceStatus(data.d);
+		DiscordCoreClient::getVoiceConnection(id).disconnect();
+	}
+
+	VoiceConnection& GuildCacheData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute,
 		StreamInfo streamInfoNew) {
 		if (DiscordCoreClient::getVoiceConnection(id).areWeConnected()) {
 			return DiscordCoreClient::getVoiceConnection(id);
 		} else if (static_cast<Snowflake>(guildMemberId) != 0 || static_cast<Snowflake>(channelId) != 0) {
-			Snowflake channelId{};
+			Snowflake channelIdNew{};
 			if (static_cast<Snowflake>(guildMemberId) != 0) {
 				VoiceStateDataLight dataLight{};
 				dataLight.guildId = id;
@@ -233,47 +252,35 @@ namespace DiscordCoreAPI {
 				GuildMemberData getData{};
 				getData.guildId = id;
 				getData.user.id = guildMemberId;
-				auto voiceStateData = GuildMembers::getVoiceStateData(GuildMemberKey{ .guildId = getData.guildId, .userId = getData.user.id });
+				auto voiceStateData = GuildMembers::getVoiceStateData(GuildMemberKey{ getData });
 				if (voiceStateData.channelId != 0) {
-					channelId = voiceStateData.channelId;
+					channelIdNew = voiceStateData.channelId;
 				}
 			} else {
-				channelId = channelId;
+				channelIdNew = channelId;
 			}
-			uint64_t theShardId{ (id.operator uint64_t() >> 22) % discordCoreClient->configManager.getTotalShardCount() };
-			auto theBaseSocketAgentIndex{ static_cast<int32_t>(floor(static_cast<double>(theShardId) /
-				static_cast<double>(discordCoreClient->configManager.getTotalShardCount()) * discordCoreClient->baseSocketAgentsMap.size())) };
+			uint64_t theShardId{ (id.operator uint64_t() >> 22) % discordCoreClient->getConfigManager().getTotalShardCount() };
 			VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.currentShard = theShardId;
 			voiceConnectInitData.streamInfo = streamInfoNew;
-			voiceConnectInitData.channelId = channelId;
+			voiceConnectInitData.channelId = channelIdNew;
 			voiceConnectInitData.guildId = id;
 			voiceConnectInitData.userId = discordCoreClient->getBotUser().id;
 			voiceConnectInitData.selfDeaf = selfDeaf;
 			voiceConnectInitData.selfMute = selfMute;
 			StopWatch stopWatch{ 10000ms };
-			auto& voiceConnection = DiscordCoreClient::getVoiceConnection(id);
-			voiceConnection.connect(voiceConnectInitData);
-			while (!voiceConnection.areWeConnected()) {
+			auto& voiceConnectionNew = DiscordCoreClient::getVoiceConnection(id);
+			voiceConnectionNew.connect(voiceConnectInitData);
+			while (!voiceConnectionNew.areWeConnected()) {
 				std::this_thread::sleep_for(1ms);
 			}
-			return voiceConnection;
+			return voiceConnectionNew;
 		}
 		return DiscordCoreClient::getVoiceConnection(id);
 	}
 
-	std::string GuildData::getIconUrl() noexcept {
-		std::string stringNew{ "https://cdn.discordapp.com/" };
-		stringNew += "icons/" + id + "/" + icon.operator std::string() + ".png";
-		return stringNew;
-	}
-
 	bool GuildData::areWeConnected() {
 		return discordCoreClient->getVoiceConnection(id).areWeConnected();
-	}
-
-	VoiceConnection& GuildData::getVoiceConnection() noexcept {
-		return DiscordCoreClient::getVoiceConnection(id);
 	}
 
 	void GuildData::disconnect() {
@@ -289,45 +296,85 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient::getVoiceConnection(id).disconnect();
 	}
 
-	bool operator==(const ApplicationCommandOptionData& lhs, const ApplicationCommandOptionData& rhs) noexcept {
-		if (lhs.autocomplete != rhs.autocomplete) {
+	VoiceConnection& GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute,
+		StreamInfo streamInfoNew) {
+		if (DiscordCoreClient::getVoiceConnection(id).areWeConnected()) {
+			return DiscordCoreClient::getVoiceConnection(id);
+		} else if (static_cast<Snowflake>(guildMemberId) != 0 || static_cast<Snowflake>(channelId) != 0) {
+			Snowflake channelIdNew{};
+			if (static_cast<Snowflake>(guildMemberId) != 0) {
+				VoiceStateDataLight dataLight{};
+				dataLight.guildId = id;
+				dataLight.id = guildMemberId;
+				GuildMemberData getData{};
+				getData.guildId = id;
+				getData.user.id = guildMemberId;
+				auto voiceStateData = GuildMembers::getVoiceStateData(GuildMemberKey{ getData });
+				if (voiceStateData.channelId != 0) {
+					channelIdNew = voiceStateData.channelId;
+				}
+			} else {
+				channelIdNew = channelId;
+			}
+			uint64_t theShardId{ (id.operator size_t() >> 22) % discordCoreClient->getConfigManager().getTotalShardCount() };
+			VoiceConnectInitData voiceConnectInitData{};
+			voiceConnectInitData.currentShard = theShardId;
+			voiceConnectInitData.streamInfo = streamInfoNew;
+			voiceConnectInitData.channelId = channelIdNew;
+			voiceConnectInitData.guildId = id;
+			voiceConnectInitData.userId = discordCoreClient->getBotUser().id;
+			voiceConnectInitData.selfDeaf = selfDeaf;
+			voiceConnectInitData.selfMute = selfMute;
+			StopWatch stopWatch{ 10000ms };
+			auto& voiceConnectionNew = DiscordCoreClient::getVoiceConnection(id);
+			voiceConnectionNew.connect(voiceConnectInitData);
+			while (!voiceConnectionNew.areWeConnected()) {
+				std::this_thread::sleep_for(1ms);
+			}
+			return voiceConnectionNew;
+		}
+		return DiscordCoreClient::getVoiceConnection(id);
+	}
+
+	bool ApplicationCommandOptionData::operator==(const ApplicationCommandOptionData& rhs) const {
+		if (autocomplete != rhs.autocomplete) {
 			return false;
 		}
-		if (lhs.channelTypes != rhs.channelTypes) {
+		if (channelTypes != rhs.channelTypes) {
 			return false;
 		}
-		if (lhs.description != rhs.description) {
+		if (description != rhs.description) {
 			return false;
 		}
-		if (lhs.descriptionLocalizations != rhs.descriptionLocalizations) {
+		if (descriptionLocalizations != rhs.descriptionLocalizations) {
 			return false;
 		}
-		if (lhs.maxValue != rhs.maxValue) {
+		if (maxValue != rhs.maxValue) {
 			return false;
 		}
-		if (lhs.minValue != rhs.minValue) {
+		if (minValue != rhs.minValue) {
 			return false;
 		}
-		if (lhs.name != rhs.name) {
+		if (name != rhs.name) {
 			return false;
 		}
-		if (lhs.nameLocalizations != rhs.nameLocalizations) {
+		if (nameLocalizations != rhs.nameLocalizations) {
 			return false;
 		}
-		if (lhs.options.size() != rhs.options.size()) {
+		if (options.size() != rhs.options.size()) {
 			return false;
 		}
-		if (lhs.required != rhs.required) {
+		if (required != rhs.required) {
 			return false;
 		}
-		if (lhs.type != rhs.type) {
+		if (type != rhs.type) {
 			return false;
 		}
-		if (lhs.choices.size() != rhs.choices.size()) {
+		if (choices.size() != rhs.choices.size()) {
 			return false;
 		}
-		for (int32_t x = 0; x < rhs.choices.size(); ++x) {
-			if (lhs.choices[x] != rhs.choices[x]) {
+		for (uint64_t x = 0; x < rhs.choices.size(); ++x) {
+			if (choices[x] != rhs.choices[x]) {
 			}
 		}
 		return true;
@@ -359,7 +406,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	void EmbedImageData::generateExcludedKeys() noexcept {
+	void EmbedImageData::generateExcludedKeys() {
 		if (width == 0) {
 			excludedKeys.emplace("width");
 		}
@@ -371,7 +418,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void EmbedAuthorData::generateExcludedKeys() noexcept {
+	void EmbedAuthorData::generateExcludedKeys() {
 		if (name == "") {
 			excludedKeys.emplace("name");
 		}
@@ -386,7 +433,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void EmbedData::generateExcludedKeys() noexcept {
+	void EmbedData::generateExcludedKeys() {
 		if (fields.size() == 0) {
 			excludedKeys.emplace("fields");
 		}
@@ -473,7 +520,7 @@ namespace DiscordCoreAPI {
 		return AuditLogEntryData();
 	}
 
-	void PartialEmojiData::generateExcludedKeys() noexcept {
+	void PartialEmojiData::generateExcludedKeys() {
 		if (name == "") {
 			excludedKeys.emplace("name");
 		}
@@ -482,7 +529,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void EmojiData::generateExcludedKeys() noexcept {
+	EmojiData::EmojiData(Snowflake newId) {
+		id = newId;
+	}
+
+	void EmojiData::generateExcludedKeys() {
 		if (id == 0) {
 			excludedKeys.emplace("id");
 		}
@@ -504,50 +555,41 @@ namespace DiscordCoreAPI {
 		return optionsArgs;
 	}
 
-	bool operator==(const ApplicationCommandData& lhs, const ApplicationCommandData& rhs) noexcept {
-		if (lhs.description != rhs.description) {
+	bool ApplicationCommandData::operator==(const ApplicationCommandData& rhs) const {
+		if (description != rhs.description) {
 			return false;
 		}
-		if (lhs.name != rhs.name) {
+		if (name != rhs.name) {
 			return false;
 		}
-		if (lhs.type != rhs.type) {
+		if (type != rhs.type) {
 			return false;
 		}
-		if (lhs.options.size() != rhs.options.size()) {
+		if (options.size() != rhs.options.size()) {
 			return false;
 		}
-		for (uint64_t x = 0; x < lhs.options.size(); ++x) {
-			if (lhs.options[x] != rhs.options[x]) {
+		for (uint64_t x = 0; x < options.size(); ++x) {
+			if (options[x] != rhs.options[x]) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	std::string UserData::getAvatarUrl() {
-		std::string stringNew{ "https://cdn.discordapp.com/avatars/" + id + "/" + avatar.operator std::string() };
-		return static_cast<std::string>(stringNew);
-	}
-
-	VoiceStateDataLight GuildMemberData::getVoiceStateData() noexcept {
-		return GuildMembers::getVoiceStateData(GuildMemberKey{ .guildId = guildId, .userId = user.id });
-	}
-
-	bool operator==(const ApplicationCommandOptionChoiceData& lhs, const ApplicationCommandOptionChoiceData& rhs) noexcept {
-		if (lhs.name != rhs.name) {
+	bool ApplicationCommandOptionChoiceData::operator==(const ApplicationCommandOptionChoiceData& rhs) const {
+		if (name != rhs.name) {
 			return false;
 		}
-		if (lhs.nameLocalizations != rhs.nameLocalizations) {
+		if (nameLocalizations != rhs.nameLocalizations) {
 			return false;
 		}
-		if (lhs.value != rhs.value) {
+		if (value != rhs.value) {
 			return false;
 		}
 		return true;
 	}
 
-	InputEventData& InputEventData::operator=(InputEventData&& other) noexcept {
+	InputEventData& InputEventData::operator=(InputEventData&& other) {
 		if (this != &other) {
 			*interactionData = std::move(*other.interactionData);
 			responseType = other.responseType;
@@ -555,11 +597,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InputEventData::InputEventData(InputEventData&& other) noexcept {
+	InputEventData::InputEventData(InputEventData&& other) {
 		*this = std::move(other);
 	}
 
-	InputEventData& InputEventData::operator=(const InputEventData& other) noexcept {
+	InputEventData& InputEventData::operator=(const InputEventData& other) {
 		if (this != &other) {
 			*interactionData = *other.interactionData;
 			responseType = other.responseType;
@@ -567,16 +609,16 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InputEventData::InputEventData(const InputEventData& other) noexcept {
+	InputEventData::InputEventData(const InputEventData& other) {
 		*this = other;
 	}
 
-	InputEventData& InputEventData::operator=(const InteractionData& other) noexcept {
+	InputEventData& InputEventData::operator=(const InteractionData& other) {
 		*interactionData = other;
 		return *this;
 	}
 
-	InputEventData::InputEventData(const InteractionData& interactionData) noexcept {
+	InputEventData::InputEventData(const InteractionData& interactionData) {
 		*this = interactionData;
 	}
 
@@ -605,7 +647,7 @@ namespace DiscordCoreAPI {
 		return returnData;
 	}
 
-	void InteractionCallbackData::generateExcludedKeys() noexcept {
+	void InteractionCallbackData::generateExcludedKeys() {
 		if (allowedMentions.parse.size() == 0 && allowedMentions.roles.size() == 0 && allowedMentions.users.size() == 0) {
 			excludedKeys.emplace("allowed_mentions");
 		}
@@ -640,7 +682,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void ComponentData::generateExcludedKeys() noexcept {
+	void ComponentData::generateExcludedKeys() {
 		switch (type) {
 			case ComponentType::Button: {
 				if (customId == "") {
@@ -756,7 +798,7 @@ namespace DiscordCoreAPI {
 		return interactionData->message;
 	}
 
-	RespondToInputEventData::operator InteractionCallbackData() const noexcept {
+	RespondToInputEventData::operator InteractionCallbackData() const {
 		InteractionCallbackData returnData{};
 		returnData.allowedMentions = allowedMentions;
 		returnData.components = components;
@@ -810,7 +852,7 @@ namespace DiscordCoreAPI {
 				component.type = ComponentType::Button;
 				component.emoji.name = emojiName;
 				component.label = buttonLabel;
-				component.style = static_cast<int32_t>(buttonStyle);
+				component.style = static_cast<uint64_t>(buttonStyle);
 				component.customId = customIdNew;
 				component.disabled = disabled;
 				component.emoji.id = emojiId;
@@ -825,7 +867,7 @@ namespace DiscordCoreAPI {
 	}
 
 	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew,
-		const std::vector<SelectOptionData>& options, const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
+		const std::vector<SelectOptionData>& options, const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType typeNew,
 		std::vector<ChannelType> channelTypes) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
@@ -834,7 +876,7 @@ namespace DiscordCoreAPI {
 		if (components.size() < 5) {
 			if (components[components.size() - 1].components.size() < 5) {
 				ComponentData componentData;
-				componentData.type = static_cast<ComponentType>(type);
+				componentData.type = static_cast<ComponentType>(typeNew);
 				componentData.channelTypes = channelTypes;
 				componentData.placeholder = placeholder;
 				componentData.customId = customIdNew;
@@ -852,7 +894,7 @@ namespace DiscordCoreAPI {
 	}
 
 	RespondToInputEventData& RespondToInputEventData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew,
-		const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle,
+		const std::string& titleNew, const std::string& customIdNew, bool required, uint64_t minLength, uint64_t maxLength, TextInputStyle inputStyle,
 		const std::string& label, const std::string& placeholder) {
 		title = topTitleNew;
 		customId = topCustomIdNew;
@@ -865,7 +907,7 @@ namespace DiscordCoreAPI {
 				ComponentData component{};
 				component.type = ComponentType::Text_Input;
 				component.customId = customIdNew;
-				component.style = static_cast<int32_t>(inputStyle);
+				component.style = static_cast<uint64_t>(inputStyle);
 				component.title = titleNew;
 				component.maxLength = maxLength;
 				component.minLength = minLength;
@@ -943,7 +985,7 @@ namespace DiscordCoreAPI {
 				component.type = ComponentType::Button;
 				component.emoji.name = emojiName;
 				component.label = buttonLabel;
-				component.style = static_cast<int32_t>(buttonStyle);
+				component.style = static_cast<uint64_t>(buttonStyle);
 				component.customId = customIdNew;
 				component.disabled = disabled;
 				component.emoji.id = emojiId;
@@ -958,7 +1000,7 @@ namespace DiscordCoreAPI {
 	}
 
 	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, std::vector<ChannelType> channelTypes) {
+		const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType type, std::vector<ChannelType> channelTypes) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);
@@ -984,7 +1026,7 @@ namespace DiscordCoreAPI {
 	}
 
 	MessageResponseBase& MessageResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label,
+		const std::string& customIdNew, bool required, uint64_t minLength, uint64_t maxLength, TextInputStyle inputStyle, const std::string& label,
 		const std::string& placeholder) {
 		title = topTitleNew;
 		customId = topCustomIdNew;
@@ -997,7 +1039,7 @@ namespace DiscordCoreAPI {
 				ComponentData component{};
 				component.type = ComponentType::Text_Input;
 				component.customId = customIdNew;
-				component.style = static_cast<int32_t>(inputStyle);
+				component.style = static_cast<uint64_t>(inputStyle);
 				component.title = titleNew;
 				component.maxLength = maxLength;
 				component.minLength = minLength;
@@ -1073,7 +1115,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CommandData& CommandData::operator=(const CommandData& other) noexcept {
+	CommandData& CommandData::operator=(const CommandData& other) {
 		subCommandGroupName = other.subCommandGroupName;
 		subCommandName = other.subCommandName;
 		commandName = other.commandName;
@@ -1082,11 +1124,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	CommandData::CommandData(const CommandData& other) noexcept {
+	CommandData::CommandData(const CommandData& other) {
 		*this = other;
 	}
 
-	CommandData::CommandData(const InputEventData& inputEventData) noexcept {
+	CommandData::CommandData(const InputEventData& inputEventData) {
 		if (inputEventData.interactionData->data.name != "") {
 			commandName = inputEventData.interactionData->data.name;
 		}
@@ -1155,7 +1197,7 @@ namespace DiscordCoreAPI {
 		return eventData;
 	}
 
-	BaseFunctionArguments::BaseFunctionArguments(const CommandData& commanddataNew, DiscordCoreClient* discordCoreClientNew) noexcept
+	BaseFunctionArguments::BaseFunctionArguments(const CommandData& commanddataNew, DiscordCoreClient* discordCoreClientNew)
 		: CommandData(commanddataNew) {
 		discordCoreClient = discordCoreClientNew;
 	}
@@ -1196,12 +1238,12 @@ namespace DiscordCoreAPI {
 				UniquePtr<RespondToInputEventData> dataPackage02{ makeUnique<RespondToInputEventData>(originalEvent) };
 
 				dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-				for (size_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
+				for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 					ActionRowData actionRow{};
-					for (size_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-						auto component = originalEvent.getMessageData().components[x].components[y];
+					for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+						ComponentData component = originalEvent.getMessageData().components[x].components[y];
 						component.disabled = true;
-						actionRow.components.push_back(component);
+						actionRow.components.emplace_back(component);
 					}
 					dataPackage02->addComponentRow(actionRow);
 				}
@@ -1227,12 +1269,12 @@ namespace DiscordCoreAPI {
 				}
 
 				dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-				for (size_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
+				for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 					ActionRowData actionRow{};
-					for (size_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-						auto component = originalEvent.getMessageData().components[x].components[y];
+					for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+						ComponentData component = originalEvent.getMessageData().components[x].components[y];
 						component.disabled = true;
-						actionRow.components.push_back(component);
+						actionRow.components.emplace_back(component);
 					}
 					dataPackage02->addComponentRow(actionRow);
 				}
@@ -1260,12 +1302,12 @@ namespace DiscordCoreAPI {
 				interactionData = makeUnique<InteractionData>(buttonIntData.at(0));
 				auto dataPackage = RespondToInputEventData{ *interactionData };
 				dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
-				for (size_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
+				for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 					ActionRowData actionRow{};
-					for (size_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-						auto component = originalEvent.getMessageData().components[x].components[y];
+					for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+						ComponentData component = originalEvent.getMessageData().components[x].components[y];
 						component.disabled = false;
-						actionRow.components.push_back(component);
+						actionRow.components.emplace_back(component);
 					}
 					dataPackage.addComponentRow(actionRow);
 				}
@@ -1276,16 +1318,16 @@ namespace DiscordCoreAPI {
 					InputEventData dataPackage03{ originalEvent };
 					InputEvents::deleteInputEventResponseAsync(dataPackage03);
 				} else {
-					UniquePtr<InteractionData> interactionData = makeUnique<InteractionData>(buttonIntData.at(0));
-					auto dataPackage = RespondToInputEventData{ *interactionData };
+					UniquePtr<InteractionData> interactionDataNew = makeUnique<InteractionData>(buttonIntData.at(0));
+					auto dataPackage = RespondToInputEventData{ *interactionDataNew };
 					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-					for (size_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
+					for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 						ActionRowData actionRow{};
-						for (size_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-							auto component = originalEvent.getMessageData().components[x].components[y];
+						for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+							ComponentData component = originalEvent.getMessageData().components[x].components[y];
 							component.disabled = true;
-							actionRow.components.push_back(component);
+							actionRow.components.emplace_back(component);
 						}
 						dataPackage.addComponentRow(actionRow);
 					}

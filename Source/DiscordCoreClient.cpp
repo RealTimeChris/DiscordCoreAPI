@@ -64,8 +64,8 @@ namespace DiscordCoreAPI {
 			uint64_t theShardId{ (guildId.operator uint64_t() >> 22) % guild.discordCoreClient->configManager.getTotalShardCount() };
 			uint64_t baseSocketIndex{ theShardId % guild.discordCoreClient->baseSocketAgentsMap.size() };
 			auto baseSocketAgent = guild.discordCoreClient->baseSocketAgentsMap[baseSocketIndex].get();
-			voiceConnectionMap[guildId.operator uint64_t()] = makeUnique<VoiceConnection>(guild.discordCoreClient,
-				static_cast<DiscordCoreInternal::WebSocketClient*>(&baseSocketAgent->shardMap[theShardId]), &doWeQuit);
+			voiceConnectionMap[guildId.operator uint64_t()] =
+				makeUnique<VoiceConnection>(guild.discordCoreClient, &baseSocketAgent->shardMap[theShardId], &doWeQuit);
 		}
 		return *voiceConnectionMap[guildId.operator uint64_t()].get();
 	}
@@ -80,18 +80,6 @@ namespace DiscordCoreAPI {
 	void atexitHandler() {
 		doWeQuit.store(true);
 	}
-
-	SIGTERMError::SIGTERMError(const std::string& message, std::source_location location) : DCAException(message, location){};
-
-	SIGSEGVError::SIGSEGVError(const std::string& message, std::source_location location) : DCAException(message, location){};
-
-	SIGINTError::SIGINTError(const std::string& message, std::source_location location) : DCAException(message, location){};
-
-	SIGILLError::SIGILLError(const std::string& message, std::source_location location) : DCAException(message, location){};
-
-	SIGABRTError::SIGABRTError(const std::string& message, std::source_location location) : DCAException(message, location){};
-
-	SIGFPEError::SIGFPEError(const std::string& message, std::source_location location) : DCAException(message, location){};
 
 	void signalHandler(int32_t value) {
 		try {
@@ -115,11 +103,11 @@ namespace DiscordCoreAPI {
 					throw SIGFPEError{ "Exiting for: SIGFPE." };
 				}
 			}
-		} catch (SIGINTError&) {
-			reportException("signalHandler()");
+		} catch (const SIGINTError& error) {
+			MessagePrinter::printError<PrintMessageType::General>(error.what());
 			doWeQuit.store(true);
-		} catch (...) {
-			reportException("signalHandler()");
+		} catch (const std::exception& error) {
+			MessagePrinter::printError<PrintMessageType::General>(error.what());
 			std::exit(EXIT_FAILURE);
 		}
 	}
@@ -198,7 +186,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::registerFunctionsInternal() {
-		std::vector<ApplicationCommand> theCommands{
+		std::vector<ApplicationCommandData> theCommands{
 			ApplicationCommands::getGlobalApplicationCommandsAsync({ .applicationId = getBotUser().id, .withLocalizations = false }).get()
 		};
 		while (commandsToRegister.size() > 0) {
@@ -212,7 +200,7 @@ namespace DiscordCoreAPI {
 					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
 				}
 			} else {
-				std::vector<ApplicationCommand> guildCommands{};
+				std::vector<ApplicationCommandData> guildCommands{};
 				if (data.guildId != 0) {
 					guildCommands = ApplicationCommands::getGuildApplicationCommandsAsync(
 						{ .applicationId = getBotUser().id, .withLocalizations = false, .guildId = data.guildId })
@@ -248,7 +236,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath = "/gateway/bot";
 			workload.callStack = "DiscordCoreClient::getGateWayBot()";
 			GatewayBotData data{};
-			httpsClient->submitWorkloadAndGetResult<GatewayBotData>(std::move(workload), data);
+			httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
 			return data;
 		} catch (const DiscordCoreInternal::HttpsError& error) {
 			MessagePrinter::printError<PrintMessageType::Https>(error.what());
@@ -279,36 +267,35 @@ namespace DiscordCoreAPI {
 			configManager.setConnectionPort(443);
 		}
 
-		for (int32_t x = 0; x < configManager.getTotalShardCount(); ++x) {
+		for (uint32_t x = 0; x < configManager.getTotalShardCount(); ++x) {
 			if (!baseSocketAgentsMap.contains(x % theWorkerCount)) {
-				while (!connectionStopWatch01.hasTimePassed()) {
-					std::this_thread::sleep_for(1ms);
-				}
-				connectionStopWatch01.resetTimer();
 				baseSocketAgentsMap[x % theWorkerCount] = makeUnique<DiscordCoreInternal::BaseSocketAgent>(this, &doWeQuit, x % theWorkerCount);
 			}
 			baseSocketAgentsMap[x % theWorkerCount]->shardMap[x] = DiscordCoreInternal::WebSocketClient{ this, x, &doWeQuit };
+			while (!connectionStopWatch01.hasTimePassed()) {
+				std::this_thread::sleep_for(1ms);
+			}
+			connectionStopWatch01.resetTimer();
 		}
 
 		for (auto& value: configManager.getFunctionsToExecute()) {
-			if (value.repeated) {
-				TimeElapsedHandlerNoArgs onSend = [=, this]() -> void {
-					value.function(this);
-				};
-				ThreadPool::storeThread(onSend, value.intervalInMs);
-			} else {
-				ThreadPool::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, false, this);
-			}
+			executeFunctionAfterTimePeriod(value.function, value.intervalInMs, value.repeated, false, this);
 		}
 		startupTimeSinceEpoch = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch());
 		return true;
 	}
 
-	DiscordCoreClient::~DiscordCoreClient() noexcept {
+	DiscordCoreClient::~DiscordCoreClient() {
+		auto guildVector = Guilds::getAllGuildsAsync().get();
+		for (auto& value: guildVector) {
+			if (value.areWeConnected()) {
+				value.disconnect();
+			}
+		}
 		for (auto& [key, value]: NewThreadAwaiterBase::threadPool.workerThreads) {
-			if (value.thread.joinable()) {
-				value.thread.request_stop();
-				value.thread.detach();
+			if (value->thread.joinable()) {
+				value->thread.request_stop();
+				value->thread.detach();
 			}
 		}
 	}

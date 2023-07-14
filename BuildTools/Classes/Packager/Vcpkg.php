@@ -89,7 +89,7 @@ class Vcpkg
 
     /**
      * Check out a repository by tag or branch name to ~/discordcoreapi,
-     * using the personal access token and username passed in as command line parameters.
+     * using the personal access token and userName passed in as command line parameters.
      * 
      * @param string $tag Tag to clone
      * @return bool false if the repository could not be cloned
@@ -172,7 +172,7 @@ file(
   "version": ' . json_encode($this->getVersion()) . ',
   "description": "A Discord bot library written in C++ using custom asynchronous coroutines.",
   "homepage": "https://discordcoreapi.com",
-  "license": "LGPL-2.1-or-later",
+  "license": "MIT",
   "supports": "(windows & x64 & !xbox) | (linux & x64)",
   "dependencies": [
     "jsonifier",

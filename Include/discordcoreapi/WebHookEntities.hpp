@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// WebHookEntities.hpp - The header file for WebHook relate stuff.
+/// WebHookEntities.hpp - The header file for WebHookData relate stuff.
 /// Dec 1, 2021
 /// https://discordcoreapi.com
 /// \file WebHookEntities.hpp
@@ -40,9 +40,9 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// \brief For creating a new WebHook.
+	/// \brief For creating a new WebHookData.
 	struct DiscordCoreAPI_Dll CreateWebHookData {
-		Snowflake channelId{};///< The Channel within which to create the WebHook.
+		Snowflake channelId{};///< The ChannelData within which to create the WebHookData.
 		std::string avatar{};///< Image for the default webhook avatar.
 		std::string name{};///< Name of the webhook(1 - 80 characters).
 	};
@@ -50,21 +50,21 @@ namespace DiscordCoreAPI {
 	/// \brief For executing a WebHook.
 	class DiscordCoreAPI_Dll ExecuteWebHookData {
 	  public:
-		friend struct Jsonifier::Core<ExecuteWebHookData>;
+		friend struct Jsonifier::Core<DiscordCoreAPI::ExecuteWebHookData>;
 		friend class CreateEphemeralFollowUpMessageData;
 		friend class CreateFollowUpMessageData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
 		friend class WebHooks;
 
-		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		Snowflake threadId{};///< Send a message to the specified thread within a webhook's ChannelData. The thread will automatically be unarchived.
 		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
 
-		ExecuteWebHookData() noexcept = default;
+		ExecuteWebHookData() = default;
 
 		ExecuteWebHookData(WebHookData dataNew);
 
-		/// \brief Adds a button to the response Message.
+		/// \brief Adds a button to the response MessageData.
 		/// \param disabled Whether the button is active or not.
 		/// \param customIdNew A custom id to give for identifying the button.
 		/// \param buttonLabel A visible label for the button.
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
 			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
-		/// \brief Adds a select-menu to the response Message.
+		/// \brief Adds a select-menu to the response MessageData.
 		/// \param disabled Whether the select-menu is active or not.
 		/// \param customIdNew A custom id to give for identifying the select-menu.
 		/// \param options A vector of select-menu-options to offer.
@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
 			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
 
-		/// \brief Adds a modal to the response Message.
+		/// \brief Adds a modal to the response MessageData.
 		/// \param topTitleNew A title for the modal.
 		/// \param topCustomIdNew A custom id to give for the modal.
 		/// \param titleNew A title for the modal's individual input.
@@ -135,41 +135,41 @@ namespace DiscordCoreAPI {
 		std::vector<ActionRowData> components{};///< Array of message component the components to include with the message.
 		AllowedMentionsData allowedMentions{};///< Allowed mention object.
 		std::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
-		std::string webhookToken{};///< The WebHook token you would like to execute.
+		std::string webhookToken{};///< The WebHookData token you would like to execute.
 		std::vector<File> files{};///< File contents the contents of the file being sent.
 		std::string avatarUrl{};///< Override the default avatar of the webhook.
-		std::string userName{};///< Override the default userName of the webhook.
+		std::string userName{};///< Override the default username of the webhook.
 		std::string customId{};///< Custom id for the modal.
-		Snowflake webHookId{};///< The WebHook you would like to execute.
+		Snowflake webHookId{};///< The WebHookData you would like to execute.
 		std::string content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
 		std::string title{};///< Title for the modal.
 		int32_t flags{};///< Flags combined as a bitfield.
 		bool tts{};///< True if this is a TTS message.
 	};
 
-	/// \brief For editing a WebHook Message.
+	/// \brief For editing a WebHook MessageData.
 	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
 	  public:
-		friend struct Jsonifier::Core<EditWebHookData>;
+		friend struct Jsonifier::Core<DiscordCoreAPI::EditWebHookData>;
 		friend class EditInteractionResponseData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
 		friend class WebHooks;
 
 		Snowflake messageId{};///< The Message Snowflake to collect.
-		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		Snowflake threadId{};///< Send a message to the specified thread within a webhook's ChannelData. The thread will automatically be unarchived.
 		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData& setTTSStatus(bool) = delete;
 
-		EditWebHookData() noexcept = default;
+		EditWebHookData() = default;
 
 		EditWebHookData(WebHookData dataNew);
 	};
 
-	/// \brief For collecting a list of WebHooks from a chosen Channel.
+	/// \brief For collecting a list of WebHooks from a chosen ChannelData.
 	struct DiscordCoreAPI_Dll GetChannelWebHooksData {
-		Snowflake channelId{};///< The Channel from which to collect the WebHooks.
+		Snowflake channelId{};///< The ChannelData from which to collect the WebHooks.
 	};
 
 	/// \brief For collecting a list of WebHooks from a chosen Guild.
@@ -177,70 +177,60 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild from which to collect the WebHooks.
 	};
 
-	/// \brief Collects a single WebHook.
+	/// \brief Collects a single WebHookData.
 	struct DiscordCoreAPI_Dll GetWebHookData {
-		Snowflake webHookId{};///< Snowflake of the desired WebHook to collect.
+		Snowflake webHookId{};///< Snowflake of the desired WebHookData to collect.
 	};
 
-	/// \brief Collects a single WebHook, using the Token and Snowflake.
-	struct DiscordCoreAPI_Dll GetWebHookWithTokenData {
-		std::string webhookToken{};///< Token of the desired WebHook.
-		Snowflake webHookId{};///< Snowflake of the desired WebHook.
+	/// \brief Collects a single WebHookData, using the Token and Snowflake.
+	struct DiscordCoreAPI_Dll GetWebHookDataWithTokenData {
+		std::string webhookToken{};///< Token of the desired WebHookData.
+		Snowflake webHookId{};///< Snowflake of the desired WebHookData.
 	};
 
 	/// \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookData {
-		Snowflake channelId{};///< The new Channel id this webhook should be moved to.
-		Snowflake webHookId{};///< The WebHook to be modified.
+		Snowflake channelId{};///< The new ChannelData id this webhook should be moved to.
+		Snowflake webHookId{};///< The WebHookData to be modified.
 		std::string avatar{};///< Image responseData for the default webhook avatar.
 		std::string name{};///< The default name of the webhook.
 	};
 
 	/// \brief For modifying a WebHook.
-	struct DiscordCoreAPI_Dll ModifyWebHookWithTokenData {
-		std::string webhookToken{};///< Token of the desired WebHook.
-		Snowflake channelId{};///< The new Channel id this webhook should be moved to.
-		Snowflake webHookId{};///< The WebHook to be modified.
+	struct DiscordCoreAPI_Dll ModifyWebHookDataWithTokenData {
+		std::string webhookToken{};///< Token of the desired WebHookData.
+		Snowflake channelId{};///< The new ChannelData id this webhook should be moved to.
+		Snowflake webHookId{};///< The WebHookData to be modified.
 		std::string avatar{};///< Image responseData for the default webhook avatar.
 		std::string name{};///< The default name of the webhook.
 	};
 
 	/// \brief For deleting a WebHook.
 	struct DiscordCoreAPI_Dll DeleteWebHookData {
-		Snowflake webHookId{};///< The desired WebHook to delete.
+		Snowflake webHookId{};///< The desired WebHookData to delete.
 	};
 
 	/// \brief For deleting a WebHook, using its Token.
-	struct DiscordCoreAPI_Dll DeleteWebHookWithTokenData {
-		std::string webhookToken{};///< Token of the desired WebHook.
-		Snowflake webHookId{};///< The desired WebHook to delete.
+	struct DiscordCoreAPI_Dll DeleteWebHookDataWithTokenData {
+		std::string webhookToken{};///< Token of the desired WebHookData.
+		Snowflake webHookId{};///< The desired WebHookData to delete.
 	};
 
-	/// \brief For getting a WebHook Message.
-	struct DiscordCoreAPI_Dll GetWebHookMessageData {
-		std::string webhookToken{};///< The WebHook token you would like to collect.
-		Snowflake webHookId{};///< The WebHook you would like to collect.
+	/// \brief For getting a WebHook MessageData.
+	struct DiscordCoreAPI_Dll GetWebHookDataMessageData {
+		std::string webhookToken{};///< The WebHookData token you would like to collect.
+		Snowflake webHookId{};///< The WebHookData you would like to collect.
 		Snowflake messageId{};///< The Message Snowflake to collect.
 		Snowflake threadId{};///< The thread that the Message is in.
 	};
 
-	/// \brief For deleting a WebHook Message.
-	struct DiscordCoreAPI_Dll DeleteWebHookMessageData {
-		std::string webhookToken{};///< The WebHook token you would like to collect.
-		Snowflake webHookId{};///< The WebHook you would like to collect.
+	/// \brief For deleting a WebHook MessageData.
+	struct DiscordCoreAPI_Dll DeleteWebHookDataMessageData {
+		std::string webhookToken{};///< The WebHookData token you would like to collect.
+		Snowflake webHookId{};///< The WebHookData you would like to collect.
 		Snowflake messageId{};///< The Message Snowflake to collect.
-		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		Snowflake threadId{};///< Send a message to the specified thread within a webhook's ChannelData. The thread will automatically be unarchived.
 	};
-
-	/// \brief A single WebHook.
-	class DiscordCoreAPI_Dll WebHook : public WebHookData {
-	  public:
-		WebHook() noexcept = default;
-
-		virtual ~WebHook() noexcept = default;
-	};
-
-	using WebHookVector = std::vector<WebHook>;
 
 	/**@}*/
 
@@ -248,75 +238,75 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the WebHook related Discord endpoints;
+	/// \brief An interface class for the WebHookData related Discord endpoints;
 	class DiscordCoreAPI_Dll WebHooks {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		/// \brief Creates a new WebHook.
+		/// \brief Creates a new WebHookData.
 		/// \param dataPackage A GetMessageData structure.
 		/// \returns A CoRoutine containing a WebHook.
-		static CoRoutine<WebHook> createWebHookAsync(CreateWebHookData dataPackage);
+		static CoRoutine<WebHookData> createWebHookDataAsync(CreateWebHookData dataPackage);
 
-		/// \brief Collects a list of WebHooks from a chosen Channel.
+		/// \brief Collects a list of WebHooks from a chosen ChannelData.
 		/// \param dataPackage A GetChannelWebHooksData structure.
-		/// \returns A CoRoutine containing a WebHookVector.
-		static CoRoutine<std::vector<WebHook>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
+		/// \returns A CoRoutine containing a std::vector<WebHookData>.
+		static CoRoutine<std::vector<WebHookData>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
 
 		/// \brief Collects a list of WebHooks from a chosen Guild.
 		/// \param dataPackage A GetGuildWebHooksData structure.
-		/// \returns A CoRoutine containing a WebHookVector.
-		static CoRoutine<std::vector<WebHook>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
+		/// \returns A CoRoutine containing a std::vector<WebHookData>.
+		static CoRoutine<std::vector<WebHookData>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
 
-		/// \brief Collects a single WebHook.
+		/// \brief Collects a single WebHookData.
 		/// \param dataPackage A GetWebHookData structure.
 		/// \returns A CoRoutine containing a WebHook.
-		static CoRoutine<WebHook> getWebHookAsync(GetWebHookData dataPackage);
+		static CoRoutine<WebHookData> getWebHookDataAsync(GetWebHookData dataPackage);
 
-		/// \brief Collects a single WebHook, using the Token.
-		/// \param dataPackage A GetWebHookWithTokenData structure.
+		/// \brief Collects a single WebHookData, using the Token.
+		/// \param dataPackage A GetWebHookDataWithTokenData structure.
 		/// \returns A CoRoutine containing a WebHook.
-		static CoRoutine<WebHook> getWebHookWithTokenAsync(GetWebHookWithTokenData dataPackage);
+		static CoRoutine<WebHookData> getWebHookDataWithTokenAsync(GetWebHookDataWithTokenData dataPackage);
 
-		/// \brief Modifies a single WebHook.
+		/// \brief Modifies a single WebHookData.
 		/// \param dataPackage A ModifyWebHookData structure.
 		/// \returns A CoRoutine containing a WebHook.
-		static CoRoutine<WebHook> modifyWebHookAsync(ModifyWebHookData dataPackage);
+		static CoRoutine<WebHookData> modifyWebHookDataAsync(ModifyWebHookData dataPackage);
 
-		/// \brief Modifies a single WebHook, using its Token.
-		/// \param dataPackage A ModifyWebHookWithTokenData structure.
+		/// \brief Modifies a single WebHookData, using its Token.
+		/// \param dataPackage A ModifyWebHookDataWithTokenData structure.
 		/// \returns A CoRoutine containing a WebHook.
-		static CoRoutine<WebHook> modifyWebHookWithTokenAsync(ModifyWebHookWithTokenData dataPackage);
+		static CoRoutine<WebHookData> modifyWebHookDataWithTokenAsync(ModifyWebHookDataWithTokenData dataPackage);
 
-		/// \brief Deletes a single WebHook.
+		/// \brief Deletes a single WebHookData.
 		/// \param dataPackage A DeleteWebHookData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteWebHookAsync(DeleteWebHookData dataPackage);
+		static CoRoutine<void> deleteWebHookDataAsync(DeleteWebHookData dataPackage);
 
-		/// \brief Deletes a single WebHook, using its Token.
-		/// \param dataPackage A DeleteWebHookWithTokenData structure.
+		/// \brief Deletes a single WebHookData, using its Token.
+		/// \param dataPackage A DeleteWebHookDataWithTokenData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteWebHookWithTokenAsync(DeleteWebHookWithTokenData dataPackage);
+		static CoRoutine<void> deleteWebHookDataWithTokenAsync(DeleteWebHookDataWithTokenData dataPackage);
 
-		/// \brief Executes a single WebHook.
+		/// \brief Executes a single WebHookData.
 		/// \param dataPackage An ExecuteWebHookData structure.
 		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<Message> executeWebHookAsync(ExecuteWebHookData dataPackage);
+		static CoRoutine<MessageData> executeWebHookDataAsync(ExecuteWebHookData dataPackage);
 
-		/// \brief Collects a WebHook Message.
-		/// \param dataPackage An GetWebHookMessageData structure.
+		/// \brief Collects a WebHook MessageData.
+		/// \param dataPackage An GetWebHookDataMessageData structure.
 		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<Message> getWebHookMessageAsync(GetWebHookMessageData dataPackage);
+		static CoRoutine<MessageData> getWebHookDataMessageAsync(GetWebHookDataMessageData dataPackage);
 
-		/// \brief Edits a WebHook Message.
-		/// \param dataPackage An EditWebHookMessageData structure.
+		/// \brief Edits a WebHook MessageData.
+		/// \param dataPackage An EditWebHookDataMessageData structure.
 		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<Message> editWebHookMessageAsync(EditWebHookData dataPackage);
+		static CoRoutine<MessageData> editWebHookDataMessageAsync(EditWebHookData dataPackage);
 
-		/// \brief Deletes a WebHook Message.
-		/// \param dataPackage An DeleteWebHookMessageData structure.
+		/// \brief Deletes a WebHook MessageData.
+		/// \param dataPackage An DeleteWebHookDataMessageData structure.
 		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<void> deleteWebHookMessageAsync(DeleteWebHookMessageData dataPackage);
+		static CoRoutine<void> deleteWebHookDataMessageAsync(DeleteWebHookDataMessageData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

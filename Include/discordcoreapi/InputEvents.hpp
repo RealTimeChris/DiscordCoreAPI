@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief For handling User input - Messages or Interactions.
+	/// \brief For handling UserData input - Messages or Interactions.
 	class DiscordCoreAPI_Dll InputEvents {
 	  public:
 		/// \brief Responds to one of a number of types of "InputEvents".

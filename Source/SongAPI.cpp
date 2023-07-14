@@ -40,29 +40,29 @@ namespace DiscordCoreAPI {
 		guildId = guildIdNew;
 	}
 
-	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake guildId) noexcept {
+	void SongAPI::onSongCompletion(std::function<CoRoutine<void, false>(SongCompletionEventData)> handler) {
 		onSongCompletionEvent.functions.clear();
 		eventToken = onSongCompletionEvent.add(handler);
 	}
 
-	bool SongAPI::skip(const GuildMember& guildMember, bool wasItAFail) noexcept {
+	bool SongAPI::skip(const GuildMemberData& guildMember, bool wasItAFail) {
 		AudioFrameData dataFrame{};
 		audioDataBuffer.clearContents();
 		auto returnValue = DiscordCoreClient::getVoiceConnection(guildId).skip(wasItAFail);
-		dataFrame.guildMemberId = guildMember.user.id.operator size_t();
+		dataFrame.guildMemberId = guildMember.user.id.operator uint64_t();
 		audioDataBuffer.send(std::move(dataFrame));
 		return returnValue;
 	}
 
-	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery) noexcept {
+	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery) {
 		std::unique_lock lock{ accessMutex };
 		auto vector01 = DiscordCoreClient::getSoundCloudAPI(guildId).searchForSong(searchQuery);
 		auto vector02 = DiscordCoreClient::getYouTubeAPI(guildId).searchForSong(searchQuery);
-		int32_t totalLength = static_cast<int32_t>(vector01.size() + vector02.size());
+		uint64_t totalLength = vector01.size() + vector02.size();
 		std::vector<Song> newVector{};
-		int32_t vector01Used{};
-		int32_t vector02Used{};
-		for (size_t x = 0; x < totalLength; ++x) {
+		uint64_t vector01Used{};
+		uint64_t vector02Used{};
+		for (uint64_t x = 0; x < totalLength; ++x) {
 			if ((vector01Used < vector01.size()) && (x % 2 == 0) && vector01.size() > 0) {
 				newVector.emplace_back(vector01[vector01Used]);
 				newVector[newVector.size() - 1].type = SongType::SoundCloud;
@@ -76,55 +76,44 @@ namespace DiscordCoreAPI {
 		return newVector;
 	}
 
-	bool SongAPI::play(Song songNew, const GuildMember& guildMember) noexcept {
+	bool SongAPI::play(Song songNew, const GuildMemberData& guildMember) {
 		songNew.addedByUserId = guildMember.user.id;
 		std::unique_lock lock{ accessMutex };
-		if (taskThread) {
-			taskThread->request_stop();
-			if (taskThread->joinable()) {
-				taskThread.reset(nullptr);
-			}
+		if (taskThread.getStatus() == CoRoutineStatus::Running) {
+			taskThread.cancel();
 		}
 		if (songNew.type == SongType::SoundCloud) {
 			Song newerSong{ DiscordCoreClient::getSoundCloudAPI(guildMember.guildId).collectFinalSong(songNew) };
-			taskThread = makeUnique<std::jthread>([=, this](std::stop_token eventToken) {
-				DiscordCoreClient::getSoundCloudAPI(guildMember.guildId).downloadAndStreamAudio(newerSong, eventToken, 0);
-			});
+			taskThread = DiscordCoreClient::getSoundCloudAPI(guildMember.guildId).downloadAndStreamAudio(newerSong);
 
 		} else if (songNew.type == SongType::YouTube) {
 			Song newerSong{ DiscordCoreClient::getYouTubeAPI(guildMember.guildId).collectFinalSong(songNew) };
-			taskThread = makeUnique<std::jthread>([=, this](std::stop_token eventToken) {
-				DiscordCoreClient::getYouTubeAPI(guildMember.guildId).downloadAndStreamAudio(newerSong, eventToken, 0);
-			});
+			taskThread = DiscordCoreClient::getYouTubeAPI(guildMember.guildId).downloadAndStreamAudio(newerSong);
 		};
 		return DiscordCoreClient::getVoiceConnection(guildMember.guildId).play();
 	}
 
-	bool SongAPI::areWeCurrentlyPlaying() const noexcept {
+	bool SongAPI::areWeCurrentlyPlaying() const {
 		return DiscordCoreClient::getVoiceConnection(guildId).areWeCurrentlyPlaying();
 	}
 
-	bool SongAPI::play(Snowflake guildId) noexcept {
+	bool SongAPI::play() {
 		return DiscordCoreClient::getVoiceConnection(guildId).play();
 	}
 
-	bool SongAPI::pauseToggle() noexcept {
+	bool SongAPI::pauseToggle() {
 		return DiscordCoreClient::getVoiceConnection(guildId).pauseToggle();
 	}
 
-	bool SongAPI::stop() noexcept {
+	bool SongAPI::stop() {
 		bool returnValue = DiscordCoreClient::getVoiceConnection(guildId).stop();
 		audioDataBuffer.clearContents();
 		return returnValue;
 	}
 
-	void SongAPI::disconnect() noexcept {
-		if (taskThread) {
-			taskThread->request_stop();
-			if (taskThread->joinable()) {
-				taskThread->detach();
-				taskThread.reset(nullptr);
-			}
+	void SongAPI::disconnect() {
+		if (taskThread.getStatus() == CoRoutineStatus::Running) {
+			taskThread.cancel();
 		}
 		onSongCompletionEvent.erase(eventToken);
 		audioDataBuffer.clearContents();
@@ -137,12 +126,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	SongAPI::~SongAPI() noexcept {
-		if (taskThread) {
-			taskThread->request_stop();
-			if (taskThread->joinable()) {
-				taskThread->join();
-			}
-		}
+	SongAPI::~SongAPI() {
 	}
 };
