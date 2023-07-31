@@ -35,19 +35,19 @@
 
 namespace DiscordCoreAPI {
 
-	/// \brief A class for handling commands from user input.
+	/// @brief A class for handling commands from user input.
 	class DiscordCoreAPI_Dll CommandController {
 	  public:
 		CommandController(DiscordCoreClient*);
 
-		/// \brief Registers a function to be called.
-		/// \param functionNames A vector of strings to be accepted as function names.
-		/// \param baseFunction A unique_ptr to the function to be called.
+		/// @brief Registers a function to be called.
+		/// @param functionNames A vector of strings to be accepted as function names.
+		/// @param baseFunction A unique_ptr to the function to be called.
 		void registerFunction(const std::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction);
 
-		/// \brief For returning the contained map of functions.
-		/// \returns A map containing the function names as well as unique_ptrs to the functions.
-		std::map<std::vector<std::string>, UniquePtr<BaseFunction>>& getFunctions();
+		/// @brief For returning the contained map of functions.
+		/// @return A map containing the function names as well as unique_ptrs to the functions.
+		UnorderedMap<std::vector<std::string>, UniquePtr<BaseFunction>>& getFunctions();
 
 		CoRoutine<void> checkForAndRunCommand(CommandData commandData);
 

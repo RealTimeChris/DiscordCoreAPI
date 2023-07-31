@@ -63,11 +63,14 @@
 	#ifdef min
 		#undef min
 	#endif
-#elif __linux__
+#else
 	#include <netinet/tcp.h>
 	#include <netinet/in.h>
 	#include <sys/socket.h>
 	#include <sys/types.h>
+	#include <arpa/inet.h>
+	#include <unistd.h>
+	#include <errno.h>
 	#include <netdb.h>
 	#include <fcntl.h>
 	#include <poll.h>
@@ -122,8 +125,8 @@ namespace DiscordCoreAPI {
 		}
 
 #ifdef _WIN32
-		struct DiscordCoreAPI_Dll WSADataWrapper {
-			struct DiscordCoreAPI_Dll WSADataDeleter {
+		struct WSADataWrapper {
+			struct WSADataDeleter {
 				inline void operator()(WSADATA* other) {
 					WSACleanup();
 					delete other;
@@ -142,13 +145,13 @@ namespace DiscordCoreAPI {
 		};
 #endif
 
-		struct DiscordCoreAPI_Dll PollFDWrapper {
-			std::vector<uint32_t> indices{};
+		struct PollFDWrapper {
+			std::vector<uint64_t> indices{};
 			std::vector<pollfd> polls{};
 		};
 
-		struct DiscordCoreAPI_Dll SSL_CTXWrapper {
-			struct DiscordCoreAPI_Dll SSL_CTXDeleter {
+		struct SSL_CTXWrapper {
+			struct SSL_CTXDeleter {
 				inline void operator()(SSL_CTX* other) {
 					if (other) {
 						SSL_CTX_free(other);
@@ -170,9 +173,9 @@ namespace DiscordCoreAPI {
 			UniquePtr<SSL_CTX, SSL_CTXDeleter> ptr{};
 		};
 
-		class DiscordCoreAPI_Dll SSLWrapper {
+		class SSLWrapper {
 		  public:
-			struct DiscordCoreAPI_Dll SSLDeleter {
+			struct SSLDeleter {
 				inline void operator()(SSL* other) {
 					if (other) {
 						SSL_shutdown(other);
@@ -211,9 +214,9 @@ namespace DiscordCoreAPI {
 			UniquePtr<SSL, SSLDeleter> ptr{};
 		};
 
-		class DiscordCoreAPI_Dll SOCKETWrapper {
+		class SOCKETWrapper {
 		  public:
-			struct DiscordCoreAPI_Dll SOCKETDeleter {
+			struct SOCKETDeleter {
 				inline void operator()(SOCKET* ptr) {
 					if (ptr && *ptr != INVALID_SOCKET) {
 						shutdown(*ptr, SHUT_RDWR);
@@ -255,7 +258,7 @@ namespace DiscordCoreAPI {
 			UniquePtr<SOCKET, SOCKETDeleter> ptr{};
 		};
 
-		struct DiscordCoreAPI_Dll addrinfoWrapper {
+		struct addrinfoWrapper {
 			inline addrinfo* operator->() {
 				return ptr;
 			}
@@ -273,7 +276,7 @@ namespace DiscordCoreAPI {
 			addrinfo* ptr{ &value };
 		};
 
-		class DiscordCoreAPI_Dll SSLContextHolder {
+		class SSLContextHolder {
 		  public:
 			inline static SSL_CTXWrapper context{};
 			inline static std::mutex accessMutex{};
@@ -318,13 +321,13 @@ namespace DiscordCoreAPI {
 					if (dataToWrite.size() > 0 && static_cast<ValueType*>(this)->ssl) {
 						if (priority && dataToWrite.size() < maxBufferSize) {
 							outputBuffer.clear();
-							outputBuffer.writeData(reinterpret_cast<const uint8_t*>(dataToWrite.data()), dataToWrite.size());
+							outputBuffer.writeData(dataToWrite.data(), dataToWrite.size());
 							static_cast<ValueType*>(this)->processWriteData();
 						} else {
 							uint64_t remainingBytes{ dataToWrite.size() };
 							while (remainingBytes > 0) {
 								uint64_t amountToCollect{ dataToWrite.size() >= maxBufferSize ? maxBufferSize : dataToWrite.size() };
-								outputBuffer.writeData(reinterpret_cast<const uint8_t*>(dataToWrite.data()), amountToCollect);
+								outputBuffer.writeData(dataToWrite.data(), amountToCollect);
 								dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
 								remainingBytes = dataToWrite.size();
 							}
@@ -350,15 +353,15 @@ namespace DiscordCoreAPI {
 				bytesRead = 0;
 			}
 
-			virtual ~SSLDataInterface() = default;
-
 		  protected:
 			const uint64_t maxBufferSize{ (1024 * 16) };
-			RingBuffer<uint8_t, 16> outputBuffer{};
 			RingBuffer<uint8_t, 64> inputBuffer{};
+			RingBuffer<char, 16> outputBuffer{};
 			int64_t bytesRead{};
 
 			inline SSLDataInterface() = default;
+
+			virtual ~SSLDataInterface() = default;
 		};
 
 		template<typename ValueType> class TCPConnection {
@@ -407,8 +410,8 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				bool boolOptionVal{ true };
-				if (setsockopt(socket, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<const char*>(&boolOptionVal), sizeof(int32_t))) {
+				char boolOptionVal{ static_cast<char>(true) };
+				if (setsockopt(socket, SOL_SOCKET, SO_KEEPALIVE, &boolOptionVal, sizeof(int32_t))) {
 					MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("TCPConnection::setsockopt(), to: " + baseUrlNew));
 					currentStatus = ConnectionStatus::CONNECTION_Error;
 					socket = INVALID_SOCKET;
@@ -645,18 +648,17 @@ namespace DiscordCoreAPI {
 				return true;
 			}
 
-			template<typename ValueType2>
-			inline static std::unordered_map<uint32_t, ValueType2&> processIO(std::unordered_map<uint32_t, ValueType2&>& shardMap) {
-				std::unordered_map<uint32_t, ValueType2&> returnData{};
+			template<typename ValueType2> inline static UnorderedMap<uint64_t, ValueType2*> processIO(UnorderedMap<uint64_t, ValueType2*>& shardMap) {
+				UnorderedMap<uint64_t, ValueType2*> returnData{};
 				PollFDWrapper readWriteSet{};
 				for (auto& [key, value]: shardMap) {
-					if (value.areWeStillConnected()) {
+					if (value->areWeStillConnected()) {
 						pollfd fdSet{};
-						fdSet.fd = static_cast<SOCKET>(value.socket);
-						if ((value.outputBuffer.getUsedSpace() > 0 || value.writeWantWrite || value.readWantWrite) && !value.readWantRead &&
-							!value.writeWantRead) {
+						fdSet.fd = static_cast<SOCKET>(value->socket);
+						if ((value->outputBuffer.getUsedSpace() > 0 || value->writeWantWrite || value->readWantWrite) && !value->readWantRead &&
+							!value->writeWantRead) {
 							fdSet.events = POLLIN | POLLOUT;
-						} else if (!value.writeWantWrite && !value.readWantWrite) {
+						} else if (!value->writeWantWrite && !value->readWantWrite) {
 							fdSet.events = POLLIN;
 						}
 						readWriteSet.indices.emplace_back(key);
@@ -675,8 +677,8 @@ namespace DiscordCoreAPI {
 					for (uint64_t x = 0; x < readWriteSet.polls.size(); ++x) {
 						if (readWriteSet.polls.at(x).revents & POLLERR || readWriteSet.polls.at(x).revents & POLLHUP ||
 							readWriteSet.polls.at(x).revents & POLLNVAL) {
-							shardMap.at(readWriteSet.indices.at(x)).currentStatus = ConnectionStatus::SOCKET_Error;
-							returnData.emplace(readWriteSet.indices.at(x), std::ref(shardMap.at(readWriteSet.indices.at(x))));
+							shardMap.at(readWriteSet.indices.at(x))->currentStatus = ConnectionStatus::SOCKET_Error;
+							returnData.emplace(readWriteSet.indices.at(x), shardMap.at(readWriteSet.indices.at(x)));
 							readWriteSet.indices.erase(readWriteSet.indices.begin() + x);
 							readWriteSet.polls.erase(readWriteSet.polls.begin() + x);
 							didWeFindTheSocket = true;
@@ -684,8 +686,8 @@ namespace DiscordCoreAPI {
 					}
 					if (!didWeFindTheSocket) {
 						for (uint64_t x = 0; x < readWriteSet.polls.size(); ++x) {
-							shardMap.at(readWriteSet.indices.at(x)).currentStatus = ConnectionStatus::SOCKET_Error;
-							returnData.emplace(readWriteSet.indices.at(x), std::ref(shardMap.at(readWriteSet.indices.at(x))));
+							shardMap.at(readWriteSet.indices.at(x))->currentStatus = ConnectionStatus::SOCKET_Error;
+							returnData.emplace(readWriteSet.indices.at(x), shardMap.at(readWriteSet.indices.at(x)));
 						}
 						return returnData;
 					}
@@ -694,39 +696,39 @@ namespace DiscordCoreAPI {
 					return returnData;
 				}
 				for (uint64_t x = 0; x < readWriteSet.polls.size(); ++x) {
-					if (readWriteSet.polls.at(x).revents & POLLOUT || (POLLIN && shardMap.at(readWriteSet.indices.at(x)).writeWantRead)) {
-						if (!shardMap.at(readWriteSet.indices.at(x)).processWriteData()) {
-							shardMap.at(readWriteSet.indices.at(x)).currentStatus = ConnectionStatus::WRITE_Error;
-							returnData.emplace(readWriteSet.indices.at(x), std::ref(shardMap.at(readWriteSet.indices.at(x))));
+					if (readWriteSet.polls.at(x).revents & POLLOUT || (POLLIN && shardMap.at(readWriteSet.indices.at(x))->writeWantRead)) {
+						if (!shardMap.at(readWriteSet.indices.at(x))->processWriteData()) {
+							shardMap.at(readWriteSet.indices.at(x))->currentStatus = ConnectionStatus::WRITE_Error;
+							returnData.emplace(readWriteSet.indices.at(x), shardMap.at(readWriteSet.indices.at(x)));
 							continue;
 						}
 					}
-					if (readWriteSet.polls.at(x).revents & POLLIN || (POLLOUT && shardMap.at(readWriteSet.indices.at(x)).readWantWrite)) {
-						if (!shardMap.at(readWriteSet.indices.at(x)).processReadData()) {
-							shardMap.at(readWriteSet.indices.at(x)).currentStatus = ConnectionStatus::READ_Error;
-							returnData.emplace(readWriteSet.indices.at(x), std::ref(shardMap.at(readWriteSet.indices.at(x))));
+					if (readWriteSet.polls.at(x).revents & POLLIN || (POLLOUT && shardMap.at(readWriteSet.indices.at(x))->readWantWrite)) {
+						if (!shardMap.at(readWriteSet.indices.at(x))->processReadData()) {
+							shardMap.at(readWriteSet.indices.at(x))->currentStatus = ConnectionStatus::READ_Error;
+							returnData.emplace(readWriteSet.indices.at(x), shardMap.at(readWriteSet.indices.at(x)));
 							continue;
 						}
 					}
 					if (readWriteSet.polls.at(x).revents & POLLERR) {
-						shardMap.at(readWriteSet.indices.at(x)).currentStatus = ConnectionStatus::POLLERR_Error;
-						shardMap.at(readWriteSet.indices.at(x)).socket = INVALID_SOCKET;
-						shardMap.at(readWriteSet.indices.at(x)).ssl = nullptr;
-						returnData.emplace(readWriteSet.indices.at(x), std::ref(shardMap.at(readWriteSet.indices.at(x))));
+						shardMap.at(readWriteSet.indices.at(x))->currentStatus = ConnectionStatus::POLLERR_Error;
+						shardMap.at(readWriteSet.indices.at(x))->socket = INVALID_SOCKET;
+						shardMap.at(readWriteSet.indices.at(x))->ssl = nullptr;
+						returnData.emplace(readWriteSet.indices.at(x), shardMap.at(readWriteSet.indices.at(x)));
 						continue;
 					}
 					if (readWriteSet.polls.at(x).revents & POLLNVAL) {
-						shardMap.at(readWriteSet.indices.at(x)).currentStatus = ConnectionStatus::POLLNVAL_Error;
-						shardMap.at(readWriteSet.indices.at(x)).socket = INVALID_SOCKET;
-						shardMap.at(readWriteSet.indices.at(x)).ssl = nullptr;
-						returnData.emplace(readWriteSet.indices.at(x), std::ref(shardMap.at(readWriteSet.indices.at(x))));
+						shardMap.at(readWriteSet.indices.at(x))->currentStatus = ConnectionStatus::POLLNVAL_Error;
+						shardMap.at(readWriteSet.indices.at(x))->socket = INVALID_SOCKET;
+						shardMap.at(readWriteSet.indices.at(x))->ssl = nullptr;
+						returnData.emplace(readWriteSet.indices.at(x), shardMap.at(readWriteSet.indices.at(x)));
 						continue;
 					}
 					if (readWriteSet.polls.at(x).revents & POLLHUP) {
-						shardMap.at(readWriteSet.indices.at(x)).currentStatus = ConnectionStatus::POLLHUP_Error;
-						shardMap.at(readWriteSet.indices.at(x)).socket = INVALID_SOCKET;
-						shardMap.at(readWriteSet.indices.at(x)).ssl = nullptr;
-						returnData.emplace(readWriteSet.indices.at(x), std::ref(shardMap.at(readWriteSet.indices.at(x))));
+						shardMap.at(readWriteSet.indices.at(x))->currentStatus = ConnectionStatus::POLLHUP_Error;
+						shardMap.at(readWriteSet.indices.at(x))->socket = INVALID_SOCKET;
+						shardMap.at(readWriteSet.indices.at(x))->ssl = nullptr;
+						returnData.emplace(readWriteSet.indices.at(x), shardMap.at(readWriteSet.indices.at(x)));
 						continue;
 					}
 				}

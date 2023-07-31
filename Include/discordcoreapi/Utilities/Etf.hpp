@@ -35,16 +35,22 @@
 
 namespace DiscordCoreAPI {
 
-	struct DCAException : public std::runtime_error {
-		inline DCAException(const std::string& error, std::source_location location = std::source_location::current())
-			: std::runtime_error("Thrown From: " + std::string{ location.file_name() } + std::string{ " (" } + std::to_string(location.line()) + ":" +
-				  std::to_string(location.column()) + ")\n" + error){};
-	};
-
 	namespace DiscordCoreInternal {
 
+		/**
+		* \addtogroup discord_core_internal
+		* @{
+		*/
+
+#if defined T_AVX || T_AVX2 || T_AVX512
+
+		/// @brief Reverses the byte order of a value if needed, based on the endianness.
+		/// @tparam ReturnType The type of the value to reverse.
+		/// @param net The value to reverse.
+		/// @return The reversed value.
 		template<typename ReturnType> inline ReturnType reverseByteOrder(ReturnType& net) {
 			if constexpr (std::endian::native == std::endian::little) {
+				// Reverse byte order using SIMD intrinsics
 				switch (sizeof(ReturnType)) {
 					case 2: {
 						net = _mm_extract_epi16(_mm_shuffle_epi8(_mm_insert_epi16(__m128i{}, net, 0), _mm_insert_epi16(__m128i{}, 0x01, 0)), 0);
@@ -68,18 +74,55 @@ namespace DiscordCoreAPI {
 			}
 		}
 
+// If not using SSE/AVX intrinsics, use standard functions for reversing byte order
+#else
+		template<typename ReturnType> inline ReturnType reverseByteOrder(ReturnType& net) {
+			if constexpr (std::endian::native == std::endian::little) {
+				// Reverse byte order using standard network to host conversion functions
+				switch (sizeof(ReturnType)) {
+					case 2: {
+						net = static_cast<ReturnType>(ntohs(static_cast<uint16_t>(net)));
+						return net;
+					}
+					case 4: {
+						net = static_cast<ReturnType>(ntohl(static_cast<uint32_t>(net)));
+						return net;
+					}
+					case 8: {
+						net = static_cast<ReturnType>(ntohll(static_cast<uint64_t>(net)));
+						return net;
+					}
+					default: {
+						return net;
+					}
+				}
+			} else {
+				return net;
+			}
+		}
+#endif
+
+		/// @brief Stores the bits of a number into a character array.
+		/// @tparam ReturnType The type of the number.
+		/// @param to The character array to store the bits.
+		/// @param num The number whose bits are to be stored.
 		template<typename ReturnType> inline void storeBits(char* to, ReturnType num) {
 			const uint8_t byteSize{ 8 };
 			num = reverseByteOrder<ReturnType>(num);
+
+			// Store the bits of the number in the character array
 			for (uint64_t x = 0; x < sizeof(ReturnType); ++x) {
 				to[x] = static_cast<uint8_t>(num >> (byteSize * x));
 			}
 		}
 
+		/// @brief Exception class for ETF parsing errors.
 		struct EtfParseError : public DCAException {
-		  public:
+			/// @brief Constructs an EtfParseError instance with a message and source location.
+			/// @param message The error message.
+			/// @param location The source location where the error occurred.
 			inline explicit EtfParseError(const std::string& message, std::source_location location = std::source_location::current())
-				: DCAException(message, location){};
+				: DCAException{ message, location } {};
 		};
 
 		enum class EtfType : uint8_t {
@@ -98,10 +141,14 @@ namespace DiscordCoreAPI {
 
 		constexpr uint8_t formatVersion{ 131 };
 
+		/// @brief Class for parsing ETF data into JSON format.
 		class DiscordCoreAPI_Dll EtfParser {
 		  public:
 			friend class WebSocketClient;
 
+			/// @brief Parse ETF data to JSON format.
+			/// @param dataToParse The ETF data to be parsed.
+			/// @return The JSON representation of the parsed data.
 			inline std::string_view parseEtfToJson(std::string_view dataToParse) {
 				dataBuffer = dataToParse.data();
 				dataSize = dataToParse.size();
@@ -116,22 +163,29 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			LightString<char> finalString{};
-			const char* dataBuffer{};
-			uint64_t currentSize{};
-			uint64_t dataSize{};
-			uint64_t offSet{};
+			LightString<char> finalString{};///< The final JSON string.
+			const char* dataBuffer{};///< Pointer to ETF data buffer.
+			uint64_t currentSize{};///< Current size of the JSON string.
+			uint64_t dataSize{};///< Size of the ETF data.
+			uint64_t offSet{};///< Current offset in the ETF data.
 
+			/// @brief Read bits from the data buffer and convert to ReturnType.
+			/// @tparam ReturnType The type to convert the read data to.
+			/// @return The converted value.
 			template<typename ReturnType> inline ReturnType readBitsFromBuffer() {
 				if (offSet + sizeof(ReturnType) > dataSize) {
 					throw EtfParseError{ "EtfParser::readBitsFromBuffer() Error: readBitsFromBuffer() past end of the buffer." };
 				}
-				ReturnType newValue = *reinterpret_cast<const ReturnType*>(dataBuffer + offSet);
+				ReturnType newValue{};
+				std::memcpy(&newValue, dataBuffer + offSet, sizeof(ReturnType));
 				offSet += sizeof(ReturnType);
 				newValue = reverseByteOrder<ReturnType>(newValue);
 				return newValue;
 			}
 
+			/// @brief Write characters to the final JSON string.
+			/// @param data Pointer to the data to be written.
+			/// @param length Number of characters to write.
 			inline void writeCharacters(const char* data, uint64_t length) {
 				if (finalString.size() < currentSize + length) {
 					finalString.resize((finalString.size() + length) * 2);
@@ -140,6 +194,8 @@ namespace DiscordCoreAPI {
 				currentSize += length;
 			}
 
+			/// @brief Write characters from the buffer to the final JSON string.
+			/// @param length Number of characters to write from the buffer.
 			inline void writeCharactersFromBuffer(uint32_t length) {
 				if (!length) {
 					writeCharacters("\"\"", 2);
@@ -171,7 +227,6 @@ namespace DiscordCoreAPI {
 				writeCharacter('"');
 				for (uint64_t x = 0; x < length; ++x) {
 					bool doWeBreak{};
-
 					switch (stringNew[x]) {
 						case '\\': {
 							switch (stringNew[++x]) {
@@ -200,7 +255,6 @@ namespace DiscordCoreAPI {
 								case 't':
 									writeCharacter('\t');
 									break;
-
 								default: {
 									writeCharacter(stringNew[x]);
 									break;
@@ -225,6 +279,8 @@ namespace DiscordCoreAPI {
 				writeCharacter('"');
 			}
 
+			/// @brief Write a character to the final JSON string.
+			/// @param value The character to write.
 			inline void writeCharacter(const char value) {
 				if (finalString.size() < currentSize + 1) {
 					finalString.resize((finalString.size() + 1) * 2);
@@ -232,7 +288,8 @@ namespace DiscordCoreAPI {
 				finalString[currentSize++] = value;
 			}
 
-			inline void singleValueETFToJson() {
+			/// @brief Parse a single ETF value and convert to JSON.
+			void singleValueETFToJson() {
 				if (offSet > dataSize) {
 					throw EtfParseError{ "ErlPacker::singleValueETFToJson() Error: Read past end of buffer." };
 				}
@@ -277,6 +334,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 
+			/// @brief Parse ETF data representing a list and convert to JSON array.
 			inline void parseListExt() {
 				uint32_t length = readBitsFromBuffer<uint32_t>();
 				writeCharacter('[');
@@ -293,16 +351,19 @@ namespace DiscordCoreAPI {
 				writeCharacter(']');
 			}
 
+			/// @brief Parse ETF data representing a small integer and convert to JSON number.
 			inline void parseSmallIntegerExt() {
 				auto string = std::to_string(readBitsFromBuffer<uint8_t>());
 				writeCharacters(string.data(), string.size());
 			}
 
+			/// @brief Parse ETF data representing an integer and convert to JSON number.
 			inline void parseIntegerExt() {
 				auto string = std::to_string(readBitsFromBuffer<uint32_t>());
 				writeCharacters(string.data(), string.size());
 			}
 
+			/// @brief Parse ETF data representing a string and convert to JSON string.
 			inline void parseStringExt() {
 				writeCharacter('"');
 				uint16_t length = readBitsFromBuffer<uint16_t>();
@@ -315,13 +376,16 @@ namespace DiscordCoreAPI {
 				writeCharacter('"');
 			}
 
+			/// @brief Parse ETF data representing a new float and convert to JSON number.
 			inline void parseNewFloatExt() {
 				uint64_t value = readBitsFromBuffer<uint64_t>();
-				double* newDouble = reinterpret_cast<double*>(&value);
-				std::string valueNew = std::to_string(*newDouble);
+				double newDouble{};
+				std::memcpy(&newDouble, &value, sizeof(double));
+				std::string valueNew = std::to_string(newDouble);
 				writeCharacters(valueNew.data(), valueNew.size());
 			}
 
+			/// @brief Parse ETF data representing a small big integer and convert to JSON number.
 			inline void parseSmallBigExt() {
 				writeCharacter('"');
 				auto digits = readBitsFromBuffer<uint8_t>();
@@ -351,22 +415,27 @@ namespace DiscordCoreAPI {
 				}
 			}
 
+			/// @brief Parse ETF data representing an atom and convert to JSON string.
 			inline void parseAtomExt() {
 				writeCharactersFromBuffer(readBitsFromBuffer<uint16_t>());
 			}
 
+			/// @brief Parse ETF data representing a binary and convert to JSON string.
 			inline void parseBinaryExt() {
 				writeCharactersFromBuffer(readBitsFromBuffer<uint32_t>());
 			}
 
+			/// @brief Parse ETF data representing a nil value and convert to JSON null.
 			inline void parseNilExt() {
 				writeCharacters("[]", 2);
 			}
 
+			/// @brief Parse ETF data representing a small atom and convert to JSON string.
 			inline void parseSmallAtomExt() {
 				writeCharactersFromBuffer(readBitsFromBuffer<uint8_t>());
 			}
 
+			/// @brief Parse ETF data representing a map and convert to JSON object.
 			inline void parseMapExt() {
 				uint32_t length = readBitsFromBuffer<uint32_t>();
 				writeCharacter('{');
@@ -382,78 +451,84 @@ namespace DiscordCoreAPI {
 			}
 		};
 
+		/// @brief Custom exception class for ETF serialization errors.
 		struct EtfSerializeError : public DCAException {
 		  public:
+			/// @brief Constructor for EtfSerializeError.
+			/// @param message The error message.
+			/// @param location Source location where the error occurred.
 			inline EtfSerializeError(const std::string& message, std::source_location location = std::source_location::current())
-				: DCAException(message, location){};
+				: DCAException{ message, location } {};
 		};
 
+		/// @brief Enumeration for different JSON value types.
 		enum class JsonType : uint8_t { Null = 0, Object = 1, Array = 2, String = 3, Float = 4, Uint = 5, Int = 6, Bool = 7 };
 
-		class DiscordCoreAPI_Dll EtfSerializer;
+		/// @brief Forward declaration of the EtfSerializer class.
+		class EtfSerializer;
 
-		template<typename ValueType>
-		concept EtfSerializerT = std::same_as<ValueType, EtfSerializeError>;
-
-		template<typename ValueType>
-		concept EnumT = std::is_enum<std::decay_t<ValueType>>::value && !EtfSerializerT<ValueType>;
-
-		template<typename ValueType>
-		concept BoolT = std::same_as<std::decay_t<ValueType>, bool> && !EtfSerializerT<ValueType> && !std::integral<ValueType>;
-
+		/// @brief Concept for floating-point types excluding EtfSerializer types.
 		template<typename ValueType>
 		concept FloatT = std::floating_point<std::decay_t<ValueType>> && !EtfSerializerT<ValueType>;
 
+		/// @brief Concept for signed integral types excluding EtfSerializer and boolean types.
 		template<typename ValueType>
 		concept SignedT = std::signed_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !EtfSerializerT<ValueType>;
 
-		template<typename ValueType>
-		concept IntegerT = std::integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !EtfSerializerT<ValueType>;
-
+		/// @brief Concept for unsigned integral types excluding EtfSerializer, boolean, and signed types.
 		template<typename ValueType>
 		concept UnsignedT =
 			std::unsigned_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !SignedT<ValueType> && !EtfSerializerT<ValueType>;
 
+		/// @brief Concept for string types excluding EtfSerializer.
 		template<typename ValueType>
 		concept StringT = std::same_as<std::decay_t<ValueType>, std::string> || std::same_as<std::decay_t<ValueType>, std::string_view> ||
 			std::convertible_to<ValueType, std::string> && !std::same_as<std::decay_t<ValueType>, char> && !EtfSerializerT<ValueType>;
 
+		/// @brief Concept for types that have emplace_back method.
 		template<typename ValueType>
 		concept HasEmplaceBack = requires(ValueType data, typename ValueType::reference& valueNew) {
 			{ data.emplace_back(valueNew) } -> std::same_as<typename ValueType::reference>;
 		};
 
+		/// @brief Concept for types that have begin and end methods.
 		template<typename ValueType>
 		concept HasRange = requires(ValueType data) {
 			{ data.begin() } -> std::same_as<typename ValueType::iterator>;
 			{ data.end() } -> std::same_as<typename ValueType::iterator>;
 		};
 
+		/// @brief Concept for types that have resize method.
 		template<typename ValueType>
 		concept HasResize = requires(ValueType data, uint64_t valueNew) {
 			{ data.resize(valueNew) };
 		};
 
+		/// @brief Concept for null types excluding EtfSerializer.
 		template<typename ValueType>
 		concept NullT = std::same_as<std::decay_t<ValueType>, std::nullptr_t> && !EtfSerializerT<ValueType>;
 
+		/// @brief Concept for types that are subscriptable with [] operator.
 		template<typename ValueType>
 		concept VectorSubscriptable = requires(ValueType data, uint64_t valueNew) {
 			{ data[valueNew] } -> std::same_as<typename ValueType::reference>;
 		};
 
+		/// @brief Concept for array types excluding EtfSerializer.
 		template<typename ValueType>
 		concept ArrayT = HasRange<ValueType> && HasResize<std::decay_t<ValueType>> && HasEmplaceBack<std::decay_t<ValueType>> &&
 			VectorSubscriptable<std::decay_t<ValueType>> && requires(ValueType data) { typename ValueType::value_type; } &&
 			!EtfSerializerT<ValueType>;
 
+		/// @brief Concept for object (associative container) types excluding EtfSerializer.
 		template<typename ValueType>
 		concept ObjectT = requires(ValueType data) {
 			typename ValueType::mapped_type;
 			typename ValueType::key_type;
 		} && HasRange<ValueType> && !EtfSerializerT<ValueType>;
 
-		class DiscordCoreAPI_Dll EtfSerializer {
+
+		class EtfSerializer {
 		  public:
 			template<typename ValueType> using allocator = std::allocator<ValueType>;
 			using map_allocator = allocator<std::pair<const std::string, EtfSerializer>>;
@@ -530,69 +605,35 @@ namespace DiscordCoreAPI {
 			template<ObjectT ValueType> inline EtfSerializer& operator=(ValueType&& data) {
 				setValue(JsonType::Object);
 				for (auto& [key, value]: data) {
-					getObject().at(key) = std::move(value);
+					getObject().emplace(key, std::forward<typename ValueType::value_type>(value));
 				}
 				return *this;
 			}
 
 			template<ObjectT ValueType> inline EtfSerializer(ValueType&& data) {
-				*this = std::move(data);
+				*this = std::forward<ValueType>(data);
 			};
-
-			template<ObjectT ValueType> inline EtfSerializer& operator=(const ValueType& data) {
-				setValue(JsonType::Object);
-				for (auto& [key, value]: data) {
-					getObject().at(key) = value;
-				}
-				return *this;
-			}
-
-			template<ObjectT ValueType> inline EtfSerializer(const ValueType& data) {
-				*this = data;
-			}
 
 			template<ArrayT ValueType> inline EtfSerializer& operator=(ValueType&& data) {
 				setValue(JsonType::Array);
 				for (auto& value: data) {
-					getArray().emplace_back(std::move(value));
+					getArray().emplace_back(std::forward<typename ValueType::value_type>(value));
 				}
 				return *this;
 			}
 
 			template<ArrayT ValueType> inline EtfSerializer(ValueType&& data) {
-				*this = std::move(data);
-			}
-
-			template<ArrayT ValueType> inline EtfSerializer& operator=(const ValueType& data) {
-				setValue(JsonType::Array);
-				for (auto& value: data) {
-					getArray().emplace_back(value);
-				}
-				return *this;
-			}
-
-			template<ArrayT ValueType> inline EtfSerializer(const ValueType& data) {
-				*this = data;
+				*this = std::forward<ValueType>(data);
 			}
 
 			template<StringT ValueType> inline EtfSerializer& operator=(ValueType&& data) {
 				setValue(JsonType::String);
-				getString() = std::move(data);
+				getString() = std::forward<ValueType>(data);
 				return *this;
 			}
 
 			template<StringT ValueType> inline EtfSerializer(ValueType&& data) {
-				*this = std::move(data);
-			}
-
-			template<StringT ValueType> inline EtfSerializer& operator=(const ValueType& data) {
-				setValue(JsonType::String);
-				getString() = data;
-				return *this;
-			}
-
-			template<StringT ValueType> inline EtfSerializer(const ValueType& data) {
-				*this = data;
+				*this = std::forward<ValueType>(data);
 			}
 
 			template<uint64_t StrLength> inline EtfSerializer& operator=(const char (&str)[StrLength]) {
@@ -664,23 +705,11 @@ namespace DiscordCoreAPI {
 				return type;
 			}
 
-			inline std::string refreshString() {
+			inline operator std::string() {
 				stringReal.clear();
 				appendVersion();
 				serializeJsonToEtfString(*this);
 				return std::move(stringReal);
-			}
-
-			inline EtfSerializer& operator[](typename object_type::key_type&& key) {
-				if (type == JsonType::Null) {
-					setValue(JsonType::Object);
-				}
-
-				if (type == JsonType::Object) {
-					auto result = getObject().emplace(std::move(key), EtfSerializer{});
-					return result.first->second;
-				}
-				throw EtfSerializeError{ "Sorry, but this value's type is not Object." };
 			}
 
 			inline EtfSerializer& operator[](const typename object_type::key_type& key) {
@@ -690,6 +719,18 @@ namespace DiscordCoreAPI {
 
 				if (type == JsonType::Object) {
 					auto result = getObject().emplace(key, EtfSerializer{});
+					return result.first->second;
+				}
+				throw EtfSerializeError{ "Sorry, but this value's type is not Object." };
+			}
+
+			template<typename object_type_new> inline EtfSerializer& operator[](typename object_type::key_type&& key) {
+				if (type == JsonType::Null) {
+					setValue(JsonType::Object);
+				}
+
+				if (type == JsonType::Object) {
+					auto result = getObject().emplace(std::forward<typename object_type_new::key_type>(key), EtfSerializer{});
 					return result.first->second;
 				}
 				throw EtfSerializeError{ "Sorry, but this value's type is not Object." };
@@ -710,25 +751,13 @@ namespace DiscordCoreAPI {
 				throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
 			}
 
-			inline void emplaceBack(EtfSerializer&& other) {
+			template<typename EtfSerialzerType> inline void emplaceBack(EtfSerialzerType&& other) {
 				if (type == JsonType::Null) {
 					setValue(JsonType::Array);
 				}
 
 				if (type == JsonType::Array) {
-					getArray().emplace_back(std::move(other));
-					return;
-				}
-				throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
-			}
-
-			inline void emplaceBack(EtfSerializer& other) {
-				if (type == JsonType::Null) {
-					setValue(JsonType::Array);
-				}
-
-				if (type == JsonType::Array) {
-					getArray().emplace_back(other);
+					getArray().emplace_back(std::forward<EtfSerialzerType>(other));
 					return;
 				}
 				throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
@@ -797,59 +826,31 @@ namespace DiscordCoreAPI {
 			std::string stringReal{};
 			void* value{};
 
-			inline object_type& getObject() {
+			inline object_type& getObject() const {
 				return *static_cast<object_type*>(value);
 			}
 
-			inline array_type& getArray() {
+			inline array_type& getArray() const {
 				return *static_cast<array_type*>(value);
 			}
 
-			inline string_type& getString() {
+			inline string_type& getString() const {
 				return *static_cast<string_type*>(value);
 			}
 
-			inline float_type& getFloat() {
+			inline float_type& getFloat() const {
 				return *static_cast<float_type*>(value);
 			}
 
-			inline uint_type& getUint() {
+			inline uint_type& getUint() const {
 				return *static_cast<uint_type*>(value);
 			}
 
-			inline int_type& getInt() {
+			inline int_type& getInt() const {
 				return *static_cast<int_type*>(value);
 			}
 
-			inline bool_type& getBool() {
-				return *static_cast<bool_type*>(value);
-			}
-
-			inline const object_type& getObject() const {
-				return *static_cast<object_type*>(value);
-			}
-
-			inline const array_type& getArray() const {
-				return *static_cast<array_type*>(value);
-			}
-
-			inline const string_type& getString() const {
-				return *static_cast<string_type*>(value);
-			}
-
-			inline const float_type& getFloat() const {
-				return *static_cast<float_type*>(value);
-			}
-
-			inline const uint_type& getUint() const {
-				return *static_cast<uint_type*>(value);
-			}
-
-			inline const int_type& getInt() const {
-				return *static_cast<int_type*>(value);
-			}
-
-			inline const bool_type& getBool() const {
+			inline bool_type& getBool() const {
 				return *static_cast<bool_type*>(value);
 			}
 
@@ -1050,43 +1051,43 @@ namespace DiscordCoreAPI {
 				type = typeNew;
 				switch (type) {
 					case JsonType::Object: {
-						AllocWrapper<object_type> alloc{};
+						JsonifierInternal::AllocWrapper<object_type> alloc{};
 						value = alloc.allocate(1);
 						alloc.construct(&getObject());
 						break;
 					}
 					case JsonType::Array: {
-						AllocWrapper<array_type> alloc{};
+						JsonifierInternal::AllocWrapper<array_type> alloc{};
 						value = alloc.allocate(1);
 						alloc.construct(&getArray());
 						break;
 					}
 					case JsonType::String: {
-						AllocWrapper<string_type> alloc{};
+						JsonifierInternal::AllocWrapper<string_type> alloc{};
 						value = alloc.allocate(1);
 						alloc.construct(&getString());
 						break;
 					}
 					case JsonType::Float: {
-						AllocWrapper<float_type> alloc{};
+						JsonifierInternal::AllocWrapper<float_type> alloc{};
 						value = alloc.allocate(1);
 						alloc.construct(&getFloat());
 						break;
 					}
 					case JsonType::Uint: {
-						AllocWrapper<uint_type> alloc{};
+						JsonifierInternal::AllocWrapper<uint_type> alloc{};
 						value = alloc.allocate(1);
 						alloc.construct(&getUint());
 						break;
 					}
 					case JsonType::Int: {
-						AllocWrapper<int_type> alloc{};
+						JsonifierInternal::AllocWrapper<int_type> alloc{};
 						value = alloc.allocate(1);
 						alloc.construct(&getInt());
 						break;
 					}
 					case JsonType::Bool: {
-						AllocWrapper<bool_type> alloc{};
+						JsonifierInternal::AllocWrapper<bool_type> alloc{};
 						value = alloc.allocate(1);
 						alloc.construct(&getBool());
 						break;
@@ -1101,43 +1102,43 @@ namespace DiscordCoreAPI {
 				if (value) {
 					switch (type) {
 						case JsonType::Object: {
-							AllocWrapper<object_type> alloc{};
+							JsonifierInternal::AllocWrapper<object_type> alloc{};
 							alloc.destroy(&getObject());
 							alloc.deallocate(static_cast<object_type*>(value), 1);
 							break;
 						}
 						case JsonType::Array: {
-							AllocWrapper<array_type> alloc{};
+							JsonifierInternal::AllocWrapper<array_type> alloc{};
 							alloc.destroy(&getArray());
 							alloc.deallocate(static_cast<array_type*>(value), 1);
 							break;
 						}
 						case JsonType::String: {
-							AllocWrapper<string_type> alloc{};
+							JsonifierInternal::AllocWrapper<string_type> alloc{};
 							alloc.destroy(&getString());
 							alloc.deallocate(static_cast<string_type*>(value), 1);
 							break;
 						}
 						case JsonType::Float: {
-							AllocWrapper<float_type> alloc{};
+							JsonifierInternal::AllocWrapper<float_type> alloc{};
 							alloc.destroy(&getFloat());
 							alloc.deallocate(static_cast<float_type*>(value), 1);
 							break;
 						}
 						case JsonType::Uint: {
-							AllocWrapper<uint_type> alloc{};
+							JsonifierInternal::AllocWrapper<uint_type> alloc{};
 							alloc.destroy(&getUint());
 							alloc.deallocate(static_cast<uint_type*>(value), 1);
 							break;
 						}
 						case JsonType::Int: {
-							AllocWrapper<int_type> alloc{};
+							JsonifierInternal::AllocWrapper<int_type> alloc{};
 							alloc.destroy(&getInt());
 							alloc.deallocate(static_cast<int_type*>(value), 1);
 							break;
 						}
 						case JsonType::Bool: {
-							AllocWrapper<bool_type> alloc{};
+							JsonifierInternal::AllocWrapper<bool_type> alloc{};
 							alloc.destroy(&getBool());
 							alloc.deallocate(static_cast<bool_type*>(value), 1);
 							break;
@@ -1151,6 +1152,8 @@ namespace DiscordCoreAPI {
 				}
 			}
 		};
+
+		/**@}*/
 
 	};
 }// namespace DiscordCoreInternal

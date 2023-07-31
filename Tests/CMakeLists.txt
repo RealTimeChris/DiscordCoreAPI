@@ -29,15 +29,17 @@ set(PROJECT_NAME "DiscordCoreAPITest")
 project(
   "${PROJECT_NAME}"
   VERSION 1.0
-  LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/Install/")
+
+set(CMAKE_CXX_STANDARD 20)
 
 if (GITHUB_BRANCH_TYPE STREQUAL "refs/heads/main")
     set(BRANCH "main")
 else()
     set(BRANCH "dev")
+	set(DEV true)
 endif()
 
 set(BUILD_SHARED_LIBS FALSE)
@@ -57,5 +59,29 @@ add_executable(
 
 target_link_libraries(
     "${PROJECT_NAME}" PUBLIC
-    DiscordCoreAPI
+    DiscordCoreAPI::DiscordCoreAPI
+)
+
+if (WIN32)
+	install(
+		FILES 
+		"$<TARGET_PDB_FILE:${PROJECT_NAME}>"
+		DESTINATION "${CMAKE_INSTALL_PREFIX}/$<CONFIG>"
+	)
+	install(
+		FILES 
+		"$<IF:$<CONFIG:Debug>,${DEBUG_PDB_FILE_PATH},${RELEASE_PDB_FILE_PATH}>" 
+		DESTINATION "${CMAKE_INSTALL_PREFIX}/$<CONFIG>"
+	)	
+	install(
+		FILES 
+		"$<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>"
+		DESTINATION "${CMAKE_INSTALL_PREFIX}/$<CONFIG>"
+	)
+endif()
+
+install(
+	FILES 
+	"$<TARGET_FILE:${PROJECT_NAME}>"
+	DESTINATION "$<CONFIG>"
 )

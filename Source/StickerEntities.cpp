@@ -28,6 +28,7 @@
 /// https://discordcoreapi.com
 /// \file StickerEntities.cpp
 
+#include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/StickerEntities.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 
@@ -91,7 +92,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<StickerData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers";
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Stickers::createGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -106,7 +107,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<StickerData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers/" + dataPackage.stickerId;
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Stickers::modifyGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

@@ -41,29 +41,29 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// \brief For addin a RoleData to a GuildMemberData.
-	struct DiscordCoreAPI_Dll AddGuildMemberRoleData {
+	/// @brief For addin a RoleData to a GuildMember.
+	struct AddGuildMemberRoleData {
 		Snowflake guildId{};///< The id of the Guild within which to assign the RoleData.
 		std::string reason{};///< Reason for adding the GuildMemberData's RoleData.
 		Snowflake userId{};///< The id of the UserData to whom to assign the RoleData.
 		Snowflake roleId{};///< The id of the RoleData to be assigned.
 	};
 
-	/// \brief For removing a RoleData from a GuildMemberData.
-	struct DiscordCoreAPI_Dll RemoveGuildMemberRoleData {
+	/// @brief For removing a RoleData from a GuildMember.
+	struct RemoveGuildMemberRoleData {
 		std::string reason{};///< Reason for removing the GuildMemberData's RoleData.
 		Snowflake guildId{};///< The id of the Guild within which to remove the RoleData.
 		Snowflake userId{};///< The id of the UserData from whom to remove the RoleData.
 		Snowflake roleId{};///< The id of the RoleData to be removed.
 	};
 
-	/// \brief For getting a chosen Guild's Roles.
-	struct DiscordCoreAPI_Dll GetGuildRolesData {
+	/// @brief For getting a chosen Guild's Roles.
+	struct GetGuildRolesData {
 		Snowflake guildId{};///< Guild id for which Guild to get the roles from.
 	};
 
-	/// \brief For creating a new RoleData within a chosen Guild.
-	struct DiscordCoreAPI_Dll CreateGuildRoleData {
+	/// @brief For creating a new RoleData within a chosen Guild.
+	struct CreateGuildRoleData {
 		PermissionsParse permissions{};///< The base permissions to give the RoleData.
 		std::string hexColorValue{};///< Hex color-value between 0 and ffffff.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
@@ -76,14 +76,14 @@ namespace DiscordCoreAPI {
 		bool hoist{};///< Is this RoleData hoisted above the rest of them?
 	};
 
-	/// \brief For updating the positions of the roles.
-	struct DiscordCoreAPI_Dll RolePositionData {
+	/// @brief For updating the positions of the roles.
+	struct RolePositionData {
 		int32_t rolePosition{};///< The new RoleData position.
 		Snowflake roleId{};///< The RoleData to update.
 	};
 
-	/// \brief For updating the RoleData positions.
-	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
+	/// @brief For updating the RoleData positions.
+	struct ModifyGuildRolePositionsData {
 		friend struct Jsonifier::Core<DiscordCoreAPI::ModifyGuildRolePositionsData>;
 		friend class Roles;
 
@@ -96,8 +96,8 @@ namespace DiscordCoreAPI {
 		std::vector<RolePositionData> rolePositions;
 	};
 
-	/// \brief For updating a RoleData's options within a chosen Guild.
-	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
+	/// @brief For updating a RoleData's options within a chosen Guild.
+	struct ModifyGuildRoleData {
 		PermissionsParse permissions{ "0" };///< Base Guild permissions for the RoleData.
 		std::string hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
@@ -110,21 +110,21 @@ namespace DiscordCoreAPI {
 		bool hoist{};///< Is this RoleData hoisted above the others?
 	};
 
-	/// \brief For removing a RoleData from a chosen Guild.
-	struct DiscordCoreAPI_Dll RemoveGuildRoleData {
+	/// @brief For removing a RoleData from a chosen Guild.
+	struct RemoveGuildRoleData {
 		std::string reason{};///< Reason for removing this RoleData.
 		Snowflake guildId{};///< The id of the Guild from which to remove the RoleData.
 		Snowflake roleId{};///< The id of the RoleData to remove.
 	};
 
-	/// \brief For getting a chosen GuildMemberData's Roles.
-	struct DiscordCoreAPI_Dll GetGuildMemberRolesData {
+	/// @brief For getting a chosen GuildMemberData's Roles.
+	struct GetGuildMemberRolesData {
 		GuildMemberData guildMember{};///< Which Guild member to collect the roles from.
 		Snowflake guildId{};///< Which Guild to collect their roles from.
 	};
 
-	/// \brief For getting a RoleData from the library's cache, or the Discord server.
-	struct DiscordCoreAPI_Dll GetRoleData {
+	/// @brief For getting a RoleData from the library's cache, or the Discord server.
+	struct GetRoleData {
 		Snowflake guildId{};///< Which Guild to collect the RoleData from.
 		Snowflake roleId{};///< Which RoleData to collect.
 	};
@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the RoleData related Discord endpoints.
+	/// @brief An interface class for the RoleData related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	  public:
 		friend class DiscordCoreInternal::WebSocketClient;
@@ -146,65 +146,72 @@ namespace DiscordCoreAPI {
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
-		/// \brief Adds a RoleData to a chosen Guild member.
-		/// \param dataPackage An AddGuildMemberRoleData structure.
-		/// \returns A CoRoutine containing void.
+		/// @brief Adds a RoleData to a chosen Guild member.
+		/// @param dataPackage An AddGuildMemberRoleData structure.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage);
 
-		/// \brief Removes a given Role from a chosen GuildMemberData.
-		/// \param dataPackage A RemoveGuildMemberRoleData structure.
-		/// \returns A CoRoutine containing void.
+		/// @brief Removes a given Role from a chosen GuildMemberData.
+		/// @param dataPackage A RemoveGuildMemberRoleData structure.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> removeGuildMemberRoleAsync(RemoveGuildMemberRoleData dataPackage);
 
-		/// \brief Collects the Roles that a Guild has.
-		/// \param dataPackage A GetGuildRolesData structure.
-		/// \returns A CoRoutine containing a std::vector<RoleData>.
+		/// @brief Collects the Roles that a Guild has.
+		/// @param dataPackage A GetGuildRolesData structure.
+		/// @return A CoRoutine containing a std::vector<RoleData>.
 		static CoRoutine<std::vector<RoleData>> getGuildRolesAsync(GetGuildRolesData dataPackage);
 
-		/// \brief Creates a new RoleData within the given Guild.
-		/// \param dataPackage A CreateGuildRoleData structure.
-		/// \returns A CoRoutine containing a RoleData.
+		/// @brief Creates a new RoleData within the given Guild.
+		/// @param dataPackage A CreateGuildRoleData structure.
+		/// @return A CoRoutine containing a RoleData.
 		static CoRoutine<RoleData> createGuildRoleAsync(CreateGuildRoleData dataPackage);
 
-		/// \brief Updates a RoleData's positions.
-		/// \param dataPackage A ModifyGuildRolePositionsData structure.
-		/// \returns A CoRoutine containing a std::vector<RoleData>.
+		/// @brief Updates a RoleData's positions.
+		/// @param dataPackage A ModifyGuildRolePositionsData structure.
+		/// @return A CoRoutine containing a std::vector<RoleData>.
 		static CoRoutine<std::vector<RoleData>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
-		/// \brief Updates a given Role's properties.
-		/// \param dataPackage A ModifyGuildRoleData structure.
-		/// \returns A CoRoutine containing a RoleData.
+		/// @brief Updates a given Role's properties.
+		/// @param dataPackage A ModifyGuildRoleData structure.
+		/// @return A CoRoutine containing a RoleData.
 		static CoRoutine<RoleData> modifyGuildRoleAsync(ModifyGuildRoleData dataPackage);
 
-		/// \brief Removes a given Role from a Guild.
-		/// \param dataPackage A RemoveGuildRoleData structure.
-		/// \returns A CoRoutine containing void.
+		/// @brief Removes a given Role from a Guild.
+		/// @param dataPackage A RemoveGuildRoleData structure.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> removeGuildRoleAsync(RemoveGuildRoleData dataPackage);
 
-		/// \brief Collects the Roles that a GuildMemberData has.
-		/// \param dataPackage A GetGuildMemberRolesData structure.
-		/// \returns A CoRoutine containing a std::vector<RoleData>.
+		/// @brief Collects the Roles that a GuildMember has.
+		/// @param dataPackage A GetGuildMemberRolesData structure.
+		/// @return A CoRoutine containing a std::vector<RoleData>.
 		static CoRoutine<std::vector<RoleData>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
 
-		/// \brief Collects a RoleData from the Discord servers.
-		/// \param dataPackage A GetRoleData structure.
-		/// \returns A CoRoutine containing a RoleData.
+		/// @brief Collects a RoleData from the Discord servers.
+		/// @param dataPackage A GetRoleData structure.
+		/// @return A CoRoutine containing a RoleData.
 		static CoRoutine<RoleData> getRoleAsync(GetRoleData dataPackage);
 
-		/// \brief Collects a given Role from the library's cache.
-		/// \param dataPackage A GetRoleData structure.
-		/// \returns A CoRoutine containing a RoleData.
+		/// @brief Collects a given Role from the library's cache.
+		/// @param dataPackage A GetRoleData structure.
+		/// @return A CoRoutine containing a RoleData.
 		static RoleCacheData getCachedRole(GetRoleData dataPackage);
 
-		static void removeRole(const Snowflake roleId);
+		template<typename RoleType> inline static void insertRole(RoleType&& role) {
+			if (doWeCacheRolesBool) {
+				if (role.id == 0) {
+					throw DCAException{ "Sorry, but there was no id set for that role." };
+				}
+				cache.emplace(static_cast<RoleCacheData>(std::forward<RoleType>(role)));
+			}
+		}
 
-		static void insertRole(const RoleData& role);
+		static void removeRole(const RoleCacheData& roleId);
 
 		static bool doWeCacheRoles();
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<Snowflake, RoleCacheData> cache;
+		static ObjectCache<RoleCacheData> cache;
 		static bool doWeCacheRolesBool;
 	};
 	/**@}*/

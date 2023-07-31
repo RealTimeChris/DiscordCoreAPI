@@ -23,10 +23,10 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// Https.cpp - Source file for the Https class.
+/// HttpsClient.cpp - Source file for the Https class.
 /// May 12, 2021
 /// https://discordcoreapi.com
-/// \file Https.cpp
+/// \file HttpsClient.cpp
 
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 	namespace DiscordCoreInternal {
 
 		HttpsTCPConnection::HttpsTCPConnection(const std::string& baseUrlNew, const uint16_t portNew, HttpsConnection* ptrNew)
-			: TCPConnection<HttpsTCPConnection>{ baseUrlNew, portNew } {
+			: TCPConnection<HttpsTCPConnection>{ baseUrlNew, portNew }, SSLDataInterface{} {
 			ptr = ptrNew;
 		};
 
@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 
 			while ((b = in.find_first_not_of(sep, b)) != std::string::npos) {
 				auto e = in.find(sep, b);
-				result.push_back(static_cast<std::string>(in.substr(b, e - b)));
+				result.emplace_back(static_cast<std::string>(in.substr(b, e - b)));
 				b = e;
 			}
 			return result;
@@ -90,8 +90,6 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		HttpsRnRBuilder::HttpsRnRBuilder(){};
-
 		HttpsClientCore::HttpsClientCore(const std::string& botTokenNew) {
 			botToken = botTokenNew;
 		}
@@ -99,14 +97,13 @@ namespace DiscordCoreAPI {
 		void HttpsRnRBuilder::updateRateLimitData(RateLimitData& rateLimitData) {
 			auto connection{ static_cast<HttpsConnection*>(this) };
 			if (connection->data.responseHeaders.contains("x-ratelimit-bucket")) {
-				rateLimitData.bucket = connection->data.responseHeaders.at("x-ratelimit-bucket");
+				rateLimitData.bucket = connection->data.responseHeaders["x-ratelimit-bucket"];
 			}
 			if (connection->data.responseHeaders.contains("x-ratelimit-reset-after")) {
-				rateLimitData.sRemain.store(
-					Seconds{ static_cast<int64_t>(ceil(stod(connection->data.responseHeaders.at("x-ratelimit-reset-after")))) });
+				rateLimitData.sRemain.store(Seconds{ static_cast<int64_t>(ceil(stod(connection->data.responseHeaders["x-ratelimit-reset-after"]))) });
 			}
 			if (connection->data.responseHeaders.contains("x-ratelimit-remaining")) {
-				rateLimitData.getsRemaining.store(static_cast<int64_t>(stoi(connection->data.responseHeaders.at("x-ratelimit-remaining"))));
+				rateLimitData.getsRemaining.store(static_cast<int64_t>(stoi(connection->data.responseHeaders["x-ratelimit-remaining"])));
 			}
 			if (rateLimitData.getsRemaining.load() <= 1 || rateLimitData.areWeASpecialBucket.load()) {
 				rateLimitData.doWeWait.store(true);
@@ -179,13 +176,13 @@ namespace DiscordCoreAPI {
 			auto stringViewNew = static_cast<std::string>(connection->inputBufferReal);
 			if (stringViewNew.find("\r\n\r\n") != std::string::npos) {
 				auto headers = tokenize(stringViewNew);
-				std::string statusLine = headers.at(0);
+				std::string statusLine = headers[0];
 				headers.erase(headers.begin());
 				if (headers.size()) {
 					headers.erase(headers.begin());
 					std::vector<std::string> requestStatus = tokenize(statusLine, " ");
-					if (requestStatus.size() >= 3 && (requestStatus.at(0) == "HTTP/1.1" || requestStatus.at(0) == "HTTP/1.0") &&
-						atoi(requestStatus.at(1).c_str())) {
+					if (requestStatus.size() >= 3 && (requestStatus[0] == "HTTP/1.1" || requestStatus[0] == "HTTP/1.0") &&
+						atoi(requestStatus[1].c_str())) {
 						for (auto& hd: headers) {
 							std::string::size_type sep = hd.find(": ");
 							if (sep != std::string::npos) {
@@ -198,21 +195,21 @@ namespace DiscordCoreAPI {
 							}
 						}
 						if (connection->data.responseHeaders.contains("content-length")) {
-							connection->data.contentLength = stoull(connection->data.responseHeaders.at("content-length"));
+							connection->data.contentLength = stoull(connection->data.responseHeaders["content-length"]);
 						} else {
 							connection->data.contentLength = std::numeric_limits<uint32_t>::max();
 						}
 						connection->data.isItChunked = false;
 						if (connection->data.responseHeaders.contains("transfer-encoding")) {
-							if (connection->data.responseHeaders.at("transfer-encoding").find("chunked") != std::string::npos) {
+							if (connection->data.responseHeaders["transfer-encoding"].find("chunked") != std::string::npos) {
 								connection->data.isItChunked = true;
 								connection->data.contentLength = 0;
 								connection->data.currentState = HttpsState::Collecting_Chunked_Contents;
 							}
 						}
-						connection->data.responseCode = atoi(requestStatus.at(1).c_str());
+						connection->data.responseCode = atoi(requestStatus[1].c_str());
 						if (connection->data.responseCode == 302) {
-							connection->workload.baseUrl = connection->data.responseHeaders.at("location");
+							connection->workload.baseUrl = connection->data.responseHeaders["location"];
 							connection->disconnect();
 							return false;
 						}
@@ -309,32 +306,30 @@ namespace DiscordCoreAPI {
 			if (!httpsConnections.contains(workloadType)) {
 				httpsConnections.emplace(workloadType, makeUnique<HttpsConnection>());
 			}
-			return *httpsConnections.at(workloadType).get();
+			return *httpsConnections[workloadType].get();
 		}
 
 		RateLimitData& HttpsConnectionManager::getRateLimitData(HttpsWorkloadType workloadType) {
 			std::unique_lock lock{ accessMutex };
-			return *rateLimitValues.at(rateLimitValueBuckets.at(workloadType)).get();
+			return *rateLimitValues[rateLimitValueBuckets[workloadType]].get();
 		}
 
 		HttpsConnectionStackHolder::HttpsConnectionStackHolder(HttpsConnectionManager& connectionManager, HttpsWorkloadData&& workload) {
-			while (HttpsWorkloadData::workloadIdsInternal.at(workload.getWorkloadType())->load() < workload.thisWorkerId.load() &&
+			while (HttpsWorkloadData::workloadIdsInternal[workload.getWorkloadType()]->load() < workload.thisWorkerId.load() &&
 				workload.thisWorkerId.load() != 0) {
 				std::this_thread::sleep_for(1ms);
 			}
-
 			connection = &connectionManager.getConnection(workload.getWorkloadType());
 			connection->theSemaphore.acquire();
 			connection->resetValues(std::move(workload));
 			if (!connection->areWeConnected()) {
-				connection->tcpConnection.~HttpsTCPConnection();
 				connection->tcpConnection = HttpsTCPConnection{ connection->workload.baseUrl, static_cast<uint16_t>(443), connection };
 			}
 		}
 
 		HttpsConnectionStackHolder::~HttpsConnectionStackHolder() {
-			auto value = HttpsWorkloadData::workloadIdsInternal.at(connection->workload.getWorkloadType())->load();
-			HttpsWorkloadData::workloadIdsInternal.at(connection->workload.getWorkloadType())->store(value + 1);
+			auto value = HttpsWorkloadData::workloadIdsInternal[connection->workload.getWorkloadType()]->load();
+			HttpsWorkloadData::workloadIdsInternal[connection->workload.getWorkloadType()]->store(value + 1);
 			connection->theSemaphore.release();
 		}
 
@@ -468,9 +463,8 @@ namespace DiscordCoreAPI {
 			std::string currentBucket = rateLimitData.bucket;
 			if (!connectionManager.rateLimitValues.contains(rateLimitData.bucket)) {
 				UniquePtr<RateLimitData> rateLimitDataNew{ makeUnique<RateLimitData>() };
-				connectionManager.rateLimitValues.at(connectionManager.rateLimitValueBuckets.at(connection.workload.workloadType))
-					.swap(rateLimitDataNew);
-				connectionManager.rateLimitValueBuckets.at(connection.workload.workloadType) = currentBucket;
+				connectionManager.rateLimitValues[connectionManager.rateLimitValueBuckets[connection.workload.workloadType]].swap(rateLimitDataNew);
+				connectionManager.rateLimitValueBuckets[connection.workload.workloadType] = currentBucket;
 				connectionManager.rateLimitValues.emplace(currentBucket, std::move(rateLimitDataNew));
 			}
 			if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
@@ -479,7 +473,7 @@ namespace DiscordCoreAPI {
 			} else if (returnData.responseCode == 429) {
 				if (connection.data.responseHeaders.contains("x-ratelimit-retry-after")) {
 					rateLimitData.sRemain.store(
-						Seconds{ static_cast<uint64_t>(stoll(connection.data.responseHeaders.at("x-ratelimit-retry-after")) / 1000.0f) });
+						Seconds{ static_cast<uint64_t>(stoull(connection.data.responseHeaders["x-ratelimit-retry-after"]) / 1000.0f) });
 				}
 				rateLimitData.doWeWait.store(true);
 				rateLimitData.sampledTimeInMs.store(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()));
@@ -502,7 +496,7 @@ namespace DiscordCoreAPI {
 		}
 
 		HttpsResponseData HttpsClientCore::getResponse(HttpsConnection& connection, RateLimitData& rateLimitData) {
-			StopWatch stopWatch{ 10000ms };
+			StopWatch<std::chrono::milliseconds> stopWatch{ 10000ms };
 			while (connection.data.currentState != HttpsState::Complete && !stopWatch.hasTimePassed()) {
 				if (connection.areWeConnected()) {
 					switch (connection.tcpConnection.processIO(10)) {

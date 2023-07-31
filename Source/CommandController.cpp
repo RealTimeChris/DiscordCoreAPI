@@ -29,10 +29,11 @@
 /// \file CommandController.cpp
 
 #include <discordcoreapi/CommandController.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 
 namespace DiscordCoreAPI {
 
-	std::map<std::vector<std::string>, UniquePtr<BaseFunction>> functions{};
+	UnorderedMap<std::vector<std::string>, UniquePtr<BaseFunction>> functions{};
 
 	CommandController::CommandController(DiscordCoreClient* discordCoreClientNew) {
 		discordCoreClient = discordCoreClientNew;
@@ -42,7 +43,7 @@ namespace DiscordCoreAPI {
 		functions[functionNames] = std::move(baseFunction);
 	}
 
-	std::map<std::vector<std::string>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
+	UnorderedMap<std::vector<std::string>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
 		return functions;
 	};
 

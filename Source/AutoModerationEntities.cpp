@@ -29,6 +29,7 @@
 /// \file AutoModerationEntities.cpp
 
 #include <discordcoreapi/AutoModerationEntities.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 
 namespace Jsonifier {
 
@@ -82,7 +83,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<AutoModerationRuleData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/auto-moderation/rules";
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "AutoModerationRules::createAutoModerationRuleAsync()";
 		AutoModerationRuleData returnData{};
 		AutoModerationRules::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
@@ -94,7 +95,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<AutoModerationRuleData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/auto-moderation/rules/" + std::to_string(dataPackage.autoModerationRuleId);
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "AutoModerationRules::modifyAutoModerationRuleAsync()";
 		AutoModerationRuleData returnData{};
 		AutoModerationRules::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);

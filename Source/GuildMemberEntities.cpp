@@ -29,6 +29,7 @@
 /// \file GuildMemberEntities.cpp
 
 #include <discordcoreapi/GuildMemberEntities.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
@@ -121,7 +122,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	};
 
-	GuildMemberCacheData::operator DiscordCoreAPI::GuildMemberData() {
+	GuildMemberCacheData::operator GuildMemberData() {
 		GuildMemberData returnData{};
 		returnData.pending = getFlagValue(GuildMemberFlags::Pending);
 		returnData.permissions = permissions.operator std::string();
@@ -141,10 +142,6 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	GuildMemberData::GuildMemberData(Snowflake newId) {
-		user.id = newId;
-	}
-
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
 		GuildMembers::doWeCacheGuildMembersBool = configManagerNew->doWeCacheGuildMembers();
 		GuildMembers::httpsClient = client;
@@ -156,23 +153,25 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 		workload.callStack = "GuildMembers::getGuildMemberAsync()";
-		GuildMemberData data{ dataPackage.guildId };
+		GuildMemberData data{};
 		data.user.id = dataPackage.guildMemberId;
-		GuildMemberKey key{ data };
+		data.guildId = dataPackage.guildId;
+		TwoIdKey key{ data };
 		if (cache.contains(key)) {
 			data = cache[key];
 		}
 		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
 		if (doWeCacheGuildMembersBool) {
-			insertGuildMember(data);
+			insertGuildMember(static_cast<GuildMemberCacheData>(data));
 		}
 		co_return data;
 	}
 
 	GuildMemberCacheData GuildMembers::getCachedGuildMember(GetGuildMemberData dataPackage) {
-		GuildMemberKey key{};
-		key.userId = dataPackage.guildMemberId;
-		key.guildId = dataPackage.guildId;
+		GuildMemberCacheData data{};
+		data.user.id = dataPackage.guildMemberId;
+		data.guildId = dataPackage.guildId;
+		TwoIdKey key{ data };
 		if (cache.contains(key)) {
 			return cache[key];
 		} else {
@@ -223,7 +222,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId;
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildMembers::addGuildMemberAsync()";
 		GuildMemberData returnData{};
 		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
@@ -235,7 +234,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/@me";
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildMembers::modifyCurrentGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -250,20 +249,21 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildMembers::modifyGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		GuildMemberData data{ dataPackage.guildId };
+		GuildMemberData data{};
 		data.user.id = dataPackage.guildMemberId;
-		GuildMemberKey key{ data };
+		data.guildId = dataPackage.guildId;
+		TwoIdKey key{ data };
 		if (cache.contains(key)) {
 			data = cache[key];
 		}
 		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
 		if (doWeCacheGuildMembersBool) {
-			insertGuildMember(data);
+			insertGuildMember(static_cast<GuildMemberCacheData>(data));
 		}
 		co_return data;
 	}
@@ -337,20 +337,7 @@ namespace DiscordCoreAPI {
 		co_return guildMember;
 	}
 
-	VoiceStateDataLight& GuildMembers::insertVoiceState(VoiceStateDataLight&& voiceState) {
-		if (voiceState.id == 0) {
-			throw DCAException{ "Sorry, but there was no id set for that voice state.", std::source_location::current() };
-		}
-		GuildMemberKey key{ voiceState };
-		vsCache.emplace(std::move(voiceState));
-		return vsCache[key];
-	}
-
-	void GuildMembers::removeVoiceState(const GuildMemberKey& key) {
-		vsCache.erase(key);
-	}
-
-	VoiceStateDataLight GuildMembers::getVoiceStateData(const GuildMemberKey& key) {
+	VoiceStateDataLight GuildMembers::getVoiceStateData(const TwoIdKey& key) {
 		if (vsCache.contains(key)) {
 			return vsCache[key];
 		} else {
@@ -358,28 +345,20 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void GuildMembers::insertGuildMember(const GuildMemberData& guildMember) {
-		if (doWeCacheGuildMembersBool) {
-			if (guildMember.guildId == 0 || guildMember.user.id == 0) {
-				throw DCAException{ "Sorry, but there was no id set for that guildmember.", std::source_location::current() };
-			}
-			cache.emplace(guildMember);
-			if (GuildMembers::cache.count() % 1000 == 0) {
-				std::cout << "GUILDMEMBERS COUNT: " << GuildMembers::cache.count() << std::endl;
-			}
-		}
-	}
-
-	void GuildMembers::removeGuildMember(const GuildMemberKey& key) {
+	void GuildMembers::removeGuildMember(const TwoIdKey& key) {
 		cache.erase(key);
 	};
+
+	void GuildMembers::removeVoiceState(const TwoIdKey& key) {
+		vsCache.erase(key);
+	}
 
 	bool GuildMembers::doWeCacheGuildMembers() {
 		return GuildMembers::doWeCacheGuildMembersBool;
 	}
 
-	ObjectCache<GuildMemberKey, VoiceStateDataLight> GuildMembers::vsCache{};
-	ObjectCache<GuildMemberKey, GuildMemberCacheData> GuildMembers::cache{};
+	ObjectCache<VoiceStateDataLight> GuildMembers::vsCache{};
+	ObjectCache<GuildMemberCacheData> GuildMembers::cache{};
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{};
 	bool GuildMembers::doWeCacheGuildMembersBool{};
 };

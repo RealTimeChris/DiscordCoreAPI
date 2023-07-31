@@ -28,6 +28,7 @@
 /// https://discordcoreapi.com
 /// \file RoleEntities.cpp
 
+#include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
@@ -117,7 +118,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RoleCacheData::operator DiscordCoreAPI::RoleData() {
+	RoleCacheData::operator RoleData() {
 		RoleData returnData{};
 		returnData.mentionable = getFlagValue<RoleFlags>(RoleFlags::Mentionable);
 		returnData.managed = getFlagValue<RoleFlags>(RoleFlags::Managed);
@@ -175,7 +176,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Roles };
 		co_await NewThreadAwaitable<std::vector<RoleData>>();
 		if (dataPackage.guildId == 0) {
-			throw DCAException{ "Roles::getGuildRolesAsync() Error: Sorry, but you forgot to set the guildId!", std::source_location::current() };
+			throw DCAException{ "Roles::getGuildRolesAsync() Error: Sorry, but you forgot to set the guildId!" };
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
@@ -190,7 +191,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<RoleData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Roles::createGuildRoleAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -240,7 +241,7 @@ namespace DiscordCoreAPI {
 		dataPackage.rolePositions.emplace_back(newDataPos);
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Roles::modifyGuildRolePositionsAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -255,18 +256,18 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<RoleData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles/" + dataPackage.roleId;
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Roles::modifyGuildRoleAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		RoleData data{ dataPackage.roleId };
-		if (cache.contains(dataPackage.roleId)) {
-			data = cache[dataPackage.roleId];
+		if (cache.contains(data.id)) {
+			data = cache[data.id];
 		}
 		Roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
 		if (doWeCacheRolesBool) {
-			insertRole(data);
+			insertRole(static_cast<RoleCacheData>(data));
 		}
 		co_return data;
 	}
@@ -302,11 +303,11 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<RoleData>();
 		auto roles = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		if (dataPackage.guildId == 0) {
-			throw DCAException{ "Roles::getRoleAsync() Error: Sorry, but you forgot to set the guildId!", std::source_location::current() };
+			throw DCAException{ "Roles::getRoleAsync() Error: Sorry, but you forgot to set the guildId!" };
 		}
 		RoleData data{ dataPackage.roleId };
-		if (cache.contains(dataPackage.roleId)) {
-			data = cache[dataPackage.roleId];
+		if (cache.contains(data.id)) {
+			data = cache[data.id];
 		}
 		for (auto& value: roles) {
 			if (value.id == dataPackage.roleId) {
@@ -314,8 +315,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (doWeCacheRolesBool) {
-			insertRole(std::move(data));
-			data = cache[dataPackage.roleId];
+			insertRole(static_cast<RoleCacheData>(data));
 		}
 		co_return data;
 	}
@@ -323,28 +323,14 @@ namespace DiscordCoreAPI {
 	RoleCacheData Roles::getCachedRole(GetRoleData dataPackage) {
 		RoleData data{};
 		data.id = dataPackage.roleId;
-		if (!cache.contains(dataPackage.roleId)) {
+		if (!cache.contains(data.id)) {
 			return Roles::getRoleAsync(dataPackage).get();
 		} else {
 			return cache[data.id];
 		}
 	}
 
-	StopWatch<Milliseconds> stopWatchNew{ 5ms };
-
-	void Roles::insertRole(const RoleData& role) {
-		if (doWeCacheRolesBool) {
-			if (role.id == 0) {
-				throw DCAException{ "Sorry, but there was no id set for that role.", std::source_location::current() };
-			}
-			cache.emplace(role);
-			if (cache.count() % 1000 == 0) {
-				std::cout << "ROLE COUNT: " << cache.count() << std::endl;
-			}
-		}
-	}
-
-	void Roles::removeRole(const Snowflake roleId) {
+	void Roles::removeRole(const RoleCacheData& roleId) {
 		cache.erase(roleId);
 	};
 
@@ -353,6 +339,6 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{};
-	ObjectCache<Snowflake, RoleCacheData> Roles::cache{};
+	ObjectCache<RoleCacheData> Roles::cache{};
 	bool Roles::doWeCacheRolesBool{};
 };

@@ -35,29 +35,29 @@
 
 namespace DiscordCoreAPI {
 
-	/// \brief For creating a StageInstanceData.
-	struct DiscordCoreAPI_Dll CreateStageInstanceData {
+	/// @brief For creating a StageInstanceData.
+	struct CreateStageInstanceData {
 		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance(default Guild_Only).
 		Snowflake channelId{};///< The id of the Stage ChannelData.
 		std::string reason{};///< The reason for starting it.
 		std::string topic{};///< The topic of the Stage instance(1 - 120 characters).
 	};
 
-	/// \brief For collecting a single StageInstanceData.
-	struct DiscordCoreAPI_Dll GetStageInstanceData {
+	/// @brief For collecting a single StageInstanceData.
+	struct GetStageInstanceData {
 		Snowflake channelId{};///< The ChannelData id from which you would like to collect the StageInstanceData.
 	};
 
-	/// \brief For modifying a single StageInstanceData.
-	struct DiscordCoreAPI_Dll ModifyStageInstanceData {
+	/// @brief For modifying a single StageInstanceData.
+	struct ModifyStageInstanceData {
 		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance.
 		Snowflake channelId{};///< The ChannelData Snowflake of the StageInstanceData.
 		std::string reason{};///< Reason for modifying the StageInstanceData.
 		std::string topic{};///< The topic of the Stage instance(1 - 120 characters).
 	};
 
-	/// \brief For deleting a single StageInstanceData.
-	struct DiscordCoreAPI_Dll DeleteStageInstanceData {
+	/// @brief For deleting a single StageInstanceData.
+	struct DeleteStageInstanceData {
 		Snowflake channelId{};///< The ChannelData Snowflake of the StageInstanceData.
 		std::string reason{};///< Reason for deleting the StageInstanceData.
 	};
@@ -66,29 +66,29 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the StageInstanceData related Discord endpoints.
+	/// @brief An interface class for the StageInstanceData related Discord endpoints.
 	class DiscordCoreAPI_Dll StageInstances {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		/// \brief Creates a StageInstanceData.
-		/// \param dataPackage A CreateStageInstanceData structure.
-		/// \returns A CoRoutine containing a StageInstanceData.
+		/// @brief Creates a StageInstanceData.
+		/// @param dataPackage A CreateStageInstanceData structure.
+		/// @return A CoRoutine containing a StageInstanceData.
 		static CoRoutine<StageInstanceData> createStageInstanceAsync(CreateStageInstanceData dataPackage);
 
-		/// \brief Collects a StageInstanceData.
-		/// \param dataPackage A GetStageInstanceData structure.
-		/// \returns A CoRoutine containing a StageInstanceData.
+		/// @brief Collects a StageInstanceData.
+		/// @param dataPackage A GetStageInstanceData structure.
+		/// @return A CoRoutine containing a StageInstanceData.
 		static CoRoutine<StageInstanceData> getStageInstanceAsync(GetStageInstanceData dataPackage);
 
-		/// \brief Modifies a StageInstanceData.
-		/// \param dataPackage A ModifyStageInstanceData structure.
-		/// \returns A CoRoutine containing a StageInstanceData.
+		/// @brief Modifies a StageInstanceData.
+		/// @param dataPackage A ModifyStageInstanceData structure.
+		/// @return A CoRoutine containing a StageInstanceData.
 		static CoRoutine<StageInstanceData> modifyStageInstanceAsync(ModifyStageInstanceData dataPackage);
 
-		/// \brief Deletes a StageInstanceData.
-		/// \param dataPackage A DeleteStageInstanceData structure.
-		/// \returns A CoRoutine containing void.
+		/// @brief Deletes a StageInstanceData.
+		/// @param dataPackage A DeleteStageInstanceData structure.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteStageInstanceAsync(DeleteStageInstanceData dataPackage);
 
 	  protected:

@@ -39,14 +39,14 @@ namespace DiscordCoreAPI {
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
-	/// \brief For collecting a list of a Guild's scheduled events.
-	struct DiscordCoreAPI_Dll GetGuildScheduledEventsData {
+	/// @brief For collecting a list of a Guild's scheduled events.
+	struct GetGuildScheduledEventsData {
 		bool withUserCount{};///< Do we collect the user counts?
 		Snowflake guildId{};///< Guild from which we would like to collect the events.
 	};
 
-	/// \brief For creating a GuildScheduledEventData.
-	struct DiscordCoreAPI_Dll CreateGuildScheduledEventData {
+	/// @brief For creating a GuildScheduledEventData.
+	struct CreateGuildScheduledEventData {
 		GuildScheduledEventPrivacyLevel privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};/// The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
@@ -58,15 +58,15 @@ namespace DiscordCoreAPI {
 		std::string name{};///< The name of the scheduled event.
 	};
 
-	/// \brief For collecting a single Guild scheduled event.
-	struct DiscordCoreAPI_Dll GetGuildScheduledEventData {
+	/// @brief For collecting a single Guild scheduled event.
+	struct GetGuildScheduledEventData {
 		Snowflake guildScheduledEventId{};///< The id of the desired scheduled event.
 		bool withUserCount{};///< Do we collect the user counts?
 		Snowflake guildId{};///< Guild from which we would like to collect the events.
 	};
 
-	/// \brief For modifying a single Guild Scheduled Event.
-	struct DiscordCoreAPI_Dll ModifyGuildScheduledEventData {
+	/// @brief For modifying a single Guild Scheduled Event.
+	struct ModifyGuildScheduledEventData {
 		GuildScheduledEventPrivacyLevel privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
 		GuildScheduledEventStatus status{ GuildScheduledEventStatus::Active };///< The status of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};///< The entity metadata of the scheduled event.
@@ -80,14 +80,14 @@ namespace DiscordCoreAPI {
 		std::string name{};///< The name of the scheduled event.
 	};
 
-	/// \brief For deleting a single Guild Scheduled Event.
-	struct DiscordCoreAPI_Dll DeleteGuildScheduledEventData {
+	/// @brief For deleting a single Guild Scheduled Event.
+	struct DeleteGuildScheduledEventData {
 		Snowflake guildScheduledEventId{};///< The id of the event to modify.
 		Snowflake guildId{};///< The Guild within which to modify the event.
 	};
 
-	/// \brief For collecting a list of Guild Scheduled Event Users.
-	struct DiscordCoreAPI_Dll GetGuildScheduledEventUsersData {
+	/// @brief For collecting a list of Guild Scheduled Event Users.
+	struct GetGuildScheduledEventUsersData {
 		Snowflake guildScheduledEventId{};///< The id of the event to modify.
 		Snowflake guildId{};///< The Guild within which to modify the event.
 		Snowflake before{};///< Consider only users before given user id.
@@ -102,39 +102,39 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the GuildScheduledEventData related Discord endpoints.
+	/// @brief An interface class for the GuildScheduledEventData related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildScheduledEvents {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		/// \brief Gets a list of a given Guild's scheduled events.
-		/// \param dataPackage A GetGuildScheduledEventsstructure.
-		/// \returns A CoRoutine containing a vector<GuildScheduledEventData>.
+		/// @brief Gets a list of a given Guild's scheduled events.
+		/// @param dataPackage A GetGuildScheduledEventsstructure.
+		/// @return A CoRoutine containing a vector<GuildScheduledEventData>.
 		static CoRoutine<std::vector<GuildScheduledEventData>> getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage);
 
-		/// \brief Creates a new GuildScheduledEventData within a chosen Guild.
-		/// \param dataPackage A CreateGuildScheduledEventData structure.
-		/// \returns A CoRoutine containing a GuildScheduledEventData.
+		/// @brief Creates a new GuildScheduledEventData within a chosen Guild.
+		/// @param dataPackage A CreateGuildScheduledEventData structure.
+		/// @return A CoRoutine containing a GuildScheduledEventData.
 		static CoRoutine<GuildScheduledEventData> createGuildScheduledEventAsync(CreateGuildScheduledEventData dataPackage);
 
-		/// \brief Collects a single GuildScheduledEventData.
-		/// \param dataPackage A GetGuildScheduledEventData structure.
-		/// \returns A CoRoutine containing a GuildScheduledEventData.
+		/// @brief Collects a single GuildScheduledEventData.
+		/// @param dataPackage A GetGuildScheduledEventData structure.
+		/// @return A CoRoutine containing a GuildScheduledEventData.
 		static CoRoutine<GuildScheduledEventData> getGuildScheduledEventAsync(GetGuildScheduledEventData dataPackage);
 
-		/// \brief Modifies a single GuildScheduledEventData.
-		/// \param dataPackage A ModifyGuildScheduledEventData structure.
-		/// \returns A CoRoutine containing a GuildScheduledEventData.
+		/// @brief Modifies a single GuildScheduledEventData.
+		/// @param dataPackage A ModifyGuildScheduledEventData structure.
+		/// @return A CoRoutine containing a GuildScheduledEventData.
 		static CoRoutine<GuildScheduledEventData> modifyGuildScheduledEventAsync(ModifyGuildScheduledEventData dataPackage);
 
-		/// \brief Deletes a single GuildScheduledEventData.
-		/// \param dataPackage A DeleteGuildScheduledEventData structure.
-		/// \returns A CoRoutine containing void.
+		/// @brief Deletes a single GuildScheduledEventData.
+		/// @param dataPackage A DeleteGuildScheduledEventData structure.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteGuildScheduledEventAsync(DeleteGuildScheduledEventData dataPackage);
 
-		/// \brief Collects a list of Users for a given GuildScheduledEventData.
-		/// \param dataPackage A GetGuildScheduledEventUsersData structure.
-		/// \returns A CoRoutine containing a vector<GuildScheduledEventUser>.
+		/// @brief Collects a list of Users for a given GuildScheduledEventData.
+		/// @param dataPackage A GetGuildScheduledEventUsersData structure.
+		/// @return A CoRoutine containing a vector<GuildScheduledEventUser>.
 		static CoRoutine<std::vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
 
 	  protected:

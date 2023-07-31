@@ -25,7 +25,9 @@
 
 #include <discordcoreapi/Utilities/WebSocketClient.hpp>
 #include <discordcoreapi/EventManager.hpp>
+#include <discordcoreapi/Utilities/Base.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
+#include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/JsonSpecializations.hpp>
 #include <random>
 
@@ -177,12 +179,12 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		WebSocketCore::WebSocketCore(ConfigManager* configManagerNew, WebSocketType typeOfWebSocketNew) {
+		WebSocketCore::WebSocketCore(ConfigManager* configManagerNew, WebSocketType typeOfWebSocketNew) : EtfParser{} {
 			configManager = configManagerNew;
 			wsType = typeOfWebSocketNew;
 		}
 
-		WebSocketCore& WebSocketCore::operator=(WebSocketCore&& other) {
+		WebSocketCore& WebSocketCore::operator=(WebSocketCore&& other) noexcept {
 			haveWeReceivedHeartbeatAck = other.haveWeReceivedHeartbeatAck;
 			areWeCollectingData.store(other.areWeCollectingData.load());
 			heartBeatStopWatch = std::move(other.heartBeatStopWatch);
@@ -207,7 +209,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		WebSocketCore::WebSocketCore(WebSocketCore&& other) {
+		WebSocketCore::WebSocketCore(WebSocketCore&& other) noexcept : EtfParser{} {
 			*this = std::move(other);
 		}
 
@@ -227,7 +229,7 @@ namespace DiscordCoreAPI {
 				std::this_thread::sleep_for(1s);
 				return false;
 			}
-			StopWatch stopWatch{ 5s };
+			StopWatch<std::chrono::milliseconds> stopWatch{ 5000ms };
 			do {
 				if (stopWatch.hasTimePassed()) {
 					std::this_thread::sleep_for(1s);
@@ -244,7 +246,7 @@ namespace DiscordCoreAPI {
 		}
 
 		WebSocketTCPConnection::WebSocketTCPConnection(const std::string& baseUrlNew, uint16_t portNew, WebSocketCore* ptrNew)
-			: TCPConnection{ baseUrlNew, portNew } {
+			: TCPConnection{ baseUrlNew, portNew }, SSLDataInterface{} {
 			ptr = ptrNew;
 		}
 
@@ -291,9 +293,9 @@ namespace DiscordCoreAPI {
 			return true;
 		}
 
-		void WebSocketCore::parseConnectionHeaders(std::string_view stringNew) {
+		void WebSocketCore::parseConnectionHeaders() {
 			if (areWeConnected() && currentState.load() == WebSocketState::Upgrading) {
-				auto theFindValue = stringNew.find("\r\n\r\n");
+				auto theFindValue = currentMessage.operator std::string_view().find("\r\n\r\n");
 				if (theFindValue != std::string::npos) {
 					currentMessage.clear();
 					currentState.store(WebSocketState::Collecting_Hello);
@@ -310,12 +312,12 @@ namespace DiscordCoreAPI {
 					EtfSerializer data{};
 					data["d"] = lastNumberReceived;
 					data["op"] = 1;
-					string = data.refreshString();
+					string = data.operator std::string();
 				} else {
 					WebSocketMessageData<uint64_t> message{};
 					message.d = lastNumberReceived;
 					message.op = 1;
-					jsonifierCore.serializeJson(message, string);
+					parser.serializeJson(message, string);
 				}
 				haveWeReceivedHeartbeatAck = false;
 				heartBeatStopWatch.resetTimer();
@@ -411,11 +413,18 @@ namespace DiscordCoreAPI {
 		void WebSocketTCPConnection::handleBuffer() {
 			if (ptr->currentState.load() == WebSocketState::Upgrading) {
 				auto inputBufferNew = getInputBuffer();
-				ptr->parseConnectionHeaders({ reinterpret_cast<const char*>(inputBufferNew.data()), inputBufferNew.size() });
+				auto oldSize = ptr->currentMessage.size();
+				if (ptr->currentMessage.size() < oldSize + inputBufferNew.size()) {
+					ptr->currentMessage.resize(oldSize + inputBufferNew.size());
+				}
+				std::memcpy(ptr->currentMessage.data() + oldSize, inputBufferNew.data(), inputBufferNew.size());
+				ptr->parseConnectionHeaders();
 			} else {
 				auto inputBufferNew = getInputBuffer();
 				auto oldSize = ptr->currentMessage.size();
-				ptr->currentMessage.resize(oldSize + inputBufferNew.size());
+				if (ptr->currentMessage.size() < oldSize + inputBufferNew.size()) {
+					ptr->currentMessage.resize(oldSize + inputBufferNew.size());
+				}
 				std::memcpy(ptr->currentMessage.data() + oldSize, inputBufferNew.data(), inputBufferNew.size());
 				while (ptr->parseMessage()) {
 				};
@@ -445,7 +454,7 @@ namespace DiscordCoreAPI {
 			WebSocketMessageData<UpdateVoiceStateDataDC> data01{};
 			data01.excludedKeys.emplace("t");
 			data01.excludedKeys.emplace("s");
-			data01.d.channelId = 0;
+			data01.d.channelId = std::nullptr_t{};
 			data01.d.guildId = doWeCollect.guildId;
 			data01.d.selfDeaf = doWeCollect.selfDeaf;
 			data01.d.selfMute = doWeCollect.selfMute;
@@ -461,11 +470,11 @@ namespace DiscordCoreAPI {
 			data02.d.selfMute = doWeCollect.selfMute;
 			data02.op = 4;
 			std::string string{};
-			auto serializer = data01.d.operator EtfSerializer();
+			auto serializer = data01.operator EtfSerializer();
 			if (dataOpCode == WebSocketOpCode::Op_Binary) {
-				string = serializer.refreshString();
+				string = serializer.operator std::string();
 			} else {
-				jsonifierCore.serializeJson<true>(data01, string);
+				parser.serializeJson<true>(data01, string);
 			}
 			createHeader(string, dataOpCode);
 			if (!sendMessage(string, true)) {
@@ -474,11 +483,11 @@ namespace DiscordCoreAPI {
 			if (Snowflake{ doWeCollect.channelId } == 0) {
 				return;
 			}
-			serializer = data02.d.operator EtfSerializer();
+			serializer = data02.operator EtfSerializer();
 			if (dataOpCode == WebSocketOpCode::Op_Binary) {
-				string = serializer.refreshString();
+				string = serializer.operator std::string();
 			} else {
-				jsonifierCore.serializeJson<true>(data02, string);
+				parser.serializeJson<true>(data02, string);
 			}
 			createHeader(string, dataOpCode);
 			areWeCollectingData.store(true);
@@ -501,7 +510,7 @@ namespace DiscordCoreAPI {
 					if (configManager->getTextFormat() == TextFormat::Etf) {
 						try {
 							dataNew = EtfParser::parseEtfToJson(dataNew);
-							jsonifierCore.parseJson<true, true>(message, dataNew);
+							parser.parseJson<true, true>(message, dataNew);
 						} catch (const DCAException& error) {
 							MessagePrinter::printError<PrintMessageType::WebSocket>(error.what());
 							tcpConnection.getInputBuffer();
@@ -509,7 +518,7 @@ namespace DiscordCoreAPI {
 							return false;
 						}
 					} else {
-						jsonifierCore.parseJson<true, true>(message, dataNew);
+						parser.parseJson<true, true>(message, dataNew);
 					}
 
 					if (message.s != 0) {
@@ -523,22 +532,22 @@ namespace DiscordCoreAPI {
 								switch (EventConverter{ message.t }) {
 									case 1: {
 										WebSocketMessageData<ReadyData> data{};
-										if (this->dataOpCode == WebSocketOpCode::Op_Text) {
+										if (dataOpCode == WebSocketOpCode::Op_Text) {
 											data.d.excludedKeys.emplace("shard");
 										}
 										currentState.store(WebSocketState::Authenticated);
-										jsonifierCore.parseJson<true, true, true>(data, dataNew);
+										parser.parseJson<true, true, true>(data, dataNew);
 										sessionId = data.d.sessionId;
 										if (data.d.resumeGatewayUrl.find("wss://") != std::string::npos) {
 											resumeUrl = data.d.resumeGatewayUrl.substr(
 												data.d.resumeGatewayUrl.find("wss://") + std::string{ "wss://" }.size());
 										}
 										discordCoreClient->currentUser = BotUser{ data.d.user,
-											discordCoreClient->baseSocketAgentsMap
-												.at(static_cast<uint64_t>(floor(static_cast<uint64_t>(shard.at(0)) %
-													static_cast<uint64_t>(discordCoreClient->baseSocketAgentsMap.size()))))
+											discordCoreClient
+												->baseSocketAgentsMap[static_cast<uint64_t>(floor(static_cast<uint64_t>(shard.at(0)) %
+													static_cast<uint64_t>(discordCoreClient->baseSocketAgentsMap.size())))]
 												.get() };
-										Users::insertUser(std::move(data.d.user));
+										Users::insertUser(static_cast<UserCacheData>(std::move(data.d.user)));
 										currentReconnectTries = 0;
 										break;
 									}
@@ -550,7 +559,7 @@ namespace DiscordCoreAPI {
 									case 3: {
 										if (discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent.functions.size() > 0) {
 											UniquePtr<OnApplicationCommandPermissionsUpdateData> dataPackage{
-												makeUnique<OnApplicationCommandPermissionsUpdateData>(jsonifierCore, dataNew)
+												makeUnique<OnApplicationCommandPermissionsUpdateData>(parser, dataNew)
 											};
 											discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent(*dataPackage);
 										}
@@ -559,15 +568,15 @@ namespace DiscordCoreAPI {
 									case 4: {
 										if (discordCoreClient->eventManager.onAutoModerationRuleCreationEvent.functions.size() > 0) {
 											UniquePtr<OnAutoModerationRuleCreationData> dataPackage{ makeUnique<OnAutoModerationRuleCreationData>(
-												jsonifierCore, dataNew) };
+												parser, dataNew) };
 											discordCoreClient->eventManager.onAutoModerationRuleCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 5: {
 										if (discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnAutoModerationRuleUpdateData> dataPackage{ makeUnique<OnAutoModerationRuleUpdateData>(
-												jsonifierCore, dataNew) };
+											UniquePtr<OnAutoModerationRuleUpdateData> dataPackage{ makeUnique<OnAutoModerationRuleUpdateData>(parser,
+												dataNew) };
 											discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent(*dataPackage);
 										}
 										break;
@@ -575,7 +584,7 @@ namespace DiscordCoreAPI {
 									case 6: {
 										if (discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent.functions.size() > 0) {
 											UniquePtr<OnAutoModerationRuleDeletionData> dataPackage{ makeUnique<OnAutoModerationRuleDeletionData>(
-												jsonifierCore, dataNew) };
+												parser, dataNew) };
 											discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent(*dataPackage);
 										}
 										break;
@@ -583,28 +592,28 @@ namespace DiscordCoreAPI {
 									case 7: {
 										if (discordCoreClient->eventManager.onAutoModerationActionExecutionEvent.functions.size() > 0) {
 											UniquePtr<OnAutoModerationActionExecutionData> dataPackage{
-												makeUnique<OnAutoModerationActionExecutionData>(jsonifierCore, dataNew)
+												makeUnique<OnAutoModerationActionExecutionData>(parser, dataNew)
 											};
 											discordCoreClient->eventManager.onAutoModerationActionExecutionEvent(*dataPackage);
 										}
 										break;
 									}
 									case 8: {
-										UniquePtr<OnChannelCreationData> dataPackage{ makeUnique<OnChannelCreationData>(jsonifierCore, dataNew) };
+										UniquePtr<OnChannelCreationData> dataPackage{ makeUnique<OnChannelCreationData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onChannelCreationEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onChannelCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 9: {
-										UniquePtr<OnChannelUpdateData> dataPackage{ makeUnique<OnChannelUpdateData>(jsonifierCore, dataNew) };
+										UniquePtr<OnChannelUpdateData> dataPackage{ makeUnique<OnChannelUpdateData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onChannelUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onChannelUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 10: {
-										UniquePtr<OnChannelDeletionData> dataPackage{ makeUnique<OnChannelDeletionData>(jsonifierCore, dataNew) };
+										UniquePtr<OnChannelDeletionData> dataPackage{ makeUnique<OnChannelDeletionData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onChannelDeletionEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onChannelDeletionEvent(*dataPackage);
 										}
@@ -612,58 +621,56 @@ namespace DiscordCoreAPI {
 									}
 									case 11: {
 										if (discordCoreClient->eventManager.onChannelPinsUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnChannelPinsUpdateData> dataPackage{ makeUnique<OnChannelPinsUpdateData>(jsonifierCore,
-												dataNew) };
+											UniquePtr<OnChannelPinsUpdateData> dataPackage{ makeUnique<OnChannelPinsUpdateData>(parser, dataNew) };
 											discordCoreClient->eventManager.onChannelPinsUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 12: {
 										if (discordCoreClient->eventManager.onThreadCreationEvent.functions.size() > 0) {
-											UniquePtr<OnThreadCreationData> dataPackage{ makeUnique<OnThreadCreationData>(jsonifierCore, dataNew) };
+											UniquePtr<OnThreadCreationData> dataPackage{ makeUnique<OnThreadCreationData>(parser, dataNew) };
 											discordCoreClient->eventManager.onThreadCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 13: {
 										if (discordCoreClient->eventManager.onThreadUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnThreadUpdateData> dataPackage{ makeUnique<OnThreadUpdateData>(jsonifierCore, dataNew) };
+											UniquePtr<OnThreadUpdateData> dataPackage{ makeUnique<OnThreadUpdateData>(parser, dataNew) };
 											discordCoreClient->eventManager.onThreadUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 14: {
 										if (discordCoreClient->eventManager.onThreadDeletionEvent.functions.size() > 0) {
-											UniquePtr<OnThreadDeletionData> dataPackage{ makeUnique<OnThreadDeletionData>(jsonifierCore, dataNew) };
+											UniquePtr<OnThreadDeletionData> dataPackage{ makeUnique<OnThreadDeletionData>(parser, dataNew) };
 											discordCoreClient->eventManager.onThreadDeletionEvent(*dataPackage);
 										}
 										break;
 									}
 									case 15: {
 										if (discordCoreClient->eventManager.onThreadListSyncEvent.functions.size() > 0) {
-											UniquePtr<OnThreadListSyncData> dataPackage{ makeUnique<OnThreadListSyncData>(jsonifierCore, dataNew) };
+											UniquePtr<OnThreadListSyncData> dataPackage{ makeUnique<OnThreadListSyncData>(parser, dataNew) };
 											discordCoreClient->eventManager.onThreadListSyncEvent(*dataPackage);
 										}
 										break;
 									}
 									case 16: {
 										if (discordCoreClient->eventManager.onThreadMemberUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnThreadMemberUpdateData> dataPackage{ makeUnique<OnThreadMemberUpdateData>(jsonifierCore,
-												dataNew) };
+											UniquePtr<OnThreadMemberUpdateData> dataPackage{ makeUnique<OnThreadMemberUpdateData>(parser, dataNew) };
 											discordCoreClient->eventManager.onThreadMemberUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 17: {
 										if (discordCoreClient->eventManager.onThreadMembersUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnThreadMembersUpdateData> dataPackage{ makeUnique<OnThreadMembersUpdateData>(jsonifierCore,
+											UniquePtr<OnThreadMembersUpdateData> dataPackage{ makeUnique<OnThreadMembersUpdateData>(parser,
 												dataNew) };
 											discordCoreClient->eventManager.onThreadMembersUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 18: {
-										UniquePtr<OnGuildCreationData> dataPackage{ makeUnique<OnGuildCreationData>(jsonifierCore, dataNew,
+										UniquePtr<OnGuildCreationData> dataPackage{ makeUnique<OnGuildCreationData>(parser, dataNew,
 											discordCoreClient) };
 										if (discordCoreClient->eventManager.onGuildCreationEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildCreationEvent(*dataPackage);
@@ -671,15 +678,14 @@ namespace DiscordCoreAPI {
 										break;
 									}
 									case 19: {
-										UniquePtr<OnGuildUpdateData> dataPackage{ makeUnique<OnGuildUpdateData>(jsonifierCore, dataNew,
-											discordCoreClient) };
+										UniquePtr<OnGuildUpdateData> dataPackage{ makeUnique<OnGuildUpdateData>(parser, dataNew, discordCoreClient) };
 										if (discordCoreClient->eventManager.onGuildUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 20: {
-										UniquePtr<OnGuildDeletionData> dataPackage{ makeUnique<OnGuildDeletionData>(jsonifierCore, dataNew) };
+										UniquePtr<OnGuildDeletionData> dataPackage{ makeUnique<OnGuildDeletionData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onGuildDeletionEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildDeletionEvent(*dataPackage);
 										}
@@ -687,29 +693,28 @@ namespace DiscordCoreAPI {
 									}
 									case 21: {
 										if (discordCoreClient->eventManager.onGuildBanAddEvent.functions.size() > 0) {
-											UniquePtr<OnGuildBanAddData> dataPackage{ makeUnique<OnGuildBanAddData>(jsonifierCore, dataNew) };
+											UniquePtr<OnGuildBanAddData> dataPackage{ makeUnique<OnGuildBanAddData>(parser, dataNew) };
 											discordCoreClient->eventManager.onGuildBanAddEvent(*dataPackage);
 										}
 										break;
 									}
 									case 22: {
 										if (discordCoreClient->eventManager.onGuildBanRemoveEvent.functions.size() > 0) {
-											UniquePtr<OnGuildBanRemoveData> dataPackage{ makeUnique<OnGuildBanRemoveData>(jsonifierCore, dataNew) };
+											UniquePtr<OnGuildBanRemoveData> dataPackage{ makeUnique<OnGuildBanRemoveData>(parser, dataNew) };
 											discordCoreClient->eventManager.onGuildBanRemoveEvent(*dataPackage);
 										}
 										break;
 									}
 									case 23: {
 										if (discordCoreClient->eventManager.onGuildEmojisUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnGuildEmojisUpdateData> dataPackage{ makeUnique<OnGuildEmojisUpdateData>(jsonifierCore,
-												dataNew) };
+											UniquePtr<OnGuildEmojisUpdateData> dataPackage{ makeUnique<OnGuildEmojisUpdateData>(parser, dataNew) };
 											discordCoreClient->eventManager.onGuildEmojisUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 24: {
 										if (discordCoreClient->eventManager.onGuildStickersUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnGuildStickersUpdateData> dataPackage{ makeUnique<OnGuildStickersUpdateData>(jsonifierCore,
+											UniquePtr<OnGuildStickersUpdateData> dataPackage{ makeUnique<OnGuildStickersUpdateData>(parser,
 												dataNew) };
 											discordCoreClient->eventManager.onGuildStickersUpdateEvent(*dataPackage);
 										}
@@ -717,28 +722,28 @@ namespace DiscordCoreAPI {
 									}
 									case 25: {
 										if (discordCoreClient->eventManager.onGuildIntegrationsUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnGuildIntegrationsUpdateData> dataPackage{ makeUnique<OnGuildIntegrationsUpdateData>(
-												jsonifierCore, dataNew) };
+											UniquePtr<OnGuildIntegrationsUpdateData> dataPackage{ makeUnique<OnGuildIntegrationsUpdateData>(parser,
+												dataNew) };
 											discordCoreClient->eventManager.onGuildIntegrationsUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 26: {
-										UniquePtr<OnGuildMemberAddData> dataPackage{ makeUnique<OnGuildMemberAddData>(jsonifierCore, dataNew) };
+										UniquePtr<OnGuildMemberAddData> dataPackage{ makeUnique<OnGuildMemberAddData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onGuildMemberAddEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildMemberAddEvent(*dataPackage);
 										}
 										break;
 									}
 									case 27: {
-										UniquePtr<OnGuildMemberRemoveData> dataPackage{ makeUnique<OnGuildMemberRemoveData>(jsonifierCore, dataNew) };
+										UniquePtr<OnGuildMemberRemoveData> dataPackage{ makeUnique<OnGuildMemberRemoveData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onGuildMemberRemoveEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildMemberRemoveEvent(*dataPackage);
 										}
 										break;
 									}
 									case 28: {
-										UniquePtr<OnGuildMemberUpdateData> dataPackage{ makeUnique<OnGuildMemberUpdateData>(jsonifierCore, dataNew) };
+										UniquePtr<OnGuildMemberUpdateData> dataPackage{ makeUnique<OnGuildMemberUpdateData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onGuildMemberUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
 										}
@@ -746,28 +751,27 @@ namespace DiscordCoreAPI {
 									}
 									case 29: {
 										if (discordCoreClient->eventManager.onGuildMembersChunkEvent.functions.size() > 0) {
-											UniquePtr<OnGuildMembersChunkData> dataPackage{ makeUnique<OnGuildMembersChunkData>(jsonifierCore,
-												dataNew) };
+											UniquePtr<OnGuildMembersChunkData> dataPackage{ makeUnique<OnGuildMembersChunkData>(parser, dataNew) };
 											discordCoreClient->eventManager.onGuildMembersChunkEvent(*dataPackage);
 										}
 										break;
 									}
 									case 30: {
-										UniquePtr<OnRoleCreationData> dataPackage{ makeUnique<OnRoleCreationData>(jsonifierCore, dataNew) };
+										UniquePtr<OnRoleCreationData> dataPackage{ makeUnique<OnRoleCreationData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onRoleCreationEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onRoleCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 31: {
-										UniquePtr<OnRoleUpdateData> dataPackage{ makeUnique<OnRoleUpdateData>(jsonifierCore, dataNew) };
+										UniquePtr<OnRoleUpdateData> dataPackage{ makeUnique<OnRoleUpdateData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onRoleUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onRoleUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 32: {
-										UniquePtr<OnRoleDeletionData> dataPackage{ makeUnique<OnRoleDeletionData>(jsonifierCore, dataNew) };
+										UniquePtr<OnRoleDeletionData> dataPackage{ makeUnique<OnRoleDeletionData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onRoleDeletionEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onRoleDeletionEvent(*dataPackage);
 										}
@@ -776,7 +780,7 @@ namespace DiscordCoreAPI {
 									case 33: {
 										if (discordCoreClient->eventManager.onGuildScheduledEventCreationEvent.functions.size() > 0) {
 											UniquePtr<OnGuildScheduledEventCreationData> dataPackage{ makeUnique<OnGuildScheduledEventCreationData>(
-												jsonifierCore, dataNew) };
+												parser, dataNew) };
 											discordCoreClient->eventManager.onGuildScheduledEventCreationEvent(*dataPackage);
 										}
 										break;
@@ -784,7 +788,7 @@ namespace DiscordCoreAPI {
 									case 34: {
 										if (discordCoreClient->eventManager.onGuildScheduledEventUpdateEvent.functions.size() > 0) {
 											UniquePtr<OnGuildScheduledEventUpdateData> dataPackage{ makeUnique<OnGuildScheduledEventUpdateData>(
-												jsonifierCore, dataNew) };
+												parser, dataNew) };
 											discordCoreClient->eventManager.onGuildScheduledEventUpdateEvent(*dataPackage);
 										}
 										break;
@@ -792,7 +796,7 @@ namespace DiscordCoreAPI {
 									case 35: {
 										if (discordCoreClient->eventManager.onGuildScheduledEventDeletionEvent.functions.size() > 0) {
 											UniquePtr<OnGuildScheduledEventDeletionData> dataPackage{ makeUnique<OnGuildScheduledEventDeletionData>(
-												jsonifierCore, dataNew) };
+												parser, dataNew) };
 											discordCoreClient->eventManager.onGuildScheduledEventDeletionEvent(*dataPackage);
 										}
 										break;
@@ -800,7 +804,7 @@ namespace DiscordCoreAPI {
 									case 36: {
 										if (discordCoreClient->eventManager.onGuildScheduledEventUserAddEvent.functions.size() > 0) {
 											UniquePtr<OnGuildScheduledEventUserAddData> dataPackage{ makeUnique<OnGuildScheduledEventUserAddData>(
-												jsonifierCore, dataNew) };
+												parser, dataNew) };
 											discordCoreClient->eventManager.onGuildScheduledEventUserAddEvent(*dataPackage);
 										}
 										break;
@@ -808,7 +812,7 @@ namespace DiscordCoreAPI {
 									case 37: {
 										if (discordCoreClient->eventManager.onGuildScheduledEventUserRemoveEvent.functions.size() > 0) {
 											UniquePtr<OnGuildScheduledEventUserRemoveData> dataPackage{
-												makeUnique<OnGuildScheduledEventUserRemoveData>(jsonifierCore, dataNew)
+												makeUnique<OnGuildScheduledEventUserRemoveData>(parser, dataNew)
 											};
 											discordCoreClient->eventManager.onGuildScheduledEventUserRemoveEvent(*dataPackage);
 										}
@@ -816,7 +820,7 @@ namespace DiscordCoreAPI {
 									}
 									case 38: {
 										if (discordCoreClient->eventManager.onIntegrationCreationEvent.functions.size() > 0) {
-											UniquePtr<OnIntegrationCreationData> dataPackage{ makeUnique<OnIntegrationCreationData>(jsonifierCore,
+											UniquePtr<OnIntegrationCreationData> dataPackage{ makeUnique<OnIntegrationCreationData>(parser,
 												dataNew) };
 											discordCoreClient->eventManager.onIntegrationCreationEvent(*dataPackage);
 										}
@@ -824,23 +828,22 @@ namespace DiscordCoreAPI {
 									}
 									case 39: {
 										if (discordCoreClient->eventManager.onIntegrationUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnIntegrationUpdateData> dataPackage{ makeUnique<OnIntegrationUpdateData>(jsonifierCore,
-												dataNew) };
+											UniquePtr<OnIntegrationUpdateData> dataPackage{ makeUnique<OnIntegrationUpdateData>(parser, dataNew) };
 											discordCoreClient->eventManager.onIntegrationUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 40: {
 										if (discordCoreClient->eventManager.onIntegrationDeletionEvent.functions.size() > 0) {
-											UniquePtr<OnIntegrationDeletionData> dataPackage{ makeUnique<OnIntegrationDeletionData>(jsonifierCore,
+											UniquePtr<OnIntegrationDeletionData> dataPackage{ makeUnique<OnIntegrationDeletionData>(parser,
 												dataNew) };
 											discordCoreClient->eventManager.onIntegrationDeletionEvent(*dataPackage);
 										}
 										break;
 									}
 									case 41: {
-										UniquePtr<OnInteractionCreationData> dataPackage{ makeUnique<OnInteractionCreationData>(jsonifierCore,
-											dataNew, discordCoreClient) };
+										UniquePtr<OnInteractionCreationData> dataPackage{ makeUnique<OnInteractionCreationData>(parser, dataNew,
+											discordCoreClient) };
 										if (discordCoreClient->eventManager.onInteractionCreationEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 										}
@@ -848,27 +851,27 @@ namespace DiscordCoreAPI {
 									}
 									case 42: {
 										if (discordCoreClient->eventManager.onInviteCreationEvent.functions.size() > 0) {
-											UniquePtr<OnInviteCreationData> dataPackage{ makeUnique<OnInviteCreationData>(jsonifierCore, dataNew) };
+											UniquePtr<OnInviteCreationData> dataPackage{ makeUnique<OnInviteCreationData>(parser, dataNew) };
 											discordCoreClient->eventManager.onInviteCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 43: {
 										if (discordCoreClient->eventManager.onInviteDeletionEvent.functions.size() > 0) {
-											UniquePtr<OnInviteDeletionData> dataPackage{ makeUnique<OnInviteDeletionData>(jsonifierCore, dataNew) };
+											UniquePtr<OnInviteDeletionData> dataPackage{ makeUnique<OnInviteDeletionData>(parser, dataNew) };
 											discordCoreClient->eventManager.onInviteDeletionEvent(*dataPackage);
 										}
 										break;
 									}
 									case 44: {
-										UniquePtr<OnMessageCreationData> dataPackage{ makeUnique<OnMessageCreationData>(jsonifierCore, dataNew) };
+										UniquePtr<OnMessageCreationData> dataPackage{ makeUnique<OnMessageCreationData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onMessageCreationEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onMessageCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 45: {
-										UniquePtr<OnMessageUpdateData> dataPackage{ makeUnique<OnMessageUpdateData>(jsonifierCore, dataNew) };
+										UniquePtr<OnMessageUpdateData> dataPackage{ makeUnique<OnMessageUpdateData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onMessageUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onMessageUpdateEvent(*dataPackage);
 										}
@@ -876,51 +879,49 @@ namespace DiscordCoreAPI {
 									}
 									case 46: {
 										if (discordCoreClient->eventManager.onMessageDeletionEvent.functions.size() > 0) {
-											UniquePtr<OnMessageDeletionData> dataPackage{ makeUnique<OnMessageDeletionData>(jsonifierCore, dataNew) };
+											UniquePtr<OnMessageDeletionData> dataPackage{ makeUnique<OnMessageDeletionData>(parser, dataNew) };
 											discordCoreClient->eventManager.onMessageDeletionEvent(*dataPackage);
 										}
 										break;
 									}
 									case 47: {
 										if (discordCoreClient->eventManager.onMessageDeleteBulkEvent.functions.size() > 0) {
-											UniquePtr<OnMessageDeleteBulkData> dataPackage{ makeUnique<OnMessageDeleteBulkData>(jsonifierCore,
-												dataNew) };
+											UniquePtr<OnMessageDeleteBulkData> dataPackage{ makeUnique<OnMessageDeleteBulkData>(parser, dataNew) };
 											discordCoreClient->eventManager.onMessageDeleteBulkEvent(*dataPackage);
 										}
 										break;
 									}
 									case 48: {
 										if (discordCoreClient->eventManager.onReactionAddEvent.functions.size() > 0) {
-											UniquePtr<OnReactionAddData> dataPackage{ makeUnique<OnReactionAddData>(jsonifierCore, dataNew) };
+											UniquePtr<OnReactionAddData> dataPackage{ makeUnique<OnReactionAddData>(parser, dataNew) };
 											discordCoreClient->eventManager.onReactionAddEvent(*dataPackage);
 										}
 										break;
 									}
 									case 49: {
 										if (discordCoreClient->eventManager.onReactionRemoveEvent.functions.size() > 0) {
-											UniquePtr<OnReactionRemoveData> dataPackage{ makeUnique<OnReactionRemoveData>(jsonifierCore, dataNew) };
+											UniquePtr<OnReactionRemoveData> dataPackage{ makeUnique<OnReactionRemoveData>(parser, dataNew) };
 											discordCoreClient->eventManager.onReactionRemoveEvent(*dataPackage);
 										}
 										break;
 									}
 									case 50: {
 										if (discordCoreClient->eventManager.onReactionRemoveAllEvent.functions.size() > 0) {
-											UniquePtr<OnReactionRemoveAllData> dataPackage{ makeUnique<OnReactionRemoveAllData>(jsonifierCore,
-												dataNew) };
+											UniquePtr<OnReactionRemoveAllData> dataPackage{ makeUnique<OnReactionRemoveAllData>(parser, dataNew) };
 											discordCoreClient->eventManager.onReactionRemoveAllEvent(*dataPackage);
 										}
 										break;
 									}
 									case 51: {
 										if (discordCoreClient->eventManager.onReactionRemoveEmojiEvent.functions.size() > 0) {
-											UniquePtr<OnReactionRemoveEmojiData> dataPackage{ makeUnique<OnReactionRemoveEmojiData>(jsonifierCore,
+											UniquePtr<OnReactionRemoveEmojiData> dataPackage{ makeUnique<OnReactionRemoveEmojiData>(parser,
 												dataNew) };
 											discordCoreClient->eventManager.onReactionRemoveEmojiEvent(*dataPackage);
 										}
 										break;
 									}
 									case 52: {
-										UniquePtr<OnPresenceUpdateData> dataPackage{ makeUnique<OnPresenceUpdateData>(jsonifierCore, dataNew) };
+										UniquePtr<OnPresenceUpdateData> dataPackage{ makeUnique<OnPresenceUpdateData>(parser, dataNew) };
 										if (discordCoreClient->eventManager.onPresenceUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onPresenceUpdateEvent(*dataPackage);
 										}
@@ -928,7 +929,7 @@ namespace DiscordCoreAPI {
 									}
 									case 53: {
 										if (discordCoreClient->eventManager.onStageInstanceCreationEvent.functions.size() > 0) {
-											UniquePtr<OnStageInstanceCreationData> dataPackage{ makeUnique<OnStageInstanceCreationData>(jsonifierCore,
+											UniquePtr<OnStageInstanceCreationData> dataPackage{ makeUnique<OnStageInstanceCreationData>(parser,
 												dataNew) };
 											discordCoreClient->eventManager.onStageInstanceCreationEvent(*dataPackage);
 										}
@@ -936,7 +937,7 @@ namespace DiscordCoreAPI {
 									}
 									case 54: {
 										if (discordCoreClient->eventManager.onStageInstanceUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnStageInstanceUpdateData> dataPackage{ makeUnique<OnStageInstanceUpdateData>(jsonifierCore,
+											UniquePtr<OnStageInstanceUpdateData> dataPackage{ makeUnique<OnStageInstanceUpdateData>(parser,
 												dataNew) };
 											discordCoreClient->eventManager.onStageInstanceUpdateEvent(*dataPackage);
 										}
@@ -944,7 +945,7 @@ namespace DiscordCoreAPI {
 									}
 									case 55: {
 										if (discordCoreClient->eventManager.onStageInstanceDeletionEvent.functions.size() > 0) {
-											UniquePtr<OnStageInstanceDeletionData> dataPackage{ makeUnique<OnStageInstanceDeletionData>(jsonifierCore,
+											UniquePtr<OnStageInstanceDeletionData> dataPackage{ makeUnique<OnStageInstanceDeletionData>(parser,
 												dataNew) };
 											discordCoreClient->eventManager.onStageInstanceDeletionEvent(*dataPackage);
 										}
@@ -952,29 +953,27 @@ namespace DiscordCoreAPI {
 									}
 									case 56: {
 										if (discordCoreClient->eventManager.onTypingStartEvent.functions.size() > 0) {
-											UniquePtr<OnTypingStartData> dataPackage{ makeUnique<OnTypingStartData>(jsonifierCore, dataNew) };
+											UniquePtr<OnTypingStartData> dataPackage{ makeUnique<OnTypingStartData>(parser, dataNew) };
 											discordCoreClient->eventManager.onTypingStartEvent(*dataPackage);
 										}
 										break;
 									}
 									case 57: {
 										if (discordCoreClient->eventManager.onUserUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnUserUpdateData> dataPackage{ makeUnique<OnUserUpdateData>(jsonifierCore, dataNew) };
+											UniquePtr<OnUserUpdateData> dataPackage{ makeUnique<OnUserUpdateData>(parser, dataNew) };
 											discordCoreClient->eventManager.onUserUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 58: {
-										UniquePtr<OnVoiceStateUpdateData> dataPackage{ makeUnique<OnVoiceStateUpdateData>(jsonifierCore, dataNew,
-											this) };
+										UniquePtr<OnVoiceStateUpdateData> dataPackage{ makeUnique<OnVoiceStateUpdateData>(parser, dataNew, this) };
 										if (discordCoreClient->eventManager.onVoiceStateUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 59: {
-										UniquePtr<OnVoiceServerUpdateData> dataPackage{ makeUnique<OnVoiceServerUpdateData>(jsonifierCore, dataNew,
-											this) };
+										UniquePtr<OnVoiceServerUpdateData> dataPackage{ makeUnique<OnVoiceServerUpdateData>(parser, dataNew, this) };
 										if (discordCoreClient->eventManager.onVoiceServerUpdateEvent.functions.size() > 0) {
 											discordCoreClient->eventManager.onVoiceServerUpdateEvent(*dataPackage);
 										}
@@ -982,7 +981,7 @@ namespace DiscordCoreAPI {
 									}
 									case 60: {
 										if (discordCoreClient->eventManager.onWebhookUpdateEvent.functions.size() > 0) {
-											UniquePtr<OnWebhookUpdateData> dataPackage{ makeUnique<OnWebhookUpdateData>(jsonifierCore, dataNew) };
+											UniquePtr<OnWebhookUpdateData> dataPackage{ makeUnique<OnWebhookUpdateData>(parser, dataNew) };
 											discordCoreClient->eventManager.onWebhookUpdateEvent(*dataPackage);
 										}
 										break;
@@ -1006,7 +1005,7 @@ namespace DiscordCoreAPI {
 						}
 						case WebSocketOpCodes::Invalid_Session: {
 							WebSocketMessageData<bool> data{};
-							jsonifierCore.parseJson<true, true>(data, dataNew);
+							parser.parseJson<true, true>(data, dataNew);
 							MessagePrinter::printError<PrintMessageType::WebSocket>(
 								"Shard [" + std::to_string(shard.at(0)) + "," + std::to_string(shard.at(1)) + "]" + " Reconnecting (Type 9)!");
 							std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
@@ -1025,7 +1024,7 @@ namespace DiscordCoreAPI {
 						}
 						case WebSocketOpCodes::Hello: {
 							WebSocketMessageData<HelloData> data{};
-							jsonifierCore.parseJson<true, true>(data, dataNew);
+							parser.parseJson<true, true>(data, dataNew);
 							if (data.d.heartbeatInterval != 0) {
 								areWeHeartBeating = true;
 								heartBeatStopWatch = StopWatch<Milliseconds>{ Milliseconds{ data.d.heartbeatInterval } };
@@ -1040,10 +1039,10 @@ namespace DiscordCoreAPI {
 								dataNewer.op = 6;
 								std::string string{};
 								if (dataOpCode == WebSocketOpCode::Op_Binary) {
-									auto serializer = dataNewer.d.operator EtfSerializer();
-									string = serializer.refreshString();
+									auto serializer = dataNewer.operator EtfSerializer();
+									string = serializer.operator std::string();
 								} else {
-									jsonifierCore.serializeJson(dataNewer, string);
+									parser.serializeJson(dataNewer, string);
 								}
 								createHeader(string, dataOpCode);
 								currentState.store(WebSocketState::Sending_Identify);
@@ -1057,13 +1056,18 @@ namespace DiscordCoreAPI {
 								dataNewer.d.shard.at(1) = shard.at(1);
 								dataNewer.d.intents = static_cast<int64_t>(configManager->getGatewayIntents());
 								dataNewer.d.presence = configManager->getPresenceData();
+								for (auto& value: dataNewer.d.presence.activities) {
+									if (value.url == "") {
+										value.excludedKeys.emplace("url");
+									}
+								}
 								dataNewer.op = 2;
 								std::string string{};
 								if (dataOpCode == WebSocketOpCode::Op_Binary) {
-									auto serializer = dataNewer.d.operator EtfSerializer();
-									string = serializer.refreshString();
+									auto serializer = dataNewer.operator EtfSerializer();
+									string = serializer.operator std::string();
 								} else {
-									jsonifierCore.serializeJson(dataNewer, string);
+									parser.serializeJson<true>(dataNewer, string);
 								}
 								createHeader(string, dataOpCode);
 								currentState.store(WebSocketState::Sending_Identify);
@@ -1129,7 +1133,7 @@ namespace DiscordCoreAPI {
 		}
 
 		bool BaseSocketAgent::waitForState(ConnectionPackage& packageNew, WebSocketState state) {
-			StopWatch stopWatch{ 10000ms };
+			StopWatch<std::chrono::milliseconds> stopWatch{ 10000ms };
 			stopWatch.resetTimer();
 			if (getClient(packageNew.currentShard).areWeConnected()) {
 				while (!doWeQuit->load()) {
@@ -1185,25 +1189,25 @@ namespace DiscordCoreAPI {
 		}
 
 		WebSocketClient& BaseSocketAgent::getClient(uint32_t index) {
-			return shardMap.at(index);
+			return shardMap[index];
 		}
 
 		void BaseSocketAgent::run(std::stop_token token) {
-			std::unordered_map<uint32_t, WebSocketTCPConnection&> processIOMapNew{};
+			UnorderedMap<uint64_t, WebSocketTCPConnection*> processIOMapNew{};
 			while (!token.stop_requested() && !doWeQuit->load()) {
 				try {
 					for (auto& [key, value]: shardMap) {
 						if (value.areWeConnected()) {
-							processIOMapNew.emplace(key, std::ref(value.tcpConnection));
+							processIOMapNew.emplace(key, &value.tcpConnection);
 						}
 					}
 					auto result = TCPConnection<WebSocketTCPConnection>::processIO(processIOMapNew);
 					processIOMapNew.clear();
 					for (auto& [key, value]: result) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>("Connection lost for WebSocket [" +
-							std::to_string(shardMap.at(key).shard.at(0)) + "," +
-							std::to_string(discordCoreClient->configManager.getTotalShardCount()) + "]... reconnecting.");
-						shardMap.at(key).onClosed();
+							std::to_string(shardMap[key].shard.at(0)) + "," + std::to_string(discordCoreClient->configManager.getTotalShardCount()) +
+							"]... reconnecting.");
+						shardMap[key].onClosed();
 					}
 					bool areWeConnected{};
 					for (auto& [key, dValueNew]: shardMap) {

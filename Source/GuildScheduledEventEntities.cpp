@@ -30,6 +30,7 @@
 
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 
 namespace Jsonifier {
 
@@ -73,7 +74,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildScheduledEventData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events";
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildScheduledEvents::createGuildScheduledEventAsync()";
 		GuildScheduledEventData returnData{};
 		GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
@@ -100,7 +101,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildScheduledEventData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events/" + dataPackage.guildScheduledEventId;
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildScheduledEvents::modifyGuildScheduledEventAsync()";
 		GuildScheduledEventData returnData{};
 		GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);

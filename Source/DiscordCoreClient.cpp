@@ -29,6 +29,7 @@
 /// \file DiscordCoreClient.cpp
 
 #include <discordcoreapi/DiscordCoreClient.hpp>
+#include <discordcoreapi/CommandController.hpp>
 #include <csignal>
 #include <atomic>
 
@@ -41,44 +42,46 @@ namespace DiscordCoreAPI {
 	std::atomic_bool doWeQuit{};
 
 	DiscordCoreInternal::SoundCloudAPI& DiscordCoreClient::getSoundCloudAPI(Snowflake guildId) {
-		GuildData guild = Guilds::getCachedGuild({ .guildId = guildId });
-		if (!soundCloudAPIMap.contains(guildId.operator uint64_t())) {
-			soundCloudAPIMap[guildId.operator uint64_t()] =
-				makeUnique<DiscordCoreInternal::SoundCloudAPI>(&guild.discordCoreClient->configManager, guildId);
+		if (!soundCloudAPIMap.contains(guildId.operator const uint64_t&())) {
+			soundCloudAPIMap[guildId.operator const uint64_t&()] =
+				makeUnique<DiscordCoreInternal::SoundCloudAPI>(&getInstance()->configManager, guildId);
 		}
-		return *soundCloudAPIMap[guildId.operator uint64_t()].get();
+		return *soundCloudAPIMap[guildId.operator const uint64_t&()].get();
 	}
 
 	DiscordCoreInternal::YouTubeAPI& DiscordCoreClient::getYouTubeAPI(Snowflake guildId) {
-		GuildData guild = Guilds::getCachedGuild({ .guildId = guildId });
-		if (!youtubeAPIMap.contains(guildId.operator uint64_t())) {
-			youtubeAPIMap[guildId.operator uint64_t()] =
-				makeUnique<DiscordCoreInternal::YouTubeAPI>(&guild.discordCoreClient->configManager, guildId);
+		if (!youtubeAPIMap.contains(guildId.operator const uint64_t&())) {
+			youtubeAPIMap[guildId.operator const uint64_t&()] = makeUnique<DiscordCoreInternal::YouTubeAPI>(&getInstance()->configManager, guildId);
 		}
-		return *youtubeAPIMap[guildId.operator uint64_t()].get();
+		return *youtubeAPIMap[guildId.operator const uint64_t&()].get();
 	}
 
 	VoiceConnection& DiscordCoreClient::getVoiceConnection(Snowflake guildId) {
-		GuildData guild = Guilds::getCachedGuild({ .guildId = guildId });
-		if (!voiceConnectionMap.contains(guildId.operator uint64_t())) {
-			uint64_t theShardId{ (guildId.operator uint64_t() >> 22) % guild.discordCoreClient->configManager.getTotalShardCount() };
-			uint64_t baseSocketIndex{ theShardId % guild.discordCoreClient->baseSocketAgentsMap.size() };
-			auto baseSocketAgent = guild.discordCoreClient->baseSocketAgentsMap[baseSocketIndex].get();
-			voiceConnectionMap[guildId.operator uint64_t()] =
-				makeUnique<VoiceConnection>(guild.discordCoreClient, &baseSocketAgent->shardMap[theShardId], &doWeQuit);
+		if (!voiceConnectionMap.contains(guildId.operator const uint64_t&())) {
+			uint64_t theShardId{ (guildId.operator const uint64_t&() >> 22) % getInstance()->configManager.getTotalShardCount() };
+			uint64_t baseSocketIndex{ theShardId % getInstance()->baseSocketAgentsMap.size() };
+			auto baseSocketAgent = getInstance()->baseSocketAgentsMap[baseSocketIndex].get();
+			voiceConnectionMap[guildId.operator const uint64_t&()] =
+				makeUnique<VoiceConnection>(getInstance(), &baseSocketAgent->shardMap[theShardId], &doWeQuit);
 		}
-		return *voiceConnectionMap[guildId.operator uint64_t()].get();
+		return *voiceConnectionMap[guildId.operator const uint64_t&()].get();
 	}
 
 	SongAPI& DiscordCoreClient::getSongAPI(Snowflake guildId) {
-		if (!songAPIMap.contains(guildId.operator uint64_t())) {
-			songAPIMap[guildId.operator uint64_t()] = makeUnique<SongAPI>(guildId);
+		if (!songAPIMap.contains(guildId.operator const uint64_t&())) {
+			songAPIMap[guildId.operator const uint64_t&()] = makeUnique<SongAPI>(guildId);
 		}
-		return *songAPIMap[guildId.operator uint64_t()].get();
+		return *songAPIMap[guildId.operator const uint64_t&()].get();
+	}
+
+	DiscordCoreClient* DiscordCoreClient::getInstance() {
+		return instancePtr.get();
+		;
 	}
 
 	void atexitHandler() {
 		doWeQuit.store(true);
+		exit(EXIT_SUCCESS);
 	}
 
 	void signalHandler(int32_t value) {
@@ -105,14 +108,14 @@ namespace DiscordCoreAPI {
 			}
 		} catch (const SIGINTError& error) {
 			MessagePrinter::printError<PrintMessageType::General>(error.what());
-			doWeQuit.store(true);
-		} catch (const std::exception& error) {
-			MessagePrinter::printError<PrintMessageType::General>(error.what());
-			std::exit(EXIT_FAILURE);
+			exit(EXIT_SUCCESS);
+		} catch (...) {
+			exit(EXIT_FAILURE);
 		}
 	}
 
 	DiscordCoreClient::DiscordCoreClient(DiscordCoreClientConfig configData) {
+		instancePtr.reset(this);
 		std::atexit(&atexitHandler);
 		std::signal(SIGTERM, &signalHandler);
 		std::signal(SIGSEGV, &signalHandler);
@@ -260,6 +263,7 @@ namespace DiscordCoreAPI {
 		}
 		int32_t theWorkerCount = configManager.getTotalShardCount() <= std::thread::hardware_concurrency() ? configManager.getTotalShardCount()
 																										   : std::thread::hardware_concurrency();
+
 		if (configManager.getConnectionAddress() == "") {
 			configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string_view{ "wss://" }.size()));
 		}
@@ -277,7 +281,6 @@ namespace DiscordCoreAPI {
 			}
 			connectionStopWatch01.resetTimer();
 		}
-
 		for (auto& value: configManager.getFunctionsToExecute()) {
 			executeFunctionAfterTimePeriod(value.function, value.intervalInMs, value.repeated, false, this);
 		}
@@ -286,7 +289,7 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() {
-		auto guildVector = Guilds::getAllGuildsAsync().get();
+		auto guildVector = Guilds::getAllGuildsAsync();
 		for (auto& value: guildVector) {
 			if (value.areWeConnected()) {
 				value.disconnect();
@@ -298,6 +301,7 @@ namespace DiscordCoreAPI {
 				value->thread.detach();
 			}
 		}
+		instancePtr.release();
 	}
 
 	BotUser DiscordCoreClient::currentUser{};

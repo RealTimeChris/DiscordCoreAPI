@@ -45,48 +45,33 @@ namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
 
-		WebSocketResumeData::operator EtfSerializer() {
+		WebSocketResumeData::operator DiscordCoreInternal::EtfSerializer() {
 			EtfSerializer data{};
-			data["op"] = 6;
-			data["d"]["seq"] = lastNumberReceived;
-			data["d"]["session_id"] = sessionId;
-			data["d"]["token"] = botToken;
+			data["seq"] = lastNumberReceived;
+			data["session_id"] = sessionId;
+			data["token"] = botToken;
 			return data;
 		}
 
-		WebSocketIdentifyData::operator EtfSerializer() {
+		WebSocketIdentifyData::operator DiscordCoreInternal::EtfSerializer() {
 			EtfSerializer serializer{};
-			serializer["d"]["intents"] = intents;
-			serializer["d"]["large_threshold"] = 250;
-			for (auto& value: presence.activities) {
-				EtfSerializer serializer01{};
-				if (value.url != "") {
-					serializer01["url"] = value.url;
-				}
-				serializer01["name"] = value.name;
-				serializer01["type"] = value.type;
-				serializer["d"]["presence"]["activities"].emplaceBack(serializer01);
-			}
-			serializer["d"]["presence"]["afk"] = presence.afk;
-			if (presence.since != 0) {
-				serializer["d"]["presence"]["since"] = presence.since;
-			}
-			serializer["d"]["presence"]["status"] = presence.status;
-			serializer["d"]["properties"]["browser"] = "DiscordCoreAPI";
-			serializer["d"]["properties"]["device"] = "DiscordCoreAPI";
+			serializer["intents"] = intents;
+			serializer["large_threshold"] = 250;
+			serializer["presence"] = presence.operator DiscordCoreInternal::EtfSerializer();
+			serializer["properties"]["browser"] = "DiscordCoreAPI";
+			serializer["properties"]["device"] = "DiscordCoreAPI";
 #ifdef _WIN32
-			serializer["d"]["properties"]["os"] = "Windows";
-#elif __linux__
-			serializer["d"]["properties"]["os"] = "Linux";
+			serializer["properties"]["os"] = "Windows";
+#else
+			serializer["properties"]["os"] = "Linux";
 #endif
-			serializer["d"]["shard"].emplaceBack(shard[0]);
-			serializer["d"]["shard"].emplaceBack(shard[1]);
-			serializer["d"]["token"] = botToken;
-			serializer["op"] = 2;
+			serializer["shard"].emplaceBack(shard[0]);
+			serializer["shard"].emplaceBack(shard[1]);
+			serializer["token"] = botToken;
 			return serializer;
 		}
 
-		HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadData&& other) {
+		HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadData&& other) noexcept {
 			if (this != &other) {
 				headersToInsert = std::move(other.headersToInsert);
 				relativePath = std::move(other.relativePath);
@@ -101,7 +86,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadData&& other) {
+		HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadData&& other) noexcept {
 			*this = std::move(other);
 		}
 
@@ -129,13 +114,12 @@ namespace DiscordCoreAPI {
 			return value;
 		}
 
-		std::unordered_map<HttpsWorkloadType, UniquePtr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsExternal{};
-		std::unordered_map<HttpsWorkloadType, UniquePtr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsInternal{};
+		UnorderedMap<HttpsWorkloadType, UniquePtr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsExternal{};
+		UnorderedMap<HttpsWorkloadType, UniquePtr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsInternal{};
 	}
 
 	UpdatePresenceData::operator DiscordCoreInternal::EtfSerializer() {
 		DiscordCoreInternal::EtfSerializer data{};
-		data["op"] = 3;
 		for (auto& value: activities) {
 			DiscordCoreInternal::EtfSerializer newData{};
 			if (value.url != "") {
@@ -143,7 +127,7 @@ namespace DiscordCoreAPI {
 			}
 			newData["name"] = std::string_view{ value.name };
 			newData["type"] = value.type;
-			data["d"]["activities"].emplaceBack(newData);
+			data["activities"].emplaceBack(newData);
 		}
 		switch (status) {
 			case PresenceUpdateState::Online: {
@@ -167,39 +151,35 @@ namespace DiscordCoreAPI {
 				break;
 			}
 		}
-		if (since != 0) {
-			data["since"] = since;
-		}
+		data["since"] = since;
 		data["afk"] = afk;
 		return data;
 	}
 
 	UpdateVoiceStateData::operator DiscordCoreInternal::EtfSerializer() {
 		DiscordCoreInternal::EtfSerializer data{};
-		data["op"] = 4;
 		if (channelId == 0) {
-			data["d"]["channel_id"] = DiscordCoreInternal::JsonType::Null;
+			data["channel_id"] = DiscordCoreInternal::JsonType::Null;
 		} else {
-			data["d"]["channel_id"] = channelId.operator std::string();
+			data["channel_id"] = channelId.operator std::string();
 		}
-		data["d"]["self_deaf"] = selfDeaf;
-		data["d"]["self_mute"] = selfMute;
-		data["d"]["guild_id"] = guildId.operator std::string();
+		data["self_deaf"] = selfDeaf;
+		data["self_mute"] = selfMute;
+		data["guild_id"] = guildId.operator std::string();
 		return data;
 	}
 
 	UpdateVoiceStateDataDC::operator DiscordCoreInternal::EtfSerializer() {
 		DiscordCoreInternal::EtfSerializer data{};
-		data["op"] = 4;
-		data["d"]["channel_id"] = DiscordCoreInternal::JsonType::Null;
-		data["d"]["self_deaf"] = selfDeaf;
-		data["d"]["self_mute"] = selfMute;
-		data["d"]["guild_id"] = guildId.operator std::string();
+		data["channel_id"] = DiscordCoreInternal::JsonType::Null;
+		data["self_deaf"] = selfDeaf;
+		data["self_mute"] = selfMute;
+		data["guild_id"] = guildId.operator std::string();
 		return data;
 	}
 
 	VoiceStateDataLight GuildMemberData::getVoiceStateData() {
-		return GuildMembers::getVoiceStateData(GuildMemberKey{ *this });
+		return GuildMembers::getVoiceStateData(*this);
 	}
 
 	UserCacheData GuildMemberData::getUserData() {
@@ -211,7 +191,7 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceStateDataLight GuildMemberCacheData::getVoiceStateData() {
-		return GuildMembers::getVoiceStateData(GuildMemberKey{ *this });
+		return GuildMembers::getVoiceStateData(*this);
 	}
 
 	UserCacheData GuildMemberCacheData::getUserData() {
@@ -227,56 +207,14 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildCacheData::disconnect() {
-		DiscordCoreInternal::WebSocketMessageData<UpdateVoiceStateData> data{};
-		data.excludedKeys.emplace("t");
-		data.excludedKeys.emplace("s");
-		data.d.channelId = 0;
-		data.d.selfDeaf = false;
-		data.d.selfMute = false;
-		data.d.guildId = id;
+		UpdateVoiceStateData data{};
+		data.channelId = 0;
+		data.selfDeaf = false;
+		data.selfMute = false;
+		data.guildId = id;
 		DiscordCoreClient::getSongAPI(id).disconnect();
-		DiscordCoreClient::getBotUser().updateVoiceStatus(data.d);
+		DiscordCoreClient::getBotUser().updateVoiceStatus(data);
 		DiscordCoreClient::getVoiceConnection(id).disconnect();
-	}
-
-	VoiceConnection& GuildCacheData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute,
-		StreamInfo streamInfoNew) {
-		if (DiscordCoreClient::getVoiceConnection(id).areWeConnected()) {
-			return DiscordCoreClient::getVoiceConnection(id);
-		} else if (static_cast<Snowflake>(guildMemberId) != 0 || static_cast<Snowflake>(channelId) != 0) {
-			Snowflake channelIdNew{};
-			if (static_cast<Snowflake>(guildMemberId) != 0) {
-				VoiceStateDataLight dataLight{};
-				dataLight.guildId = id;
-				dataLight.id = guildMemberId;
-				GuildMemberData getData{};
-				getData.guildId = id;
-				getData.user.id = guildMemberId;
-				auto voiceStateData = GuildMembers::getVoiceStateData(GuildMemberKey{ getData });
-				if (voiceStateData.channelId != 0) {
-					channelIdNew = voiceStateData.channelId;
-				}
-			} else {
-				channelIdNew = channelId;
-			}
-			uint64_t theShardId{ (id.operator uint64_t() >> 22) % discordCoreClient->getConfigManager().getTotalShardCount() };
-			VoiceConnectInitData voiceConnectInitData{};
-			voiceConnectInitData.currentShard = theShardId;
-			voiceConnectInitData.streamInfo = streamInfoNew;
-			voiceConnectInitData.channelId = channelIdNew;
-			voiceConnectInitData.guildId = id;
-			voiceConnectInitData.userId = discordCoreClient->getBotUser().id;
-			voiceConnectInitData.selfDeaf = selfDeaf;
-			voiceConnectInitData.selfMute = selfMute;
-			StopWatch stopWatch{ 10000ms };
-			auto& voiceConnectionNew = DiscordCoreClient::getVoiceConnection(id);
-			voiceConnectionNew.connect(voiceConnectInitData);
-			while (!voiceConnectionNew.areWeConnected()) {
-				std::this_thread::sleep_for(1ms);
-			}
-			return voiceConnectionNew;
-		}
-		return DiscordCoreClient::getVoiceConnection(id);
 	}
 
 	bool GuildData::areWeConnected() {
@@ -294,46 +232,6 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient::getSongAPI(id).disconnect();
 		DiscordCoreClient::getBotUser().updateVoiceStatus(data.d);
 		DiscordCoreClient::getVoiceConnection(id).disconnect();
-	}
-
-	VoiceConnection& GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute,
-		StreamInfo streamInfoNew) {
-		if (DiscordCoreClient::getVoiceConnection(id).areWeConnected()) {
-			return DiscordCoreClient::getVoiceConnection(id);
-		} else if (static_cast<Snowflake>(guildMemberId) != 0 || static_cast<Snowflake>(channelId) != 0) {
-			Snowflake channelIdNew{};
-			if (static_cast<Snowflake>(guildMemberId) != 0) {
-				VoiceStateDataLight dataLight{};
-				dataLight.guildId = id;
-				dataLight.id = guildMemberId;
-				GuildMemberData getData{};
-				getData.guildId = id;
-				getData.user.id = guildMemberId;
-				auto voiceStateData = GuildMembers::getVoiceStateData(GuildMemberKey{ getData });
-				if (voiceStateData.channelId != 0) {
-					channelIdNew = voiceStateData.channelId;
-				}
-			} else {
-				channelIdNew = channelId;
-			}
-			uint64_t theShardId{ (id.operator size_t() >> 22) % discordCoreClient->getConfigManager().getTotalShardCount() };
-			VoiceConnectInitData voiceConnectInitData{};
-			voiceConnectInitData.currentShard = theShardId;
-			voiceConnectInitData.streamInfo = streamInfoNew;
-			voiceConnectInitData.channelId = channelIdNew;
-			voiceConnectInitData.guildId = id;
-			voiceConnectInitData.userId = discordCoreClient->getBotUser().id;
-			voiceConnectInitData.selfDeaf = selfDeaf;
-			voiceConnectInitData.selfMute = selfMute;
-			StopWatch stopWatch{ 10000ms };
-			auto& voiceConnectionNew = DiscordCoreClient::getVoiceConnection(id);
-			voiceConnectionNew.connect(voiceConnectInitData);
-			while (!voiceConnectionNew.areWeConnected()) {
-				std::this_thread::sleep_for(1ms);
-			}
-			return voiceConnectionNew;
-		}
-		return DiscordCoreClient::getVoiceConnection(id);
 	}
 
 	bool ApplicationCommandOptionData::operator==(const ApplicationCommandOptionData& rhs) const {
@@ -589,7 +487,7 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
-	InputEventData& InputEventData::operator=(InputEventData&& other) {
+	InputEventData& InputEventData::operator=(InputEventData&& other) noexcept {
 		if (this != &other) {
 			*interactionData = std::move(*other.interactionData);
 			responseType = other.responseType;
@@ -597,7 +495,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InputEventData::InputEventData(InputEventData&& other) {
+	InputEventData::InputEventData(InputEventData&& other) noexcept {
 		*this = std::move(other);
 	}
 
@@ -959,11 +857,11 @@ namespace DiscordCoreAPI {
 	}
 
 	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(DiscordCoreInternal::EtfSerializer value, const std::string& theName,
-		std::unordered_map<std::string, std::string> theNameLocalizations) {
+		UnorderedMap<std::string, std::string> theNameLocalizations) {
 		ApplicationCommandOptionChoiceData choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name = theName;
-		choiceData.value = Jsonifier::RawJsonData{ value.refreshString() };
+		choiceData.value = Jsonifier::RawJsonData{ value.operator std::string() };
 		choices.emplace_back(choiceData);
 		return *this;
 	}
@@ -1103,13 +1001,13 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void parseCommandDataOption(std::unordered_map<std::string, JsonStringValue>& values, ApplicationCommandInteractionDataOption& data) {
+	void parseCommandDataOption(UnorderedMap<std::string, JsonStringValue>& values, ApplicationCommandInteractionDataOption& data) {
 		JsonStringValue valueNew{};
 		if (data.value.operator std::string()[0] == '"') {
 			data.value = data.value.operator std::string().substr(1, data.value.operator std::string().size() - 2);
 		}
 		valueNew.value = data.value;
-		values.insert_or_assign(data.name, valueNew);
+		values[data.name] = valueNew;
 		for (auto& value: data.options) {
 			parseCommandDataOption(values, value);
 		}
@@ -1144,7 +1042,7 @@ namespace DiscordCoreAPI {
 		eventData = inputEventData;
 		for (auto& value: eventData.interactionData->data.options) {
 			JsonStringValue serializer{ .value = Jsonifier::RawJsonData{ value.value.operator std::string() } };
-			optionsArgs.values.insert_or_assign(value.name, serializer);
+			optionsArgs.values[value.name] = serializer;
 			parseCommandDataOption(optionsArgs.values, value);
 		}
 		for (auto& value: eventData.interactionData->data.options) {
@@ -1206,7 +1104,7 @@ namespace DiscordCoreAPI {
 		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		uint32_t newCurrentPageIndex = currentPageIndex;
-		StopWatch stopWatch{ Milliseconds{ waitForMaxMs } };
+		StopWatch<std::chrono::milliseconds> stopWatch{ Milliseconds{ waitForMaxMs } };
 		auto createResponseData = makeUnique<CreateInteractionResponseData>(originalEvent);
 		auto interactionResponse = makeUnique<RespondToInputEventData>(originalEvent);
 		auto embedData = makeUnique<EmbedData>();
@@ -1259,12 +1157,12 @@ namespace DiscordCoreAPI {
 				dataPackage03.buttonId = "exit";
 				return dataPackage03;
 
-			} else if (buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
+			} else if (buttonIntData[0].buttonId == "empty" || buttonIntData[0].buttonId == "exit") {
 				UniquePtr<RespondToInputEventData> dataPackage02{ makeUnique<RespondToInputEventData>(originalEvent) };
-				if (buttonIntData.at(0).buttonId == "empty") {
+				if (buttonIntData[0].buttonId == "empty") {
 					*dataPackage02 = originalEvent;
 				} else {
-					interactionData = makeUnique<InteractionData>(buttonIntData.at(0));
+					interactionData = makeUnique<InteractionData>(buttonIntData[0]);
 					*dataPackage02 = RespondToInputEventData{ *interactionData };
 				}
 
@@ -1289,17 +1187,17 @@ namespace DiscordCoreAPI {
 				dataPackage03.inputEventData = originalEvent;
 				dataPackage03.buttonId = "exit";
 				return dataPackage03;
-			} else if (buttonIntData.at(0).buttonId == "forwards" || buttonIntData.at(0).buttonId == "backwards") {
-				if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
+			} else if (buttonIntData[0].buttonId == "forwards" || buttonIntData[0].buttonId == "backwards") {
+				if (buttonIntData[0].buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
 					newCurrentPageIndex = 0;
-				} else if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
+				} else if (buttonIntData[0].buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
 					++newCurrentPageIndex;
-				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
+				} else if (buttonIntData[0].buttonId == "backwards" && (newCurrentPageIndex > 0)) {
 					--newCurrentPageIndex;
-				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
+				} else if (buttonIntData[0].buttonId == "backwards" && (newCurrentPageIndex == 0)) {
 					newCurrentPageIndex = static_cast<uint32_t>(messageEmbeds.size()) - 1;
 				}
-				interactionData = makeUnique<InteractionData>(buttonIntData.at(0));
+				interactionData = makeUnique<InteractionData>(buttonIntData[0]);
 				auto dataPackage = RespondToInputEventData{ *interactionData };
 				dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 				for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
@@ -1313,12 +1211,12 @@ namespace DiscordCoreAPI {
 				}
 				dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 				InputEvents::respondToInputEventAsync(dataPackage).get();
-			} else if (buttonIntData.at(0).buttonId == "select") {
+			} else if (buttonIntData[0].buttonId == "select") {
 				if (deleteAfter == true) {
 					InputEventData dataPackage03{ originalEvent };
 					InputEvents::deleteInputEventResponseAsync(dataPackage03);
 				} else {
-					UniquePtr<InteractionData> interactionDataNew = makeUnique<InteractionData>(buttonIntData.at(0));
+					UniquePtr<InteractionData> interactionDataNew = makeUnique<InteractionData>(buttonIntData[0]);
 					auto dataPackage = RespondToInputEventData{ *interactionDataNew };
 					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
@@ -1335,7 +1233,7 @@ namespace DiscordCoreAPI {
 				}
 				returnData.currentPageIndex = newCurrentPageIndex;
 				returnData.inputEventData = originalEvent;
-				returnData.buttonId = buttonIntData.at(0).buttonId;
+				returnData.buttonId = buttonIntData[0].buttonId;
 				return returnData;
 			}
 		};

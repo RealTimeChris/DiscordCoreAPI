@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
 
 		void execute(BaseFunctionArguments& argsNew) {
 			try {
-				auto guilds = Guilds::getAllGuildsAsync().get();
+				auto guilds = Guilds::getAllGuildsAsync();
 				int32_t userCount{ 0 };
 				for (auto& value: guilds) {
 					userCount += value.memberCount;
@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 					std::string{ argsNew.discordCoreClient->getBotUser().userName } + "#" +
 						std::string{ argsNew.discordCoreClient->getBotUser().discriminator },
 					true);
-				messageEmbed.addField("__Bot ID:__", std::to_string(argsNew.discordCoreClient->getBotUser().id.operator uint64_t()), true);
+				messageEmbed.addField("__Bot ID:__", std::to_string(argsNew.discordCoreClient->getBotUser().id.operator const uint64_t&()), true);
 				messageEmbed.addField("__Guild Count:__", std::to_string(guilds.size()), true);
 				messageEmbed.addField("__Created At:__", argsNew.discordCoreClient->getBotUser().getCreatedAtTimeStamp(), true);
 				messageEmbed.addField("__Serving Users:__", std::to_string(userCount), true);
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 				dataPackage.addMessageEmbed(messageEmbed);
 				auto eventNew = InputEvents::respondToInputEventAsync(dataPackage).get();
 				return;
-			} catch (const std::exception& error) {
+			} catch (const DCAException& error) {
 				std::cout << "BotInfo::execute()" << error.what() << std::endl;
 			}
 		}

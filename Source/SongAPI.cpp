@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 		AudioFrameData dataFrame{};
 		audioDataBuffer.clearContents();
 		auto returnValue = DiscordCoreClient::getVoiceConnection(guildId).skip(wasItAFail);
-		dataFrame.guildMemberId = guildMember.user.id.operator uint64_t();
+		dataFrame.guildMemberId = guildMember.user.id.operator const uint64_t&();
 		audioDataBuffer.send(std::move(dataFrame));
 		return returnValue;
 	}
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 		}
 		onSongCompletionEvent.erase(eventToken);
 		audioDataBuffer.clearContents();
-		StopWatch stopWatch{ 10000ms };
+		StopWatch<std::chrono::milliseconds> stopWatch{ 10000ms };
 		while (DiscordCoreClient::getSoundCloudAPI(guildId).areWeWorking() || DiscordCoreClient::getYouTubeAPI(guildId).areWeWorking()) {
 			if (stopWatch.hasTimePassed()) {
 				break;

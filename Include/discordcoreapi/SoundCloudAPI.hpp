@@ -77,20 +77,20 @@ namespace DiscordCoreAPI {
 			Snowflake guildId{};
 		};
 
-		struct DiscordCoreAPI_Dll Transcoding {
+		struct Transcoding {
 			std::string preset{};
 			std::string url{};
 		};
 
-		struct DiscordCoreAPI_Dll Media {
+		struct Media {
 			std::vector<Transcoding> transcodings{};
 		};
 
-		struct DiscordCoreAPI_Dll SecondDownloadUrl {
+		struct SecondDownloadUrl {
 			std::string url{};
 		};
 
-		struct DiscordCoreAPI_Dll RawSoundCloudSong {
+		struct RawSoundCloudSong {
 			std::string trackAuthorization{};
 			std::string description{};
 			std::string artworkUrl{};
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 			Media media{};
 		};
 
-		struct DiscordCoreAPI_Dll SoundCloudSearchResults {
+		struct SoundCloudSearchResults {
 			std::vector<RawSoundCloudSong> collection{};
 		};
 

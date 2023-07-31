@@ -34,9 +34,8 @@
 
 namespace DiscordCoreAPI {
 
-	/// \brief A thread-safe messaging block for data-structures.
-	/// \tparam ValueType The type of object that will be sent over
-	///  message block.
+	/// @brief A thread-safe messaging block for data-structures.
+	/// @tparam ValueType The type of object that will be sent over the message block.
 	template<CopyableOrMovable ValueType> class UnboundedMessageBlock {
 	  public:
 		inline UnboundedMessageBlock(){};
@@ -56,9 +55,9 @@ namespace DiscordCoreAPI {
 
 		inline ~UnboundedMessageBlock() = default;
 
-		inline void send(ValueType&& object) {
+		template<typename ValueTypeNew> inline void send(ValueTypeNew&& object) {
 			std::unique_lock lock{ accessMutex };
-			queue.emplace_back(std::move(object));
+			queue.emplace_back(std::forward<ValueTypeNew>(object));
 		}
 
 		inline void clearContents() {
@@ -89,7 +88,7 @@ namespace DiscordCoreAPI {
 
 	template<typename ValueType>
 	inline bool waitForTimeToPass(UnboundedMessageBlock<std::decay_t<ValueType>>& outBuffer, ValueType& argOne, uint64_t timeInMsNew) {
-		StopWatch stopWatchNew{ Milliseconds{ timeInMsNew } };
+		StopWatch<std::chrono::milliseconds> stopWatchNew{ Milliseconds{ timeInMsNew } };
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(1ms);
 			if (stopWatchNew.hasTimePassed()) {

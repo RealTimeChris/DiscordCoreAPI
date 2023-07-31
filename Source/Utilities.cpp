@@ -33,6 +33,7 @@
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/InteractionEntities.hpp>
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
@@ -264,7 +265,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool IconHash::operator==(const std::string& rhs) const {
-		return this->operator std::string() == rhs;
+		return operator std::string() == rhs;
 	}
 
 	uint64_t strtoull(std::string_view string) {
@@ -481,7 +482,7 @@ namespace DiscordCoreAPI {
 
 		std::string returnString{};
 		returnString.reserve(encodedLength);
-		StopWatch stopWatch{ 1500ms };
+		StopWatch<std::chrono::milliseconds> stopWatch{ 1500ms };
 		uint64_t pos = 0;
 		while (pos < string.size()) {
 			if (stopWatch.hasTimePassed()) {

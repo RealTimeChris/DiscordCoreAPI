@@ -38,29 +38,29 @@ namespace Jsonifier {
 
 	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::Media> {
 		using ValueType = DiscordCoreAPI::DiscordCoreInternal::Media;
-		constexpr static auto parseValue = object("transcodings", &ValueType::transcodings);
+		static constexpr auto parseValue = object("transcodings", &ValueType::transcodings);
 	};
 
 	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::SecondDownloadUrl> {
 		using ValueType = DiscordCoreAPI::DiscordCoreInternal::SecondDownloadUrl;
-		constexpr static auto parseValue = object("url", &ValueType::url);
+		static constexpr auto parseValue = object("url", &ValueType::url);
 	};
 
 	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::Transcoding> {
 		using ValueType = DiscordCoreAPI::DiscordCoreInternal::Transcoding;
-		constexpr static auto parseValue = object("preset", &ValueType::preset, "url", &ValueType::url);
+		static constexpr auto parseValue = object("preset", &ValueType::preset, "url", &ValueType::url);
 	};
 
 	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::RawSoundCloudSong> {
 		using ValueType = DiscordCoreAPI::DiscordCoreInternal::RawSoundCloudSong;
-		constexpr static auto parseValue = object("artwork_url", &ValueType::artworkUrl, "description", &ValueType::description, "duration",
+		static constexpr auto parseValue = object("artwork_url", &ValueType::artworkUrl, "description", &ValueType::description, "duration",
 			&ValueType::duration, "media", &ValueType::media, "title", &ValueType::title, "track_authorization", &ValueType::trackAuthorization,
 			"permalink_url", &ValueType::viewUrl);
 	};
 
 	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::SoundCloudSearchResults> {
 		using ValueType = DiscordCoreAPI::DiscordCoreInternal::SoundCloudSearchResults;
-		constexpr static auto parseValue = object("collection", &ValueType::collection);
+		static constexpr auto parseValue = object("collection", &ValueType::collection);
 	};
 }
 
@@ -89,14 +89,14 @@ namespace DiscordCoreAPI {
 				HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				dataPackage.baseUrl = baseUrl02;
 				dataPackage.headersToInsert["User-Agent"] =
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36";
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36";
 				dataPackage.relativePath = "/search?q=" + urlEncode(collectSongIdFromSearchQuery(songQuery).c_str()) +
 					"&facet=model&client_id=" + SoundCloudRequestBuilder::clientId;
 				dataPackage.workloadClass = HttpsWorkloadClass::Get;
 				HttpsResponseData returnData = submitWorkloadAndGetResult(std::move(dataPackage));
 				std::vector<Song> results{};
 				SoundCloudSearchResults resultsNew{};
-				jsonifierCore.parseJson<true, true>(resultsNew, returnData.responseData);
+				parser.parseJson<true, true>(resultsNew, returnData.responseData);
 				for (auto& value: resultsNew.collection) {
 					Song songNew{};
 					if (value.title == "") {
@@ -162,11 +162,11 @@ namespace DiscordCoreAPI {
 				dataPackage01.workloadClass = HttpsWorkloadClass::Get;
 				dataPackage01.headersToInsert["Connection"] = "Keep-Alive";
 				dataPackage01.headersToInsert["User-Agent"] =
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36";
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36";
 				HttpsResponseData results = submitWorkloadAndGetResult(std::move(dataPackage01));
 				SecondDownloadUrl downloadUrl{};
 				Song newerSong{ songNew };
-				jsonifierCore.parseJson<true, true>(downloadUrl, results.responseData);
+				parser.parseJson<true, true>(downloadUrl, results.responseData);
 				newerSong.secondDownloadUrl = downloadUrl.url;
 				if (newerSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
 					HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetDownloadLinks };
@@ -209,15 +209,15 @@ namespace DiscordCoreAPI {
 					dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 					dataPackage02.headersToInsert["Connection"] = "Keep-Alive";
 					dataPackage02.headersToInsert["User-Agent"] =
-						"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36";
+						"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36";
 					auto headersNew = submitWorkloadAndGetResult(std::move(dataPackage02));
 					uint64_t valueBitRate{};
 					uint64_t valueLength{};
 					if (headersNew.responseHeaders.find("x-amz-meta-bitrate") != headersNew.responseHeaders.end()) {
-						valueBitRate = stoll(headersNew.responseHeaders.find("x-amz-meta-bitrate")->second);
+						valueBitRate = stoull(headersNew.responseHeaders.find("x-amz-meta-bitrate")->second);
 					}
 					if (headersNew.responseHeaders.find("x-amz-meta-duration") != headersNew.responseHeaders.end()) {
-						valueLength = stoll(headersNew.responseHeaders.find("x-amz-meta-duration")->second);
+						valueLength = stoull(headersNew.responseHeaders.find("x-amz-meta-duration")->second);
 					}
 					DownloadUrl downloadUrlNew{};
 					downloadUrlNew.contentSize = static_cast<uint64_t>(((valueBitRate * valueLength) / 8) - 193);
@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
 				dataPackage02.baseUrl = baseUrl;
 				dataPackage02.relativePath = "/search?q=testValue";
 				dataPackage02.headersToInsert["User-Agent"] =
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36";
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36";
 				dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 				HttpsResponseData returnData = submitWorkloadAndGetResult(std::move(dataPackage02));
 				std::vector<std::string> assetPaths{};
@@ -342,24 +342,26 @@ namespace DiscordCoreAPI {
 
 					if (result.responseData.size() > 0) {
 						buffer.emplace_back(std::move(result.responseData));
-						demuxer.writeData({ reinterpret_cast<char*>(buffer.back().data()), buffer.back().size() });
+						demuxer.writeData({ buffer.back().data(), buffer.back().size() });
 						demuxer.proceedDemuxing();
 					}
 					if (coroHandle.promise().areWeStopped()) {
 						areWeWorkingBool.store(false);
 						co_return;
 					}
-					AudioFrameData frameData{};
-					while (demuxer.collectFrame(frameData)) {
+					bool didWeReceive{ true };
+					do {
+						AudioFrameData frameData{};
+						didWeReceive = demuxer.collectFrame(frameData);
 						if (coroHandle.promise().areWeStopped()) {
 							areWeWorkingBool.store(false);
 							co_return;
 						}
 						if (frameData.currentSize != 0) {
-							frameData.guildMemberId = songNew.addedByUserId.operator uint64_t();
+							frameData.guildMemberId = songNew.addedByUserId.operator const uint64_t&();
 							DiscordCoreClient::getSongAPI(guildId).audioDataBuffer.send(std::move(frameData));
 						}
-					}
+					} while (didWeReceive);
 					if (coroHandle.promise().areWeStopped()) {
 						areWeWorkingBool.store(false);
 						co_return;
@@ -369,7 +371,7 @@ namespace DiscordCoreAPI {
 				areWeWorkingBool.store(false);
 				DiscordCoreClient::getVoiceConnection(guildId).skip(false);
 				AudioFrameData frameData{};
-				frameData.guildMemberId = songNew.addedByUserId.operator uint64_t();
+				frameData.guildMemberId = songNew.addedByUserId.operator const uint64_t&();
 				DiscordCoreClient::getSongAPI(guildId).audioDataBuffer.send(std::move(frameData));
 				co_return;
 			} catch (const HttpsError& error) {

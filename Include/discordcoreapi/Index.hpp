@@ -30,4 +30,5 @@
 
 #pragma once
 
+#include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>

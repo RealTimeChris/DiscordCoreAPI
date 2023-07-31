@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
 			Snowflake guildId{};
 		};
 
-		struct DiscordCoreAPI_Dll YouTubeRequestClient {
+		struct YouTubeRequestClient {
 			std::string clientVersion{ "17.10.35" };
 			std::string androidSdkVersion{ "31" };
 			std::string clientName{ "ANDROID" };
@@ -83,22 +83,22 @@ namespace DiscordCoreAPI {
 			std::string gl{ "US" };
 		};
 
-		struct DiscordCoreAPI_Dll Request {
+		struct Request {
 			const bool useSsl{ true };
 		};
 
-		struct DiscordCoreAPI_Dll User {
+		struct User {
 			const bool lockedSafetyMode{};
 		};
 
-		struct DiscordCoreAPI_Dll YouTubeRequestContext {
-			std::unordered_map<std::string, std::string> captionParams{};
+		struct YouTubeRequestContext {
+			UnorderedMap<std::string, std::string> captionParams{};
 			YouTubeRequestClient client{};
 			Request request{};
 			User user{};
 		};
 
-		struct DiscordCoreAPI_Dll YouTubeRequest {
+		struct YouTubeRequest {
 			const bool contentCheckOk{ true };
 			YouTubeRequestContext context{};
 			const std::string playlistId{};
@@ -107,66 +107,66 @@ namespace DiscordCoreAPI {
 			std::string videoId{};
 		};
 
-		struct DiscordCoreAPI_Dll Format {
+		struct Format {
 			std::string contentLength{};
 			std::string mimeType{};
 			std::string url{};
 			uint64_t bitrate{};
 		};
 
-		struct DiscordCoreAPI_Dll StreamingData {
+		struct StreamingData {
 			std::vector<Format> adaptiveFormats{};
 			std::vector<Format> formats{};
 		};
 
-		struct DiscordCoreAPI_Dll Data {
+		struct Data {
 			StreamingData streamingData{};
 		};
 
-		struct DiscordCoreAPI_Dll YouTubeSearchResult {
+		struct YouTubeSearchResult {
 			std::string description{};
 			std::string viewUrl{};
 			std::string songId{};
 			SongType type{};
 		};
 
-		struct DiscordCoreAPI_Dll Thumbnail {
+		struct Thumbnail {
 			std::string url{};
 		};
 
-		struct DiscordCoreAPI_Dll ThumbNails {
+		struct ThumbNails {
 			std::vector<Thumbnail> thumbNails{};
 		};
 
-		struct DiscordCoreAPI_Dll AccessibilityData {
+		struct AccessibilityData {
 			std::string label{};
 		};
 
-		struct DiscordCoreAPI_Dll Accessibility {
+		struct Accessibility {
 			AccessibilityData accessibilityData{};
 		};
 
-		struct DiscordCoreAPI_Dll LengthText {
+		struct LengthText {
 			Accessibility accessibility{};
 		};
 
-		struct DiscordCoreAPI_Dll Text {
+		struct Text {
 			std::string text{};
 		};
 
-		struct DiscordCoreAPI_Dll Title {
+		struct Title {
 			std::vector<Text> runs{};
 		};
 
-		struct DiscordCoreAPI_Dll SnippetText {
+		struct SnippetText {
 			std::vector<Text> runs{};
 		};
 
-		struct DiscordCoreAPI_Dll SnippetTextValue {
+		struct SnippetTextValue {
 			SnippetText snippetText{};
 		};
 
-		struct DiscordCoreAPI_Dll VideoRenderer {
+		struct VideoRenderer {
 			std::vector<SnippetTextValue> detailedMetadataSnippets{};
 			ThumbNails thumbnails{};
 			LengthText lengthText{};
@@ -174,35 +174,35 @@ namespace DiscordCoreAPI {
 			Title title{};
 		};
 
-		struct DiscordCoreAPI_Dll VideoRendererType {
+		struct VideoRendererType {
 			VideoRenderer videoRenderer{};
 		};
 
-		struct DiscordCoreAPI_Dll ItemSectionRendererContents {
+		struct ItemSectionRendererContents {
 			std::vector<DiscordCoreInternal::VideoRendererType> contents{};
 		};
 
-		struct DiscordCoreAPI_Dll ItemSectionRenderer {
+		struct ItemSectionRenderer {
 			ItemSectionRendererContents itemSectionRendererContents{};
 		};
 
-		struct DiscordCoreAPI_Dll SectionListRenderer {
+		struct SectionListRenderer {
 			std::vector<ItemSectionRenderer> contents{};
 		};
 
-		struct DiscordCoreAPI_Dll PrimaryContents {
+		struct PrimaryContents {
 			SectionListRenderer sectionListRenderer{};
 		};
 
-		struct DiscordCoreAPI_Dll TwoColumnSearchResultsRenderer {
+		struct TwoColumnSearchResultsRenderer {
 			PrimaryContents primaryContents{};
 		};
 
-		struct DiscordCoreAPI_Dll Contents01 {
+		struct Contents01 {
 			TwoColumnSearchResultsRenderer twoColumnSearchResultsRenderer{};
 		};
 
-		struct DiscordCoreAPI_Dll YouTubeSearchResults {
+		struct YouTubeSearchResults {
 			Contents01 contents{};
 		};
 	}

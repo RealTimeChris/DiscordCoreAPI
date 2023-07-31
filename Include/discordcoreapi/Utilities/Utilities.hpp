@@ -32,39 +32,11 @@
 
 #include <discordcoreapi/Utilities/Base.hpp>
 #include <discordcoreapi/Utilities/UnorderedSet.hpp>
+#include <discordcoreapi/Utilities/UnorderedMap.hpp>
 #include <discordcoreapi/Utilities/ObjectCache.hpp>
 #include <discordcoreapi/Utilities/UnboundedMessageBlock.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
-
-/**
- * \defgroup main_endpoints Main Endpoints
- * \brief For all of the Discord API's endpoints.
- */
-
-/**
- * \defgroup voice_connection Voice Connection
- * \brief For all of the voice connection related stuff.
- */
-
-/**
- * \defgroup discord_events Discord Events
- * \brief For all of the events that could be sent by the Discord API.
- */
-
-/**
- * \defgroup utilities Utilities
- * \brief For utility classes/functions.
- */
-
-/**
- * \defgroup foundation_entities Foundation Entities
- * \brief For all of the building blocks of the main endpoints.
- */
-
-/**
- * \defgroup discord_events Discord Events
- * \brief For all of events that could be sent by Discord's Websockets.
- */
+#include <coroutine>
 
 namespace DiscordCoreAPI {
 
@@ -73,7 +45,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// \brief Activity types.
+	/// @brief Activity types.
 	enum class ActivityType : uint8_t {
 		Game = 0,///< Game.
 		Streaming = 1,///< Streaming.
@@ -83,8 +55,9 @@ namespace DiscordCoreAPI {
 		Competing = 5///< Competing.
 	};
 
-	/// \brief Activity data.
-	struct DiscordCoreAPI_Dll ActivityData {
+	/// @brief Activity data.
+	struct ActivityData {
+		UnorderedSet<std::string> excludedKeys{};
 		ActivityType type{};///< Activity data.
 		std::string name{};///< Name of the activity.
 		std::string url{};///< Url associated with the activity.
@@ -94,50 +67,68 @@ namespace DiscordCoreAPI {
 		~ActivityData() = default;
 	};
 
-	/// \brief For connecting two bots to stream the VC contents between the two.
-	struct DiscordCoreAPI_Dll StreamInfo {
-		StreamType type{};///< The type of streamer that this is. Set one to client and one to server.
+	/// @brief For connecting two bots to stream the VC contents between the two.
+	struct StreamInfo {
 		bool streamBotAudio{};///< Do we stream the audio coming from other bots?
 		std::string address{};///< The address to connect to.
+		StreamType type{};///< The type of streamer that this is. Set one to client and one to server.
 		uint16_t port{};///< The port to connect to.
 	};
 
 	namespace DiscordCoreInternal {
 
-		class DiscordCoreAPI_Dll SoundCloudRequestBuilder;
-		class DiscordCoreAPI_Dll YouTubeRequestBuilder;
-		class DiscordCoreAPI_Dll WebSocketClient;
-		class DiscordCoreAPI_Dll BaseSocketAgent;
-		class DiscordCoreAPI_Dll SoundCloudAPI;
-		class DiscordCoreAPI_Dll YouTubeAPI;
+		class SoundCloudRequestBuilder;
+		class YouTubeRequestBuilder;
+		class WebSocketClient;
+		class BaseSocketAgent;
+		class SoundCloudAPI;
+		class YouTubeAPI;
 
 	}// namespace DiscordCoreInternal
 
-	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData;
-	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData;
-	struct DiscordCoreAPI_Dll File;
+	struct OnVoiceServerUpdateData;
+	struct OnVoiceStateUpdateData;
+	struct File;
 
-	class DiscordCoreAPI_Dll DiscordCoreClient;
-	class DiscordCoreAPI_Dll VoiceConnection;
-	class DiscordCoreAPI_Dll GuildMemberData;
-	class DiscordCoreAPI_Dll ChannelData;
-	class DiscordCoreAPI_Dll Reactions;
-	class DiscordCoreAPI_Dll RoleData;
-	class DiscordCoreAPI_Dll BotUser;
+	class DiscordCoreClient;
+	class CommandController;
+	class VoiceConnection;
+	class GuildMemberData;
+	class GuildMembers;
+	class ChannelData;
+	class Reactions;
+	class RoleData;
+	class BotUser;
+
+	/**@}*/
+
+	/**
+	 * \addtogroup utilities
+	 * @{
+	 */
 
 	template<typename ReturnType, bool timeOut = true> class CoRoutine;
 
+	/**@}*/
+
+	/**
+	 * \addtogroup foundation_entities
+	 * @{
+	 */
+
 	enum class PresenceUpdateState { Online = 0, Do_Not_Disturb = 1, Idle = 2, Invisible = 3, Offline = 4 };
 
-	/// \brief For updating a UserData's presence.
+	/// @brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		friend struct Jsonifier::Core<DiscordCoreAPI::UpdatePresenceData>;
-
-		UpdatePresenceData(PresenceUpdateState updateState);
+		UnorderedSet<std::string> excludedKeys{};
 		std::vector<ActivityData> activities{};///< A vector of activities.
 		PresenceUpdateState status{};///< Current status.
 		int64_t since{};///< When was the activity started?
 		bool afk{};///< Are we afk.
+
+		inline UpdatePresenceData() = default;
+		UpdatePresenceData(PresenceUpdateState updateState);
 
 		operator DiscordCoreInternal::EtfSerializer();
 
@@ -147,7 +138,7 @@ namespace DiscordCoreAPI {
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void ));
 
-	/// \brief Input event response types.
+	/// @brief Input event response types.
 	enum class InputEventResponseType : uint8_t {
 		Unset = 0,///< Unset.
 		Deferred_Response = 1,
@@ -162,7 +153,7 @@ namespace DiscordCoreAPI {
 		Modal_Interaction_Response = 10,///< Respond to an interaction with a popup modal.
 	};
 
-	/// \brief Gateway intents.
+	/// @brief Gateway intents.
 	enum class GatewayIntents : uint32_t {
 		Guilds = 1 << 0,///< Intent for receipt of Guild information.
 		Guild_Members = 1 << 1,///< Intent for receipt of Guild members.
@@ -181,38 +172,38 @@ namespace DiscordCoreAPI {
 		Direct_Message_Typing = 1 << 14,///< Intent for receipt of direct message typing notifications.
 		Message_Content = 1 << 15,///< Intent for receipt of message content.
 		Guild_Scheduled_Events = 1 << 16,///< Scheduled events.
+		Auto_Moderation_Configuration = 1 << 20,/// Auto moderation configuration.
+		Auto_Moderation_Execution = 1 << 21,///< Auto moderation execution.
 		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates |
 			Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing |
-			Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
+			Guild_Scheduled_Events | Auto_Moderation_Configuration | Auto_Moderation_Execution,///< Default intents (all non-privileged intents).
 		Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
 		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
 	};
 
-	/// \brief Function data for repeated functions to be loaded.
-	struct DiscordCoreAPI_Dll RepeatedFunctionData {
+	/// @brief Function data for repeated functions to be loaded.
+	struct RepeatedFunctionData {
 		std::function<void(DiscordCoreClient*)> function{};///< The std::function char* to be loaded.
 		uint32_t intervalInMs{};///< The time interval at which to call the std::function.
 		bool repeated{};///< Whether or not the std::function is repeating.
 		int64_t dummyArg{};
 	};
 
-	/// \brief Represents which text format to use for websocket transfer.
+	/// @brief Represents which text format to use for websocket transfer.
 	enum class TextFormat : uint8_t {
 		Etf = 0x00,///< Etf format.
 		Json = 0x01///< Json format.
 	};
 
-	/// \brief Sharding options for the library.
-	struct DiscordCoreAPI_Dll ShardingOptions {
+	/// @brief Sharding options for the library.
+	struct ShardingOptions {
 		uint32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
 		uint32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
 		uint32_t startingShard{};///< The first shard to start on this process.
 	};
 
-	/**@}*/
-
-	/// \brief Loggin options for the library.
-	struct DiscordCoreAPI_Dll LoggingOptions {
+	/// @brief Loggin options for the library.
+	struct LoggingOptions {
 		bool logWebSocketSuccessMessages{};///< Do we log the websocket success messages to std::cout?
 		bool logWebSocketErrorMessages{};///< Do we log the websocket error messages to std::cout?
 		bool logGeneralSuccessMessages{};///< Do we log general success messages to std::cout?
@@ -221,8 +212,8 @@ namespace DiscordCoreAPI {
 		bool logHttpsErrorMessages{};///< Do we log Https response error messages to std::cout?
 	};
 
-	/// \brief For selecting the caching style of the library.
-	struct DiscordCoreAPI_Dll CacheOptions {
+	/// @brief For selecting the caching style of the library.
+	struct CacheOptions {
 		bool cacheGuildMembers{ true };///< Do we cache GuildMembers?
 		bool cacheChannels{ true };///< Do we cache Channels?
 		bool cacheGuilds{ true };///< Do we cache Guilds?
@@ -230,8 +221,8 @@ namespace DiscordCoreAPI {
 		bool cacheUsers{ true };///< Do we cache Users?
 	};
 
-	/// \brief Configuration data for the library's main class, DiscordCoreClient.
-	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
+	/// @brief Configuration data for the library's main class, DiscordCoreClient.
+	struct DiscordCoreClientConfig {
 		UpdatePresenceData presenceData{ PresenceUpdateState::Online };///< Presence data to initialize your bot with.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
 		GatewayIntents intents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
@@ -244,7 +235,7 @@ namespace DiscordCoreAPI {
 		std::string botToken{};///< Your bot's token.
 	};
 
-	struct DiscordCoreAPI_Dll JsonStringValue {
+	struct JsonStringValue {
 		DiscordCoreInternal::JsonType type{};
 		Jsonifier::RawJsonData value{};
 	};
@@ -305,12 +296,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreClientConfig config{};
 	};
 
-	/**
-	 * \addtogroup utilities
-	 * @{
-	 */
-
-	/// \brief Color constants for use in the EmbedData color values.
+	/// @brief Color constants for use in the EmbedData color values.
 	namespace Colors {
 		const std::string_view White = "FFFFFF",///< White.
 			DiscordWhite = "FFFFFE",///< Discord white.
@@ -366,14 +352,14 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// \brief Audio frame types.
+	/// @brief Audio frame types.
 	enum class AudioFrameType : uint8_t {
 		Unset = 0,///< Unset.
 		RawPCM = 1,///< Raw PCM.
 		Encoded = 2,///< Encoded audio data.
 	};
 
-	/// \brief Represents a single frame of audio data.
+	/// @brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
 		std::vector<uint8_t> data{};///< The audio data.
@@ -394,8 +380,8 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
-	/// \brief For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
-	struct DiscordCoreAPI_Dll VoiceConnectInitData {
+	/// @brief For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
+	struct VoiceConnectInitData {
 		StreamInfo streamInfo{};///< The info for the stream-socket, if applicable.
 		int32_t currentShard{};///< The current websocket shard, if applicable.
 		Snowflake channelId{};///< The channel id to connect to.
@@ -412,20 +398,20 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename ReturnType> ReturnType inline fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
+	template<typename ReturnType> inline ReturnType fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		ReturnType value{};
 		std::istringstream stream(string);
 		stream >> type, stream >> value;
 		return value;
 	}
 
-	template<typename ReturnType> std::string inline toHex(ReturnType inputValue) {
+	template<typename ReturnType> inline std::string toHex(ReturnType inputValue) {
 		std::stringstream stream{};
 		stream << std::setfill('0') << std::setw(sizeof(ReturnType) * 2) << std::hex << inputValue;
 		return stream.str();
 	}
 
-	class DiscordCoreAPI_Dll RGBColorValue {
+	class RGBColorValue {
 	  public:
 		uint8_t green{};
 		uint8_t blue{};
@@ -492,7 +478,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// \brief Permission values, for a given Channel, by RoleData or GuildMemberData.
+	/// @brief Permission values, for a given Channel, by RoleData or GuildMemberData.
 	enum class Permission : uint64_t {
 		Create_Instant_Invite = 0x0000000000000001,///< Allows creation of instant invites.
 		Kick_Members = 0x0000000000000002,///< Allows kicking members.
@@ -541,7 +527,7 @@ namespace DiscordCoreAPI {
 		Send_Voice_Messages = 0x0000400000000000,///< Allows sending voice messages.
 	};
 
-	/// \brief PermissionsBase class, for representing and manipulating Permission values.
+	/// @brief PermissionsBase class, for representing and manipulating Permission values.
 	template<typename ValueType> class PermissionsBase {
 	  public:
 		friend struct JsonifierInternal::ParseWithKeys;
@@ -551,19 +537,19 @@ namespace DiscordCoreAPI {
 			return *static_cast<const ValueType*>(this) == other;
 		}
 
-		/// \brief Returns a string containing all of a given User's PermissionsBase for a given Channel.
-		/// \param guildMember The GuildMemberData who's PermissionsBase to analyze.
-		/// \param channel The ChannelData withint which to check for PermissionsBase.
-		/// \returns std::string A string containing the final Permission's value for a given Channel.
+		/// @brief Returns a string containing all of a given User's PermissionsBase for a given Channel.
+		/// @param guildMember The GuildMemberData who's PermissionsBase to analyze.
+		/// @param channel The ChannelData withint which to check for PermissionsBase.
+		/// @return std::string A string containing the final Permission's value for a given Channel.
 		inline static std::string getCurrentChannelPermissions(const GuildMemberData& guildMember, const ChannelData& channel) {
 			return computePermissions(guildMember, channel);
 		}
 
-		/// \brief Checks for a given Permission in a chosen ChannelData, for a specific UserData.
-		/// \param guildMember The GuildMemberData who to check the PermissionsBase of.
-		/// \param channel The ChannelData within which to check for the Permission's presence.
-		/// \param permission A Permission to check the current ChannelData for.
-		/// \returns bool A bool suggesting the presence of the chosen Permission.
+		/// @brief Checks for a given Permission in a chosen ChannelData, for a specific UserData.
+		/// @param guildMember The GuildMemberData who to check the PermissionsBase of.
+		/// @param channel The ChannelData within which to check for the Permission's presence.
+		/// @param permission A Permission to check the current ChannelData for.
+		/// @return bool A bool suggesting the presence of the chosen Permission.
 		inline bool checkForPermission(const GuildMemberData& guildMember, const ChannelData& channel, Permission permission) {
 			if ((stoull(computePermissions(guildMember, channel)) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
 				return true;
@@ -572,16 +558,16 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		/// \brief Returns a string containing the currently held PermissionsBase in a given Guild.
-		/// \param guildMember The GuildMemberData who's PermissionsBase are to be evaluated.
-		/// \returns std::string A string containing the current PermissionsBase.
+		/// @brief Returns a string containing the currently held PermissionsBase in a given Guild.
+		/// @param guildMember The GuildMemberData who's PermissionsBase are to be evaluated.
+		/// @return std::string A string containing the current PermissionsBase.
 		inline static std::string getCurrentGuildPermissions(const GuildMemberData& guildMember) {
 			PermissionsBase setValue(computeBasePermissions(guildMember));
 			return static_cast<ValueType*>(setValue);
 		}
 
-		/// \brief Removes one or more PermissionsBase from the current PermissionsBase value.
-		/// \param permissionsToRemove A vector containing the PermissionsBase you wish to remove.
+		/// @brief Removes one or more PermissionsBase from the current PermissionsBase value.
+		/// @param permissionsToRemove A vector containing the PermissionsBase you wish to remove.
 		inline void removePermissions(const std::vector<Permission>& permissionsToRemove) {
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			for (auto valueNew: permissionsToRemove) {
@@ -592,8 +578,8 @@ namespace DiscordCoreAPI {
 			*static_cast<ValueType*>(this) = sstream.str();
 		}
 
-		/// \brief Adds one or more PermissionsBase to the current PermissionsBase value.
-		/// \param permissionsToAdd A vector containing the PermissionsBase you wish to add.
+		/// @brief Adds one or more PermissionsBase to the current PermissionsBase value.
+		/// @param permissionsToAdd A vector containing the PermissionsBase you wish to add.
 		inline void addPermissions(const std::vector<Permission>& permissionsToAdd) {
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			for (auto valueNew: permissionsToAdd) {
@@ -604,154 +590,166 @@ namespace DiscordCoreAPI {
 			*static_cast<ValueType*>(this) = sstream.str();
 		}
 
-		/// \brief Displays the currently present PermissionsBase in a string, and returns a vector with each of them stored in string format.
-		/// \returns std::vector A vector full of strings of the PermissionsBase that are in the input std::string's value.
+		/// @brief Displays the currently present PermissionsBase in a string, and returns a vector with each of them stored in string format.
+		/// @return std::vector A vector full of strings of the PermissionsBase that are in the input std::string's value.
 		inline std::vector<std::string> displayPermissions() {
 			std::vector<std::string> returnVector{};
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			if (permissionsInteger & (1ll << 3)) {
-				for (int64_t x = 0; x < 41; ++x) {
+				for (int64_t x = 0; x < 46; ++x) {
 					permissionsInteger |= 1ll << x;
 				}
 			}
-			if (permissionsInteger & (1ll << 0)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Create_Instant_Invite)) {
 				returnVector.emplace_back("Create Instant Invite");
 			}
-			if (permissionsInteger & (1ll << 1)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Kick_Members)) {
 				returnVector.emplace_back("Kick Members");
 			}
-			if (permissionsInteger & (1ll << 2)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Ban_Members)) {
 				returnVector.emplace_back("Ban Members");
 			}
-			if (permissionsInteger & (1ll << 3)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Administrator)) {
 				returnVector.emplace_back("Administrator");
 			}
-			if (permissionsInteger & (1ll << 4)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Manage_Channels)) {
 				returnVector.emplace_back("Manage Channels");
 			}
-			if (permissionsInteger & (1ll << 5)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Manage_Guild)) {
 				returnVector.emplace_back("Manage Guild");
 			}
-			if (permissionsInteger & (1ll << 6)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Add_Reactions)) {
 				returnVector.emplace_back("Add Reactions");
 			}
-			if (permissionsInteger & (1ll << 7)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::View_Audit_Log)) {
 				returnVector.emplace_back("View Audit Log");
 			}
-			if (permissionsInteger & (1ll << 8)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Priority_Speaker)) {
 				returnVector.emplace_back("Priority Speaker");
 			}
-			if (permissionsInteger & (1ll << 9)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Stream)) {
 				returnVector.emplace_back("Stream");
 			}
-			if (permissionsInteger & (1ll << 10)) {
-				returnVector.emplace_back("View ChannelData");
+			if (permissionsInteger & static_cast<uint64_t>(Permission::View_Channel)) {
+				returnVector.emplace_back("View Channel");
 			}
-			if (permissionsInteger & (1ll << 11)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Send_Messages)) {
 				returnVector.emplace_back("Send Messages");
 			}
-			if (permissionsInteger & (1ll << 12)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Send_TTS_Messages)) {
 				returnVector.emplace_back("Send TTS Messages");
 			}
-			if (permissionsInteger & (1ll << 13)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Manage_Messages)) {
 				returnVector.emplace_back("Manage Messages");
 			}
-			if (permissionsInteger & (1ll << 14)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Embed_Links)) {
 				returnVector.emplace_back("Embed Links");
 			}
-			if (permissionsInteger & (1ll << 15)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Attach_Files)) {
 				returnVector.emplace_back("Attach Files");
 			}
-			if (permissionsInteger & (1ll << 16)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Read_Message_History)) {
 				returnVector.emplace_back("Read Message History");
 			}
-			if (permissionsInteger & (1ll << 17)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Mention_Everyone)) {
 				returnVector.emplace_back("Mention Everyone");
 			}
-			if (permissionsInteger & (1ll << 18)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Use_External_Emojis)) {
 				returnVector.emplace_back("Use External Emoji");
 			}
-			if (permissionsInteger & (1ll << 19)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::View_Guild_Insights)) {
 				returnVector.emplace_back("View Guild Insights");
 			}
-			if (permissionsInteger & (1ll << 20)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Connect)) {
 				returnVector.emplace_back("Connect");
 			}
-			if (permissionsInteger & (1ll << 21)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Speak)) {
 				returnVector.emplace_back("Speak");
 			}
-			if (permissionsInteger & (1ll << 22)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Mute_Members)) {
 				returnVector.emplace_back("Mute Members");
 			}
-			if (permissionsInteger & (1ll << 23)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Deafen_Members)) {
 				returnVector.emplace_back("Deafen Members");
 			}
-			if (permissionsInteger & (1ll << 24)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Move_Members)) {
 				returnVector.emplace_back("Move Members");
 			}
-			if (permissionsInteger & (1ll << 25)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Use_VAD)) {
 				returnVector.emplace_back("Use VAD");
 			}
-			if (permissionsInteger & (1ll << 26)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Change_Nickname)) {
 				returnVector.emplace_back("Change Nickname");
 			}
-			if (permissionsInteger & (1ll << 27)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Manage_Nicknames)) {
 				returnVector.emplace_back("Manage Nicknames");
 			}
-			if (permissionsInteger & (1ll << 28)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Manage_Roles)) {
 				returnVector.emplace_back("Manage Roles");
 			}
-			if (permissionsInteger & (1ll << 29)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Manage_Webhooks)) {
 				returnVector.emplace_back("Manage Webhooks");
 			}
-			if (permissionsInteger & (1ll << 30)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Manage_Guild_Expressions)) {
 				returnVector.emplace_back("Manage Emojis And Stickers");
 			}
-			if (permissionsInteger & (1ll << 31)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Use_Application_Commands)) {
 				returnVector.emplace_back("Use Application Commands");
 			}
-			if (permissionsInteger & (1ll << 32)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Request_to_Speak)) {
 				returnVector.emplace_back("Request To Speak");
 			}
-			if (permissionsInteger & (1ll << 33)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Manage_Events)) {
 				returnVector.emplace_back("Manage Events");
 			}
-			if (permissionsInteger & (1ll << 34)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Manage_Threads)) {
 				returnVector.emplace_back("Manage Threads");
 			}
-			if (permissionsInteger & (1ll << 35)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Create_Public_Threads)) {
 				returnVector.emplace_back("Create Public Threads");
 			}
-			if (permissionsInteger & (1ll << 36)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Create_Private_Threads)) {
 				returnVector.emplace_back("Create Private Threads");
 			}
-			if (permissionsInteger & (1ll << 37)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Use_External_Stickers)) {
 				returnVector.emplace_back("Use External Stickers");
 			}
-			if (permissionsInteger & (1ll << 38)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Send_Messages_in_Threads)) {
 				returnVector.emplace_back("Send Messages In Threads");
 			}
-			if (permissionsInteger & (1ll << 39)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Use_Embedded_Activities)) {
 				returnVector.emplace_back("Start Embedded Activities");
 			}
-			if (permissionsInteger & (1ll << 40)) {
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Moderate_Members)) {
 				returnVector.emplace_back("Moderate Members");
+			}
+			if (permissionsInteger & static_cast<uint64_t>(Permission::View_Creator_Monetization_Analytics)) {
+				returnVector.emplace_back("View Creator Monetization Analytics");
+			}
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Use_Soundboard)) {
+				returnVector.emplace_back("Use Soundboard");
+			}
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Use_External_Sounds)) {
+				returnVector.emplace_back("Use External Sounds");
+			}
+			if (permissionsInteger & static_cast<uint64_t>(Permission::Send_Voice_Messages)) {
+				returnVector.emplace_back("Send Voice Messages");
 			}
 			return returnVector;
 		}
 
-		/// \brief Returns a string containing the currently held PermissionsBase.
-		/// \returns std::string A string containing the current PermissionsBase.
+		/// @brief Returns a string containing the currently held PermissionsBase.
+		/// @return std::string A string containing the current PermissionsBase.
 		inline std::string getCurrentPermissionString() {
 			std::string returnString = *static_cast<ValueType*>(this);
 			return returnString;
 		}
 
-		/// \brief Returns a string containing ALL of the possible PermissionsBase.
-		/// \returns std::string A string containing all of the possible PermissionsBase.
+		/// @brief Returns a string containing ALL of the possible PermissionsBase.
+		/// @return std::string A string containing all of the possible PermissionsBase.
 		inline static std::string getAllPermissions() {
 			uint64_t allPerms{};
-			for (int64_t x = 0; x < 41; ++x) {
+			for (int64_t x = 0; x < 46; ++x) {
 				allPerms |= 1ll << x;
 			}
 			std::stringstream stream{};
@@ -782,7 +780,7 @@ namespace DiscordCoreAPI {
 		inline PermissionsParse() = default;
 
 		inline PermissionsParse& operator=(const std::string& valueNew) {
-			this->resize(valueNew.size());
+			resize(valueNew.size());
 			std::memcpy(data(), valueNew.data(), size());
 			return *this;
 		}
@@ -792,7 +790,7 @@ namespace DiscordCoreAPI {
 		}
 
 		inline PermissionsParse& operator=(std::string&& valueNew) {
-			this->resize(valueNew.size());
+			resize(valueNew.size());
 			std::memcpy(data(), valueNew.data(), size());
 			return *this;
 		}
@@ -811,7 +809,7 @@ namespace DiscordCoreAPI {
 		}
 
 		inline PermissionsParse substr(uint64_t offset, uint64_t count) {
-			return this->substr(offset, count);
+			return substr(offset, count);
 		}
 
 		inline uint64_t size() {
@@ -823,7 +821,7 @@ namespace DiscordCoreAPI {
 		}
 
 		inline operator int64_t() const {
-			return std::stoll(*this);
+			return std::stoull(*this);
 		}
 	};
 
@@ -899,20 +897,25 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
-	/// \brief Acquires a timeStamp with the current time and date - suitable for use in message-embeds.
-	/// \returns std::string A string containing the current date-time stamp.
+	/// @brief Acquires a timeStamp with the current time and date - suitable for use in message-embeds.
+	/// @return std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
+	/**@}*/
+
+	/**
+	 * \addtogroup utilities
+	 * @{
+	 */
 	template<typename ReturnType, bool timeOut = true> class NewThreadAwaiter;
 
-	/// \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
-	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
+	/// @brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
+	/// @tparam ReturnType The type of value returned by the containing CoRoutine.
+	/// @tparam timeOut Whether or not to time out the CoRoutine's execution after a period of time.
+	/// @return NewThreadAwaiter<ReturnType, timeOut> A NewThreadAwaiter for suspendint the current CoRoutine's execution.
 	template<typename ReturnType, bool timeOut = true> inline auto NewThreadAwaitable() {
 		return NewThreadAwaiter<ReturnType, timeOut>{};
 	}
-
-	/// \brief Typedef for the message filter.
-	template<typename ValueType> using ObjectFilter = std::function<bool(ValueType)>;
 
 	/**@}*/
 };

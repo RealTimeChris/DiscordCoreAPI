@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// \brief A class representing the Song APIs.
+	/// @brief A class representing the Song APIs.
 	class DiscordCoreAPI_Dll SongAPI {
 	  public:
 		friend class DiscordCoreInternal::SoundCloudAPI;
@@ -57,41 +57,41 @@ namespace DiscordCoreAPI {
 
 		SongAPI(Snowflake guildId);
 
-		/// \brief For setting up behavior in response to a completed song
-		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.
+		/// @brief For setting up behavior in response to a completed song
+		/// @param handler A delegate taking a SongCompletionEventData structure as an argument.
 		void onSongCompletion(std::function<CoRoutine<void, false>(SongCompletionEventData)> handler);
 
-		/// \brief Skips to the next Song in the queue, if applicable.
-		/// \param guildMember The GuildMemberData structure of the individual who is skipping the Song.
-		/// \param wasItAfail A bool representing whether or not this skip is due to a playing failure.
-		/// \returns A bool suggesting the success or failure of the skip command.
+		/// @brief Skips to the next Song in the queue, if applicable.
+		/// @param guildMember The GuildMemberData structure of the individual who is skipping the Song.
+		/// @param wasItAfail A bool representing whether or not this skip is due to a playing failure.
+		/// @return A bool suggesting the success or failure of the skip command.
 		bool skip(const GuildMemberData& guildMember, bool wasItAfail = false);
 
-		/// \brief Search for a Song to play.
-		/// \param searchQuery The Song to search for.
-		/// \returns A vector of Song objects representing the search results.
+		/// @brief Search for a Song to play.
+		/// @param searchQuery The Song to search for.
+		/// @return A vector of Song objects representing the search results.
 		std::vector<Song> searchForSong(const std::string& searchQuery);
 
-		/// \brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
-		/// \param songNew The song to play.
-		/// \param guildMember The GuildMemberData that is running this song.
-		/// \returns A bool suggesting the success or failure of the play command.
+		/// @brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
+		/// @param songNew The song to play.
+		/// @param guildMember The GuildMemberData that is running this song.
+		/// @return A bool suggesting the success or failure of the play command.
 		bool play(Song songNew, const GuildMemberData& guildMember);
 
-		/// \brief Checks if there is currently playing music for the current Guild.
-		/// \returns A bool representing the currently playing status.
+		/// @brief Checks if there is currently playing music for the current Guild.
+		/// @return A bool representing the currently playing status.
 		bool areWeCurrentlyPlaying() const;
 
-		/// \brief Toggles pausing on and off.
-		/// \returns A bool suggesting the success or failure of the pauseToggle command.
+		/// @brief Toggles pausing on and off.
+		/// @return A bool suggesting the success or failure of the pauseToggle command.
 		bool pauseToggle();
 
-		/// \brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
-		/// \returns A bool suggesting the success or failure of the play command.
+		/// @brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
+		/// @return A bool suggesting the success or failure of the play command.
 		bool play();
 
-		/// \brief Stops the currently playing Song.
-		/// \returns A bool suggesting the success or failure of the stop command.
+		/// @brief Stops the currently playing Song.
+		/// @return A bool suggesting the success or failure of the stop command.
 		bool stop();
 
 		~SongAPI();

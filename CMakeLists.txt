@@ -21,7 +21,7 @@
 # CMakeLists.txt - The CMake script for building this library.
 # May 13, 2021
 # https://discordcoreapi.com
-set(VCPKG_ROOT_DIR "/home/chris/Vcpkg")
+set(VCPKG_ROOT_DIR "C:/Vcpkg")
 set(Opus_DIR "C:/Vcpkg/installed/x64-windows/share/opus") # Set this one to the folder location of the file "OpusConfig.cmake".
 set(unofficial-sodium_DIR "C:/Vcpkg/installed/x64-windows/share/unofficial-sodium") # Set this one to the folder location of the file "unofficial-sodiumConfig.cmake".
 set(Jsonifier_DIR "C:/vcpkg2/installed/x64-windows/share/jsonifier/") # Set this one to the folder location of the file "JsonifierConfig.cmake".
@@ -49,7 +49,6 @@ if (NOT "$ENV{VCPKG_INSTALLATION_ROOT}" STREQUAL "")
 	include("${VCPKG_INSTALLATION_ROOT_NEW}/scripts/buildsystems/vcpkg.cmake")
 	set(OS_NAME "${CMAKE_SYSTEM_NAME}")
 	string(TOLOWER "${OS_NAME}" OS_NAME)
-	set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}")
 	set(DEBUG_PREFIX "")
 else()
 	message(WARNING "No Vcpkg root folder found, Please make sure that you properly set the library folders.")
@@ -58,7 +57,7 @@ endif()
 
 set(PROJECT_NAME "DiscordCoreAPI")
 set(LIB_NAME "${PROJECT_NAME}")
-set(PRODUCT_VERSION "1.2.0")
+set(PRODUCT_VERSION "${VERSION}")
 set(DESCRIPTION "A Discord bot library, written in C++, using custom asynchronous coroutines.")
 
 project(

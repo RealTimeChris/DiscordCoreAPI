@@ -41,19 +41,19 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// \brief For listing all of the auto-moderation-rules for a particular Guild .
-	struct DiscordCoreAPI_Dll ListAutoModerationRulesForGuildData {
+	/// @brief For listing all of the auto-moderation-rules for a particular Guild .
+	struct ListAutoModerationRulesForGuildData {
 		Snowflake guildId{};///< The id of the Guild for which you would like to list the auto-moderation rules.
 	};
 
-	/// \brief For collecting an auto-moderation-rule for a particular AutoModerationRuleData.
-	struct DiscordCoreAPI_Dll GetAutoModerationRuleData {
+	/// @brief For collecting an auto-moderation-rule for a particular AutoModerationRuleData.
+	struct GetAutoModerationRuleData {
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to collect.
 		Snowflake guildId{};///< The id of the Guild from which you would like to collect the auto-moderation-rule from.
 	};
 
-	/// \brief For creating an auto-moderation-rule.
-	struct DiscordCoreAPI_Dll CreateAutoModerationRuleData {
+	/// @brief For creating an auto-moderation-rule.
+	struct CreateAutoModerationRuleData {
 		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
 		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		TriggerMetaData triggerMetadata{};///< The trigger metadata.
@@ -65,8 +65,8 @@ namespace DiscordCoreAPI {
 		bool enabled{};///< Whether the rule is enabled(False by default).
 	};
 
-	/// \brief For modifying an auto-moderation-rule.
-	struct DiscordCoreAPI_Dll ModifyAutoModerationRuleData {
+	/// @brief For modifying an auto-moderation-rule.
+	struct ModifyAutoModerationRuleData {
 		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
 		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		TriggerMetaData triggerMetadata{};///< The trigger metadata.
@@ -78,8 +78,8 @@ namespace DiscordCoreAPI {
 		bool enabled{};///< Whether the rule is enabled(False by default).
 	};
 
-	/// \brief For when an auto-moderation-rule is executed.
-	struct DiscordCoreAPI_Dll AutoModerationActionExecutionEventData {
+	/// @brief For when an auto-moderation-rule is executed.
+	struct AutoModerationActionExecutionEventData {
 		Snowflake alertSystemMessageId{};///< The id of any system auto moderation messages posted as a result of this action.
 		TriggerType ruleTriggerType{};///< The trigger type of rule which was triggered.
 		std::string matchedKeyword{};///< The word or phrase configured in the rule that triggered the rule
@@ -97,8 +97,8 @@ namespace DiscordCoreAPI {
 		virtual ~AutoModerationActionExecutionEventData() = default;
 	};
 
-	/// \brief For deleting an auto-moderation-rule.
-	struct DiscordCoreAPI_Dll DeleteAutoModerationRuleData {
+	/// @brief For deleting an auto-moderation-rule.
+	struct DeleteAutoModerationRuleData {
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to delete.
 		Snowflake guildId{};///< Guild within which to delete the auto-moderation-rule.
 	};
@@ -109,29 +109,34 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the AutoModerationRuleData related Discord endpoints.
+	/// @brief An interface class for the AutoModerationRuleData related Discord endpoints.
 	class DiscordCoreAPI_Dll AutoModerationRules {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		/// \brief Get all of the Guild's Auto-Moderation-Rules.
-		/// \returns A CoRoutine containing a vector<AutoModerationRuleData>.
+		/// @brief Get all of the Guild's Auto-Moderation-Rules.
+		/// @param dataPackage The moderation rule data to get.
+		/// @return A CoRoutine containing a vector<AutoModerationRuleData>.
 		CoRoutine<std::vector<AutoModerationRuleData>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
-		/// \brief Get a particular Auto-Moderation-Rule
-		/// \returns A CoRoutine containing a AutoModerationRuleData.
+		/// @brief Get a particular Auto-Moderation-Rule
+		/// @param dataPackage The moderation rule data to get.
+		/// @return A CoRoutine containing a AutoModerationRuleData.
 		CoRoutine<AutoModerationRuleData> getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage);
 
-		/// \brief Create a particular Auto-Moderation-Rule
-		/// \returns A CoRoutine containing a AutoModerationRuleData.
+		/// @brief Create a particular Auto-Moderation-Rule
+		/// @param dataPackage The moderation rule data to create.
+		/// @return A CoRoutine containing a AutoModerationRuleData.
 		CoRoutine<AutoModerationRuleData> createAutoModerationRuleAsync(CreateAutoModerationRuleData dataPackage);
 
-		/// \brief Modify a particular Auto-Moderation-Rule
-		/// \returns A CoRoutine containing a AutoModerationRuleData.
+		/// @brief Modify a particular Auto-Moderation-Rule
+		/// @param dataPackage The moderation rule data to apply.
+		/// @return A CoRoutine containing a AutoModerationRuleData.
 		CoRoutine<AutoModerationRuleData> modifyAutoModerationRuleAsync(ModifyAutoModerationRuleData dataPackage);
 
-		/// \brief Delete a particular Auto-Moderation-Rule
-		/// \returns A CoRoutine containing a void.
+		/// @brief Delete a particular Auto-Moderation-Rule
+		/// @param dataPackage The moderation rule data to delete.
+		/// @return A CoRoutine containing a void.
 		CoRoutine<void> deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage);
 
 	  protected:

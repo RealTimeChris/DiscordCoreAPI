@@ -5,8 +5,23 @@
 
 #include "Commands/BotInfo.hpp"
 
+namespace DiscordCoreAPI {
+	extern std::atomic_bool doWeQuit;
+}
+
+void onBoot(DiscordCoreAPI::DiscordCoreClient* client) {
+	DiscordCoreAPI::doWeQuit.store(true);
+}
+
 int32_t main() {
 	std::string botToken = "";
+	std::vector<DiscordCoreAPI::RepeatedFunctionData> functionVector{};
+	functionVector.reserve(5);
+	DiscordCoreAPI::RepeatedFunctionData function01{};
+	function01.function = onBoot;
+	function01.repeated = false;
+	function01.intervalInMs = 1500;
+	functionVector.push_back(function01);
 	DiscordCoreAPI::ShardingOptions shardOptions{};
 	shardOptions.numberOfShardsForThisProcess = 1;
 	shardOptions.startingShard = 0;

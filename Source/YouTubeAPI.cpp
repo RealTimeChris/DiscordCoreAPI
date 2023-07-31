@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 				std::string stringSequence = ";</script><script nonce=";
 				newString = newString.substr(0, newString.find(stringSequence));
 				YouTubeSearchResults youtubeSearchResults{};
-				jsonifierCore.parseJson<true, true>(youtubeSearchResults, newString);
+				parser.parseJson<true, true>(youtubeSearchResults, newString);
 				for (auto& value: youtubeSearchResults.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents) {
 					for (auto& value02: value.itemSectionRendererContents.contents) {
 						Song songNew{};
@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
 				dataPackage02.headersToInsert["User-Agent"] = "com.google.android.youtube/17.10.35 (Linux; U; Android 12; US) gzip";
 				dataPackage02.headersToInsert["Origin"] = "https://music.youtube.com";
 				dataPackage02.relativePath = "/youtubei/v1/player?key=AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w";
-				jsonifierCore.serializeJson(requestData, dataPackage02.content);
+				parser.serializeJson(requestData, dataPackage02.content);
 				dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 				responseData = submitWorkloadAndGetResult(std::move(dataPackage02));
 				if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200) {
@@ -266,7 +266,7 @@ namespace DiscordCoreAPI {
 
 				Data dataNew{};
 				std::vector<Format> potentialFormats{};
-				jsonifierCore.parseJson<true, true>(dataNew, responseData.responseData);
+				parser.parseJson<true, true>(dataNew, responseData.responseData);
 				for (auto& value: dataNew.streamingData.adaptiveFormats) {
 					if (value.mimeType == "audio/webm; codecs=\"opus\"") {
 						potentialFormats.emplace_back(value);
@@ -392,24 +392,29 @@ namespace DiscordCoreAPI {
 							auto oldSize = buffer.size();
 							buffer.resize(buffer.size() + result.responseData.size());
 							std::memcpy(buffer.data() + oldSize, result.responseData.data(), result.responseData.size());
-							demuxer.writeData({ reinterpret_cast<uint8_t*>(buffer.data()), buffer.size() });
+							demuxer.writeData({ buffer.data(), buffer.size() });
 							demuxer.proceedDemuxing();
 						}
 					}
-
-					AudioFrameData frameData{};
-					while (demuxer.collectFrame(frameData)) {
+					bool didWeReceive{ true };
+					do {
+						AudioFrameData frameData{};
+						didWeReceive = demuxer.collectFrame(frameData);
+						if (coroHandle.promise().areWeStopped()) {
+							areWeWorkingBool.store(false);
+							co_return;
+						}
 						if (frameData.currentSize != 0) {
-							frameData.guildMemberId = songNew.addedByUserId.operator uint64_t();
+							frameData.guildMemberId = songNew.addedByUserId.operator const uint64_t&();
 							DiscordCoreClient::getSongAPI(guildId).audioDataBuffer.send(std::move(frameData));
 						}
-					}
+					} while (didWeReceive);
 					std::this_thread::sleep_for(1ms);
 				}
 				areWeWorkingBool.store(false);
 				DiscordCoreClient::getVoiceConnection(guildId).skip(false);
 				AudioFrameData frameData{};
-				frameData.guildMemberId = songNew.addedByUserId.operator uint64_t();
+				frameData.guildMemberId = songNew.addedByUserId.operator const uint64_t&();
 				DiscordCoreClient::getSongAPI(guildId).audioDataBuffer.send(std::move(frameData));
 				co_return;
 			} catch (const HttpsError& error) {

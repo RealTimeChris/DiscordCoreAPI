@@ -64,6 +64,48 @@ namespace Jsonifier {
 
 namespace DiscordCoreAPI {
 
+	template<> UnorderedMap<std::string, UnboundedMessageBlock<MessageData>*> ObjectCollector<MessageData>::objectsBuffersMap{};
+
+	template<> ObjectCollector<MessageData>::ObjectCollector() {
+		collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+		ObjectCollector::objectsBuffersMap[collectorId] = &objectsBuffer;
+	};
+
+	template<> void ObjectCollector<MessageData>::run(std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<
+			DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::MessageData>::ObjectCollectorReturnData>::promise_type>& coroHandle) {
+		int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+		int64_t elapsedTime{};
+		while (elapsedTime < msToCollectFor && !coroHandle.promise().areWeStopped()) {
+			MessageData message{};
+			waitForTimeToPass<MessageData>(objectsBuffer, message, static_cast<uint64_t>(msToCollectFor - static_cast<uint64_t>(elapsedTime)));
+			if (filteringFunction(message)) {
+				objectReturnData.objects.emplace_back(message);
+			}
+			if (static_cast<int32_t>(objectReturnData.objects.size()) >= quantityOfObjectsToCollect) {
+				break;
+			}
+
+			elapsedTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count() - startingTime;
+		}
+	}
+
+	template<> CoRoutine<ObjectCollector<MessageData>::ObjectCollectorReturnData> ObjectCollector<MessageData>::collectObjects(
+		int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<MessageData> filteringFunctionNew) {
+		auto coroHandle = co_await NewThreadAwaitable<ObjectCollectorReturnData>();
+		quantityOfObjectsToCollect = quantityToCollect;
+		filteringFunction = filteringFunctionNew;
+		msToCollectFor = msToCollectForNew;
+
+		run(coroHandle);
+		co_return std::move(objectReturnData);
+	}
+
+	template<> ObjectCollector<MessageData>::~ObjectCollector() {
+		if (ObjectCollector::objectsBuffersMap.contains(collectorId)) {
+			ObjectCollector::objectsBuffersMap.erase(collectorId);
+		}
+	};
+
 	CreateMessageData::CreateMessageData(const Snowflake channelIdNew) {
 		channelId = channelIdNew;
 	}
@@ -125,7 +167,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-
+	DeleteMessageData::DeleteMessageData(const MessageData& messageToDelete) {
+		channelId = messageToDelete.channelId;
+		timeStamp = messageToDelete.timeStamp;
+		messageId = messageToDelete.id;
+	}
 
 	void Messages::initialize(DiscordCoreInternal::HttpsClient* client) {
 		Messages::httpsClient = client;
@@ -188,9 +234,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			jsonifierCore.serializeJson(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 		} else {
-			jsonifierCore.serializeJson(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 		}
 		workload.callStack = "Messages::createMessageAsync()";
 		MessageData returnData{};
@@ -216,9 +262,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			jsonifierCore.serializeJson(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 		} else {
-			jsonifierCore.serializeJson(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 		}
 		workload.callStack = "Messages::editMessageAsync()";
 		MessageData returnData{};
@@ -253,7 +299,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}

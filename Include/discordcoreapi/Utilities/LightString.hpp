@@ -35,7 +35,7 @@
 
 namespace DiscordCoreAPI {
 
-	template<typename ValueType> class LightString {
+	template<typename ValueType> class LightString : public JsonifierInternal::AllocWrapper<ValueType> {
 	  public:
 		using value_type = ValueType;
 		using traits_type = std::char_traits<value_type>;
@@ -53,13 +53,11 @@ namespace DiscordCoreAPI {
 
 		inline constexpr LightString() noexcept = default;
 
-		inline static constexpr size_type npos{ std::numeric_limits<size_type>::max() };
+		static constexpr size_type npos{ std::numeric_limits<size_type>::max() };
 
 		inline constexpr LightString& operator=(LightString&& other) noexcept {
 			if (this != &other) {
-				JsonifierInternal::swapF(capacityVal, other.capacityVal);
-				JsonifierInternal::swapF(sizeVal, other.sizeVal);
-				JsonifierInternal::swapF(values, other.values);
+				swap(other);
 			}
 			return *this;
 		}
@@ -68,19 +66,22 @@ namespace DiscordCoreAPI {
 			*this = std::move(other);
 		}
 
-		inline constexpr LightString& operator=(const LightString& other) noexcept {
+		inline LightString& operator=(const LightString& other) {
 			if (this != &other) {
-				auto sizeNew = other.size();
-				if (sizeNew) [[likely]] {
-					reserve(sizeNew);
-					std::memcpy(values, other.data(), sizeNew);
-					sizeVal = sizeNew;
+				size_type sizeNew = other.size();
+				if (sizeNew > 0) {
+					LightString temp{};
+					temp.values = allocator::allocate(sizeNew + 1);
+					std::memcpy(temp.values, other.data(), sizeNew);
+					temp.capacityVal = sizeNew;
+					temp.sizeVal = sizeNew;
+					swap(temp);
 				}
 			}
 			return *this;
 		}
 
-		inline LightString(const LightString& other) noexcept {
+		inline LightString(const LightString& other) noexcept : JsonifierInternal::AllocWrapper<value_type>{} {
 			*this = other;
 		}
 
@@ -89,11 +90,14 @@ namespace DiscordCoreAPI {
 		}
 
 		inline LightString& operator=(const std::string& other) noexcept {
-			auto sizeNew = other.size();
-			if (sizeNew) [[likely]] {
-				reserve(sizeNew);
-				std::memcpy(values, other.data(), sizeNew);
-				sizeVal = sizeNew;
+			size_type sizeNew = other.size();
+			if (sizeNew > 0) {
+				LightString temp{};
+				temp.values = allocator::allocate(sizeNew + 1);
+				std::memcpy(temp.values, other.data(), sizeNew);
+				temp.capacityVal = sizeNew;
+				temp.sizeVal = sizeNew;
+				swap(temp);
 			}
 			return *this;
 		}
@@ -103,11 +107,14 @@ namespace DiscordCoreAPI {
 		}
 
 		inline constexpr LightString& operator=(const std::string_view& other) noexcept {
-			auto sizeNew = other.size();
-			if (sizeNew) [[likely]] {
-				reserve(sizeNew);
-				std::memcpy(values, other.data(), sizeNew);
-				sizeVal = sizeNew;
+			size_type sizeNew = other.size();
+			if (sizeNew > 0) {
+				LightString temp{};
+				temp.values = allocator::allocate(sizeNew + 1);
+				std::memcpy(temp.values, other.data(), sizeNew);
+				temp.capacityVal = sizeNew;
+				temp.sizeVal = sizeNew;
+				swap(temp);
 			}
 			return *this;
 		}
@@ -117,19 +124,25 @@ namespace DiscordCoreAPI {
 		}
 
 		template<uint64_t strLength> inline constexpr LightString(const char (&other)[strLength]) {
-			if (strLength) [[likely]] {
-				reserve(strLength);
-				std::memcpy(values, other, strLength);
-				sizeVal = strLength;
+			if (strLength > 0) {
+				LightString temp{};
+				temp.values = allocator::allocate(strLength + 1);
+				std::memcpy(temp.values, other, strLength);
+				temp.capacityVal = strLength;
+				temp.sizeVal = strLength;
+				swap(temp);
 			}
 		}
 
 		inline constexpr LightString& operator=(const_pointer other) noexcept {
 			auto sizeNew = traits_type::length(other);
 			if (sizeNew) [[likely]] {
-				reserve(sizeNew);
-				std::memcpy(values, other, sizeNew);
-				sizeVal = sizeNew;
+				LightString temp{};
+				temp.values = allocator::allocate(sizeNew + 1);
+				std::memcpy(temp.values, other, sizeNew);
+				temp.capacityVal = sizeNew;
+				temp.sizeVal = sizeNew;
+				swap(temp);
 			}
 			return *this;
 		}
@@ -139,11 +152,14 @@ namespace DiscordCoreAPI {
 		}
 
 		inline LightString(const_pointer other, uint64_t sizeNew) noexcept {
-			reserve(sizeNew);
-			if (values) {
-				std::memcpy(values, other, sizeNew);
+			if (sizeNew) [[likely]] {
+				LightString temp{};
+				temp.values = allocator::allocate(sizeNew + 1);
+				std::memcpy(temp.values, other, sizeNew);
+				temp.capacityVal = sizeNew;
+				temp.sizeVal = sizeNew;
+				swap(temp);
 			}
-			sizeVal = sizeNew;
 		}
 
 		inline LightString substr(size_type pos, size_type count) {
@@ -154,8 +170,7 @@ namespace DiscordCoreAPI {
 			result.reserve(count);
 			std::memcpy(result.values, values + pos, count * sizeof(value_type));
 			result.sizeVal = count;
-			allocator alloc{};
-			alloc.construct(&result.values[count], '\0');
+			allocator::construct(&result.values[count], '\0');
 			return result;
 		}
 
@@ -196,9 +211,8 @@ namespace DiscordCoreAPI {
 			if (sizeVal + 1 >= capacityVal) {
 				reserve((sizeVal + 2) * 4);
 			}
-			allocator alloc{};
-			alloc.construct(&values[sizeVal++], value);
-			alloc.construct(&values[sizeVal], '\0');
+			allocator::construct(&values[sizeVal++], value);
+			allocator::construct(&values[sizeVal], '\0');
 		}
 
 		inline constexpr reference at(size_type index) const {
@@ -216,6 +230,10 @@ namespace DiscordCoreAPI {
 			return std::string_view{ data() + offSet, count };
 		}
 
+		inline operator std::string_view() const noexcept {
+			return std::string_view{ data(), size() };
+		}
+
 		inline operator std::string() const noexcept {
 			return std::string{ data(), size() };
 		}
@@ -231,15 +249,14 @@ namespace DiscordCoreAPI {
 		inline void resize(size_type sizeNew) {
 			if (sizeNew > 0) [[likely]] {
 				if (sizeNew > capacityVal) [[likely]] {
-					allocator alloc{};
-					pointer newPtr = alloc.allocate(sizeNew + 1);
+					pointer newPtr = allocator::allocate(sizeNew + 1);
 					try {
 						if (values) [[likely]] {
 							std::uninitialized_move(values, values + sizeVal, newPtr);
-							alloc.deallocate(values, capacityVal + 1);
+							allocator::deallocate(values, capacityVal + 1);
 						}
 					} catch (...) {
-						alloc.deallocate(newPtr, sizeNew + 1);
+						allocator::deallocate(newPtr, sizeNew + 1);
 						throw;
 					}
 					capacityVal = sizeNew;
@@ -257,15 +274,14 @@ namespace DiscordCoreAPI {
 
 		inline void reserve(size_type capacityNew) {
 			if (capacityNew > capacityVal) [[likely]] {
-				allocator alloc{};
-				pointer newPtr = alloc.allocate(capacityNew + 1);
+				pointer newPtr = allocator::allocate(capacityNew + 1);
 				try {
 					if (values) [[likely]] {
 						std::uninitialized_move(values, values + sizeVal, newPtr);
-						alloc.deallocate(values, capacityVal + 1);
+						allocator::deallocate(values, capacityVal + 1);
 					}
 				} catch (...) {
-					alloc.deallocate(newPtr, capacityNew + 1);
+					allocator::deallocate(newPtr, capacityNew + 1);
 					throw;
 				}
 				capacityVal = capacityNew;
@@ -312,6 +328,12 @@ namespace DiscordCoreAPI {
 			return JsonifierInternal::JsonifierCoreInternal::compare(rhs.data(), data(), rhs.size());
 		}
 
+		inline void swap(LightString& other) {
+			std::swap(capacityVal, other.capacityVal);
+			std::swap(sizeVal, other.sizeVal);
+			std::swap(values, other.values);
+		}
+
 		inline LightString& operator+=(const LightString& rhs) noexcept {
 			auto oldSize = size();
 			resize(oldSize + rhs.size());
@@ -347,8 +369,7 @@ namespace DiscordCoreAPI {
 
 		inline ~LightString() {
 			if (values && capacityVal > 0) {
-				allocator alloc{};
-				alloc.deallocate(values, capacityVal + 1);
+				allocator::deallocate(values, capacityVal + 1);
 				values = nullptr;
 				capacityVal = 0;
 			}
@@ -409,9 +430,10 @@ namespace DiscordCoreAPI {
 
 	using String = LightString<char>;
 
-	inline std::basic_ostream<String::value_type, String::traits_type>& operator<<(
-		std::basic_ostream<String::value_type, String::traits_type>& oStream, const String& string) {
-		return insertString<String::value_type, String::traits_type>(oStream, string.data(), string.size());
+	inline std::basic_ostream<typename LightString<char>::value_type, typename LightString<char>::traits_type>& operator<<(
+		std::basic_ostream<typename LightString<char>::value_type, typename LightString<char>::traits_type>& oStream,
+		const LightString<char>& string) {
+		return insertString<typename LightString<char>::value_type, typename LightString<char>::traits_type>(oStream, string.data(), string.size());
 	}
 
 	inline LightString<char> operator+(const char* lhs, const LightString<char>& rhs) noexcept {

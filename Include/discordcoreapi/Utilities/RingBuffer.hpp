@@ -40,20 +40,34 @@ namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
 
+		/**
+		* \addtogroup discord_core_internal
+		* @{
+		*/
+
+		/// @brief Enum representing different access types for a ring buffer.
 		enum class RingBufferAccessType { Read = 0, Write = 1 };
 
+		/// @brief A template interface for a ring buffer.
+		/// @tparam ValueType The type of data stored in the buffer.
+		/// @tparam Size The size of the buffer.
 		template<typename ValueType, uint64_t Size> class RingBufferInterface {
 		  public:
 			using value_type = ValueType;
 			using pointer = value_type*;
 			using size_type = uint64_t;
 
+			/// @brief Constructor. Initializes the buffer size.
 			inline RingBufferInterface() {
 				arrayValue.resize(Size);
 			}
 
+			// Forward declaration to grant friendship to the RingBuffer class.
 			template<typename ValueType2, size_type SliceCount> friend class RingBuffer;
 
+			/// @brief Modify the read or write position of the buffer.
+			/// @param type The access type (Read or Write).
+			/// @param size The size by which to modify the position.
 			inline void modifyReadOrWritePosition(RingBufferAccessType type, size_type size) {
 				if (type == RingBufferAccessType::Read) {
 					tail += size;
@@ -62,37 +76,51 @@ namespace DiscordCoreAPI {
 				}
 			}
 
+			/// @brief Get the used space in the buffer.
+			/// @return The used space in the buffer.
 			inline size_type getUsedSpace() {
 				return head - tail;
 			}
 
+			/// @brief Get a pointer to the current tail position.
+			/// @return A pointer to the current tail position.
 			inline pointer getCurrentTail() {
 				return arrayValue.data() + (tail % Size);
 			}
 
+			/// @brief Get a pointer to the current head position.
+			/// @return A pointer to the current head position.
 			inline pointer getCurrentHead() {
 				return arrayValue.data() + (head % Size);
 			}
 
+			/// @brief Check if the buffer is empty.
+			/// @return True if the buffer is empty, otherwise false.
 			inline bool isItEmpty() {
 				return tail == head;
 			}
 
+			/// @brief Check if the buffer is full.
+			/// @return True if the buffer is full, otherwise false.
 			inline bool isItFull() {
 				return getUsedSpace() == Size;
 			}
 
+			/// @brief Clear the buffer by resetting positions.
 			inline void clear() {
 				tail = 0;
 				head = 0;
 			}
 
 		  protected:
-			std::vector<std::decay_t<value_type>> arrayValue{};
-			size_type tail{};
-			size_type head{};
+			std::vector<std::decay_t<value_type>> arrayValue{};///< The underlying data array.
+			size_type tail{};///< The tail position in the buffer.
+			size_type head{};///< The head position in the buffer.
 		};
 
+		/// @brief A template implementation of a ring buffer using RingBufferInterface.
+		/// @tparam ValueType The type of data stored in the buffer.
+		/// @tparam SliceCount The number of slices.
 		template<typename ValueType, uint64_t SliceCount> class RingBuffer
 			: public RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount> {
 		  public:
@@ -101,11 +129,18 @@ namespace DiscordCoreAPI {
 			using pointer = value_type*;
 			using size_type = uint64_t;
 
-			inline void writeData(const_pointer data, size_type size) {
+			/// @brief Default constructor. Initializes the buffer size.
+			inline RingBuffer() : RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>{} {};
+
+			/// @brief Write data into the buffer.
+			/// @tparam ValueTypeNew The type of data to be written.
+			/// @param data Pointer to the data.
+			/// @param size Size of the data.
+			template<typename ValueTypeNew> inline void writeData(ValueTypeNew* data, size_type size) {
 				if (RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::isItFull() ||
-					size > 16384 -
-							RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead()
-								->getUsedSpace()) {
+					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead()->getUsedSpace() +
+							size >=
+						16384) {
 					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->clear();
 					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::modifyReadOrWritePosition(
 						RingBufferAccessType::Read, 1);
@@ -120,6 +155,8 @@ namespace DiscordCoreAPI {
 					RingBufferAccessType::Write, 1);
 			}
 
+			/// @brief Read data from the buffer.
+			/// @return A string view containing the read data.
 			inline std::basic_string_view<std::decay_t<value_type>> readData() {
 				std::basic_string_view<std::decay_t<value_type>> returnData{};
 				if (RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->getUsedSpace() > 0) {
@@ -134,5 +171,7 @@ namespace DiscordCoreAPI {
 				return returnData;
 			}
 		};
+
+		/**@}*/
 	}
 }

@@ -22,6 +22,13 @@
 # May 13, 2021
 # https://discordcoreapi.com
 
+set(T_AVX_EXITCODE "0" CACHE STRING INTERNAL FORCE)
+set(T_AVX2_EXITCODE "0" CACHE STRING INTERNAL FORCE)
+set(T_AVX512_EXITCODE "0" CACHE STRING INTERNAL FORCE)
+
+include("CollectVersion")
+collect_version()
+
 include("GenerateProductVersion")
 generate_product_version(
 	PRODUCT_INFO
@@ -29,13 +36,17 @@ generate_product_version(
 	FILE_DESCRIPTION "${DESCRIPTION}"
 	ORIGINAL_FILENAME "discordcoreapi.dll"
 	COMPANY_NAME "RealTimeChris Inc."
-	VERSION_MAJOR "1"
-	VERSION_MINOR "2"
-	VERSION_PATCH "0"
-	VERSION_REVISION "0"
+	"${VERSION_MAJOR}"
+	"${VERSION_MINOR}"
 )
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(NOT DEFINED AVX_NAME)
+	include("${CMAKE_CURRENT_SOURCE_DIR}/../CMake/DetectArchitecture.cmake")
+endif()
 
 if (NOT DEFINED BUILD_SHARED_LIBS)
 	set(BUILD_SHARED_LIBS TRUE)
@@ -56,6 +67,11 @@ elseif (UNIX)
 endif()
 
 add_library("${PROJECT_NAME}::${LIB_NAME}" ALIAS "${LIB_NAME}")
+
+set_target_properties(
+	"${LIB_NAME}" PROPERTIES 
+	OUTPUT_NAME "discordcoreapi"
+)
 
 if("${DEV}")
 	include(FetchContent)
@@ -92,6 +108,7 @@ target_link_libraries(
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:DiscordCoreAPI_EXPORTS_NOPE>"
+	"${AVX_NAME}"
 )
 
 include(ProcessorCount)
@@ -107,14 +124,12 @@ target_compile_options(
 	"$<$<CXX_COMPILER_ID:GNU>:-Wextra>"
 	"$<$<CXX_COMPILER_ID:GNU>:-Wall>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/W4>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
-	"$<$<CXX_COMPILER_ID:GNU>:-march=core-avx2>"
-	"$<$<CXX_COMPILER_ID:CLANG>:-march=core-avx2>"
 	"$<$<CXX_COMPILER_ID:GNU>:-fcoroutines>"
 	"$<$<CXX_COMPILER_ID:CLANG>:-fcoroutines>"
+	"${AVX_FLAG}"
 )
 
 target_link_options(
@@ -158,7 +173,7 @@ install(
 
 install(
 	DIRECTORY
-	"${CMAKE_SOURCE_DIR}/Include/"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../Include/"
 	DESTINATION "include"
 )
 

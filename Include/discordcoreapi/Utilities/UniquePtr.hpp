@@ -35,16 +35,8 @@
 namespace DiscordCoreAPI {
 
 	template<typename ValueType01, typename ValueType02>
-	concept DerivedFrom = std::derived_from<ValueType01, ValueType02>;
-
-	template<typename ValueType01, typename ValueType02>
-	concept BaseOf = std::is_base_of_v<ValueType01, ValueType02>;
-
-	template<typename ValueType01, typename ValueType02>
-	concept SameAs = std::same_as<ValueType01, ValueType02>;
-
-	template<typename ValueType01, typename ValueType02>
-	concept IsRelatedPtr = DerivedFrom<ValueType01, ValueType02> || BaseOf<ValueType01, ValueType02> || SameAs<ValueType01, ValueType02>;
+	concept IsRelatedPtr =
+		std::derived_from<ValueType01, ValueType02> || std::is_base_of_v<ValueType01, ValueType02> || std::same_as<ValueType01, ValueType02>;
 
 	template<typename ValueType, typename Deleter = std::default_delete<ValueType>> class UniquePtr {
 	  public:
@@ -133,7 +125,9 @@ namespace DiscordCoreAPI {
 
 		inline void reset(pointer newPtr) {
 			pointer oldPtr = std::exchange(ptr, newPtr);
-			deleter_type{}(oldPtr);
+			if (oldPtr) {
+				deleter_type{}(oldPtr);
+			}
 		}
 
 		inline void swap(UniquePtr& other) {
@@ -245,7 +239,9 @@ namespace DiscordCoreAPI {
 
 		inline void reset(pointer newPtr) {
 			pointer oldPtr = std::exchange(ptr, newPtr);
-			deleter_type{}(oldPtr);
+			if (oldPtr) {
+				deleter_type{}(oldPtr);
+			}
 		}
 
 		inline void swap(UniquePtr& other) {

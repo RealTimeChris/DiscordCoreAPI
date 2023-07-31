@@ -29,6 +29,7 @@
 /// \file StageInstanceEntities.cpp
 
 #include <discordcoreapi/StageInstanceEntities.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace Jsonifier {
@@ -59,7 +60,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/stage-instances";
 		workload.callStack = "StageInstances::createStageInstanceAsync()";
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
@@ -84,7 +85,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<StageInstanceData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "StageInstances::modifyStageInstanceAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

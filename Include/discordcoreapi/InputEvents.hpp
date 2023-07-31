@@ -40,18 +40,18 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief For handling UserData input - Messages or Interactions.
+	/// @brief For handling UserData input - Messages or Interactions.
 	class DiscordCoreAPI_Dll InputEvents {
 	  public:
-		/// \brief Responds to one of a number of types of "InputEvents".
-		/// \param dataPackage A RespondToInputEventData structure.
-		/// \returns An UniquePtr containing an InputEventData structure.
+		/// @brief Responds to one of a number of types of "InputEvents".
+		/// @param dataPackage A RespondToInputEventData structure.
+		/// @return An UniquePtr containing an InputEventData structure.
 		static CoRoutine<InputEventData> respondToInputEventAsync(RespondToInputEventData dataPackage);
 
-		/// \brief Deletes a previously sent "input-event-response".
-		/// \param dataPackage A UniquePtr containing an InputEventData structure.
-		/// \param timeDelayNew An int32_t representing the desired delay until the message is deleted, in Milliseconds.
-		/// \returns A CoRoutine containing void.
+		/// @brief Deletes a previously sent "input-event-response".
+		/// @param dataPackage A UniquePtr containing an InputEventData structure.
+		/// @param timeDelayNew An int32_t representing the desired delay until the message is deleted, in Milliseconds.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteInputEventResponseAsync(InputEventData& dataPackage, int32_t timeDelayNew = 0);
 
 	  protected:

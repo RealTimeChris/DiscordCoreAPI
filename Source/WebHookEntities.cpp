@@ -30,6 +30,7 @@
 
 #include <discordcoreapi/WebHookEntities.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace Jsonifier {
@@ -205,7 +206,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/webhooks";
 		workload.callStack = "WebHooks::createWebHookDataAsync()";
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		WebHookData returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
@@ -260,7 +261,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<WebHookData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + dataPackage.webHookId;
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "WebHooks::modifyWebHookDataAsync()";
 		WebHookData returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
@@ -272,7 +273,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<WebHookData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken;
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "WebHooks::modifyWebHookDataWithTokenAsync()";
 		WebHookData returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
@@ -316,10 +317,10 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			jsonifierCore.serializeJson(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 			workload.content = constructMultiPartData(workload.content, dataPackage.files);
 		} else {
-			jsonifierCore.serializeJson(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 		}
 		MessageData returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
@@ -350,10 +351,10 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			jsonifierCore.serializeJson(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 			workload.content = constructMultiPartData(workload.content, dataPackage.files);
 		} else {
-			jsonifierCore.serializeJson(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 		}
 		workload.callStack = "WebHooks::editWebHookDataMessageAsync()";
 		MessageData returnData{};

@@ -7,9 +7,10 @@ on:
     - main
     - dev
 
+
 jobs:
   Build:
-    runs-on: ubuntu-22.04
+    runs-on: macos-latest
     
     strategy:
       fail-fast: false
@@ -23,9 +24,6 @@ jobs:
 
     - name: Update Vcpkg and install other dependencies.
       run: |
-            sudo apt-get update --fix-missing
-            sudo apt-get upgrade --fix-missing
-            sudo apt-get install nasm
             cd /usr/local/share/vcpkg
             ./bootstrap-vcpkg.sh
             git stash
@@ -34,10 +32,8 @@ jobs:
 
     - name: Install Clang17
       run: |
-            sudo apt remove clang-14
-            wget https://apt.llvm.org/llvm.sh
-            chmod +x llvm.sh
-            sudo ./llvm.sh 17
+            brew install llvm
+            echo 'export PATH="/usr/local/opt/llvm/bin:$PATH"' >> ~/.bash_profile
 
     - name: Copy the Jsonifier repo over.
       run: |
@@ -46,15 +42,15 @@ jobs:
 
     - name: Install the dependencies.
       run: |
-           vcpkg install jsonifier:x64-linux
-           vcpkg install opus:x64-linux
-           vcpkg install libsodium:x64-linux
-           vcpkg install openssl:x64-linux
+           vcpkg install jsonifier:x64-osx
+           vcpkg install opus:x64-osx
+           vcpkg install libsodium:x64-osx
+           vcpkg install openssl:x64-osx
 
     - name: Configure CMake
       working-directory: Tests
       run: |
-           cmake -S . -B ./Build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=/usr/bin/clang++-17 -DGITHUB_BRANCH_TYPE=${{github.ref}}
+           cmake -S . -B ./Build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang-16 -DGITHUB_BRANCH_TYPE=${{github.ref}}
 
     - name: Build the Test
       working-directory: Tests/Build

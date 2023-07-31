@@ -30,6 +30,7 @@
 
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {

@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 	* @{
 	*/
 
-	/// \brief The current status of the associated CoRoutine.
+	/// @brief The current status of the associated CoRoutine.
 	enum class CoRoutineStatus {
 		Idle = 0,///< Idle.
 		Running = 1,///< Running.
@@ -50,17 +50,17 @@ namespace DiscordCoreAPI {
 		Cancelled = 3///< Cancelled.
 	};
 
-	/// \brief An error type for CoRoutines.
+	/// @brief An error type for CoRoutines.
 	struct CoRoutineError : public DCAException {
 		inline CoRoutineError(const std::string& message, std::source_location location = std::source_location::current())
-			: DCAException(message, location){};
+			: DCAException{ message, location } {};
 	};
 
-	/// \brief A CoRoutine - representing a potentially asynchronous operation/function.
+	/// @brief A CoRoutine - representing a potentially asynchronous operation/function.
 	/// \tparam ReturnType The type of parameter that is returned by the CoRoutine.
 	template<typename ReturnType, bool timeOut> class CoRoutine {
 	  public:
-		class DiscordCoreAPI_Dll promise_type {
+		class promise_type {
 		  public:
 			template<typename ReturnType02, bool timeOut02> friend class CoRoutine;
 
@@ -150,8 +150,8 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		/// \brief Collects the status of the CoRoutine.
-		/// \returns CoRoutineStatus The status of the CoRoutine.
+		/// @brief Collects the status of the CoRoutine.
+		/// @return CoRoutineStatus The status of the CoRoutine.
 		inline CoRoutineStatus getStatus() {
 			if (!coroutineHandle) {
 				currentStatus.store(CoRoutineStatus::Cancelled);
@@ -163,7 +163,8 @@ namespace DiscordCoreAPI {
 			return currentStatus.load();
 		}
 
-		/// \brief Gets the resulting value of the CoRoutine.
+		/// @brief Gets the resulting value of the CoRoutine.
+		/// @return The final value resulting from the CoRoutine's execution.
 		inline ReturnType get() {
 			if (coroutineHandle) {
 				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
@@ -189,7 +190,8 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		/// \brief Cancels the currently executing CoRoutine and returns the current result.
+		/// @brief Cancels the currently executing CoRoutine and returns the current result.
+		/// @return The final value resulting from the CoRoutine's execution.
 		inline ReturnType cancel() {
 			if (coroutineHandle) {
 				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
@@ -225,11 +227,11 @@ namespace DiscordCoreAPI {
 		ReturnType result{};
 	};
 
-	/// \brief A CoRoutine - representing a potentially asynchronous operation/function.
+	/// @brief A CoRoutine - representing a potentially asynchronous operation/function.
 	/// \tparam void The type of parameter that is returned by the CoRoutine.
 	template<DiscordCoreInternal::VoidT ReturnType, bool timeOut> class CoRoutine<ReturnType, timeOut> {
 	  public:
-		class DiscordCoreAPI_Dll promise_type {
+		class promise_type {
 		  public:
 			template<typename ReturnType02, bool timeOut02> friend class CoRoutine;
 
@@ -280,7 +282,7 @@ namespace DiscordCoreAPI {
 
 		inline CoRoutine() = default;
 
-		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) {
+		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) noexcept {
 			if (this != &other) {
 				coroutineHandle = other.coroutineHandle;
 				other.coroutineHandle = nullptr;
@@ -314,8 +316,8 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		/// \brief Collects the status of the CoRoutine.
-		/// \returns CoRoutineStatus The status of the CoRoutine.
+		/// @brief Collects the status of the CoRoutine.
+		/// @return CoRoutineStatus The status of the CoRoutine.
 		inline CoRoutineStatus getStatus() {
 			if (!coroutineHandle) {
 				currentStatus.store(CoRoutineStatus::Cancelled);
@@ -327,7 +329,7 @@ namespace DiscordCoreAPI {
 			return currentStatus.load();
 		}
 
-		/// \brief Gets the resulting value of the CoRoutine.
+		/// @brief Gets the resulting value of the CoRoutine.
 		inline void get() {
 			if (coroutineHandle) {
 				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
@@ -354,7 +356,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		/// \brief Cancels the currently executing CoRoutine and returns the current result.
+		/// @brief Cancels the currently executing CoRoutine and returns the current result.
 		inline void cancel() {
 			if (coroutineHandle) {
 				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
@@ -389,12 +391,12 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<bool> resultBuffer{};
 	};
 
-	class DiscordCoreAPI_Dll NewThreadAwaiterBase {
+	class NewThreadAwaiterBase {
 	  public:
 		inline static DiscordCoreInternal::CoRoutineThreadPool threadPool{};
 	};
 
-	/// \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
+	/// @brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
 	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
 	template<typename ReturnType, bool timeOut> class NewThreadAwaiter : public NewThreadAwaiterBase {
 	  public:

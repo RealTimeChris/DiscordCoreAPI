@@ -29,6 +29,7 @@
 /// \file ReactionEntities.cpp
 
 #include <discordcoreapi/ReactionEntities.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 #include <fstream>
@@ -37,8 +38,8 @@ namespace Jsonifier {
 
 	template<> struct Core<DiscordCoreAPI::CreateGuildEmojiData> {
 		using ValueType = DiscordCoreAPI::CreateGuildEmojiData;
-		static constexpr auto parseValue = object("roles", &ValueType::roles, "imageFilePath", &ValueType::imageFilePath, "reason",
-			&ValueType::reason, "guildId", &ValueType::guildId, "name", &ValueType::name, "type", &ValueType::type);
+		static constexpr auto parseValue = object("roles", &ValueType::roles, "image", &ValueType::imageDataFinal, "reason", &ValueType::reason,
+			"guildId", &ValueType::guildId, "name", &ValueType::name, "type", &ValueType::type);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ModifyGuildEmojiData> {
@@ -50,6 +51,48 @@ namespace Jsonifier {
 }
 
 namespace DiscordCoreAPI {
+
+	template<> UnorderedMap<std::string, UnboundedMessageBlock<ReactionData>*> ObjectCollector<ReactionData>::objectsBuffersMap{};
+
+	template<> ObjectCollector<ReactionData>::ObjectCollector() {
+		collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+		ObjectCollector::objectsBuffersMap[collectorId] = &objectsBuffer;
+	};
+
+	template<> void ObjectCollector<ReactionData>::run(std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<
+			DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::ReactionData>::ObjectCollectorReturnData>::promise_type>& coroHandle) {
+		int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+		int64_t elapsedTime{};
+		while (elapsedTime < msToCollectFor && !coroHandle.promise().areWeStopped()) {
+			ReactionData message{};
+			waitForTimeToPass<ReactionData>(objectsBuffer, message, static_cast<uint64_t>(msToCollectFor - static_cast<uint64_t>(elapsedTime)));
+			if (filteringFunction(message)) {
+				objectReturnData.objects.emplace_back(message);
+			}
+			if (static_cast<int32_t>(objectReturnData.objects.size()) >= quantityOfObjectsToCollect) {
+				break;
+			}
+
+			elapsedTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count() - startingTime;
+		}
+	}
+
+	template<> CoRoutine<ObjectCollector<ReactionData>::ObjectCollectorReturnData> ObjectCollector<ReactionData>::collectObjects(
+		int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<ReactionData> filteringFunctionNew) {
+		auto coroHandle = co_await NewThreadAwaitable<ObjectCollectorReturnData>();
+		quantityOfObjectsToCollect = quantityToCollect;
+		filteringFunction = filteringFunctionNew;
+		msToCollectFor = msToCollectForNew;
+
+		run(coroHandle);
+		co_return std::move(objectReturnData);
+	}
+
+	template<> ObjectCollector<ReactionData>::~ObjectCollector() {
+		if (ObjectCollector::objectsBuffersMap.contains(collectorId)) {
+			ObjectCollector::objectsBuffersMap.erase(collectorId);
+		}
+	};
 
 	void Reactions::initialize(DiscordCoreInternal::HttpsClient* client) {
 		Reactions::httpsClient = client;
@@ -180,13 +223,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Emoji };
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		std::ifstream fin(dataPackage.imageFilePath, std::ios::binary);
-		fin.seekg(0, std::ios::end);
-		std::string data{};
-		data.resize(fin.tellg());
-		fin.seekg(0, std::ios::beg);
-		fin.read(data.data(), data.size());
-		std::string newerFile = base64Encode(std::move(data));
+		std::string newerFile = base64Encode(loadFileContents(dataPackage.imageFilePath));
 		switch (dataPackage.type) {
 			case ImageType::Jpg: {
 				dataPackage.imageDataFinal = "data:image/jpeg;base64,";
@@ -205,7 +242,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis";
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Reactions::createGuildEmojiAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -220,7 +257,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis/" + dataPackage.emojiId;
-		jsonifierCore.serializeJson(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Reactions::modifyGuildEmojiAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -242,5 +279,6 @@ namespace DiscordCoreAPI {
 		Reactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
+
 	DiscordCoreInternal::HttpsClient* Reactions::httpsClient{};
 }

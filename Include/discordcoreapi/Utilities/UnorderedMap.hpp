@@ -23,37 +23,45 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// UnorderedSet.hpp - Header file for the UnorderedSet class.
+/// UnorderedMap.hpp - Header file for the UnorderedMap class.
 /// May 12, 2021
 /// https://discordcoreapi.com
-/// \file UnorderedSet.hpp
+/// \file UnorderedMap.hpp
 
 #pragma once
 
 #include <discordcoreapi/Utilities/Hash.hpp>
 
+#include <memory_resource>
+#include <shared_mutex>
+#include <exception>
+#include <optional>
+#include <vector>
+#include <mutex>
+
 namespace DiscordCoreAPI {
 
-	template<typename ValueType> class UnorderedSet;
+	template<typename KeyType, typename ValueType> class UnorderedMap;
 
-	template<typename SetIterator, typename ValueType>
-	concept SetContainerIteratorT = std::is_same_v<typename UnorderedSet<ValueType>::iterator, std::decay_t<SetIterator>>;
+	template<typename MapIterator, typename KeyType, typename ValueType>
+	concept MapContainerIteratorT = std::is_same_v<typename UnorderedMap<KeyType, ValueType>::iterator, std::decay_t<MapIterator>>;
 
-	template<typename ValueType> class UnorderedSet : protected PowerOfTwoHashPolicy<UnorderedSet<ValueType>>,
-													  protected JsonifierInternal::AllocWrapper<ObjectCore<ValueType>>,
-													  protected ObjectCompare,
-													  protected KeyHasher {
+	template<typename KeyType, typename ValueType> class UnorderedMap
+		: protected PowerOfTwoHashPolicy<UnorderedMap<KeyType, ValueType>>,
+		  protected JsonifierInternal::AllocWrapper<ObjectCore<Pair<KeyType, ValueType>>>,
+		  protected ObjectCompare,
+		  protected KeyHasher {
 	  public:
 		using mapped_type = ValueType;
-		using key_type = ValueType;
+		using key_type = KeyType;
 		using reference = mapped_type&;
-		using value_type = mapped_type;
-		using value_type_internal = ObjectCore<mapped_type>;
+		using value_type = Pair<key_type, mapped_type>;
+		using value_type_internal = ObjectCore<Pair<key_type, mapped_type>>;
 		using const_reference = const mapped_type&;
 		using size_type = uint64_t;
 		using key_hasher = KeyHasher;
 		using object_compare = ObjectCompare;
-		using hash_policy = PowerOfTwoHashPolicy<UnorderedSet<mapped_type>>;
+		using hash_policy = PowerOfTwoHashPolicy<UnorderedMap<key_type, mapped_type>>;
 		friend hash_policy;
 
 		using iterator = HashIterator<value_type_internal>;
@@ -63,11 +71,11 @@ namespace DiscordCoreAPI {
 
 		using allocator = JsonifierInternal::AllocWrapper<value_type_internal>;
 
-		inline UnorderedSet(size_type capacityNew = 5) {
+		inline UnorderedMap(size_type capacityNew = 5) {
 			reserve(capacityNew);
 		};
 
-		inline UnorderedSet& operator=(UnorderedSet&& other) noexcept {
+		inline UnorderedMap& operator=(UnorderedMap&& other) noexcept {
 			if (this != &other) {
 				clear();
 				swap(other);
@@ -75,24 +83,32 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline UnorderedSet(UnorderedSet&& other) noexcept {
+		inline UnorderedMap(UnorderedMap&& other) noexcept {
 			*this = std::move(other);
 		}
 
-		inline UnorderedSet& operator=(const UnorderedSet& other) {
+		inline UnorderedMap& operator=(const UnorderedMap& other) {
 			if (this != &other) {
 				clear();
-				reserve(other.capacityVal);
-				for (const auto& value: other) {
-					emplace(value);
+
+				reserve(other.capacity());
+				for (const auto& [key, value]: other) {
+					emplace(key, value);
 				}
 			}
 			return *this;
 		}
 
-		inline UnorderedSet(const UnorderedSet& other) {
+		inline UnorderedMap(const UnorderedMap& other) {
 			*this = other;
 		}
+
+		inline UnorderedMap(std::initializer_list<value_type> list) {
+			reserve(list.size());
+			for (auto& value: list) {
+				emplace(std::move(value.first), std::move(value.second));
+			}
+		};
 
 		template<typename... Args> iterator emplace(Args&&... value) {
 			return emplaceInternal(std::forward<Args>(value)...);
@@ -102,7 +118,7 @@ namespace DiscordCoreAPI {
 			if (capacityVal > 0) {
 				auto currentEntry = data + hash_policy::indexForHash(key_hasher()(key));
 				for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-					if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(key))) {
+					if (currentEntry->areWeActive() && object_compare()(currentEntry->value.first, key)) {
 						return { currentEntry };
 					}
 				}
@@ -114,7 +130,7 @@ namespace DiscordCoreAPI {
 			if (capacityVal > 0) {
 				auto currentEntry = data + hash_policy::indexForHash(key_hasher()(key));
 				for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-					if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(key))) {
+					if (currentEntry->areWeActive() && object_compare()(currentEntry->value.first, key)) {
 						return { currentEntry };
 					}
 				}
@@ -123,19 +139,19 @@ namespace DiscordCoreAPI {
 		}
 
 		template<typename key_type_new> inline const_reference operator[](key_type_new&& key) const {
-			auto iter = find(std::forward<key_type_new>(key));
+			auto iter = find(key);
 			if (iter == end()) {
-				iter = emplace(mapped_type{});
+				iter = emplace(key, mapped_type{});
 			}
-			return *iter;
+			return iter->second;
 		}
 
 		template<typename key_type_new> inline reference operator[](key_type_new&& key) {
-			auto iter = find(std::forward<key_type_new>(key));
+			auto iter = find(key);
 			if (iter == end()) {
-				iter = emplace(mapped_type{});
+				iter = emplace(key, mapped_type{});
 			}
-			return *iter;
+			return iter->second;
 		}
 
 		template<typename key_type_new> inline const_reference at(key_type_new&& key) const {
@@ -143,7 +159,7 @@ namespace DiscordCoreAPI {
 			if (iter == end()) {
 				throw DCAException{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
-			return *iter;
+			return iter->second;
 		}
 
 		template<typename key_type_new> inline reference at(key_type_new&& key) {
@@ -151,14 +167,14 @@ namespace DiscordCoreAPI {
 			if (iter == end()) {
 				throw DCAException{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
-			return *iter;
+			return iter->second;
 		}
 
 		template<typename key_type_new> inline bool contains(key_type_new&& key) const {
 			if (capacityVal > 0) {
 				auto currentEntry = data + hash_policy::indexForHash(key_hasher()(key));
 				for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-					if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(key))) {
+					if (currentEntry->areWeActive() && object_compare()(currentEntry->value.first, key)) {
 						return true;
 					}
 				}
@@ -166,11 +182,11 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 
-		template<SetContainerIteratorT<mapped_type> SetIterator> inline iterator erase(SetIterator&& iter) {
+		template<MapContainerIteratorT<key_type, mapped_type> MapIterator> inline iterator erase(MapIterator&& iter) {
 			if (capacityVal > 0) {
 				auto currentEntry = data + static_cast<size_type>(iter.getRawPtr() - data);
 				for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-					if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(iter.operator*()))) {
+					if (currentEntry->areWeActive() && object_compare()(currentEntry->value.first, iter.operator*().first)) {
 						currentEntry->disable();
 						sizeVal--;
 						return { ++currentEntry };
@@ -184,7 +200,7 @@ namespace DiscordCoreAPI {
 			if (capacityVal > 0) {
 				auto currentEntry = data + hash_policy::indexForHash(key_hasher()(key));
 				for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-					if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(key))) {
+					if (currentEntry->areWeActive() && object_compare()(currentEntry->value.first, key)) {
 						currentEntry->disable();
 						sizeVal--;
 						return { ++currentEntry };
@@ -236,7 +252,7 @@ namespace DiscordCoreAPI {
 			resize(sizeNew);
 		}
 
-		void swap(UnorderedSet& other) noexcept {
+		void swap(UnorderedMap& other) noexcept {
 			std::swap(capacityVal, other.capacityVal);
 			std::swap(sizeVal, other.sizeVal);
 			std::swap(data, other.data);
@@ -246,12 +262,12 @@ namespace DiscordCoreAPI {
 			return capacityVal;
 		}
 
-		inline bool operator==(const UnorderedSet& other) const {
+		inline bool operator==(const UnorderedMap& other) const {
 			if (capacityVal != other.capacityVal || sizeVal != other.sizeVal || data != other.data) {
 				return false;
 			}
 			for (auto iter01{ begin() }, iter02{ other.begin() }; iter01 != end(); ++iter01, ++iter02) {
-				if (!object_compare()(iter01.operator*(), iter02.operator*())) {
+				if (!object_compare()(iter01.operator*().second, iter02.operator*().second)) {
 					return false;
 				}
 			}
@@ -268,7 +284,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		inline ~UnorderedSet() {
+		inline ~UnorderedMap() {
 			clear();
 		};
 
@@ -277,23 +293,23 @@ namespace DiscordCoreAPI {
 		size_type capacityVal{};
 		size_type sizeVal{};
 
-		template<typename mapped_type_new> inline iterator emplaceInternal(mapped_type_new&& value) {
+		template<typename key_type_new, typename mapped_type_new> inline iterator emplaceInternal(key_type_new&& key, mapped_type_new&& value) {
 			if (full() || capacityVal == 0) {
 				resize(static_cast<uint64_t>(static_cast<double>(capacityVal) * (static_cast<float>(maxLookupDistance) / 2.0f) + 2.0f));
 			}
-			auto currentEntry = data + hash_policy::indexForHash(key_hasher()(value));
+			auto currentEntry = data + hash_policy::indexForHash(key_hasher()(key));
 			for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
 				if (currentEntry->areWeEmpty()) {
-					currentEntry->enable(std::forward<mapped_type_new>(value));
+					currentEntry->enable(std::forward<key_type_new>(key), std::forward<mapped_type_new>(value));
 					sizeVal++;
 					return currentEntry;
-				} else if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(value))) {
-					currentEntry->value = std::forward<mapped_type_new>(value);
+				} else if (currentEntry->areWeActive() && object_compare()(currentEntry->value.first, key)) {
+					currentEntry->value.second = std::forward<mapped_type_new>(value);
 					return currentEntry;
 				}
 			}
 			resize(static_cast<uint64_t>(static_cast<double>(capacityVal) * (static_cast<float>(maxLookupDistance) / 2.0f)));
-			return emplaceInternal(std::forward<mapped_type_new>(value));
+			return emplaceInternal(std::forward<key_type_new>(key), std::forward<mapped_type_new>(value));
 		}
 
 		inline void resize(size_type capacityNew) {
@@ -310,7 +326,7 @@ namespace DiscordCoreAPI {
 				for (size_type x = 0, y = 0; x < oldCapacity && y < oldSize; ++x) {
 					if (oldPtr[x].areWeActive()) {
 						++y;
-						emplaceInternal(std::move(oldPtr[x].value));
+						emplaceInternal(std::move(oldPtr[x].value.first), std::move(oldPtr[x].value.second));
 					}
 				}
 				if (oldPtr && oldCapacity) {
@@ -319,4 +335,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 	};
+
+
 }
