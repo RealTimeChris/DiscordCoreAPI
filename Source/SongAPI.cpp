@@ -54,12 +54,12 @@ namespace DiscordCoreAPI {
 		return returnValue;
 	}
 
-	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery) {
+	Jsonifier::Vector<Song> SongAPI::searchForSong(const std::string& searchQuery) {
 		std::unique_lock lock{ accessMutex };
 		auto vector01 = DiscordCoreClient::getSoundCloudAPI(guildId).searchForSong(searchQuery);
 		auto vector02 = DiscordCoreClient::getYouTubeAPI(guildId).searchForSong(searchQuery);
 		uint64_t totalLength = vector01.size() + vector02.size();
-		std::vector<Song> newVector{};
+		Jsonifier::Vector<Song> newVector{};
 		uint64_t vector01Used{};
 		uint64_t vector02Used{};
 		for (uint64_t x = 0; x < totalLength; ++x) {

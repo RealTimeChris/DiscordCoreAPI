@@ -34,8 +34,8 @@
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/EventEntities.hpp>
 #include <discordcoreapi/Utilities/TCPConnection.hpp>
-#include <discordcoreapi/Utilities/LightString.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
+#include <thread>
 
 namespace DiscordCoreAPI {
 
@@ -109,9 +109,7 @@ namespace DiscordCoreAPI {
 				{ WebSocketCloseCode::Invalid_Intent,
 					"You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
 				{ WebSocketCloseCode::Disallowed_Intent,
-					"You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not "
-					"enabled or are "
-					"not "
+					"You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not "
 					"approved for." } };
 
 			WebSocketCloseCode value{};
@@ -177,7 +175,7 @@ namespace DiscordCoreAPI {
 			void handleBuffer();
 
 		  protected:
-			std::vector<char> resampleBuffer{};
+			Jsonifier::Vector<char> resampleBuffer{};
 			WebSocketCore* ptr{};
 		};
 
@@ -225,7 +223,6 @@ namespace DiscordCoreAPI {
 			bool haveWeReceivedHeartbeatAck{ true };
 			std::atomic_bool areWeCollectingData{};
 			WebSocketTCPConnection tcpConnection{};
-			LightString<char> currentMessage{};
 			uint32_t maxReconnectTries{ 10 };
 			uint32_t currentReconnectTries{};
 			std::array<uint32_t, 2> shard{};
@@ -233,6 +230,7 @@ namespace DiscordCoreAPI {
 			uint32_t lastNumberReceived{};
 			WebSocketOpCode dataOpCode{};
 			bool areWeHeartBeating{};
+			String currentMessage{};
 			WebSocketType wsType{};
 			bool areWeResuming{};
 		};
@@ -297,11 +295,11 @@ namespace DiscordCoreAPI {
 		  protected:
 			UnorderedMap<uint64_t, WebSocketClient> shardMap{};
 			DiscordCoreClient* discordCoreClient{};
-			UniquePtr<std::jthread> taskThread{};
+			UniquePtr<ThreadWrapper> taskThread{};
 			uint64_t currentBaseSocketAgent{};
 			std::atomic_bool* doWeQuit{};
 
-			void run(std::stop_token);
+			void run(StopToken);
 		};
 
 	}// namespace

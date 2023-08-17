@@ -296,13 +296,13 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<std::vector<InviteData>> Channels::getChannelInvitesAsync(GetChannelInvitesData dataPackage) {
+	CoRoutine<Jsonifier::Vector<InviteData>> Channels::getChannelInvitesAsync(GetChannelInvitesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Invites };
-		co_await NewThreadAwaitable<std::vector<InviteData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<InviteData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/invites";
 		workload.callStack = "Channels::getChannelInvitesAsync()";
-		std::vector<InviteData> returnData{};
+		Jsonifier::Vector<InviteData> returnData{};
 		Channels::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -357,13 +357,13 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<std::vector<ChannelData>> Channels::getGuildChannelsAsync(GetGuildChannelsData dataPackage) {
+	CoRoutine<Jsonifier::Vector<ChannelData>> Channels::getGuildChannelsAsync(GetGuildChannelsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Channels };
-		co_await NewThreadAwaitable<std::vector<ChannelData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<ChannelData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/channels";
 		workload.callStack = "Channels::getGuildChannelsAsync()";
-		std::vector<ChannelData> returnData{};
+		Jsonifier::Vector<ChannelData> returnData{};
 		Channels::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -409,13 +409,13 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<VoiceRegionData>> Channels::getVoiceRegionsAsync() {
+	CoRoutine<Jsonifier::Vector<VoiceRegionData>> Channels::getVoiceRegionsAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Voice_Regions };
-		co_await NewThreadAwaitable<std::vector<VoiceRegionData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<VoiceRegionData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/voice/regions";
 		workload.callStack = "Channels::getVoiceRegionsAsync()";
-		std::vector<VoiceRegionData> returnData{};
+		Jsonifier::Vector<VoiceRegionData> returnData{};
 		Channels::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

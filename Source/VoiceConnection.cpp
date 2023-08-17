@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 		if (keys.size() > 0) {
 			++sequence;
 			timeStamp += static_cast<uint32_t>(audioData.sampleCount);
-			const uint8_t headerSize{ 12 };
+			static constexpr uint8_t headerSize{ 12 };
 			char header[headerSize]{};
 			DiscordCoreInternal::storeBits(header, version);
 			DiscordCoreInternal::storeBits(header + 1, flags);
@@ -137,20 +137,20 @@ namespace DiscordCoreAPI {
 	}
 
 	MovingAverager MovingAverager::operator+=(int64_t value) {
-		values.emplace_front(value);
-		if (values.size() >= collectionCount) {
-			values.pop_back();
+		data.emplace_front(value);
+		if (data.size() >= collectionCount) {
+			data.pop_back();
 		}
 		return *this;
 	}
 
 	MovingAverager::operator float() {
 		float returnData{};
-		if (values.size() > 0) {
-			for (auto& value: values) {
+		if (data.size() > 0) {
+			for (auto& value: data) {
 				returnData += static_cast<float>(value);
 			}
-			return returnData / static_cast<float>(values.size());
+			return returnData / static_cast<float>(data.size());
 		} else {
 			return 0.0f;
 		}
@@ -169,9 +169,8 @@ namespace DiscordCoreAPI {
 	inline void VoiceConnectionBridge::applyGainRamp(int64_t sampleCount) {
 		increment = (endGain - currentGain) / static_cast<float>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / DiscordCoreInternal::AudioMixer::byteBlocksPerRegister; ++x) {
-			DiscordCoreInternal::AudioMixer::collectSingleRegister(upSampledVector.data() +
-					(x * DiscordCoreInternal::AudioMixer::byteBlocksPerRegister),
-				downSampledVector.data() + (x * DiscordCoreInternal::AudioMixer::byteBlocksPerRegister), currentGain, increment);
+			DiscordCoreInternal::AudioMixer::collectSingleRegister(upSampledVector + (x * DiscordCoreInternal::AudioMixer::byteBlocksPerRegister),
+				downSampledVector + (x * DiscordCoreInternal::AudioMixer::byteBlocksPerRegister), currentGain, increment);
 			currentGain += increment * static_cast<float>(DiscordCoreInternal::AudioMixer::byteBlocksPerRegister);
 		}
 	}
@@ -224,14 +223,14 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnectionBridge::mixAudio() {
 		opus_int32 voiceUserCountReal{};
-		uint64_t decodedSize{};
-		std::fill(upSampledVector.data(), upSampledVector.data() + upSampledVector.size(), 0);
+		size_t decodedSize{};
+		std::uninitialized_value_construct(upSampledVector, upSampledVector + std::size(upSampledVector));
 		for (auto& [key, value]: discordCoreClient->getVoiceConnection(guildId).voiceUsers) {
 			std::basic_string_view<uint8_t> payload{ value->extractPayload() };
 			if (payload.size() <= 44) {
 				continue;
 			} else {
-				const uint64_t headerSize{ 12 };
+				static constexpr uint64_t headerSize{ 12 };
 				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
 				const uint64_t offsetToData{ headerSize + sizeof(uint32_t) * csrcCount };
 				const uint64_t encryptedDataLength{ payload.size() - offsetToData };
@@ -256,8 +255,8 @@ namespace DiscordCoreAPI {
 					uint16_t extenstionLengthInWords{};
 					std::memcpy(&extenstionLengthInWords, newString.data() + 2, sizeof(int16_t));
 					extenstionLengthInWords = ntohs(extenstionLengthInWords);
-					const uint64_t extensionLength{ sizeof(uint32_t) * extenstionLengthInWords };
-					const uint64_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
+					static constexpr uint64_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
+					uint64_t extensionLength{ sizeof(uint32_t) * extenstionLengthInWords };
 					newString = newString.substr(extensionHeaderLength + extensionLength);
 				}
 
@@ -272,7 +271,7 @@ namespace DiscordCoreAPI {
 						decodedSize = std::max(decodedSize, decodedData.size());
 						++voiceUserCountReal;
 						auto newPtr = decodedData.data();
-						auto newerPtr = upSampledVector.data();
+						auto newerPtr = upSampledVector;
 						for (uint64_t x = 0; x < decodedData.size() / DiscordCoreInternal::AudioMixer::byteBlocksPerRegister; ++x,
 									  newPtr += DiscordCoreInternal::AudioMixer::byteBlocksPerRegister,
 									  newerPtr += DiscordCoreInternal::AudioMixer::byteBlocksPerRegister) {
@@ -289,7 +288,7 @@ namespace DiscordCoreAPI {
 			if (resampleVector.size() < decodedSize * 2) {
 				resampleVector.resize(decodedSize * 2);
 			}
-			std::memcpy(resampleVector.data(), downSampledVector.data(), decodedSize * 2);
+			std::memcpy(resampleVector.data(), downSampledVector, decodedSize * 2);
 			writeData(std::basic_string_view<uint8_t>{ resampleVector.data(), static_cast<uint64_t>(decodedSize * 2) });
 			currentGain = endGain;
 		}
@@ -530,8 +529,8 @@ namespace DiscordCoreAPI {
 					onClosed();
 					return;
 				}
-				shard.at(0) = 0;
-				shard.at(1) = 1;
+				shard[0] = 0;
+				shard[1] = 1;
 				while (currentState != DiscordCoreInternal::WebSocketState::Collecting_Hello && !token.promise().areWeStopped()) {
 					if (WebSocketCore::tcpConnection.processIO(10) != DiscordCoreInternal::ConnectionStatus::NO_Error) {
 						++currentReconnectTries;
@@ -695,6 +694,7 @@ namespace DiscordCoreAPI {
 									onClosed();
 								}
 							}
+							sendSilence();
 							if (!token.promise().areWeStopped() && VoiceConnection::areWeConnected()) {
 								checkForAndSendHeartBeat(false);
 							}
@@ -714,6 +714,7 @@ namespace DiscordCoreAPI {
 									onClosed();
 								}
 							}
+							sendSilence();
 							if (!token.promise().areWeStopped() && VoiceConnection::areWeConnected()) {
 								checkForAndSendHeartBeat(false);
 							}
@@ -745,7 +746,7 @@ namespace DiscordCoreAPI {
 						auto targetTime{ HRClock::now() + intervalCount };
 
 						while (!token.promise().areWeStopped() && activeState.load() == VoiceActiveState::Playing) {
-							int64_t bytesPerSample{ 4 };
+							uint64_t bytesPerSample{ 4 };
 							if (!token.promise().areWeStopped() && VoiceConnection::areWeConnected()) {
 								checkForAndSendHeartBeat(false);
 							}
@@ -762,7 +763,8 @@ namespace DiscordCoreAPI {
 								intervalCount = Nanoseconds{ static_cast<uint64_t>(static_cast<double>(xferAudioData.currentSize / bytesPerSample) /
 									static_cast<double>(sampleRatePerSecond) * static_cast<double>(nsPerSecond)) };
 								uint64_t framesPerSecond = 1000 / msPerPacket;
-								frameSize = std::min(bytesPerSample * sampleRatePerSecond / framesPerSecond, xferAudioData.data.size());
+								frameSize = std::min(bytesPerSample * static_cast<uint64_t>(sampleRatePerSecond) / framesPerSecond,
+									xferAudioData.data.size());
 							} else {
 								intervalCount = Nanoseconds{ 20000000 };
 							}
@@ -875,6 +877,8 @@ namespace DiscordCoreAPI {
 		if (xferAudioData.guildMemberId != 0) {
 			completionEventData.guildMember =
 				GuildMembers::getCachedGuildMember({ .guildMemberId = xferAudioData.guildMemberId, .guildId = voiceConnectInitData.guildId });
+		} else {
+			return;
 		}
 		try {
 			xferAudioData.clearData();
@@ -915,8 +919,8 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		uint8_t packet[74]{};
-		const uint16_t val1601{ 0x01 };
-		const uint16_t val1602{ 70 };
+		static constexpr uint16_t val1601{ 0x01 };
+		static constexpr uint16_t val1602{ 70 };
 		packet[0] = static_cast<uint8_t>(val1601 >> 8);
 		packet[1] = static_cast<uint8_t>(val1601 >> 0);
 		packet[2] = static_cast<uint8_t>(val1602 >> 8);
@@ -959,7 +963,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSilence() {
-		std::vector<std::basic_string<uint8_t>> frames{};
+		Jsonifier::Vector<std::basic_string<uint8_t>> frames{};
 		uint8_t arrayNew[3]{};
 		arrayNew[0] = uint8_t{ 0xf8 };
 		arrayNew[1] = uint8_t{ 0xff };

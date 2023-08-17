@@ -52,12 +52,12 @@ namespace DiscordCoreAPI {
 
 	/// @brief An error type for CoRoutines.
 	struct CoRoutineError : public DCAException {
-		inline CoRoutineError(const std::string& message, std::source_location location = std::source_location::current())
+		CoRoutineError(const std::string& message, std::source_location location = std::source_location::current())
 			: DCAException{ message, location } {};
 	};
 
 	/// @brief A CoRoutine - representing a potentially asynchronous operation/function.
-	/// \tparam ReturnType The type of parameter that is returned by the CoRoutine.
+	/// @tparam ReturnType The type of parameter that is returned by the CoRoutine.
 	template<typename ReturnType, bool timeOut> class CoRoutine {
 	  public:
 		class promise_type {
@@ -228,7 +228,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// @brief A CoRoutine - representing a potentially asynchronous operation/function.
-	/// \tparam void The type of parameter that is returned by the CoRoutine.
+	/// @tparam void The type of parameter that is returned by the CoRoutine.
 	template<DiscordCoreInternal::VoidT ReturnType, bool timeOut> class CoRoutine<ReturnType, timeOut> {
 	  public:
 		class promise_type {
@@ -397,7 +397,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// @brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
-	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
+	/// @tparam ReturnType The type of value returned by the containing CoRoutine.
 	template<typename ReturnType, bool timeOut> class NewThreadAwaiter : public NewThreadAwaiterBase {
 	  public:
 		inline bool await_ready() const {

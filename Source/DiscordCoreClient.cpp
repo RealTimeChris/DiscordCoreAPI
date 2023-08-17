@@ -164,12 +164,16 @@ namespace DiscordCoreAPI {
 			doWeQuit.store(true);
 			return;
 		}
+		while (getBotUser().id == 0) {
+			std::this_thread::sleep_for(1ms);
+		}
+		registerFunctionsInternal();
 		while (!doWeQuit.load()) {
 			std::this_thread::sleep_for(1ms);
 		}
 	}
 
-	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction,
+	void DiscordCoreClient::registerFunction(const Jsonifier::Vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction,
 		CreateApplicationCommandData commandData, bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		commandController.registerFunction(functionNames, std::move(baseFunction));
@@ -189,7 +193,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::registerFunctionsInternal() {
-		std::vector<ApplicationCommandData> theCommands{
+		Jsonifier::Vector<ApplicationCommandData> theCommands{
 			ApplicationCommands::getGlobalApplicationCommandsAsync({ .applicationId = getBotUser().id, .withLocalizations = false }).get()
 		};
 		while (commandsToRegister.size() > 0) {
@@ -203,7 +207,7 @@ namespace DiscordCoreAPI {
 					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
 				}
 			} else {
-				std::vector<ApplicationCommandData> guildCommands{};
+				Jsonifier::Vector<ApplicationCommandData> guildCommands{};
 				if (data.guildId != 0) {
 					guildCommands = ApplicationCommands::getGuildApplicationCommandsAsync(
 						{ .applicationId = getBotUser().id, .withLocalizations = false, .guildId = data.guildId })
@@ -211,22 +215,28 @@ namespace DiscordCoreAPI {
 				}
 				bool doesItExist{};
 				for (auto& value: theCommands) {
-					if (*static_cast<ApplicationCommandData*>(&value) == *static_cast<ApplicationCommandData*>(&data)) {
+					if (value == data) {
 						doesItExist = true;
+						break;
 					}
 				}
 				for (auto& value: guildCommands) {
-					if (*static_cast<ApplicationCommandData*>(&value) == *static_cast<ApplicationCommandData*>(&data)) {
+					if (value == data) {
 						doesItExist = true;
+						break;
 					}
 				}
-				if (!doesItExist) {
-					if (data.guildId != 0) {
-						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data)).get();
+				try {
+					if (!doesItExist) {
+						if (data.guildId != 0) {
+							ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data)).get();
 
-					} else {
-						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
+						} else {
+							ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
+						}
 					}
+				} catch (DCAException& error) {
+					MessagePrinter::printError<PrintMessageType::Https>(error.what());
 				}
 			}
 		}
@@ -261,8 +271,9 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		int32_t theWorkerCount = configManager.getTotalShardCount() <= std::thread::hardware_concurrency() ? configManager.getTotalShardCount()
-																										   : std::thread::hardware_concurrency();
+		int32_t theWorkerCount = configManager.getTotalShardCount() <= DiscordCoreInternal::ThreadWrapper::hardware_concurrency()
+			? configManager.getTotalShardCount()
+			: DiscordCoreInternal::ThreadWrapper::hardware_concurrency();
 
 		if (configManager.getConnectionAddress() == "") {
 			configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string_view{ "wss://" }.size()));
@@ -297,7 +308,7 @@ namespace DiscordCoreAPI {
 		}
 		for (auto& [key, value]: NewThreadAwaiterBase::threadPool.workerThreads) {
 			if (value->thread.joinable()) {
-				value->thread.request_stop();
+				value->thread.requestStop();
 				value->thread.detach();
 			}
 		}

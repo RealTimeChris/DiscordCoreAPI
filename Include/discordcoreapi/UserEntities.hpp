@@ -101,53 +101,53 @@ namespace DiscordCoreAPI {
 
 		/// @brief Adds a chosen recipient to a group DM.
 		/// @param dataPackage An AddRecipientToGroupDMData  structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage);
 
 		/// @brief Removes a chosen recipient from a group DM.
 		/// @param dataPackage A RemoveRecipientFromGroupDMData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage);
 
 		/// @brief Sets the bot's current voice state.
 		/// @param dataPackage A ModifyCurrentUserVoiceStateData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage);
 
 		/// @brief Sets another user's current voice state.
 		/// @param dataPackage A ModifyUserVoiceStateData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage);
 
 		/// @brief Collects the Bot's current UserData responseData.
-		/// @returns A CoRoutine containing a User.
+		/// @return A CoRoutine containing a User.
 		static CoRoutine<UserData> getCurrentUserAsync();
 
 		/// @brief Collects a given User from the library's cache.
 		/// @param dataPackage A GetUserData structure.
-		/// @returns A CoRoutine containing a User.
+		/// @return A CoRoutine containing a User.
 		static UserCacheData getCachedUser(GetUserData dataPackage);
 
 		/// @brief Collects a given User from the Discord servers.
 		/// @param dataPackage A GetUserData structure.
-		/// @returns A CoRoutine containing a User.
+		/// @return A CoRoutine containing a User.
 		static CoRoutine<UserData> getUserAsync(GetUserData dataPackage);
 
 		/// @brief Modifies the Bot's UserData responseData.
 		/// @param dataPackage A ModifyCurrentUserData structure.
-		/// @returns A CoRoutine containing a User.
+		/// @return A CoRoutine containing a User.
 		static CoRoutine<UserData> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);
 
 		/// @brief Collects the UserData's Connections.
-		/// @returns A CoRoutine containing a vector<ConnectionData>.
-		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
+		/// @return A CoRoutine containing a vector<ConnectionData>.
+		static CoRoutine<Jsonifier::Vector<ConnectionData>> getUserConnectionsAsync();
 
 		/// @brief Collects the Application responseData associated with the current Bot.
-		/// @returns A CoRoutine containing an ApplicationData.
+		/// @return A CoRoutine containing an ApplicationData.
 		static CoRoutine<ApplicationData> getCurrentUserApplicationInfoAsync();
 
 		/// @brief Collects the Authorization info associated with the current Bot.
-		/// @returns A CoRoutine containing an AuthorizationInfoData.
+		/// @return A CoRoutine containing an AuthorizationInfoData.
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
 		template<typename UserType> inline static void insertUser(UserType&& user) {

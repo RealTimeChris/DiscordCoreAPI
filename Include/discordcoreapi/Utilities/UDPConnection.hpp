@@ -282,12 +282,12 @@ namespace DiscordCoreAPI {
 					if (!inputBuffer.isItFull()) {
 						socklen_t currentSize{ static_cast<socklen_t>(address->ai_addrlen) };
 						uint64_t bytesToRead{ maxBufferSize };
-						readBytes = recvfrom(static_cast<SOCKET>(socket), resampleVector.data(), static_cast<int32_t>(bytesToRead), 0,
+						readBytes = recvfrom(static_cast<SOCKET>(socket), resampleVector, static_cast<int32_t>(bytesToRead), 0,
 							address->ai_addr, &currentSize);
 						if (readBytes <= 0 && errno != EWOULDBLOCK && errno != EINPROGRESS) {
 							return false;
 						} else if (readBytes > 0) {
-							inputBuffer.writeData(resampleVector.data(), readBytes);
+							inputBuffer.writeData(resampleVector, readBytes);
 							bytesRead += readBytes;
 							handleAudioBuffer();
 						}
@@ -310,10 +310,10 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			const uint64_t maxBufferSize{ (1024 * 16) };
-			std::array<char, 16384> resampleVector{};
 			RingBuffer<uint8_t, 16> inputBuffer{};
 			RingBuffer<char, 16> outputBuffer{};
 			ConnectionStatus currentStatus{};
+			char resampleVector[16384]{};
 			addrinfoWrapper address{};
 			StreamType streamType{};
 			SOCKETWrapper socket{};

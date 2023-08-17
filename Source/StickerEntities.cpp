@@ -65,24 +65,24 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
+	CoRoutine<Jsonifier::Vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Nitro_Sticker_Packs };
-		co_await NewThreadAwaitable<std::vector<StickerPackData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<StickerPackData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/sticker-packs";
 		workload.callStack = "Stickers::getNitroStickerPacksAsync()";
-		std::vector<StickerPackData> returnData{};
+		Jsonifier::Vector<StickerPackData> returnData{};
 		Stickers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<StickerData>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
+	CoRoutine<Jsonifier::Vector<StickerData>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Stickers };
-		co_await NewThreadAwaitable<std::vector<StickerData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<StickerData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers";
 		workload.callStack = "Stickers::getGuildStickersAsync()";
-		std::vector<StickerData> returnData{};
+		Jsonifier::Vector<StickerData> returnData{};
 		Stickers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

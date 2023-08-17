@@ -348,8 +348,8 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	std::vector<GuildData> Guilds::getAllGuildsAsync() {
-		std::vector<GuildData> returnData{};
+	Jsonifier::Vector<GuildData> Guilds::getAllGuildsAsync() {
+		Jsonifier::Vector<GuildData> returnData{};
 		for (auto& value: Guilds::cache) {
 			value.discordCoreClient = Guilds::discordCoreClient;
 			returnData.emplace_back(value);
@@ -430,9 +430,9 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<std::vector<BanData>> Guilds::getGuildBansAsync(GetGuildBansData dataPackage) {
+	CoRoutine<Jsonifier::Vector<BanData>> Guilds::getGuildBansAsync(GetGuildBansData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Bans };
-		co_await NewThreadAwaitable<std::vector<BanData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<BanData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/bans";
 		if (dataPackage.after != 0) {
@@ -452,7 +452,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Guilds::getGuildBansAsync()";
-		std::vector<BanData> returnData{};
+		Jsonifier::Vector<BanData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -541,35 +541,35 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<VoiceRegionData>> Guilds::getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage) {
+	CoRoutine<Jsonifier::Vector<VoiceRegionData>> Guilds::getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Voice_Regions };
-		co_await NewThreadAwaitable<std::vector<VoiceRegionData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<VoiceRegionData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/regions";
 		workload.callStack = "Guilds::getGuildVoiceRegionsAsync()";
-		std::vector<VoiceRegionData> returnData{};
+		Jsonifier::Vector<VoiceRegionData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<InviteData>> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
+	CoRoutine<Jsonifier::Vector<InviteData>> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Invites };
-		co_await NewThreadAwaitable<std::vector<InviteData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<InviteData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/invites";
 		workload.callStack = "Guilds::getGuildInvitesAsync()";
-		std::vector<InviteData> returnData{};
+		Jsonifier::Vector<InviteData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<IntegrationData>> Guilds::getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage) {
+	CoRoutine<Jsonifier::Vector<IntegrationData>> Guilds::getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Integrations };
-		co_await NewThreadAwaitable<std::vector<IntegrationData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<IntegrationData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/integrations";
 		workload.callStack = "Guilds::getGuildIntegrationsAsync()";
-		std::vector<IntegrationData> returnData{};
+		Jsonifier::Vector<IntegrationData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -718,13 +718,13 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<GuildTemplateData>> Guilds::getGuildTemplatesAsync(GetGuildTemplatesData dataPackage) {
+	CoRoutine<Jsonifier::Vector<GuildTemplateData>> Guilds::getGuildTemplatesAsync(GetGuildTemplatesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Templates };
-		co_await NewThreadAwaitable<std::vector<GuildTemplateData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<GuildTemplateData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/templates";
 		workload.callStack = "Guilds::getGuildTemplatesAsync()";
-		std::vector<GuildTemplateData> returnData{};
+		Jsonifier::Vector<GuildTemplateData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -815,9 +815,9 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<std::vector<GuildData>> Guilds::getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage) {
+	CoRoutine<Jsonifier::Vector<GuildData>> Guilds::getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Current_User_Guilds };
-		co_await NewThreadAwaitable<std::vector<GuildData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<GuildData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/@me/guilds";
 		if (dataPackage.after != 0) {
@@ -837,7 +837,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Users::getCurrentUserGuildsAsync()";
-		std::vector<GuildData> returnData{};
+		Jsonifier::Vector<GuildData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		for (auto& value: returnData) {
 			value.discordCoreClient = Guilds::discordCoreClient;

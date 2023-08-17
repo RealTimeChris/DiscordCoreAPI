@@ -365,13 +365,13 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<ConnectionData>> Users::getUserConnectionsAsync() {
+	CoRoutine<Jsonifier::Vector<ConnectionData>> Users::getUserConnectionsAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_User_Connections };
-		co_await NewThreadAwaitable<std::vector<ConnectionData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<ConnectionData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/@me/connections";
 		workload.callStack = "Users::getUserConnectionsAsync()";
-		std::vector<ConnectionData> returnData{};
+		Jsonifier::Vector<ConnectionData> returnData{};
 		Users::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

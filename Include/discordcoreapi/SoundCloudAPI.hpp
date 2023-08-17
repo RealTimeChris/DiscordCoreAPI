@@ -44,13 +44,13 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			static std::string clientId;
-			inline static std::string_view baseUrl02{ "https://api-v2.soundcloud.com" };
-			inline static std::string_view baseUrl{ "https://soundcloud.com" };
-			inline static std::string_view appVersion{ "1681464840" };
+			static constexpr std::string_view baseUrl02{ "https://api-v2.soundcloud.com" };
+			static constexpr std::string_view baseUrl{ "https://soundcloud.com" };
+			static constexpr std::string_view appVersion{ "1681464840" };
 
 			Song constructDownloadInfo(const Song& songNew);
 
-			std::vector<Song> collectSearchResults(const std::string& string);
+			Jsonifier::Vector<Song> collectSearchResults(const std::string& string);
 
 			virtual Song collectFinalSong(const Song& songNew);
 
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 
 			Song collectFinalSong(const Song& songNew) override;
 
-			std::vector<Song> searchForSong(const std::string& searchQuery);
+			Jsonifier::Vector<Song> searchForSong(const std::string& searchQuery);
 
 			bool areWeWorking();
 
@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct Media {
-			std::vector<Transcoding> transcodings{};
+			Jsonifier::Vector<Transcoding> transcodings{};
 		};
 
 		struct SecondDownloadUrl {
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct SoundCloudSearchResults {
-			std::vector<RawSoundCloudSong> collection{};
+			Jsonifier::Vector<RawSoundCloudSong> collection{};
 		};
 
 	};

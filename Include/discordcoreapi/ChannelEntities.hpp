@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For creating a new ChannelData within a chosen Guild.
 	struct CreateGuildChannelData {
-		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the ChannelData's permission overwrites.
+		Jsonifier::Vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the ChannelData's permission overwrites.
 		int32_t defaultAutoArchiveDuration{};///< Defualt duration of time before archiving a thread.
 		int32_t rateLimitPerUser{};///< Amount of seconds a user has to wait before sending another message(0 - 21600).
 		std::string reason{};///< Reason for creating the ChannelData.
@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For modifying the current positions of one or more Channels in the Guild.
 	struct ModifyGuildChannelPositionsData {
-		std::vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new ChannelData position's responseData.
+		Jsonifier::Vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new ChannelData position's responseData.
 		std::string reason{};///< Reason for re-ordering the ChannelData positions.
 		Snowflake guildId{};///< Guild within which to re-order the ChannelData positions.
 	};
@@ -192,8 +192,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects a vector of the invites to a given Channel.
 		/// @param dataPackage A GetChannelInvitesData structure.
-		/// @return A CoRoutine containing a std::vector<InviteData>.
-		static CoRoutine<std::vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<InviteData>.
+		static CoRoutine<Jsonifier::Vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
 
 		/// @brief Creates an invite to a selected ChannelData.
 		/// @param dataPackage A CreateChannelInviteData structure.
@@ -217,8 +217,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects a list of Channels from a chosen Guild.
 		/// @param dataPackage A GetGuildChannelsData structure.
-		/// @return A CoRoutine containing a std::vector<ChannelData>.
-		static CoRoutine<std::vector<ChannelData>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<ChannelData>.
+		static CoRoutine<Jsonifier::Vector<ChannelData>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
 
 		/// @brief Creates a new ChannelData within a chosen Guild.
 		/// @param dataPackage A CreateGuildChannelData structure.
@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
 		/// @return A CoRoutine containing a VoiceRegionDataVector.
-		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
+		static CoRoutine<Jsonifier::Vector<VoiceRegionData>> getVoiceRegionsAsync();
 
 		template<typename ChannelType> inline static void insertChannel(ChannelType&& channel) {
 			if (doWeCacheChannelsBool) {

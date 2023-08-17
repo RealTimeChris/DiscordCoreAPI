@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		std::vector<Song> SoundCloudRequestBuilder::collectSearchResults(const std::string& songQuery) {
+		Jsonifier::Vector<Song> SoundCloudRequestBuilder::collectSearchResults(const std::string& songQuery) {
 			if (clientId == "") {
 				SoundCloudRequestBuilder::collectClientId();
 			}
@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
 					"&facet=model&client_id=" + SoundCloudRequestBuilder::clientId;
 				dataPackage.workloadClass = HttpsWorkloadClass::Get;
 				HttpsResponseData returnData = submitWorkloadAndGetResult(std::move(dataPackage));
-				std::vector<Song> results{};
+				Jsonifier::Vector<Song> results{};
 				SoundCloudSearchResults resultsNew{};
 				parser.parseJson<true, true>(resultsNew, returnData.responseData);
 				for (auto& value: resultsNew.collection) {
@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36";
 				dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 				HttpsResponseData returnData = submitWorkloadAndGetResult(std::move(dataPackage02));
-				std::vector<std::string> assetPaths{};
+				Jsonifier::Vector<std::string> assetPaths{};
 				std::string newString01 = "crossorigin src=";
 				std::string newerString{};
 				newerString = returnData.responseData;
@@ -316,7 +316,7 @@ namespace DiscordCoreAPI {
 				}
 				coroHandle = co_await threadHandle;
 				uint64_t counter{};
-				std::vector<HttpsWorkloadData> workloadVector{};
+				Jsonifier::Vector<HttpsWorkloadData> workloadVector{};
 				for (uint64_t x = 0; x < songNew.finalDownloadUrls.size(); ++x) {
 					HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
 					if (counter < songNew.finalDownloadUrls.size()) {
@@ -330,7 +330,7 @@ namespace DiscordCoreAPI {
 					dataPackage03.workloadClass = HttpsWorkloadClass::Get;
 					workloadVector.emplace_back(std::move(dataPackage03));
 				}
-				std::vector<std::string> buffer{};
+				Jsonifier::Vector<std::string> buffer{};
 				OggDemuxer demuxer{};
 				for (uint64_t x = 0; x < songNew.finalDownloadUrls.size(); ++x) {
 					HttpsResponseData result{ submitWorkloadAndGetResult(std::move(workloadVector[x])) };
@@ -383,7 +383,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		};
 
-		std::vector<Song> SoundCloudAPI::searchForSong(const std::string& searchQuery) {
+		Jsonifier::Vector<Song> SoundCloudAPI::searchForSong(const std::string& searchQuery) {
 			return collectSearchResults(searchQuery);
 		}
 

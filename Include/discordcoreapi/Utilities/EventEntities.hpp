@@ -68,10 +68,10 @@ namespace DiscordCoreAPI {
 	};
 
 	template<EventDelegateTokenT ValueType> uint64_t KeyHasher::operator()(const ValueType& data) const {
-		uint64_t values[2]{};
-		values[0] = stoull(data.eventId);
-		values[0] = stoull(data.handlerId);
-		return internalHashFunction(values, std::size(values) * sizeof(uint64_t));
+		uint64_t dataNew[2]{};
+		dataNew[0] = stoull(data.eventId);
+		dataNew[0] = stoull(data.handlerId);
+		return internalHashFunction(dataNew, std::size(dataNew) * sizeof(uint64_t));
 	};
 
 	namespace DiscordCoreInternal {
@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 			/// This operator moves the contents of another EventDelegate instance, 'other', into the current instance.
 			/// It swaps the 'function' member between 'other' and the current instance, and then clears 'other' function.
 			/// @param other The EventDelegate instance to be moved from.
-			/// @returns Reference to the current EventDelegate instance after the move assignment.
+			/// @return Reference to the current EventDelegate instance after the move assignment.
 			EventDelegate& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
 				if (this != &other) {
 					// Swap the 'function' member between 'other' and the current instance.
@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 			/// @brief Assignment operator to set the delegate function.
 			/// This operator assigns a new std::function, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew The std::function to assign as the current event.
-			/// @returns Reference to the current EventDelegate instance after the assignment.
+			/// @return Reference to the current EventDelegate instance after the assignment.
 			EventDelegate& operator=(std::function<ReturnType(ArgTypes...)> functionNew) {
 				function = functionNew;
 				return *this;
@@ -123,7 +123,7 @@ namespace DiscordCoreAPI {
 			/// @brief Assignment operator to set the delegate function using a function pointer.
 			/// This operator assigns a new function pointer, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew The function pointer to assign as the current event.
-			/// @returns Reference to the current EventDelegate instance after the assignment.
+			/// @return Reference to the current EventDelegate instance after the assignment.
 			EventDelegate& operator=(ReturnType (*functionNew)(ArgTypes...)) {
 				function = functionNew;
 				return *this;
@@ -155,7 +155,7 @@ namespace DiscordCoreAPI {
 			/// This operator moves the contents of another Event instance, 'other', into the current instance.
 			/// It transfers the functions and eventId from 'other' to the current instance, clearing 'other' in the process.
 			/// @param other The Event instance to be moved from.
-			/// @returns Reference to the current Event instance after the move assignment.
+			/// @return Reference to the current Event instance after the move assignment.
 			Event<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) noexcept {
 				if (this != &other) {
 					// Move the functions from 'other' to the current instance.
@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 			/// @brief Move assignment operator for TriggerEventDelegate class.
 			/// This operator moves the contents of another TriggerEventDelegate instance ('other') into the current instance.
 			/// @param other The TriggerEventDelegate instance to be moved.
-			/// @returns Reference to the current TriggerEventDelegate instance after the move assignment.
+			/// @return Reference to the current TriggerEventDelegate instance after the move assignment.
 			TriggerEventDelegate& operator=(TriggerEventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
 				if (this != &other) {
 					function.swap(other.function);
@@ -257,7 +257,7 @@ namespace DiscordCoreAPI {
 			/// @brief Assignment operator to set the delegate function using a std::function.
 			/// This operator assigns a new std::function, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew The std::function to assign as the current event.
-			/// @returns Reference to the current TriggerEventDelegate instance after the assignment.
+			/// @return Reference to the current TriggerEventDelegate instance after the assignment.
 			TriggerEventDelegate& operator=(std::function<ReturnType(ArgTypes...)> functionNew) {
 				function = functionNew;
 				return *this;
@@ -276,7 +276,7 @@ namespace DiscordCoreAPI {
 			/// @brief Assignment operator to set the delegate function using a function pointer.
 			/// This operator assigns a new function pointer, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew The function pointer to assign as the current event.
-			/// @returns Reference to the current TriggerEventDelegate instance after the assignment.
+			/// @return Reference to the current TriggerEventDelegate instance after the assignment.
 			TriggerEventDelegate<ReturnType, ArgTypes...>& operator=(ReturnType (*functionNew)(ArgTypes...)) {
 				function = functionNew;
 				return *this;
@@ -318,7 +318,7 @@ namespace DiscordCoreAPI {
 			/// This operator moves the contents of another TriggerEvent instance, 'other', into the current instance.
 			/// It transfers the functions and eventId from 'other' to the current instance, clearing 'other' in the process.
 			/// @param other The TriggerEvent instance to be moved from.
-			/// @returns Reference to the current TriggerEvent instance after the move assignment.
+			/// @return Reference to the current TriggerEvent instance after the move assignment.
 			TriggerEvent<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) {
 				if (this != &other) {
 					// Move the functions from 'other' to the current instance.

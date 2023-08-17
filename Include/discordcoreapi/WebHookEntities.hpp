@@ -86,9 +86,9 @@ namespace DiscordCoreAPI {
 		/// @param type The type of select-menu that this is.
 		/// @param channelTypes Types of channels that can be accepted if this is of the type ChannelType.
 		/// @return RespondToInputEventData& A reference to this data structure.
-		ExecuteWebHookData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
+		ExecuteWebHookData& addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options,
 			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
-			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
+			Jsonifier::Vector<ChannelType> channelTypes = Jsonifier::Vector<ChannelType>{});
 
 		/// @brief Adds a modal to the response MessageData.
 		/// @param topTitleNew A title for the modal.
@@ -137,12 +137,12 @@ namespace DiscordCoreAPI {
 		ExecuteWebHookData& setTTSStatus(bool enabledTTs);
 
 	  protected:
-		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
-		std::vector<ActionRowData> components{};///< Array of message component the components to include with the message.
+		Jsonifier::Vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
+		Jsonifier::Vector<ActionRowData> components{};///< Array of message component the components to include with the message.
 		AllowedMentionsData allowedMentions{};///< Allowed mention object.
-		std::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
+		Jsonifier::Vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
 		std::string webhookToken{};///< The WebHookData token you would like to execute.
-		std::vector<File> files{};///< File contents the contents of the file being sent.
+		Jsonifier::Vector<File> files{};///< File contents the contents of the file being sent.
 		std::string avatarUrl{};///< Override the default avatar of the webhook.
 		std::string userName{};///< Override the default username of the webhook.
 		std::string customId{};///< Custom id for the modal.
@@ -256,13 +256,13 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects a list of WebHooks from a chosen ChannelData.
 		/// @param dataPackage A GetChannelWebHooksData structure.
-		/// @return A CoRoutine containing a std::vector<WebHookData>.
-		static CoRoutine<std::vector<WebHookData>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<WebHookData>.
+		static CoRoutine<Jsonifier::Vector<WebHookData>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
 
 		/// @brief Collects a list of WebHooks from a chosen Guild.
 		/// @param dataPackage A GetGuildWebHooksData structure.
-		/// @return A CoRoutine containing a std::vector<WebHookData>.
-		static CoRoutine<std::vector<WebHookData>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<WebHookData>.
+		static CoRoutine<Jsonifier::Vector<WebHookData>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
 
 		/// @brief Collects a single WebHookData.
 		/// @param dataPackage A GetWebHookData structure.

@@ -34,22 +34,35 @@
 
 namespace DiscordCoreAPI {
 
+	/**
+	 * \addtogroup utilities
+	 * @{
+	 */
+
+	/// @brief Concept to check if two types of pointers are related.
 	template<typename ValueType01, typename ValueType02>
 	concept IsRelatedPtr =
 		std::derived_from<ValueType01, ValueType02> || std::is_base_of_v<ValueType01, ValueType02> || std::same_as<ValueType01, ValueType02>;
 
-	template<typename ValueType, typename Deleter = std::default_delete<ValueType>> class UniquePtr {
+	/// @brief A smart pointer class that provides unique ownership semantics.
+	/// @tparam ValueType The type of the managed object.
+	/// @tparam Deleter The type of the deleter used to destroy the object.
+	template<typename ValueType, typename Deleter = std::default_delete<ValueType>> class UniquePtr : protected Deleter {
 	  public:
 		using element_type = std::remove_extent_t<ValueType>;
 		using pointer = element_type*;
 		using deleter_type = Deleter;
 		using reference = element_type&;
 
-		inline constexpr UniquePtr() = default;
+		/// @brief Default constructor.
+		inline UniquePtr() = default;
 
 		inline UniquePtr& operator=(const UniquePtr&) = delete;
 		inline UniquePtr(const UniquePtr&) = delete;
 
+		/// @brief Move assignment operator for related pointers.
+		/// @param other The other UniquePtr to move from.
+		/// @return UniquePtr The new managed object inside a UniquePtr.
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02>>
 		inline UniquePtr& operator=(UniquePtr<ValueType02, OtherDeleter>&& other) {
 			if (this != static_cast<void*>(&other)) {
@@ -64,11 +77,16 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		/// @brief Move constructor for related pointers.
+		/// @param other The other UniquePtr to move from.
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02>>
 		inline UniquePtr(UniquePtr<ValueType02, OtherDeleter>&& other) {
 			*this = std::move(other);
 		}
 
+		/// @brief Move assignment operator for std::unique_ptr.
+		/// @param other The std::unique_ptr to move from.
+		/// @return UniquePtr The new managed object inside a UniquePtr.
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02>>
 		inline UniquePtr& operator=(std::unique_ptr<ValueType02, OtherDeleter>&& other) {
 			reset(nullptr);
@@ -81,11 +99,16 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		/// @brief Move constructor for std::unique_ptr.
+		/// @param other The std::unique_ptr to move from.
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02>>
 		inline UniquePtr(std::unique_ptr<ValueType02, OtherDeleter>&& other) {
 			*this = std::move(other);
 		}
 
+		/// @brief Move assignment operator for raw pointer.
+		/// @param newPtr The new ptr to manage.
+		/// @return UniquePtr The new managed object inside a UniquePtr.
 		inline UniquePtr& operator=(pointer newPtr) {
 			reset(nullptr);
 			try {
@@ -97,56 +120,84 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		/// @brief Constructor from a raw pointer.
+		/// @param newPtr The new ptr to manage.
 		inline UniquePtr(pointer newPtr) {
 			*this = newPtr;
 		}
 
+		/// @brief Gets the managed raw pointer.
+		/// @return The managed raw pointer.
 		inline pointer get() const {
 			return ptr;
 		}
 
+		/// @brief Conversion operator to check if the pointer is valid.
+		/// @return `true` if the pointer is valid, `false` otherwise.
 		inline operator bool() const {
 			return ptr != nullptr;
 		}
 
+		/// @brief Dereference operator.
+		/// @return A reference to the managed object.
 		inline reference operator*() const {
 			return *ptr;
 		}
 
+		/// @brief Member access operator.
+		/// @return The managed raw pointer.
 		inline pointer operator->() const {
 			return ptr;
 		}
 
+		/// @brief Releases the managed pointer.
+		/// @return The released raw pointer.
 		inline pointer release() {
 			pointer releasedPtr = ptr;
 			ptr = nullptr;
 			return releasedPtr;
 		}
 
+		/// @brief Resets the managed pointer and invokes the deleter.
+		/// @param newPtr The new raw pointer to manage.
 		inline void reset(pointer newPtr) {
 			pointer oldPtr = std::exchange(ptr, newPtr);
 			if (oldPtr) {
-				deleter_type{}(oldPtr);
+				getDeleter()(oldPtr);
 			}
 		}
 
+		/// @brief Swaps the contents of two UniquePtr objects.
+		/// @param other The other UniquePtr to swap with.
 		inline void swap(UniquePtr& other) {
 			std::swap(ptr, other.ptr);
 		}
 
+		/// @brief Destructor that releases the managed object.
 		inline ~UniquePtr() {
 			reset(nullptr);
 		}
 
 	  protected:
-		pointer ptr{ nullptr };
+		pointer ptr{ nullptr };///< The stored object.
 
+		/// @brief Commits a new pointer value and resets the current one.
+		/// @param other The new pointer value to commit.
 		inline void commit(pointer other) {
 			pointer tempPtr = other;
 			reset(tempPtr);
 		}
+
+		/// @brief Gets the deleter associated with the managed object.
+		/// @return The associated deleter.
+		inline deleter_type& getDeleter() {
+			return *static_cast<deleter_type*>(this);
+		}
 	};
 
+	/// @brief Specialization of UniquePtr for arrays.
+	/// @tparam ValueType The type of the managed object.
+	/// @tparam Deleter The type of the deleter used to destroy the object.
 	template<typename ValueType, typename Deleter> class UniquePtr<ValueType[], Deleter> {
 	  public:
 		using element_type = std::remove_extent_t<ValueType>;
@@ -154,11 +205,15 @@ namespace DiscordCoreAPI {
 		using deleter_type = Deleter;
 		using reference = element_type&;
 
-		inline constexpr UniquePtr() = default;
+		/// @brief Default constructor.
+		inline UniquePtr() = default;
 
 		inline UniquePtr& operator=(const UniquePtr&) = delete;
 		inline UniquePtr(const UniquePtr&) = delete;
 
+		/// @brief Move assignment operator for related arrays.
+		/// @param other The other UniquePtr to move from.
+		/// @return UniquePtr The new managed object inside a UniquePtr.
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02[]>>
 		inline UniquePtr& operator=(UniquePtr<ValueType02[], OtherDeleter>&& other) {
 			if (this != static_cast<void*>(&other)) {
@@ -173,11 +228,16 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		/// @brief Move constructor for related arrays.
+		/// @param other The other UniquePtr to move from.
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02[]>>
 		inline UniquePtr(UniquePtr<ValueType02[], OtherDeleter>&& other) {
 			*this = std::move(other);
 		}
 
+		/// @brief Move assignment operator for std::unique_ptr arrays.
+		/// @param other The other UniquePtr to move from.
+		/// @return UniquePtr The new managed object inside a UniquePtr.
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02[]>>
 		inline UniquePtr& operator=(std::unique_ptr<ValueType02[], OtherDeleter>&& other) {
 			reset(nullptr);
@@ -190,11 +250,16 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		/// @brief Move constructor for std::unique_ptr arrays.
+		/// @param other The other UniquePtr to move from.
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02[]>>
 		inline UniquePtr(std::unique_ptr<ValueType02[], OtherDeleter>&& other) {
 			*this = std::move(other);
 		}
 
+		/// @brief Move assignment operator for raw pointer.
+		/// @param newPtr The pointer to be managed.
+		/// @return UniquePtr The new managed object inside a UniquePtr.
 		inline UniquePtr& operator=(pointer newPtr) {
 			reset(nullptr);
 			try {
@@ -206,75 +271,116 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		/// @brief Constructor from a raw pointer.
+		/// @param newPtr The pointer to be managed.
 		inline UniquePtr(pointer newPtr) {
 			*this = newPtr;
 		}
 
+		/// @brief Gets the managed raw pointer.
+		/// @return pointer The managed raw pointer.
 		inline pointer get() const {
 			return ptr;
 		}
 
-		template<typename ValueType02 = ValueType>
-		inline std::enable_if_t<std::is_array_v<ValueType02>, reference> operator[](std::ptrdiff_t index) const {
+		/// @brief Square bracket operator for accessing elements of this array.
+		/// @param index The index which is to be accessed.
+		/// @return reference A reference to the object that was accessed.
+		inline reference operator[](std::ptrdiff_t index) const {
 			return ptr[index];
 		}
 
+		/// @brief Conversion operator to check if the pointer is valid.
+		/// @return `true` if the pointer is valid, `false` otherwise.
 		inline operator bool() const {
 			return ptr != nullptr;
 		}
 
+		/// @brief Dereference operator.
+		/// @return A reference to the managed object.
 		inline reference operator*() const {
 			return *ptr;
 		}
 
+		/// @brief Member access operator.
+		/// @return The managed raw pointer.
 		inline pointer operator->() const {
 			return ptr;
 		}
 
+		/// @brief Releases the managed pointer.
+		/// @return The released raw pointer.
 		inline pointer release() {
 			pointer releasedPtr = ptr;
 			ptr = nullptr;
 			return releasedPtr;
 		}
 
+		/// @brief Resets the managed pointer and invokes the deleter.
+		/// @param newPtr The new raw pointer to manage.
 		inline void reset(pointer newPtr) {
 			pointer oldPtr = std::exchange(ptr, newPtr);
 			if (oldPtr) {
-				deleter_type{}(oldPtr);
+				getDeleter()(oldPtr);
 			}
 		}
 
+		/// @brief Swaps the contents of two UniquePtr objects.
+		/// @param other The other UniquePtr to swap with.
 		inline void swap(UniquePtr& other) {
 			std::swap(ptr, other.ptr);
 		}
 
+		/// @brief Destructor that releases the managed object.
 		inline ~UniquePtr() {
 			reset(nullptr);
 		}
 
 	  protected:
-		pointer ptr{ nullptr };
+		pointer ptr{ nullptr };///< The stored object.
 
+		/// @brief Commits a new pointer value and resets the current one.
+		/// @param other The new pointer value to commit.
 		inline void commit(pointer other) {
 			pointer tempPtr = other;
 			reset(tempPtr);
 		}
+
+		/// @brief Gets the deleter associated with the managed object.
+		/// @return The associated deleter.
+		inline deleter_type& getDeleter() {
+			return *static_cast<deleter_type*>(this);
+		}
 	};
 
+	/// @brief Helper function to create a UniquePtr for a non-array object.
+	/// @param args The arguments to construct the new object from.
+	/// @tparam ValueType The type of value to store in the UniquePtr.
+	/// @tparam Deleter The type of deleter to use for the stored object.
+	/// @tparam ArgTypes The types of arguments for constructing the object.
+	/// @return UniquePtr<ValueType, Deleter> The managed object.
 	template<typename ValueType, typename Deleter = std::default_delete<ValueType>, typename... ArgTypes,
 		std::enable_if_t<!std::is_array_v<ValueType>, int32_t> = 0>
-	inline constexpr UniquePtr<ValueType, Deleter> makeUnique(ArgTypes&&... args) {
+	inline UniquePtr<ValueType, Deleter> makeUnique(ArgTypes&&... args) {
 		return UniquePtr<ValueType, Deleter>(new ValueType(std::forward<ArgTypes>(args)...));
 	}
 
+	/// @brief Helper function to create a UniquePtr for a dynamic array.
+	/// @param size The size to allocate for the array.
+	/// @tparam ValueType The type of value to store in the UniquePtr.
+	/// @tparam Deleter The type of deleter to use for the stored object.
+	/// @return UniquePtr<ValueType, Deleter> The managed object.
 	template<typename ValueType, typename Deleter = std::default_delete<ValueType>,
 		std::enable_if_t<std::is_array_v<ValueType> && std::extent_v<ValueType> == 0, int32_t> = 0>
-	inline constexpr UniquePtr<ValueType, Deleter> makeUnique(const uint64_t size) {
+	inline UniquePtr<ValueType, Deleter> makeUnique(const uint64_t size) {
 		using element_type = std::remove_extent_t<ValueType>;
 		return UniquePtr<ValueType, Deleter>(new element_type[size]());
 	}
 
+	/// @brief Deleted overload for creating UniquePtr for static arrays.
 	template<typename ValueType, typename... ArgTypes, std::enable_if_t<std::extent_v<ValueType> != 0, int32_t> = 0>
 	inline void makeUnique(ArgTypes&&...) = delete;
+
+	/**@}*/
 
 }

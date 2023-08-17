@@ -109,14 +109,14 @@ namespace DiscordCoreAPI {
 	};
 
 	struct VoiceSocketReadyData {
-		std::vector<std::string> modes{};
+		Jsonifier::Vector<std::string> modes{};
 		std::string ip{};
 		uint64_t port{};
 		uint32_t ssrc{};
 	};
 
 	struct VoiceSessionDescriptionData {
-		std::vector<uint8_t> secretKey{};
+		Jsonifier::Vector<uint8_t> secretKey{};
 	};
 
 	struct SpeakingData {
@@ -182,7 +182,7 @@ namespace DiscordCoreAPI {
 		operator float();
 
 	  protected:
-		std::deque<int64_t> values{};
+		std::deque<int64_t> data{};
 		uint64_t collectionCount{};
 	};
 
@@ -232,23 +232,23 @@ namespace DiscordCoreAPI {
 
 		inline void applyGainRamp(int64_t sampleCount);
 
-		void parseOutgoingVoiceData();
-
 		void handleAudioBuffer() override;
 
-		void mixAudio();
+		void parseOutgoingVoiceData();
 
 		void disconnect() override;
 
+		void mixAudio();
+
 	  protected:
 		std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* token{};
-		std::array<opus_int16, 23040> downSampledVector{};
 		std::basic_string<uint8_t> decryptedDataString{};
-		std::array<opus_int32, 23040> upSampledVector{};
 		std::basic_string<uint8_t> encryptionKey{};
 		MovingAverager voiceUserCountAverage{ 25 };
 		DiscordCoreClient* discordCoreClient{};
-		std::vector<uint8_t> resampleVector{};
+		Jsonifier::Vector<uint8_t> resampleVector{};
+		opus_int16 downSampledVector[23040]{};
+		opus_int32 upSampledVector[23040]{};
 		Snowflake guildId{};
 		float currentGain{};
 		float increment{};
@@ -296,7 +296,7 @@ namespace DiscordCoreAPI {
 		bool areWeConnected();
 
 		/// @brief Collects the currently connected-to voice ChannelData's id.
-		/// @returns Snowflake A Snowflake containing the ChannelData's id.
+		/// @return Snowflake A Snowflake containing the ChannelData's id.
 		Snowflake getChannelId();
 
 		/// @brief Connects to a currently held voice channel.

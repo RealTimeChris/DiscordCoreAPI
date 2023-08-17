@@ -61,6 +61,13 @@ if (WIN32)
 	else()
 		add_library("${LIB_NAME}" STATIC "${SOURCES}" "${PRODUCT_INFO}")
 	endif()
+elseif (APPLE)
+	if (BUILD_SHARED_LIBS)
+		add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
+	else()
+		add_library("${LIB_NAME}" STATIC "${SOURCES}" "${PRODUCT_INFO}")
+	endif()
+	find_package(Threads REQUIRED)
 elseif (UNIX)
 	add_library("${LIB_NAME}" STATIC "${SOURCES}")
 	find_package(Threads REQUIRED)
@@ -99,6 +106,8 @@ target_link_libraries(
 	"${LIB_NAME}" PUBLIC
 	$<$<TARGET_EXISTS:unofficial-sodium::sodium>:unofficial-sodium::sodium>
 	$<$<TARGET_EXISTS:Jsonifier::Jsonifier>:Jsonifier::Jsonifier>
+	"$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++abi>"
+    "$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++>"
 	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
 	$<$<TARGET_EXISTS:OpenSSL::Crypto>:OpenSSL::Crypto>
 	$<$<TARGET_EXISTS:OpenSSL::SSL>:OpenSSL::SSL>
@@ -126,6 +135,7 @@ target_compile_options(
 	"$<$<CXX_COMPILER_ID:MSVC>:/W4>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-std=c++20>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
 	"$<$<CXX_COMPILER_ID:GNU>:-fcoroutines>"
 	"$<$<CXX_COMPILER_ID:CLANG>:-fcoroutines>"

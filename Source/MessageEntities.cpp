@@ -177,9 +177,9 @@ namespace DiscordCoreAPI {
 		Messages::httpsClient = client;
 	}
 
-	CoRoutine<std::vector<MessageData>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
+	CoRoutine<Jsonifier::Vector<MessageData>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Messages };
-		co_await NewThreadAwaitable<std::vector<MessageData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<MessageData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 		if (dataPackage.aroundThisId != 0) {
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		workload.callStack = "Messages::getMessagesAsync()";
-		std::vector<MessageData> returnData{};
+		Jsonifier::Vector<MessageData> returnData{};
 		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -307,13 +307,13 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<std::vector<MessageData>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
+	CoRoutine<Jsonifier::Vector<MessageData>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Pinned_Messages };
-		co_await NewThreadAwaitable<std::vector<MessageData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<MessageData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/pins";
 		workload.callStack = "Messages::getPinnedMessagesAsync()";
-		std::vector<MessageData> returnData{};
+		Jsonifier::Vector<MessageData> returnData{};
 		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

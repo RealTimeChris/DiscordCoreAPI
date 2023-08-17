@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 
 			Song constructDownloadInfo(const Song& songNew, uint64_t currentRecursionDepth);
 
-			std::vector<Song> collectSearchResults(const std::string& string);
+			Jsonifier::Vector<Song> collectSearchResults(const std::string& string);
 
 			virtual Song collectFinalSong(const Song& songNew);
 		};
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 
 			Song collectFinalSong(const Song& songNew) override;
 
-			std::vector<Song> searchForSong(const std::string& searchQuery);
+			Jsonifier::Vector<Song> searchForSong(const std::string& searchQuery);
 
 			bool areWeWorking();
 
@@ -73,14 +73,14 @@ namespace DiscordCoreAPI {
 		};
 
 		struct YouTubeRequestClient {
-			std::string clientVersion{ "17.10.35" };
-			std::string androidSdkVersion{ "31" };
-			std::string clientName{ "ANDROID" };
-			std::string platform{ "MOBILE" };
-			std::string osName{ "Android" };
-			std::string osVersion{ "12" };
-			std::string hl{ "en-GB" };
-			std::string gl{ "US" };
+			static constexpr std::string_view clientVersion{ "17.10.35" };
+			static constexpr std::string_view androidSdkVersion{ "31" };
+			static constexpr std::string_view clientName{ "ANDROID" };
+			static constexpr std::string_view platform{ "MOBILE" };
+			static constexpr std::string_view osName{ "Android" };
+			static constexpr std::string_view osVersion{ "12" };
+			static constexpr std::string_view hl{ "en-GB" };
+			static constexpr std::string_view gl{ "US" };
 		};
 
 		struct Request {
@@ -115,8 +115,8 @@ namespace DiscordCoreAPI {
 		};
 
 		struct StreamingData {
-			std::vector<Format> adaptiveFormats{};
-			std::vector<Format> formats{};
+			Jsonifier::Vector<Format> adaptiveFormats{};
+			Jsonifier::Vector<Format> formats{};
 		};
 
 		struct Data {
@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct ThumbNails {
-			std::vector<Thumbnail> thumbNails{};
+			Jsonifier::Vector<Thumbnail> thumbNails{};
 		};
 
 		struct AccessibilityData {
@@ -155,11 +155,11 @@ namespace DiscordCoreAPI {
 		};
 
 		struct Title {
-			std::vector<Text> runs{};
+			Jsonifier::Vector<Text> runs{};
 		};
 
 		struct SnippetText {
-			std::vector<Text> runs{};
+			Jsonifier::Vector<Text> runs{};
 		};
 
 		struct SnippetTextValue {
@@ -167,7 +167,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct VideoRenderer {
-			std::vector<SnippetTextValue> detailedMetadataSnippets{};
+			Jsonifier::Vector<SnippetTextValue> detailedMetadataSnippets{};
 			ThumbNails thumbnails{};
 			LengthText lengthText{};
 			std::string videoId{};
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct ItemSectionRendererContents {
-			std::vector<DiscordCoreInternal::VideoRendererType> contents{};
+			Jsonifier::Vector<DiscordCoreInternal::VideoRendererType> contents{};
 		};
 
 		struct ItemSectionRenderer {
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct SectionListRenderer {
-			std::vector<ItemSectionRenderer> contents{};
+			Jsonifier::Vector<ItemSectionRenderer> contents{};
 		};
 
 		struct PrimaryContents {

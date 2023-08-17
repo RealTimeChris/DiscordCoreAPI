@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 	};
 
 	struct MessageDeletionBulkData {
-		std::vector<Snowflake> ids{};///< A vector containing the list of deleted Message ids.
+		Jsonifier::Vector<Snowflake> ids{};///< A vector containing the list of deleted Message ids.
 		Snowflake channelId{};///< The id of the Channel from which the Message was deleted.
 		Snowflake guildId{};///< The id of the Guild from which the Message was deleted.
 	};

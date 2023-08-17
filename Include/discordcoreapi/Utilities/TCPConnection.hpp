@@ -146,8 +146,8 @@ namespace DiscordCoreAPI {
 #endif
 
 		struct PollFDWrapper {
-			std::vector<uint64_t> indices{};
-			std::vector<pollfd> polls{};
+			Jsonifier::Vector<uint64_t> indices{};
+			Jsonifier::Vector<pollfd> polls{};
 		};
 
 		struct SSL_CTXWrapper {
@@ -577,7 +577,7 @@ namespace DiscordCoreAPI {
 				if (static_cast<ValueType*>(this)->outputBuffer.getUsedSpace() > 0 && areWeStillConnected()) {
 					uint64_t bytesToWrite{ static_cast<ValueType*>(this)->outputBuffer.getCurrentTail()->getUsedSpace() };
 
-					uint64_t writtenBytes{};
+					size_t writtenBytes{};
 					auto returnData{ SSL_write_ex(ssl, static_cast<ValueType*>(this)->outputBuffer.readData().data(), bytesToWrite, &writtenBytes) };
 					auto errorValue{ SSL_get_error(ssl, returnData) };
 					switch (errorValue) {
@@ -610,7 +610,7 @@ namespace DiscordCoreAPI {
 				readWantWrite = false;
 				if (!static_cast<ValueType*>(this)->inputBuffer.isItFull() && areWeStillConnected()) {
 					do {
-						uint64_t readBytes{};
+						size_t readBytes{};
 						uint64_t bytesToRead{ static_cast<ValueType*>(this)->maxBufferSize };
 						auto returnData{ SSL_read_ex(ssl, static_cast<ValueType*>(this)->inputBuffer.getCurrentHead()->getCurrentHead(), bytesToRead,
 							&readBytes) };

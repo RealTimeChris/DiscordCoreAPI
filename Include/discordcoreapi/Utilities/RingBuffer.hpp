@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include <jsonifier/Index.hpp>
+
 #include <string_view>
 #include <cstring>
 #include <cstdint>
@@ -113,7 +115,7 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			std::vector<std::decay_t<value_type>> arrayValue{};///< The underlying data array.
+			Jsonifier::Vector<value_type> arrayValue{};///< The underlying data array.
 			size_type tail{};///< The tail position in the buffer.
 			size_type head{};///< The head position in the buffer.
 		};

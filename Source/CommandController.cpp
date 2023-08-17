@@ -33,17 +33,17 @@
 
 namespace DiscordCoreAPI {
 
-	UnorderedMap<std::vector<std::string>, UniquePtr<BaseFunction>> functions{};
+	UnorderedMap<Jsonifier::Vector<std::string>, UniquePtr<BaseFunction>> functions{};
 
 	CommandController::CommandController(DiscordCoreClient* discordCoreClientNew) {
 		discordCoreClient = discordCoreClientNew;
 	}
 
-	void CommandController::registerFunction(const std::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction) {
+	void CommandController::registerFunction(const Jsonifier::Vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction) {
 		functions[functionNames] = std::move(baseFunction);
 	}
 
-	UnorderedMap<std::vector<std::string>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
+	UnorderedMap<Jsonifier::Vector<std::string>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
 		return functions;
 	};
 
@@ -70,6 +70,9 @@ namespace DiscordCoreAPI {
 						functionName = convertToLowerCase(commandName.substr(0, key.length()));
 						break;
 					}
+				}
+				if (isItFound) {
+					break;
 				}
 			}
 		}

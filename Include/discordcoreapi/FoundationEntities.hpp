@@ -326,7 +326,7 @@ namespace DiscordCoreAPI {
 		struct DiscordCoreAPI_Dll HelloData {
 			HelloData() = default;
 			HelloData(Jsonifier::JsonifierCore&, std::string_view);
-			std::vector<std::string> _trace{};
+			Jsonifier::Vector<std::string> _trace{};
 			uint64_t heartbeatInterval{};
 		};
 
@@ -668,7 +668,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll EmbedData {
 	  public:
 		UnorderedSet<std::string_view> excludedKeys{};///< For excluding certain keys from parsing/serialization.
-		std::vector<EmbedFieldData> fields{};///< Array of embed fields.
+		Jsonifier::Vector<EmbedFieldData> fields{};///< Array of embed fields.
 		EmbedThumbnailData thumbnail{};///< Embed thumbnail data.
 		EmbedProviderData provider{};///< Embed provider data.
 		TimeStampParse timeStamp{};///< Timestamp to be placed on the embed.
@@ -690,7 +690,7 @@ namespace DiscordCoreAPI {
 		/// @return EmbedData& A reference to this embed.
 		EmbedData& setAuthor(const std::string& authorName, const std::string& authorAvatarUrl = "");
 
-		/// @brief Sets the footer's values for the embed.
+		/// @brief Sets the footer's data for the embed.
 		/// @param footerText The footer's text.
 		/// @param footerIconUrlText Url to the footer's icon.
 		/// @return EmbedData& A reference to this embed.
@@ -810,6 +810,10 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild id this voice state is for.
 		Snowflake userId{};///< The UserData id this voice state is for.
 
+		VoiceStateDataLight() noexcept = default;
+
+		VoiceStateDataLight(const TwoIdKey&) noexcept;
+
 		virtual ~VoiceStateDataLight() = default;
 	};
 
@@ -881,14 +885,14 @@ namespace DiscordCoreAPI {
 		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class GetUserImageUrl<UserCacheData>;
 
-		LightString<char> discriminator{};///< The user's 4-digit discord-tag identify.
-		LightString<char> globalName{};///< The user's global name.
 		std::string avatarDecoration{};///< The user's avatar decoration hash.
-		LightString<char> userName{};///< The user's username.
 		PremiumType premiumType{};///< The type of Nitro subscription on a user ' s account.
 		uint64_t accentColor{};///< The user 's banner color encoded as an integer representation of hexadecimal color code.
-		std::string banner{};///< The user's banner hash.LightString<char> discriminator{};///< The user's 4-digit discord-tag	identify.
+		String discriminator{};///< The user's 4-digit discord-tag identify.
+		std::string banner{};///< The user's banner hash.String discriminator{};///< The user's 4-digit discord-tag	identify.
 		std::string avatar{};///< The user's avatar hash.
+		String globalName{};///< The user's global name.
+		String userName{};///< The user's username.
 		UserFlags flags{};///< The public flags on a user' s account.
 		Snowflake id{};///< This user's Id.
 
@@ -914,8 +918,8 @@ namespace DiscordCoreAPI {
 		bool mentionable{};///< Whether this role is mentionable.
 		int32_t position{};///< Position of this role.
 		std::string name{};///< Role name.
-		RoleFlags flags{};///< Role flags combined as a bitfield.
 		std::string icon{};///< Role icon hash. (optional).
+		RoleFlags flags{};///< Role flags combined as a bitfield.
 		int32_t color{};///< Integer representation of hexadecimal color code.
 		Snowflake id{};///< Role id.
 		bool managed{};///< Whether this role is managed by an integration.
@@ -933,14 +937,14 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 
-		LightString<char> unicodeEmoji{};///< Emoji representing the RoleData.
 		Permissions permissions{};///< The RoleData's base Guild Permissions.
-		LightString<char> name{};///< The RoleData's name.
+		String unicodeEmoji{};///< Emoji representing the RoleData.
 		Snowflake guildId{};///< The id of the Guild that this RoleData is from.
 		int16_t position{};///< Its position amongst the rest of the Guild's roles.
 		RoleFlags flags{};///< RoleData flags.
 		uint64_t color{};///< The RoleData's color.
 		Snowflake id{};///< This role's Id.
+		String name{};///< The RoleData's name.
 
 		RoleCacheData() = default;
 
@@ -973,8 +977,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll EmojiData : public PartialEmojiData {
 	  public:
 		UnorderedSet<std::string> excludedKeys{};///< Excluding keys from parsing/serializing.
+		Jsonifier::Vector<RoleData> roles{};///< Roles that are allowed to use this emoji.
 		std::wstring unicodeName{ L"" };///< What is its unicode name?
-		std::vector<RoleData> roles{};///< Roles that are allowed to use this emoji.
 		bool available{ true };///< Is it available to be used?
 		bool requireColons{};///< Require colons to render it?
 		UserData user{};///< UserData that created this emoji.
@@ -1010,7 +1014,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief Presence update data.
 	struct PresenceUpdateData {
-		std::vector<ActivityData> activities{};///< Array of activity objects UserData's current activities.
+		Jsonifier::Vector<ActivityData> activities{};///< Array of activity objects UserData's current activities.
 		ClientStatus clientStatus{};///< 	UserData's platform-dependent status
 		std::string status{};///< Either "idle", "dnd", "online", or "offline".
 		Snowflake guildId{};///< Snowflake ID of the guild.
@@ -1038,8 +1042,8 @@ namespace DiscordCoreAPI {
 		friend class GuildData;
 
 		TimeStampParse communicationDisabledUntil{};///< ISO8601 timestamp when the user's timeout will expire.
+		Jsonifier::Vector<Snowflake> roles{};///< Array of role object ids.
 		PermissionsParse permissions{};///< Total permissions of the member in the channel, including overwrites.
-		std::vector<Snowflake> roles{};///< Array of role object ids.
 		std::string premiumSince{};///< ISO8601 timestamp when the user started boosting the guild.
 		TimeStampParse joinedAt{};///< ISO8601 timestamp when the user joined the guild.
 		GuildMemberFlags flags{};///< Guild member flags represented as a bit set, defaults to 0.
@@ -1070,14 +1074,14 @@ namespace DiscordCoreAPI {
 		friend struct EventData<GuildData>;
 		friend class GuildData;
 
-		std::vector<Snowflake> roles{};///< The Guild roGuildMemberDatales that they have.
+		Jsonifier::Vector<Snowflake> roles{};///< The Guild roGuildMemberDatales that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
-		LightString<char> nick{};///< Their nick/display name.
 		GuildMemberFlags flags{};///< GuildMemberData flags.
 		TimeStamp joinedAt{};///< When they joined the Guild.
 		Snowflake guildId{};///< The current Guild's id.
 		IconHash avatar{};///< This GuildMemberData's Guild Avatar.
 		UserIdBase user{};///< The user id for this GuildMemberData.
+		String nick{};///< Their nick/display name.
 
 		GuildMemberCacheData() = default;
 
@@ -1088,6 +1092,8 @@ namespace DiscordCoreAPI {
 		GuildMemberCacheData(const GuildMemberData&);
 
 		operator GuildMemberData();
+
+		GuildMemberCacheData(const TwoIdKey&) noexcept;
 
 		VoiceStateDataLight getVoiceStateData();
 
@@ -1141,15 +1147,15 @@ namespace DiscordCoreAPI {
 	/// @brief A ChannelData object.
 	class DiscordCoreAPI_Dll ChannelData : public GetCreatedAtTimeStamp<ChannelData>, public FlagEntity<ChannelData> {
 	  public:
-		std::vector<OverWriteData> permissionOverwrites{};///< Explicit permission overwrites for members and roles.
+		Jsonifier::Vector<OverWriteData> permissionOverwrites{};///< Explicit permission overwrites for members and roles.
+		Jsonifier::Vector<ForumTagData> availableTags{};///< The set of tags that can be used in a GUILD_FORUM channel.
+		Jsonifier::Vector<std::string> appliedTags{};///< The IDs of the set of tags that have been applied to a thread in a GUILD_FORUM channel.
 		DefaultReactionData defaultReactionEmoji{};///< The emoji to show in the add reaction button on a thread in a GUILD_FORUM channel.
-		std::vector<ForumTagData> availableTags{};///< The set of tags that can be used in a GUILD_FORUM channel.
+		Jsonifier::Vector<UserData> recipients{};///< The recipients of the DM.
 		int32_t defaultThreadRateLimitPerUser{};/// The initial rate_limit_per_user to set on newly created threads in a channel.
-		std::vector<std::string> appliedTags{};///< The IDs of the set of tags that have been applied to a thread in a GUILD_FORUM channel.
 		ForumLayoutTypes defaultForumLayout{};///< The default forum layout view used to display posts in GUILD_FORUM channels. Defaults to 0.
 		int32_t defaultAutoArchiveDuration{};///< Default duration, copied onto newly created threads, in minutes.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this ChannelData is a ThreadData.
-		std::vector<UserData> recipients{};///< The recipients of the DM.
 		SortOrderTypes defaultSortOrder{};///< The default sort order type used to order posts in GUILD_FORUM channels. Defaults to null.
 		std::string lastPinTimestamp{};///< When the last pinned message was pinned. This may be null in certain events.
 		PermissionsParse permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
@@ -1191,10 +1197,8 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 
-		std::vector<OverWriteData> permissionOverwrites{};///< Permission overwrites.
+		Jsonifier::Vector<OverWriteData> permissionOverwrites{};///< Permission overwrites.
 		ChannelType type{ ChannelType::DM };///< The type of the ChannelData.
-		LightString<char> topic{};///< ChannelData topic.
-		LightString<char> name{};///< Name of the ChannelData.
 		uint32_t memberCount{};///< Count of members active in the ChannelData.
 		Snowflake parentId{};///< Snowflake of the ChannelData's parent ChannelData/category.
 		ChannelFlags flags{};///< Flags combined as a bitmask.
@@ -1202,6 +1206,8 @@ namespace DiscordCoreAPI {
 		Snowflake ownerId{};///< Snowflake of the ChannelData's owner.
 		Snowflake guildId{};///< Snowflake of the ChannelData's Guild, if applicable.
 		Snowflake id{};///< This channel's id.
+		String topic{};///< ChannelData topic.
+		String name{};///< Name of the ChannelData.
 
 		ChannelCacheData() = default;
 
@@ -1219,15 +1225,15 @@ namespace DiscordCoreAPI {
 
 	/// @brief Data representing an active ThreadData.
 	struct ActiveThreadsData {
-		std::vector<ThreadMemberData> members{};
-		std::vector<ChannelData> threads{};
+		Jsonifier::Vector<ThreadMemberData> members{};
+		Jsonifier::Vector<ChannelData> threads{};
 		bool hasMore{};
 	};
 
 	/// @brief Data representing an archived ThreadData.
 	struct ArchivedThreadsData {
-		std::vector<ThreadMemberData> members{};
-		std::vector<ChannelData> threads{};
+		Jsonifier::Vector<ThreadMemberData> members{};
+		Jsonifier::Vector<ChannelData> threads{};
 		bool hasMore{};
 	};
 
@@ -1288,10 +1294,10 @@ namespace DiscordCoreAPI {
 
 	/// @brief Trigger metadata for auto-moderation-rules.
 	struct TriggerMetaData {
-		std::vector<std::string> regexPatterns{};///< Array of strings** KEYWORD regular expression patterns which will be matched against content.
-		std::vector<KeywordPresetType> presets{};///< The internally pre-defined wordsets which will be searched for in content.
-		std::vector<std::string> keywordFilter{};///< Substrings which will be searched for in content.keyword_filter	array of strings.
-		std::vector<std::string> allowList{};///< Substrings which will be exempt from triggering the preset trigger type.
+		Jsonifier::Vector<std::string> regexPatterns{};///< Array of strings** KEYWORD regular expression patterns which will be matched against content.
+		Jsonifier::Vector<KeywordPresetType> presets{};///< The internally pre-defined wordsets which will be searched for in content.
+		Jsonifier::Vector<std::string> keywordFilter{};///< Substrings which will be searched for in content.keyword_filter	array of strings.
+		Jsonifier::Vector<std::string> allowList{};///< Substrings which will be exempt from triggering the preset trigger type.
 		bool mentionRaidProtectionEnabled{};///< MENTION_SPAM whether to automatically detect mention raids.
 		uint64_t mentionTotalLimit{};///< Total number of unique role and user mentions allowed per message (Maximum of 50).
 	};
@@ -1305,10 +1311,10 @@ namespace DiscordCoreAPI {
 	/// @brief Represents an auto-moderation-rule.
 	class AutoModerationRuleData : public GetCreatedAtTimeStamp<AutoModerationRuleData> {
 	  public:
-		std::vector<Snowflake> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
-		std::vector<Snowflake> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		Jsonifier::Vector<Snowflake> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		Jsonifier::Vector<Snowflake> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		Jsonifier::Vector<ActionData> actions{};///< Actions which will execute when the rule is triggered.
 		TriggerMetaData triggerMetaData{};///< The rule trigger metadata actions array of action objects the.
-		std::vector<ActionData> actions{};///< Actions which will execute when the rule is triggered.
 		TriggerType triggerType{};///< The rule trigger type.
 		EventType eventType{};///< The rule event type.
 		Snowflake creatorId{};///< The user which first created this rule.
@@ -1330,7 +1336,7 @@ namespace DiscordCoreAPI {
 	/// @brief Represents the Permissions for accessing an ApplicationCommandData from within a Guild.
 	class GuildApplicationCommandPermissionsData : public GetCreatedAtTimeStamp<GuildApplicationCommandPermissionsData> {
 	  public:
-		std::vector<ApplicationCommandPermissionData> permissions{};///< The Permissions.
+		Jsonifier::Vector<ApplicationCommandPermissionData> permissions{};///< The Permissions.
 		Snowflake applicationId{};///< The application's id.
 		Snowflake guildId{};///< The Guild's id.
 		Snowflake id{};
@@ -1339,7 +1345,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For updating/modifying a given Channel's properties.
 	struct UpdateChannelData {
-		std::vector<OverWriteData> permissionOverwrites{};
+		Jsonifier::Vector<OverWriteData> permissionOverwrites{};
 		uint64_t defaultAutoArchiveDuration{ 10080 };
 		uint64_t videoQualityMode{ 1 };
 		uint64_t rateLimitPerUser{};
@@ -1404,7 +1410,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief Team members object data.
 	struct TeamMembersObjectData {
-		std::vector<PermissionsParse> permissions{};///< Permissions for the team.
+		Jsonifier::Vector<PermissionsParse> permissions{};///< Permissions for the team.
 		uint64_t membershipState{};///< Current state.
 		Snowflake teamId{};///< Snowflake of the current team.
 		UserData user{};///< UserData data of the current UserData.
@@ -1433,7 +1439,7 @@ namespace DiscordCoreAPI {
 	/// @brief Team object data.
 	class TeamObjectData : public GetCreatedAtTimeStamp<TeamObjectData> {
 	  public:
-		std::vector<TeamMembersObjectData> members{};///< Array of team members object data.
+		Jsonifier::Vector<TeamMembersObjectData> members{};///< Array of team members object data.
 		Snowflake ownerUserId{};///< UserData id of the team owner.
 		std::string icon{};///< Icon for the team.
 		Snowflake id{};
@@ -1458,15 +1464,15 @@ namespace DiscordCoreAPI {
 
 	/// @brief Install params data, for application data.
 	struct InstallParamsData {
-		std::vector<std::string> scopes{};///< The scopes to add the application to the server with.
+		Jsonifier::Vector<std::string> scopes{};///< The scopes to add the application to the server with.
 		PermissionsParse permissions{};///< The permissions to request for the bot role.
 	};
 
 	/// @brief Application data.
 	class ApplicationData : public GetCreatedAtTimeStamp<ApplicationData> {
 	  public:
-		std::vector<std::string> rpcOrigins{};///< Array of RPC origin strings.
-		std::vector<std::string> tags{};///< Up to 5 tags describing the content and functionality of the application install_params.
+		Jsonifier::Vector<std::string> rpcOrigins{};///< Array of RPC origin strings.
+		Jsonifier::Vector<std::string> tags{};///< Up to 5 tags describing the content and functionality of the application install_params.
 		std::string termsOfServiceUrl{};///< Terms of service Url.
 		std::string privacyPolicyUrl{};///< Privacy policy Url.
 		std::string customInstallUrl{};
@@ -1492,7 +1498,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief Authorization info structure.
 	struct AuthorizationInfoData {
-		std::vector<std::string> scopes{};///< Array of strings - the scopes the UserData has authorized the application for.
+		Jsonifier::Vector<std::string> scopes{};///< Array of strings - the scopes the UserData has authorized the application for.
 		ApplicationData application{};///< Partial application object the current application.
 		std::string expires{};///< When the access token expires.
 		UserData user{};/// The UserData who has authorized, if the UserData has authorized with the identify scope.
@@ -1515,8 +1521,8 @@ namespace DiscordCoreAPI {
 
 	/// @brief Get Guild Widget Data.
 	struct GetGuildWidgetObjectData : public GetCreatedAtTimeStamp<GetGuildWidgetObjectData> {
-		std::vector<ChannelData> channels{};///< Voice and stage channels which are accessible by everyone.
-		std::vector<UserData> members{};///< Special widget user objects that includes users presence (Limit 100).
+		Jsonifier::Vector<ChannelData> channels{};///< Voice and stage channels which are accessible by everyone.
+		Jsonifier::Vector<UserData> members{};///< Special widget user objects that includes users presence (Limit 100).
 		std::string instantInvite{};///< Instant invite for the guilds specified widget invite channel.
 		uint64_t presenceCount{};///< Number of online members in this guild.
 		std::string name{};///< Guild name (2-100 characters).
@@ -1645,7 +1651,7 @@ namespace DiscordCoreAPI {
 	/// @brief Audit log entry data.
 	class AuditLogEntryData : public GetCreatedAtTimeStamp<AuditLogEntryData> {
 	  public:
-		std::vector<AuditLogChangeData> changes{};///< Array of audit log change data.
+		Jsonifier::Vector<AuditLogChangeData> changes{};///< Array of audit log change data.
 		OptionalAuditEntryInfoData options{};///< Audit log entry info data.
 		TimeStampParse createdTimeStamp{};///< Time at which this entry was created.
 		AuditLogEvent actionType{};///< Audit log action type.
@@ -1702,7 +1708,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief Welcome screen data.
 	struct WelcomeScreenData {
-		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome screen ChannelData data.
+		Jsonifier::Vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome screen ChannelData data.
 		std::string description{};///< Description of the welcome screen.
 	};
 
@@ -1759,11 +1765,11 @@ namespace DiscordCoreAPI {
 
 	/// @brief Data representing a single Guild preview.
 	struct GuildPreviewData {
-		std::vector<std::string> features{};
+		Jsonifier::Vector<std::string> features{};
+		Jsonifier::Vector<StickerData> stickers{};
+		Jsonifier::Vector<EmojiData> emojis{};
 		uint64_t approximatePresenceCount{};
-		std::vector<StickerData> stickers{};
 		uint64_t approximateMemberCount{};
-		std::vector<EmojiData> emojis{};
 		std::string discoverySplash{};
 		std::string description{};
 		std::string splash{};
@@ -1880,14 +1886,14 @@ namespace DiscordCoreAPI {
 		EmojiData emoji{};
 	};
 
-	/// @brief For storing Interaction-related values.
+	/// @brief For storing Interaction-related data.
 	struct InteractionPackageData {
 		std::string interactionToken{};
 		Snowflake applicationId{};
 		Snowflake interactionId{};
 	};
 
-	/// @brief For storing MessageData-related values.
+	/// @brief For storing MessageData-related data.
 	struct MessagePackageData {
 		Snowflake channelId{};
 		Snowflake messageId{};
@@ -1896,8 +1902,7 @@ namespace DiscordCoreAPI {
 	/// @brief Data structure representing an ApplicationCommandData's option choice.
 	class ApplicationCommandOptionChoiceData {
 	  public:
-		UnorderedMap<std::string, std::string>
-			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name.
+		UnorderedMap<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary.
 		Jsonifier::RawJsonData value{};///< The value of the option.
 		std::string name{};///< The name of the current choice.
 
@@ -1907,10 +1912,10 @@ namespace DiscordCoreAPI {
 	/// @brief Data structure representing an ApplicationCommandData's option.
 	struct ApplicationCommandOptionData {
 		UnorderedMap<std::string, std::string> descriptionLocalizations{};///< Dictionary for the description localizations field.
-		UnorderedMap<std::string, std::string> nameLocalizations{};///< Dictionary for the name localizations field.
-		std::vector<ApplicationCommandOptionChoiceData> choices{};///< A vector of possible choices for the current ApplicationCommandData option.
-		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommandData option.
-		std::vector<ChannelType> channelTypes{};///< Set when the ApplicationCommandData option type is set to ChannelData.
+		Jsonifier::Vector<ApplicationCommandOptionChoiceData> choices{};///< A vector of possible choices for the current Applicat
+		UnorderedMap<std::string, std::string> nameLocalizations{};///< Dictionary for the name localizations field.ionCommandData option.
+		Jsonifier::Vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommandData option.
+		Jsonifier::Vector<ChannelType> channelTypes{};///< Set when the ApplicationCommandData option type is set to ChannelData.
 		ApplicationCommandOptionType type{};///< The type of command option.
 		std::string description{};///< A description of the current ApplicationCommandData option.
 		bool autocomplete{};///< If autocomplete interactions are enabled for this STRING, INTEGER, or NUMBER type option.
@@ -1974,9 +1979,9 @@ namespace DiscordCoreAPI {
 	/// @brief Allowable mentions for a Message.
 	class AllowedMentionsData {
 	  public:
-		std::vector<std::string> parse{};///< A vector of allowed mention types to parse from the content.
-		std::vector<std::string> roles{};///< Array of role_ids to mention (Max size of 100)
-		std::vector<std::string> users{};///< Array of user_ids to mention (Max size of 100)
+		Jsonifier::Vector<std::string> parse{};///< A vector of allowed mention types to parse from the content.
+		Jsonifier::Vector<std::string> roles{};///< Array of role_ids to mention (Max size of 100)
+		Jsonifier::Vector<std::string> users{};///< Array of user_ids to mention (Max size of 100)
 		bool repliedUser{};///< For replies, whether to mention the author of the Message being replied to (default false).
 	};
 
@@ -2009,20 +2014,20 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll ComponentData {
+		Jsonifier::Vector<SelectOptionData> options{};
+		Jsonifier::Vector<ChannelType> channelTypes{};
 		UnorderedSet<std::string> excludedKeys{};
-		std::vector<SelectOptionData> options{};
-		std::vector<ChannelType> channelTypes{};
 		std::string placeholder{};
 		PartialEmojiData emoji{};
 		std::string customId{};
 		ComponentType type{};
-		std::string label{};
 		uint64_t minValues{};
 		uint64_t maxValues{};
 		uint64_t minLength{};
 		uint64_t maxLength{};
 		std::string value{};
 		std::string title{};
+		std::string label{};
 		std::string url{};
 		uint64_t style{};
 		bool disabled{};
@@ -2035,7 +2040,7 @@ namespace DiscordCoreAPI {
 	class ActionRowData {
 	  public:
 		ComponentType type{ ComponentType::Action_Row };
-		std::vector<ComponentData> components{};///< Array of components to make up the action-row.
+		Jsonifier::Vector<ComponentData> components{};///< Array of components to make up the action-row.
 	};
 
 	/// @brief Interaction callback types.
@@ -2052,13 +2057,13 @@ namespace DiscordCoreAPI {
 
 	/// @brief Interaction ApplicationCommandData callback data.
 	struct DiscordCoreAPI_Dll InteractionCallbackData {
-		std::vector<ApplicationCommandOptionChoiceData> choices{};///< Autocomplete choices(max of 25 choices).
+		Jsonifier::Vector<ApplicationCommandOptionChoiceData> choices{};///< Autocomplete choices(max of 25 choices).
+		Jsonifier::Vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
+		Jsonifier::Vector<ActionRowData> components{};///< Message components.
 		UnorderedSet<std::string> excludedKeys{};///< Keys to exclude from parsing/serializing.
-		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
-		std::vector<ActionRowData> components{};///< Message components.
 		AllowedMentionsData allowedMentions{};///< Allowed mentions data.
-		std::vector<EmbedData> embeds{};///< Message embeds.
-		std::vector<File> files{};///< Files for uploading.
+		Jsonifier::Vector<EmbedData> embeds{};///< Message embeds.
+		Jsonifier::Vector<File> files{};///< Files for uploading.
 		std::string customId{};///< A developer-defined identifier for the component, max 100 characters.
 		std::string content{};///< Message content.
 		std::string title{};///< The title of the popup modal.
@@ -2075,7 +2080,7 @@ namespace DiscordCoreAPI {
 	  public:
 		UnorderedMap<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales.
 		UnorderedMap<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales.
-		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommandData.
+		Jsonifier::Vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommandData.
 		Permission defaultMemberPermissions{};///< Set of permissions represented as a bit set all
 		ApplicationCommandType type{};///< The type of ApplicationCommandData.
 		Snowflake applicationId{};///< The current application id.
@@ -2109,17 +2114,17 @@ namespace DiscordCoreAPI {
 
 	/// @brief Data for when threads are synced.
 	struct ThreadListSyncData {
-		std::vector<ThreadMemberData> members{};///< Array of members that are a part of the ThreadData.
-		std::vector<std::string> channelIds{};///< The parent ChannelData ids whose threads are being synced.
-		std::vector<ChannelData> threads{};///< All active threads in the given channels that the current UserData can access.
+		Jsonifier::Vector<ThreadMemberData> members{};///< Array of members that are a part of the ThreadData.
+		Jsonifier::Vector<std::string> channelIds{};///< The parent ChannelData ids whose threads are being synced.
+		Jsonifier::Vector<ChannelData> threads{};///< All active threads in the given channels that the current UserData can access.
 		Snowflake guildId{};///< The id of the Guild for which the threads are being synced.
 	};
 
 	/// @brief Represents a ThreadData-members-update.
 	class ThreadMembersUpdateData : public GetCreatedAtTimeStamp<ThreadMembersUpdateData> {
 	  public:
-		std::vector<ThreadMemberData> addedMembers{};///< New members added to the ThreadData.
-		std::vector<std::string> removedMemberIds{};///< Members who have been removed.
+		Jsonifier::Vector<ThreadMemberData> addedMembers{};///< New members added to the ThreadData.
+		Jsonifier::Vector<std::string> removedMemberIds{};///< Members who have been removed.
 		uint32_t memberCount{};///< Number of Guild-members in the ThreadData.
 		Snowflake guildId{};///< Guild id of the ThreadData.
 		Snowflake id{};
@@ -2187,12 +2192,12 @@ namespace DiscordCoreAPI {
 
 	/// @brief Represents a forum thread message.
 	struct ForumThreadMessageData {
-		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename.
-		std::vector<ActionRowData> components{};///< Array of message component objects the components to include with the message.
+		Jsonifier::Vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename.
+		Jsonifier::Vector<ActionRowData> components{};///< Array of message component objects the components to include with the message.
+		Jsonifier::Vector<std::string> stickerIds{};///< Array of snowflakes IDs of up to 3 stickers in the server to send in the message.
+		Jsonifier::Vector<EmbedData> embeds{};///< Array of embed objects	embedded rich content (up to 6000 characters).
 		AllowedMentionsData allowedMentions{};///< Allowed mention object allowed mentions for the message.
-		std::vector<std::string> stickerIds{};///< Array of snowflakes IDs of up to 3 stickers in the server to send in the message.
-		std::vector<EmbedData> embeds{};///< Array of embed objects	embedded rich content (up to 6000 characters).
-		std::vector<File> files{};///< File contents the contents of the file being sent one of content, file, embed(s), sticker_ids.
+		Jsonifier::Vector<File> files{};///< File contents the contents of the file being sent one of content, file, embed(s), sticker_ids.
 		std::string content{};///< The message contents (up to 2000 characters).
 		uint64_t flags{};///< Flags to be set for the message.
 	};
@@ -2208,17 +2213,17 @@ namespace DiscordCoreAPI {
 	/// @brief The core of a Message's data structure.
 	class MessageDataOld : public GetCreatedAtTimeStamp<MessageDataOld> {
 	  public:
-		std::vector<ChannelMentionData> mentionChannels{};///< array of ChannelData mention data.
-		std::vector<StickerItemData> stickerItems{};///< Array of Message StickerData item data.
-		std::vector<AttachmentData> attachments{};///< Array of attachment data.
+		Jsonifier::Vector<ChannelMentionData> mentionChannels{};///< array of ChannelData mention data.
+		Jsonifier::Vector<StickerItemData> stickerItems{};///< Array of Message StickerData item data.
+		Jsonifier::Vector<AttachmentData> attachments{};///< Array of attachment data.
+		Jsonifier::Vector<ActionRowData> components{};///< Array of action row data.
+		Jsonifier::Vector<std::string> mentionRoles{};///< Jsonifier::Vector of "mention roles" ids.
+		Jsonifier::Vector<ReactionData> reactions{};//< Array of reaction data.
+		Jsonifier::Vector<StickerData> stickers{};///< Array of Message StickerData data.
 		MessageReferenceData messageReference{};///< Message reference data.
-		std::vector<ActionRowData> components{};///< Array of action row data.
-		std::vector<std::string> mentionRoles{};///< std::vector of "mention roles" ids.
-		std::vector<ReactionData> reactions{};//< Array of reaction data.
+		Jsonifier::Vector<UserData> mentions{};///< Array of UserData data, for individual's that were mentioned.
+		Jsonifier::Vector<EmbedData> embeds{};///< Array of Message embeds.
 		MessageInteractionData interaction{};///< Message Interaction data.
-		std::vector<StickerData> stickers{};///< Array of Message StickerData data.
-		std::vector<UserData> mentions{};///< Array of UserData data, for individual's that were mentioned.
-		std::vector<EmbedData> embeds{};///< Array of Message embeds.
 		MessageActivityData activity{};///< Message activity data.
 		ApplicationData application{};///< Application data.
 		std::string editedTimestamp{};///< The time at which it was edited.
@@ -2264,7 +2269,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief Represents a StickerData pack.
 	struct StickerPackData {
-		std::vector<StickerData> stickers{};///< Array of StickerData objects	the stickers in the pack.
+		Jsonifier::Vector<StickerData> stickers{};///< Array of StickerData objects	the stickers in the pack.
 		std::string coverStickerId{};///< Snowflake of a StickerData in the pack which is shown as the pack's icon.
 		std::string bannerAssetId{};///< Snowflake of the StickerData pack's banner image.
 		std::string description{};///< Description of the StickerData pack.
@@ -2281,7 +2286,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief Represents a single UserData Connection.
 	struct ConnectionData {
-		std::vector<IntegrationData> integrations{};///< An array of partial server integrations.
+		Jsonifier::Vector<IntegrationData> integrations{};///< An array of partial server integrations.
 		ConnectionVisibilityTypes visibility{};///< Visibility of this connecti
 		bool showActivity{};///< Whether activities related to this connection will be shown in presence updates.on.
 		std::string name{};///< The username of the connection account.
@@ -2296,7 +2301,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief ApplicationCommandData Interaction data option.
 	struct ApplicationCommandInteractionDataOption {
-		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommandData Interaction data options.
+		Jsonifier::Vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommandData Interaction data options.
 		ApplicationCommandOptionType type{};///< The type of ApplicationCommandData options.
 		Jsonifier::RawJsonData value{};///< The value.
 		std::string name{};///< The name of the current option.
@@ -2307,8 +2312,8 @@ namespace DiscordCoreAPI {
 
 	/// @brief Interaction data data.
 	struct InteractionDataData {
-		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommandData Interaction data options.
-		std::vector<std::string> values{};///< The values of the components.
+		Jsonifier::Vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommandData Interaction data options.
+		Jsonifier::Vector<std::string> values{};///< The values of the components.
 		ApplicationCommandType type{};///< The type of ApplicationCommandData.
 		ComponentType componentType{};///< The type of component.
 		std::string customIdSmall{};///< The custom id of a particular modal input.
@@ -2365,20 +2370,20 @@ namespace DiscordCoreAPI {
 
 	/// @brief Data representing a Guild Emoji Update event.
 	struct GuildEmojisUpdateEventData {
-		std::vector<EmojiData> emojis{};
+		Jsonifier::Vector<EmojiData> emojis{};
 		Snowflake guildId{};
 	};
 
 	/// @brief Data representing a Guild Stickers Update event.
 	struct GuildStickersUpdateEventData {
-		std::vector<StickerData> stickers{};
+		Jsonifier::Vector<StickerData> stickers{};
 		Snowflake guildId{};
 	};
 
 	struct GuildMembersChunkEventData {
-		std::vector<PresenceUpdateData> presences{};
-		std::vector<GuildMemberData> members{};
-		std::vector<std::string> notFound{};
+		Jsonifier::Vector<PresenceUpdateData> presences{};
+		Jsonifier::Vector<GuildMemberData> members{};
+		Jsonifier::Vector<std::string> notFound{};
 		uint64_t chunkIndex{};
 		uint64_t chunkCount{};
 		Snowflake guildId{};
@@ -2491,34 +2496,34 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class Guilds;
 
+		Jsonifier::Vector<GuildScheduledEventData> guildScheduledEvents{};///< Scheduled events in the guild.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notifications level.
-		std::vector<GuildScheduledEventData> guildScheduledEvents{};///< Scheduled events in the guild.
+		Jsonifier::Vector<StageInstanceData> stageInstances{};///< Stage instances in the guild.
+		Jsonifier::Vector<VoiceStateDataLight> voiceStates{};///< Voice states for the current GuildMembers.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		std::vector<StageInstanceData> stageInstances{};///< Stage instances in the guild.
-		std::vector<VoiceStateDataLight> voiceStates{};///< Voice states for the current GuildMembers.
-		std::vector<PresenceUpdateData> presences{};///< Presences of the members in the guild.
+		Jsonifier::Vector<PresenceUpdateData> presences{};///< Presences of the members in the guild.
+		Jsonifier::Vector<GuildMemberData> members{};///< Custom guild emojis.
+		Jsonifier::Vector<ChannelData> channels{};///< Custom guild emojis.
+		Jsonifier::Vector<std::string> features{};///< Enabled guild features.
+		Jsonifier::Vector<StickerData> stickers{};///< Custom guild sticke
+		Jsonifier::Vector<ChannelData> threads{};///< All active threads in the guild that the current user has permission to view.rs.
 		SystemChannelFlags systemChannelFlags{};///< System channel flags.
 		DiscordCoreClient* discordCoreClient{};///< A pointer to the DiscordCoreClient.
-		std::vector<GuildMemberData> members{};///< Custom guild emojis.
 		VerificationLevel verificationLevel{};///< Verification level required for the guild.
-		std::vector<ChannelData> channels{};///< Custom guild emojis.
-		std::vector<std::string> features{};///< Enabled guild features.
-		std::vector<StickerData> stickers{};///< Custom guild stickers.
+		Jsonifier::Vector<EmojiData> emoji{};///< Custom guild emojis.
+		Jsonifier::Vector<RoleData> roles{};///< Roles in the guild.
 		int32_t maxStageVideoChannelUsers{};///< The maximum amount of users in a stage video channel.
 		Snowflake publicUpdatesChannelId{};///< The id of the channel where admins and moderators of Community guilds receive notices from Discord.
 		int32_t premiumSubscriptionCount{};///< The number of boosts this guild currently has.
 		int32_t approximatePresenceCount{};///< Approximate number of non-offline members in this guild, returned sometimes.
-		std::vector<ChannelData> threads{};///< All active threads in the guild that the current user has permission to view.
 		VoiceConnection* voiceConnection{};///< Voice connection potentially held by the current Guild.
 		WelcomeScreenData welcomeScreen{};///< The welcome screen of a Community guild, shown to new members, returned in an Invite's guild object.
 		Snowflake safetyAlertsChannelId{};///< The id of the channel where admins and moderators of Community guilds receive safety alerts.
 		int32_t approximateMemberCount{};///< Approximate number of members in this guild, returned from the GET /guilds/id and /users/me/guilds.
 		bool premiumProgressBarEnabled{};///< Whether the guild has the boost progress bar enabled.
 		int32_t maxVideoChannelUsers{};///< The maximum amount of users in a video channel.
-		std::vector<EmojiData> emoji{};///< Custom guild emojis.
 		PermissionsParse permissions{};///< Total permissions for the user in the guild (excludes overwrites).
 		std::string preferredLocale{};///< The preferred locale of a Community guild; used in server discovery and notices from Discord.
-		std::vector<RoleData> roles{};///< Roles in the guild.
 		std::string discoverySplash{};///< Discovery splash hash; only present for guilds with the "DISCOVERABLE" feature.
 		std::string vanityUrlCode{};///< The vanity url code for the guild.
 		Snowflake systemChannelId{};///< The id of the channel where guild notices such as welcome messages and boost events are posted.
@@ -2577,7 +2582,7 @@ namespace DiscordCoreAPI {
 		UnorderedSet<Snowflake> emoji{};///< Array of Guild channels.
 		UnorderedSet<Snowflake> roles{};///< Array of Guild roles.
 		IconHash discoverySplash{};///< Url to the Guild's icon.
-		LightString<char> name{};///< The Guild's name.
+		String name{};///< The Guild's name.
 		uint32_t memberCount{};///< Member count.
 		TimeStamp joinedAt{};///< When the bot joined this Guild.
 		IconHash discovery{};///< Url to the Guild's icon.
@@ -2674,13 +2679,13 @@ namespace DiscordCoreAPI {
 	/// @brief Audit log data.
 	class DiscordCoreAPI_Dll AuditLogData {
 	  public:
-		std::vector<GuildScheduledEventData> guildScheduledEvents{};///< Array of guild scheduled event objects.
-		std::vector<AutoModerationRuleData> autoModerationRules{};///< List of auto moderation rules referenced in the audit log.
-		std::vector<AuditLogEntryData> auditLogEntries{};///< Array of audit log entry objects.
-		std::vector<IntegrationData> integrations{};///< Array of partial integration objects.
-		std::vector<WebHookData> webhooks{};///< Array of webhook objects.
-		std::vector<ChannelData> threads{};///< Array of thread-specific channel objects.
-		std::vector<UserData> users{};///< Array of user objects.
+		Jsonifier::Vector<GuildScheduledEventData> guildScheduledEvents{};///< Array of guild scheduled event objects.
+		Jsonifier::Vector<AutoModerationRuleData> autoModerationRules{};///< List of auto moderation rules referenced in the audit log.
+		Jsonifier::Vector<AuditLogEntryData> auditLogEntries{};///< Array of audit log entry objects.
+		Jsonifier::Vector<IntegrationData> integrations{};///< Array of partial integration objects.
+		Jsonifier::Vector<WebHookData> webhooks{};///< Array of webhook objects.
+		Jsonifier::Vector<ChannelData> threads{};///< Array of thread-specific channel objects.
+		Jsonifier::Vector<UserData> users{};///< Array of user objects.
 
 		auto getAuditLogData(const Snowflake userIdOfChanger, AuditLogEvent auditLogType);
 
@@ -2758,7 +2763,7 @@ namespace DiscordCoreAPI {
 		friend struct InteractionResponseData;
 
 		friend DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent,
-			uint32_t currentPageIndex, const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult);
+			uint32_t currentPageIndex, const Jsonifier::Vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult);
 
 		friend class CreateEphemeralInteractionResponseData;
 		friend class CreateDeferredInteractionResponseData;
@@ -2804,9 +2809,9 @@ namespace DiscordCoreAPI {
 		/// @param type The type of select-menu that this is.
 		/// @param channelTypes Types of channels that can be accepted if this is of the type ChannelType.
 		/// @return RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, const std::vector<SelectOptionData>& options,
+		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, const Jsonifier::Vector<SelectOptionData>& options,
 			const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType type,
-			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
+			Jsonifier::Vector<ChannelType> channelTypes = Jsonifier::Vector<ChannelType>{});
 
 		/// @brief Adds a modal to the response MessageData.
 		/// @param topTitleNew A title for the modal.
@@ -2873,14 +2878,14 @@ namespace DiscordCoreAPI {
 		RespondToInputEventData& setTargetUserID(const Snowflake targetUserIdNew);
 
 	  protected:
-		std::vector<ApplicationCommandOptionChoiceData> choices{};
-		std::vector<ActionRowData> components{};
+		Jsonifier::Vector<ApplicationCommandOptionChoiceData> choices{};
+		Jsonifier::Vector<ActionRowData> components{};
 		AllowedMentionsData allowedMentions{};
-		std::vector<EmbedData> embeds{};
+		Jsonifier::Vector<EmbedData> embeds{};
 		std::string interactionToken{};
 		InputEventResponseType type{};///< The type of response to make.
 		InteractionType eventType{};
-		std::vector<File> files{};
+		Jsonifier::Vector<File> files{};
 		Snowflake interactionId{};
 		Snowflake applicationId{};
 		Snowflake targetUserId{};
@@ -2919,9 +2924,9 @@ namespace DiscordCoreAPI {
 		/// @param type The type of select-menu that this is.
 		/// @param channelTypes Types of channels that can be accepted if this is of the type ChannelType.
 		/// @return RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
+		MessageResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options,
 			const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType type,
-			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
+			Jsonifier::Vector<ChannelType> channelTypes = Jsonifier::Vector<ChannelType>{});
 
 		/// @brief Adds a modal to the response MessageData.
 		/// @param topTitleNew A title for the modal.
@@ -2970,10 +2975,10 @@ namespace DiscordCoreAPI {
 		MessageResponseBase& setTTSStatus(bool enabledTTs);
 
 	  protected:
-		std::vector<ActionRowData> components{};
+		Jsonifier::Vector<ActionRowData> components{};
 		AllowedMentionsData allowedMentions{};
-		std::vector<EmbedData> embeds{};
-		std::vector<File> files{};
+		Jsonifier::Vector<EmbedData> embeds{};
+		Jsonifier::Vector<File> files{};
 		std::string customId{};
 		std::string content{};
 		std::string title{};
@@ -2996,7 +3001,7 @@ namespace DiscordCoreAPI {
 	/// @brief Guild application command permissions data.
 	class GuildApplicationCommandPermissionData : public GetCreatedAtTimeStamp<GuildApplicationCommandPermissionData> {
 	  public:
-		std::vector<ApplicationCommandPermissionData> permissions{};
+		Jsonifier::Vector<ApplicationCommandPermissionData> permissions{};
 		Snowflake applicationId{};
 		Snowflake guildId{};
 		Snowflake id{};
@@ -3032,7 +3037,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::YouTubeAPI;
 		friend class SongAPI;
 
-		std::vector<DownloadUrl> finalDownloadUrls{};
+		Jsonifier::Vector<DownloadUrl> finalDownloadUrls{};
 		SongType type{ SongType::SoundCloud };///< The type of song.
 		std::string secondDownloadUrl{};
 		std::string firstDownloadUrl{};
@@ -3060,7 +3065,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief Playlist of songs and other variables.
 	struct Playlist {
-		std::vector<Song> songQueue{};///< The list of Songs that are stored to be played.
+		Jsonifier::Vector<Song> songQueue{};///< The list of Songs that are stored to be played.
 		bool isLoopSongEnabled{};///< Is looping of Songs currently enabled?
 		bool isLoopAllEnabled{};///< Is looping of the entire Playlist currently enabled?
 		Song currentSong{};///< The current Song that is playing.
@@ -3128,7 +3133,7 @@ namespace DiscordCoreAPI {
 	*/
 
 	struct SerializerValue {
-		UnorderedMap<std::string, JsonStringValue> values{};
+		UnorderedMap<std::string, JsonStringValue> data{};
 	};
 
 	/// @brief Command data, for functions executed by the CommandController.
@@ -3240,13 +3245,13 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent,
-		uint32_t currentPageIndex, const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult);
+		uint32_t currentPageIndex, const Jsonifier::Vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult);
 
 	/**@}*/
 
 	struct ReadyData {
 		UnorderedSet<std::string> excludedKeys{};
-		std::vector<std::string> trace{};
+		Jsonifier::Vector<std::string> trace{};
 		std::string resumeGatewayUrl{};
 		ApplicationData application{};
 		std::string sessionId{};

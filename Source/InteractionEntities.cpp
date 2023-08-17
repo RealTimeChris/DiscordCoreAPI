@@ -105,8 +105,8 @@ namespace DiscordCoreAPI {
 	}
 
 	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew,
-		std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType typeNew,
-		std::vector<ChannelType> channelTypes) {
+		Jsonifier::Vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType typeNew,
+		Jsonifier::Vector<ChannelType> channelTypes) {
 		if (data.components.size() == 0) {
 			ActionRowData actionRowData;
 			data.components.emplace_back(actionRowData);
@@ -661,9 +661,9 @@ namespace DiscordCoreAPI {
 		buffersMapKey = channelId + messageId;
 	}
 
-	CoRoutine<std::vector<SelectMenuResponseData>, false> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew,
+	CoRoutine<Jsonifier::Vector<SelectMenuResponseData>, false> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew,
 		int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
-		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>, false>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<SelectMenuResponseData>, false>();
 		SelectMenuCollector::selectMenuInteractionBuffersMap[buffersMapKey] = &selectMenuIncomingInteractionBuffer;
 		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
 			getSelectMenuDataForAll = true;
@@ -706,7 +706,7 @@ namespace DiscordCoreAPI {
 					response->messageId = messageId;
 					response->userId = selectMenuInteractionData->user.id;
 					*response->interactionData = *interactionData;
-					response->values = std::vector<std::string>{ "empty" };
+					response->values = Jsonifier::Vector<std::string>{ "empty" };
 					responseVector.emplace_back(*response);
 					break;
 				}
@@ -753,7 +753,7 @@ namespace DiscordCoreAPI {
 					response->messageId = messageId;
 					response->userId = selectMenuInteractionData->user.id;
 					*response->interactionData = *interactionData;
-					response->values = std::vector<std::string>{ "empty" };
+					response->values = Jsonifier::Vector<std::string>{ "empty" };
 					responseVector.emplace_back(*response);
 					break;
 				}
@@ -794,9 +794,9 @@ namespace DiscordCoreAPI {
 		ButtonCollector::buttonInteractionBuffersMap[buffersMapKey] = &buttonIncomingInteractionBuffer;
 	}
 
-	CoRoutine<std::vector<ButtonResponseData>, false> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
+	CoRoutine<Jsonifier::Vector<ButtonResponseData>, false> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
 		int32_t maxNumberOfPressesNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
-		co_await NewThreadAwaitable<std::vector<ButtonResponseData>, false>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<ButtonResponseData>, false>();
 		if (targetUser == 0 && !getButtonDataForAllNew) {
 			throw DCAException{ "ButtonCollector::collectButtonData(), You've failed to "
 								"properly set the collectButtonData() parameters!" };

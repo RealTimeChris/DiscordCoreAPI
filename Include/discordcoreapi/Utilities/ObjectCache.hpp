@@ -36,7 +36,7 @@
 namespace DiscordCoreAPI {
 
 	/// @brief A template class representing an object cache.
-	/// @tparam ValueType The type of values stored in the cache.
+	/// @tparam ValueType The type of data stored in the cache.
 	template<typename ValueType> class ObjectCache {
 	  public:
 		using mapped_type = ValueType;

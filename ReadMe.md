@@ -11,9 +11,14 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 alt="DiscordCoreAPI WebSite" width="500"/></p>
 
 ## Compiler Support
-![MSVC_20922](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/MSVC_2022.yml?color=00ff90&label=MSVC_2022)
-![GCC_12](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_12.yml?color=00ff90&label=GCC_12)
-![CLANG_16](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_17.yml?color=00ff90&label=CLANG_17)
+![MSVC_20922](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/MSVC_2022-Windows.yml?style=plastic&logo=microsoft&logoColor=green&label=MSVC_2022&labelColor=pewter&color=blue)
+![GCC_12](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_12-Ubuntu.yml?style=plastic&logo=linux&logoColor=green&label=GNU_12&labelColor=pewter&color=blue)
+![CLANG_16](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_16-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=CLANG_16&labelColor=pewter&color=blue)
+
+## Operating System Support
+![Windows](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/MSVC_2022-Windows.yml?style=plastic&logo=microsoft&logoColor=green&label=Windows&labelColor=pewter&color=blue)
+![Linux](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_12-Ubuntu.yml?style=plastic&logo=linux&logoColor=green&label=Linux&labelColor=pewter&color=blue)
+![Mac](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_16-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=Mac&labelColor=pewter&color=blue)
 
 # Documentation/Examples
 [Documentation/Examples](https://discordcoreapi.org/da/d26/a08215.html)
@@ -114,7 +119,7 @@ InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 - [Install vcpkg](https://vcpkg.io/en/getting-started.html), if need be.
 - Make sure to run `vcpkg integrate install`.
 - Enter within a terminal `vcpkg install discordcoreapi:x64-windows_OR_linux`.
-- Set up a console project in your IDE and make sure to set the C++ standard to C++23 or later - and include `discordcoreapi/Index.hpp`.
+- Set up a console project in your IDE and make sure to set the C++ standard to C++20 or later - and include `discordcoreapi/Index.hpp`.
 - Build and run!
 
 # Dependencies

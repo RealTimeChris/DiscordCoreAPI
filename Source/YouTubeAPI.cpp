@@ -198,7 +198,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		std::vector<Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
+		Jsonifier::Vector<Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
 			HttpsWorkloadData dataPackage{ HttpsWorkloadType::YouTubeGetSearchResults };
 			dataPackage.baseUrl = baseUrl;
 			dataPackage.relativePath = "/results?search_query=" + urlEncode(collectVideoIdFromSearchQuery(searchQuery).c_str());
@@ -208,7 +208,7 @@ namespace DiscordCoreAPI {
 				MessagePrinter::printError<PrintMessageType::Https>(
 					"YouTubeRequestBuilder::collectSearchResults() Error: " + std::to_string(returnData.responseCode) + returnData.responseData);
 			}
-			std::vector<Song> searchResults{};
+			Jsonifier::Vector<Song> searchResults{};
 			auto varInitFind = returnData.responseData.find("var ytInitialData = ");
 			if (varInitFind != std::string::npos) {
 				std::string newString00 = "var ytInitialData = ";
@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 				}
 
 				Data dataNew{};
-				std::vector<Format> potentialFormats{};
+				Jsonifier::Vector<Format> potentialFormats{};
 				parser.parseJson<true, true>(dataNew, responseData.responseData);
 				for (auto& value: dataNew.streamingData.adaptiveFormats) {
 					if (value.mimeType == "audio/webm; codecs=\"opus\"") {
@@ -352,7 +352,7 @@ namespace DiscordCoreAPI {
 				uint64_t remainder{ songNew.contentLength % (1024ull * 1024ull) };
 				uint64_t currentStart{};
 				uint64_t currentEnd{ intervalCount > 1 ? (1024ull * 1024ull) : remainder };
-				std::vector<HttpsWorkloadData> workloadVector{};
+				Jsonifier::Vector<HttpsWorkloadData> workloadVector{};
 				for (uint64_t x = 0; x < intervalCount; ++x) {
 					HttpsWorkloadData workloadData{ HttpsWorkloadType::YouTubeGetSearchResults };
 					if (songNew.finalDownloadUrls.size() > 0) {
@@ -429,7 +429,7 @@ namespace DiscordCoreAPI {
 			return areWeWorkingBool.load();
 		}
 
-		std::vector<Song> YouTubeAPI::searchForSong(const std::string& searchQuery) {
+		Jsonifier::Vector<Song> YouTubeAPI::searchForSong(const std::string& searchQuery) {
 			return collectSearchResults(searchQuery);
 		}
 

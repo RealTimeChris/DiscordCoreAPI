@@ -172,16 +172,16 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<std::vector<RoleData>> Roles::getGuildRolesAsync(GetGuildRolesData dataPackage) {
+	CoRoutine<Jsonifier::Vector<RoleData>> Roles::getGuildRolesAsync(GetGuildRolesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Roles };
-		co_await NewThreadAwaitable<std::vector<RoleData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<RoleData>>();
 		if (dataPackage.guildId == 0) {
 			throw DCAException{ "Roles::getGuildRolesAsync() Error: Sorry, but you forgot to set the guildId!" };
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
 		workload.callStack = "Roles::getGuildRolesAsync()";
-		std::vector<RoleData> returnData{};
+		Jsonifier::Vector<RoleData> returnData{};
 		Roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -211,10 +211,10 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<RoleData>> Roles::modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage) {
+	CoRoutine<Jsonifier::Vector<RoleData>> Roles::modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Role_Positions };
-		co_await NewThreadAwaitable<std::vector<RoleData>>();
-		std::vector<RoleData> currentRoles = Roles::getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
+		co_await NewThreadAwaitable<Jsonifier::Vector<RoleData>>();
+		Jsonifier::Vector<RoleData> currentRoles = Roles::getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		RoleData newRole = Roles::getCachedRole({ .roleId = dataPackage.roleId });
 		for (auto& value: currentRoles) {
 			if (value.id == newRole.id) {
@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		std::vector<RoleData> returnData{};
+		Jsonifier::Vector<RoleData> returnData{};
 		Roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -285,10 +285,10 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<std::vector<RoleData>> Roles::getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage) {
-		co_await NewThreadAwaitable<std::vector<RoleData>>();
-		std::vector<RoleData> rolesVector = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
-		std::vector<RoleData> rolesVectorNew{};
+	CoRoutine<Jsonifier::Vector<RoleData>> Roles::getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage) {
+		co_await NewThreadAwaitable<Jsonifier::Vector<RoleData>>();
+		Jsonifier::Vector<RoleData> rolesVector = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
+		Jsonifier::Vector<RoleData> rolesVectorNew{};
 		for (auto& value: rolesVector) {
 			for (auto& value2: dataPackage.guildMember.roles) {
 				if (value2 == value.id) {

@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 	  public:
 		/// @brief ObjectCollectorReturnData responseData.c
 		struct ObjectCollectorReturnData {
-			std::vector<ValueType> objects{};///< A vector of collected Objects.
+			Jsonifier::Vector<ValueType> objects{};///< A vector of collected Objects.
 		};
 
 		static UnorderedMap<std::string, UnboundedMessageBlock<ValueType>*> objectsBuffersMap;
@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 		/// @param quantityToCollect Maximum quantity of Objects to collect before returning the results.
 		/// @param msToCollectForNew Maximum number of Milliseconds to wait for Objects before returning the results.
 		/// @param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
-		/// @returns A ObjectCollectorReturnData structure.
+		/// @return A ObjectCollectorReturnData structure.
 		CoRoutine<ObjectCollectorReturnData> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew,
 			ObjectFilter<ValueType> filteringFunctionNew);
 
@@ -115,9 +115,9 @@ namespace DiscordCoreAPI {
 		CreateMessageData() = default;
 
 	  protected:
-		std::vector<AttachmentData> attachments{};
+		Jsonifier::Vector<AttachmentData> attachments{};
 		MessageReferenceData messageReference{};
-		std::vector<std::string> stickerIds{};
+		Jsonifier::Vector<std::string> stickerIds{};
 	};
 
 	/// @brief For sending a direct-message.
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 		EditMessageData(RespondToInputEventData dataPackage);
 
 	  protected:
-		std::vector<AttachmentData> attachments{};
+		Jsonifier::Vector<AttachmentData> attachments{};
 		Snowflake channelId{};
 		Snowflake messageId{};
 		int32_t flags{};
@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For deleting a bulk of Messages.
 	struct DeleteMessagesBulkData {
-		std::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
+		Jsonifier::Vector<Snowflake> messageIds{};///< Array of Message ids to delete.
 		Snowflake channelId{};///< ChannelData within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
 	};
@@ -207,52 +207,52 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects a collection of Message from the Discord servers
 		/// @param dataPackage A GetMessagesData structure.
-		/// @returns A CoRoutine containing a std::vector<MessageData>.
-		static CoRoutine<std::vector<MessageData>> getMessagesAsync(GetMessagesData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<MessageData>.
+		static CoRoutine<Jsonifier::Vector<MessageData>> getMessagesAsync(GetMessagesData dataPackage);
 
 		/// @brief Collects a Message from the Discord servers.
 		/// @param dataPackage A GetMessageData structure.
-		/// @returns A CoRoutine containing a Message.
+		/// @return A CoRoutine containing a Message.
 		static CoRoutine<MessageData> getMessageAsync(GetMessageData dataPackage);
 
 		/// @brief Creates a new MessageData.
 		/// @param dataPackage A CreateMessageData structure.
-		/// @returns A CoRoutine containing a Message.
+		/// @return A CoRoutine containing a Message.
 		static CoRoutine<MessageData> createMessageAsync(CreateMessageData dataPackage);
 
 		/// @brief Crossposts a message from a News ChannelData to the following Channels.
 		/// @param dataPackage A CrosspostMessageData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<MessageData> crosspostMessageAsync(CrosspostMessageData dataPackage);
 
 		/// @brief Edit a Message.
 		/// @param dataPackage An EditMessageData structure.
-		/// @returns A CoRoutine containing a Message.
+		/// @return A CoRoutine containing a Message.
 		static CoRoutine<MessageData> editMessageAsync(EditMessageData dataPackage);
 
 		/// @brief Deletes a Message.
 		/// @param dataPackage A DeleteMessageData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteMessageAsync(DeleteMessageData dataPackage);
 
 		/// @brief Deletes a collection of Messages.
 		/// @param dataPackage A DeleteMessagesBulkData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage);
 
 		/// @brief Collects a collection of pinned Messages from the Discord servers.
 		/// @param dataPackage A GetPinnedMessagesData structure.
-		/// @returns A CoRoutine containing a std::vector<MessageData>.
-		static CoRoutine<std::vector<MessageData>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<MessageData>.
+		static CoRoutine<Jsonifier::Vector<MessageData>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
 
 		/// @brief Pins a Message to a given Channel.
 		/// @param dataPackage A PinMessageData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> pinMessageAsync(PinMessageData dataPackage);
 
 		/// @brief Unpins a Message from a given Channel.
 		/// @param dataPackage An UnpinMessageData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
 
 	  protected:

@@ -10,9 +10,14 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 ![imageDiscordCoreAPI](./TheLogo.png "A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.")
 
 ## Compiler Support
-![MSVC_20922](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/MSVC_2022.yml?color=00ff90&label=MSVC_2022)
-![GCC_12](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_12.yml?color=00ff90&label=GCC_12)
-![CLANG_16](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_17.yml?color=00ff90&label=CLANG_17)
+![MSVC_20922](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/MSVC_2022-Windows.yml?style=plastic&logo=microsoft&logoColor=green&label=MSVC_2022&labelColor=pewter&color=blue)
+![GCC_12](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_12-Ubuntu.yml?style=plastic&logo=linux&logoColor=green&label=GNU_12&labelColor=pewter&color=blue)
+![CLANG_16](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_16-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=CLANG_16&labelColor=pewter&color=blue)
+
+## Operating System Support
+![Windows](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/MSVC_2022-Windows.yml?style=plastic&logo=microsoft&logoColor=green&label=Windows&labelColor=pewter&color=blue)
+![Linux](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_12-Ubuntu.yml?style=plastic&logo=linux&logoColor=green&label=Linux&labelColor=pewter&color=blue)
+![Mac](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_16-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=Mac&labelColor=pewter&color=blue)
 
 # Documentation/Examples
 \subpage Examples
@@ -27,7 +32,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 
 ## Performant   
 ----
-- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/Etf.hpp) for websocket transfer, and a pool of [kept-alive HTTPS connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/HttpsClient.hpp#L213) - this library offers the snappiest responses to your interactions and user input.
+- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/Etf.hpp) for websocket transfer, and a pool of [kept-alive HTTPS connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/HttpsClient.hpp#L212) - this library offers the snappiest responses to your interactions and user input.
 
 ## Audio-Bridge   
 
@@ -47,7 +52,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 ## Concurrent Discord API Access   
 
 ----
-- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/CoRoutineThreadPool.hpp#L70), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.    
+- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/CoRoutineThreadPool.hpp#L64), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.    
 
 ## Advanced Rate-Limiting System
 
@@ -124,7 +129,7 @@ InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 - [Install vcpkg](https://vcpkg.io/en/getting-started.html), if need be.
 - Make sure to run `vcpkg integrate install`.
 - Enter within a terminal `vcpkg install discordcoreapi:x64-windows_OR_linux`.
-- Set up a console project in your IDE and make sure to set the C++ standard to C++23 or later - and include `discordcoreapi/Index.hpp`.
+- Set up a console project in your IDE and make sure to set the C++ standard to C++20 or later - and include `discordcoreapi/Index.hpp`.
 - Build and run!
 
 # Dependencies

@@ -58,13 +58,13 @@ namespace DiscordCoreAPI {
 		GuildScheduledEvents::httpsClient = client;
 	}
 
-	CoRoutine<std::vector<GuildScheduledEventData>> GuildScheduledEvents::getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage) {
+	CoRoutine<Jsonifier::Vector<GuildScheduledEventData>> GuildScheduledEvents::getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Events };
-		co_await NewThreadAwaitable<std::vector<GuildScheduledEventData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<GuildScheduledEventData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events";
 		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventAsync()";
-		std::vector<GuildScheduledEventData> returnData{};
+		Jsonifier::Vector<GuildScheduledEventData> returnData{};
 		GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -118,10 +118,10 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<std::vector<GuildScheduledEventUserData>> GuildScheduledEvents::getGuildScheduledEventUsersAsync(
+	CoRoutine<Jsonifier::Vector<GuildScheduledEventUserData>> GuildScheduledEvents::getGuildScheduledEventUsersAsync(
 		GetGuildScheduledEventUsersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event_Users };
-		co_await NewThreadAwaitable<std::vector<GuildScheduledEventUserData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<GuildScheduledEventUserData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events/" + dataPackage.guildScheduledEventId + "/users";
 		if (dataPackage.limit != 0) {
@@ -155,7 +155,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?with_member=true";
 		}
 		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventUsersAsync()";
-		std::vector<GuildScheduledEventUserData> returnData{};
+		Jsonifier::Vector<GuildScheduledEventUserData> returnData{};
 		GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

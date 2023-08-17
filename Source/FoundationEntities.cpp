@@ -182,12 +182,22 @@ namespace DiscordCoreAPI {
 		return GuildMembers::getVoiceStateData(*this);
 	}
 
+	VoiceStateDataLight::VoiceStateDataLight(const TwoIdKey& other) noexcept {
+		this->guildId = other.idOne;
+		this->userId = other.idTwo;
+	}
+
 	UserCacheData GuildMemberData::getUserData() {
 		if (user.id != 0) {
 			return Users::getCachedUser(GetUserData{ .userId = user.id });
 		} else {
 			return {};
 		}
+	}
+
+	GuildMemberCacheData::GuildMemberCacheData(const TwoIdKey& other) noexcept {
+		this->guildId = other.idOne;
+		this->user.id = other.idTwo;
 	}
 
 	VoiceStateDataLight GuildMemberCacheData::getVoiceStateData() {
@@ -273,6 +283,7 @@ namespace DiscordCoreAPI {
 		}
 		for (uint64_t x = 0; x < rhs.choices.size(); ++x) {
 			if (choices[x] != rhs.choices[x]) {
+				return false;
 			}
 		}
 		return true;
@@ -765,8 +776,8 @@ namespace DiscordCoreAPI {
 	}
 
 	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew,
-		const std::vector<SelectOptionData>& options, const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType typeNew,
-		std::vector<ChannelType> channelTypes) {
+		const Jsonifier::Vector<SelectOptionData>& options, const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType typeNew,
+		Jsonifier::Vector<ChannelType> channelTypes) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);
@@ -897,8 +908,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType type, std::vector<ChannelType> channelTypes) {
+	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options,
+		const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType type, Jsonifier::Vector<ChannelType> channelTypes) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);
@@ -1001,15 +1012,15 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void parseCommandDataOption(UnorderedMap<std::string, JsonStringValue>& values, ApplicationCommandInteractionDataOption& data) {
+	void parseCommandDataOption(UnorderedMap<std::string, JsonStringValue>& data, ApplicationCommandInteractionDataOption& dataNew) {
 		JsonStringValue valueNew{};
-		if (data.value.operator std::string()[0] == '"') {
-			data.value = data.value.operator std::string().substr(1, data.value.operator std::string().size() - 2);
+		if (dataNew.value.operator std::string()[0] == '"') {
+			dataNew.value = dataNew.value.operator std::string().substr(1, dataNew.value.operator std::string().size() - 2);
 		}
-		valueNew.value = data.value;
-		values[data.name] = valueNew;
-		for (auto& value: data.options) {
-			parseCommandDataOption(values, value);
+		valueNew.value = dataNew.value;
+		data[dataNew.name] = valueNew;
+		for (auto& value: dataNew.options) {
+			parseCommandDataOption(data, value);
 		}
 	}
 
@@ -1031,19 +1042,19 @@ namespace DiscordCoreAPI {
 			commandName = inputEventData.interactionData->data.name;
 		}
 		if (inputEventData.interactionData->data.targetId != 0) {
-			optionsArgs.values.emplace("target_id",
+			optionsArgs.data.emplace("target_id",
 				JsonStringValue{ .type = DiscordCoreInternal::JsonType::String,
 					.value = Jsonifier::RawJsonData{ inputEventData.interactionData->data.targetId.operator std::string() } });
 		} else if (inputEventData.interactionData->data.targetId != 0) {
-			optionsArgs.values.emplace("target_id",
+			optionsArgs.data.emplace("target_id",
 				JsonStringValue{ .type = DiscordCoreInternal::JsonType::String,
 					.value = Jsonifier::RawJsonData{ inputEventData.interactionData->data.targetId.operator std::string() } });
 		}
 		eventData = inputEventData;
 		for (auto& value: eventData.interactionData->data.options) {
 			JsonStringValue serializer{ .value = Jsonifier::RawJsonData{ value.value.operator std::string() } };
-			optionsArgs.values[value.name] = serializer;
-			parseCommandDataOption(optionsArgs.values, value);
+			optionsArgs.data[value.name] = serializer;
+			parseCommandDataOption(optionsArgs.data, value);
 		}
 		for (auto& value: eventData.interactionData->data.options) {
 			if (value.type == ApplicationCommandOptionType::Sub_Command) {
@@ -1101,7 +1112,7 @@ namespace DiscordCoreAPI {
 	}
 
 	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
-		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
+		const Jsonifier::Vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		uint32_t newCurrentPageIndex = currentPageIndex;
 		StopWatch<std::chrono::milliseconds> stopWatch{ Milliseconds{ waitForMaxMs } };
@@ -1128,7 +1139,7 @@ namespace DiscordCoreAPI {
 		while (!stopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
 			UniquePtr<ButtonCollector> button{ makeUnique<ButtonCollector>(originalEvent) };
-			std::vector<ButtonResponseData> buttonIntData{
+			Jsonifier::Vector<ButtonResponseData> buttonIntData{
 				button->collectButtonData(false, waitForMaxMs, 1, *createResponseData, Snowflake{ stoull(userID) }).get()
 			};
 			UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };

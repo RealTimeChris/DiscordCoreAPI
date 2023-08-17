@@ -31,17 +31,16 @@
 #pragma once
 
 #include <discordcoreapi/Utilities/TCPConnection.hpp>
-#include <discordcoreapi/Utilities/LightString.hpp>
 #include <discordcoreapi/JsonSpecializations.hpp>
 
 namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
 
-		/// \brief Voice Websocket close codes.
+		/// @brief Voice Websocket close codes.
 		class HttpsResponseCode {
 		  public:
-			/// \brief Voice Websocket close codes.
+			/// @brief Voice Websocket close codes.
 			enum class HttpsResponseCodes : uint32_t {
 				Ok = 200,///< The request completed successfully.
 				Created = 201,///< The entity was created successfully.
@@ -99,7 +98,7 @@ namespace DiscordCoreAPI {
 		class HttpsError : public DCAException {
 		  public:
 			int32_t errorCode{};
-			inline HttpsError(std::string message, std::source_location location = std::source_location::current())
+			HttpsError(std::string message, std::source_location location = std::source_location::current())
 				: DCAException{ message, location } {};
 		};
 
@@ -179,7 +178,7 @@ namespace DiscordCoreAPI {
 
 			std::counting_semaphore<1> theSemaphore{ 1 };
 			const int32_t maxReconnectTries{ 3 };
-			LightString<char> inputBufferReal{};
+			String inputBufferReal{};
 			HttpsTCPConnection tcpConnection{};
 			int32_t currentReconnectTries{};
 			HttpsWorkloadData workload{};

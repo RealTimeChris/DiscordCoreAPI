@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::Shortest };///< Afk timeout in seconds.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		std::vector<ChannelData> channels{};///< Array of partial ChannelData objects.
+		Jsonifier::Vector<ChannelData> channels{};///< Array of partial ChannelData objects.
 		int32_t systemChannelFlags{};///< System ChannelData flags.
 		Snowflake systemChannelId{};///< The id of the ChannelData where Guild notices such as welcome messages and boost events are posted.
 		int32_t verificationLevel{};///< Verification level.
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 		std::string region{};///< The region that the servers are in.
 		std::string icon{};///< base64 128x128 image for the Guild icon.
 		std::string name{};///< The name of the new Guild.
-		std::vector<RoleData> roles{};///< Array of RoleData objects.
+		Jsonifier::Vector<RoleData> roles{};///< Array of RoleData objects.
 	};
 
 	/// @brief For getting a Guild from the library's cache or a Discord server.
@@ -116,14 +116,14 @@ namespace DiscordCoreAPI {
 
 	/// @brief For collecting the Guild prune count.
 	struct GetGuildPruneCountData {
-		std::vector<Snowflake> includeRoles{};///< Roles to be included in the prune.
+		Jsonifier::Vector<Snowflake> includeRoles{};///< Roles to be included in the prune.
 		Snowflake guildId{};///< The Guild to be pruned.
 		int32_t days{};///< The number of days beyond which to prune the user's for inactivity.
 	};
 
 	/// @brief For pruning a number of GuildMembers from the Guild.
 	struct BeginGuildPruneData {
-		std::vector<Snowflake> includeRoles{};/// Roles to be included in the prune.
+		Jsonifier::Vector<Snowflake> includeRoles{};/// Roles to be included in the prune.
 		bool computePruneCount{};/// Whether 'pruned' is returned, discouraged for large guilds.
 		std::string reason{};///< Reason for pruning the GuildMembers.
 		Snowflake guildId{};///< Guild within which to perform the prune.
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For modifying a Guild's welcome screen.
 	struct ModifyGuildWelcomeScreenData {
-		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
+		Jsonifier::Vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
 		std::string description{};///< The description of the welcome screen.
 		std::string reason{};///< The reason for modifying the welcome screen.
 		Snowflake guildId{};///< The Guild for which to modify the welcome screen of.
@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		SystemChannelFlags systemChannelFlags{};///< System ChannelData flags.
 		VerificationLevel verificationLevel{};///< Verification level.
-		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
+		Jsonifier::Vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
 		Snowflake
 			publicUpdatesChannelId{};///< The id of the ChannelData where admins and moderators of Community guilds receive notices from Discord.
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
@@ -306,181 +306,181 @@ namespace DiscordCoreAPI {
 
 		/// @brief Gets an audit log from the Discord servers.
 		/// @param dataPackage A GetGuildAuditLogsData structure.
-		/// @returns A CoRoutine containing an AuditLogData.
+		/// @return A CoRoutine containing an AuditLogData.
 		static CoRoutine<AuditLogData> getGuildAuditLogsAsync(GetGuildAuditLogsData dataPackage);
 
 		/// @brief Creates a new Guild.
 		/// @param dataPackage A CreateGuildData structure.
-		/// @returns A CoRoutine containing a Guild.
+		/// @return A CoRoutine containing a Guild.
 		static CoRoutine<GuildData> createGuildAsync(CreateGuildData dataPackage);
 
 		/// @brief Returns all of the Guilds that the current bot is in.
-		/// @returns A CoRoutine containing a std::vector<GuildData>.
-		static std::vector<GuildData> getAllGuildsAsync();
+		/// @return A CoRoutine containing a Jsonifier::Vector<GuildData>.
+		static Jsonifier::Vector<GuildData> getAllGuildsAsync();
 
 		/// @brief Collects a Guild from the Discord servers.
 		/// @param dataPackage A GetGuildData structure.
-		/// @returns A CoRoutine containing a Guild.
+		/// @return A CoRoutine containing a Guild.
 		static CoRoutine<GuildData> getGuildAsync(GetGuildData dataPackage);
 
 		/// @brief Collects a Guild from the library's cache.
 		/// @param dataPackage A GetGuildData structure.
-		/// @returns A CoRoutine containing a Guild.
+		/// @return A CoRoutine containing a Guild.
 		static GuildCacheData getCachedGuild(GetGuildData dataPackage);
 
 		/// @brief Acquires the preview Data of a chosen Guild.
 		/// @param dataPackage A GetGuildPreviewData structure.
-		/// @returns A CoRoutine containing a GuildPreviewData.
+		/// @return A CoRoutine containing a GuildPreviewData.
 		static CoRoutine<GuildPreviewData> getGuildPreviewAsync(GetGuildPreviewData dataPackage);
 
 		/// @brief Modifies a chosen Guild's properties.
 		/// @param dataPackage A ModifyGuildData structure.
-		/// @returns A CoRoutine containing a Guild.
+		/// @return A CoRoutine containing a Guild.
 		static CoRoutine<GuildData> modifyGuildAsync(ModifyGuildData dataPackage);
 
 		/// @brief Deletes a chosen Guild.
 		/// @param dataPackage A DeleteGuildData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteGuildAsync(DeleteGuildData dataPackage);
 
 		/// @brief Collects a list of Bans from a chosen Guild.
 		/// @param dataPackage A GetGuildBansData structure.
-		/// @returns A CoRoutine containing a BanDataVector.
-		static CoRoutine<std::vector<BanData>> getGuildBansAsync(GetGuildBansData dataPackage);
+		/// @return A CoRoutine containing a BanDataVector.
+		static CoRoutine<Jsonifier::Vector<BanData>> getGuildBansAsync(GetGuildBansData dataPackage);
 
 		/// @brief Collects a single Ban from a chosen Guild.
 		/// @param dataPackage A GetGuildBanData structure.
-		/// @returns A CoRoutine containing a BanData.
+		/// @return A CoRoutine containing a BanData.
 		static CoRoutine<BanData> getGuildBanAsync(GetGuildBanData dataPackage);
 
 		/// @brief Bans a GuildMember.
 		/// @param dataPackage A CreateGuildBanData structure.
-		/// @returns A CoRoutine containing a BanData.
+		/// @return A CoRoutine containing a BanData.
 		static CoRoutine<void> createGuildBanAsync(CreateGuildBanData dataPackage);
 
 		/// @brief Removes a previously created ban.
 		/// @param dataPackage A RemoveGuildBanData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> removeGuildBanAsync(RemoveGuildBanData dataPackage);
 
 		/// @brief For collecting the Guild prune count.
 		/// @param dataPackage A GetGuildPruneCountData structure.
-		/// @returns A CoRoutine containing GuildPruneCountData.
+		/// @return A CoRoutine containing GuildPruneCountData.
 		static CoRoutine<GuildPruneCountData> getGuildPruneCountAsync(GetGuildPruneCountData dataPackage);
 
 		/// @brief For performing a pruning of the GuildMembers of the Guild, based on days of inactivity.
 		/// @param dataPackage A BeginGuildPruneData structure.
-		/// @returns A CoRoutine containing a GuildPruneCountData.
+		/// @return A CoRoutine containing a GuildPruneCountData.
 		static CoRoutine<GuildPruneCountData> beginGuildPruneAsync(BeginGuildPruneData dataPackage);
 
 		/// @brief Gets the list of voice regions for a particular server.
 		/// @param dataPackage A GetGuildVoiceRegionsData structure.
-		/// @returns A CoRoutine containing a VoiceRegionDataVector.
-		static CoRoutine<std::vector<VoiceRegionData>> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);
+		/// @return A CoRoutine containing a VoiceRegionDataVector.
+		static CoRoutine<Jsonifier::Vector<VoiceRegionData>> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);
 
 		/// @brief Gets multiple invites from the Discord servers.
 		/// @param dataPackage A GetGuildInvitesData structure.
-		/// @returns A CoRoutine containing a std::vector<InviteData>.
-		static CoRoutine<std::vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<InviteData>.
+		static CoRoutine<Jsonifier::Vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
 
 		/// @brief Gets the list of Guild integrations for a particular server.
 		/// @param dataPackage A GetGuildIntegrationsData structure.
-		/// @returns A CoRoutine containing a std::vector<IntegrationData>.
-		static CoRoutine<std::vector<IntegrationData>> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<IntegrationData>.
+		static CoRoutine<Jsonifier::Vector<IntegrationData>> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
 
 		/// @brief Deletes an integration from a Guild.
 		/// @param dataPackage A DeleteGuildIntegrationData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteGuildIntegrationAsync(DeleteGuildIntegrationData dataPackage);
 
 		/// @brief Gets the Guild widget's settings for a particular server.
 		/// @param dataPackage A GetGuildWidgetSettingsData structure.
-		/// @returns A CoRoutine containing a GuildWidgetData.
+		/// @return A CoRoutine containing a GuildWidgetData.
 		static CoRoutine<GuildWidgetData> getGuildWidgetSettingsAsync(GetGuildWidgetSettingsData dataPackage);
 
 		/// @brief Modifies the Guild widget for a particular server.
 		/// @param dataPackage A ModifyGuildWidgetData structure.
-		/// @returns A CoRoutine containing a GuildWidgetData.
+		/// @return A CoRoutine containing a GuildWidgetData.
 		static CoRoutine<GuildWidgetData> modifyGuildWidgetAsync(ModifyGuildWidgetData dataPackage);
 
 		/// @brief Gets the Guild widget for a particular server.
 		/// @param dataPackage A GetGuildWidgetData structure.
-		/// @returns A CoRoutine containing a GuildWidgetData.
+		/// @return A CoRoutine containing a GuildWidgetData.
 		static CoRoutine<GuildWidgetData> getGuildWidgetAsync(GetGuildWidgetData dataPackage);
 
 		/// @brief Gets the vanity invite responseData from a particular server.
 		/// @param dataPackage A GetGuildVanityInviteData structure.
-		/// @returns A CoRoutine containing InviteData.
+		/// @return A CoRoutine containing InviteData.
 		static CoRoutine<InviteData> getGuildVanityInviteAsync(GetGuildVanityInviteData dataPackage);
 
 		/// @brief Gets the Guild widget image for a particular server.
 		/// @param dataPackage A GetGuildWidgetImageData structure.
-		/// @returns A CoRoutine containing a GuildWidgetImageData.
+		/// @return A CoRoutine containing a GuildWidgetImageData.
 		static CoRoutine<GuildWidgetImageData> getGuildWidgetImageAsync(GetGuildWidgetImageData dataPackage);
 
 		/// @brief Gets the Guild welcome screen for a particular server.
 		/// @param dataPackage A GetGuildWelcomeScreenData structure.
-		/// @returns A CoRoutine containing a WelcomeScreenData.
+		/// @return A CoRoutine containing a WelcomeScreenData.
 		static CoRoutine<WelcomeScreenData> getGuildWelcomeScreenAsync(GetGuildWelcomeScreenData dataPackage);
 
 		/// @brief Modifies the Guild welcome screen.
 		/// @param dataPackage A ModifyGuildWelcomeScreenData structure.
-		/// @returns A CoRoutine containing a WelcomeScreenData.
+		/// @return A CoRoutine containing a WelcomeScreenData.
 		static CoRoutine<WelcomeScreenData> modifyGuildWelcomeScreenAsync(ModifyGuildWelcomeScreenData dataPackage);
 
 		/// @brief Gets the Guild Template from a particular server.
 		/// @param dataPackage A GetGuildTemplateData structure.
-		/// @returns A CoRoutine containing a GuildTemplateData.
+		/// @return A CoRoutine containing a GuildTemplateData.
 		static CoRoutine<GuildTemplateData> getGuildTemplateAsync(GetGuildTemplateData dataPackage);
 
 		/// @brief Creates a Guild from the Guild Template.
 		/// @param dataPackage A CreateGuildFromGuildTemplateData structure.
-		/// @returns A CoRoutine containing a Guild.
+		/// @return A CoRoutine containing a Guild.
 		static CoRoutine<GuildData> createGuildFromGuildTemplateAsync(CreateGuildFromGuildTemplateData dataPackage);
 
 		/// @brief Collects a list of Guild Templates from a chosen Guild.
 		/// @param dataPackage A GetGuildTemplatesData structure.
-		/// @returns A CoRoutine containing a GuiildTemplateDataVector.
-		static CoRoutine<std::vector<GuildTemplateData>> getGuildTemplatesAsync(GetGuildTemplatesData dataPackage);
+		/// @return A CoRoutine containing a GuiildTemplateDataVector.
+		static CoRoutine<Jsonifier::Vector<GuildTemplateData>> getGuildTemplatesAsync(GetGuildTemplatesData dataPackage);
 
 		/// @brief Creates a Guild Template.
 		/// @param dataPackage A CreateGuildTemplateData structure.
-		/// @returns A CoRoutine containing a GuiildTemplateData.
+		/// @return A CoRoutine containing a GuiildTemplateData.
 		static CoRoutine<GuildTemplateData> createGuildTemplateAsync(CreateGuildTemplateData dataPackage);
 
 		/// @brief Syncs a Guild Template.
 		/// @param dataPackage A SyncGuildTemplateData structure.
-		/// @returns A CoRoutine containing a GuiildTemplateData.
+		/// @return A CoRoutine containing a GuiildTemplateData.
 		static CoRoutine<GuildTemplateData> syncGuildTemplateAsync(SyncGuildTemplateData dataPackage);
 
 		/// @brief Modifies a Guild Template.
 		/// @param dataPackage A ModifyGuildTemplateData structure.
-		/// @returns A CoRoutine containing a GuiildTemplateData.
+		/// @return A CoRoutine containing a GuiildTemplateData.
 		static CoRoutine<GuildTemplateData> modifyGuildTemplateAsync(ModifyGuildTemplateData dataPackage);
 
 		/// @brief Deletes a Guild Template.
 		/// @param dataPackage A DeleteGuildTemplateData structure.
-		/// @returns A CoRoutine containing a void.
+		/// @return A CoRoutine containing a void.
 		static CoRoutine<void> deleteGuildTemplateAsync(DeleteGuildTemplateData dataPackage);
 
 		/// @brief Gets an invite from the Discord servers.
 		/// @param dataPackage A GetInviteData structure.
-		/// @returns A CoRoutine containing an InviteData.
+		/// @return A CoRoutine containing an InviteData.
 		static CoRoutine<InviteData> getInviteAsync(GetInviteData dataPackage);
 
 		/// @brief Deletes an invite from the Discord servers
 		/// @param dataPackage A DeleteInviteData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteInviteAsync(DeleteInviteData dataPackage);
 
 		/// @brief Collects a list of Guilds that the Bot is in.
 		/// @param dataPackage A GetCurrentUserGuildsData structure.
-		/// @returns A CoRoutine containing a GuildVector.
-		static CoRoutine<std::vector<GuildData>> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
+		/// @return A CoRoutine containing a GuildVector.
+		static CoRoutine<Jsonifier::Vector<GuildData>> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
 
 		/// @brief Removes the bot from a chosen Guild.
 		/// @param dataPackage A LeaveGuildData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 		template<typename GuildType> inline static void insertGuild(GuildType&& guild) {

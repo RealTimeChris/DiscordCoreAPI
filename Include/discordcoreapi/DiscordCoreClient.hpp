@@ -168,15 +168,15 @@ namespace DiscordCoreAPI {
 		static DiscordCoreClient* getInstance();
 
 		/// @brief DiscordCoreClient constructor.
-		/// \param configData A DiscordCoreClientConfig structure to select various library options.
+		/// @param configData A DiscordCoreClientConfig structure to select various library options.
 		DiscordCoreClient(DiscordCoreClientConfig configData);
 
 		/// @brief For registering a function with the CommandController.
-		/// \param functionNames A vector containing the possible names for activating this command/function.
-		/// \param baseFunction A unique_ptr to the command to be registered.
-		/// \param commandData A CreateApplicationCommandData structure describing the current function.
-		/// \param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of registered commands.
-		void registerFunction(const std::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction,
+		/// @param functionNames A vector containing the possible names for activating this command/function.
+		/// @param baseFunction A unique_ptr to the command to be registered.
+		/// @param commandData A CreateApplicationCommandData structure describing the current function.
+		/// @param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of registered commands.
+		void registerFunction(const Jsonifier::Vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction,
 			CreateApplicationCommandData commandData, bool alwaysRegister = false);
 
 		/// @brief For collecting a reference to the CommandController.

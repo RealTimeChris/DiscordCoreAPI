@@ -47,12 +47,12 @@ namespace DiscordCoreAPI {
 		static constexpr uint8_t SIMPLEBLOCK_ID{ 0xA3 };
 		static constexpr uint8_t OPUS_TRACK_ID{ 0x81 };
 
-		static constexpr std::array<uint8_t, 256> ffLog2Tab{ 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-			4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+		static constexpr uint8_t ffLog2Tab[]{ 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5,
+			5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
 			6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-			6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+			6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
 			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
+			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
 
 		/// @brief A class for demuxing Matroska-contained audio data.
 		class MatroskaDemuxer {
@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Constructor for OpusPacket.
 			/// @param newData The data for the Opus packet.
-			inline OpusPacket(std::vector<uint8_t> newData) {
+			inline OpusPacket(Jsonifier::Vector<uint8_t> newData) {
 				dataVal = newData;
 			};
 
@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			std::vector<uint8_t> dataVal{};///< The data for the Opus packet.
+			Jsonifier::Vector<uint8_t> dataVal{};///< The data for the Opus packet.
 		};
 
 		/// @brief A class representing an Ogg page for demuxing.
@@ -251,7 +251,7 @@ namespace DiscordCoreAPI {
 		  public:
 			/// @brief Constructor for OggPage.
 			/// @param newData The data for the Ogg page.
-			inline OggPage(std::vector<uint8_t>& newData) {
+			inline OggPage(Jsonifier::Vector<uint8_t>& newData) {
 				data = std::move(newData);
 				verifyAsOggPage();
 				getSegmentData();
@@ -264,7 +264,7 @@ namespace DiscordCoreAPI {
 				if (segmentTable.size() > 0) {
 					auto newSpace = segmentTable.front();
 					segmentTable.pop_front();
-					std::vector<uint8_t> returnValue{};
+					Jsonifier::Vector<uint8_t> returnValue{};
 					returnValue.resize(newSpace);
 					std::memcpy(returnValue.data(), data.data() + currentPosition, newSpace);
 					currentPosition += newSpace;
@@ -299,7 +299,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			std::deque<int32_t> segmentTable{};///< Segment table storing Opus packet sizes.
-			std::vector<uint8_t> data{};///< The data for the Ogg page.
+			Jsonifier::Vector<uint8_t> data{};///< The data for the Ogg page.
 			uint64_t totalPacketSize{};///< Total size of Opus packets in the page.
 			uint64_t currentPosition{};///< Current position in the page data.
 			int32_t segmentCount{};///< Number of segments in the Ogg page.
@@ -348,13 +348,13 @@ namespace DiscordCoreAPI {
 						uint64_t nextOggPos = inputData.find("OggS", oggPos + 1);
 						if (nextOggPos != std::string::npos) {
 							collectedLength += nextOggPos - oggPos;
-							std::vector<uint8_t> newerString{};
+							Jsonifier::Vector<uint8_t> newerString{};
 							newerString.resize(nextOggPos - oggPos);
 							std::memcpy(newerString.data(), data.data() + oggPos, nextOggPos - oggPos);
 							pages.emplace_back(newerString);
 							pos = nextOggPos;
 						} else {
-							std::vector<uint8_t> newerString{};
+							Jsonifier::Vector<uint8_t> newerString{};
 							newerString.resize(inputData.size() - collectedLength);
 							std::memcpy(newerString.data(), data.data() + oggPos, inputData.size() - collectedLength);
 							pages.emplace_back(newerString);
@@ -362,7 +362,7 @@ namespace DiscordCoreAPI {
 							break;
 						}
 					} else {
-						std::vector<uint8_t> newerString{};
+						Jsonifier::Vector<uint8_t> newerString{};
 						newerString.resize(inputData.size() - collectedLength);
 						std::memcpy(newerString.data(), data.data() + oggPos, inputData.size() - collectedLength);
 						pages.emplace_back(newerString);

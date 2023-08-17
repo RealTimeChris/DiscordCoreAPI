@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 		config.connectionPort = connectionPortNew;
 	}
 
-	std::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
+	Jsonifier::Vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
 		return config.functionsToExecute;
 	}
 
@@ -279,33 +279,33 @@ namespace DiscordCoreAPI {
 		}
 
 		uint64_t permissions = stoull(basePermissions);
-		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
-				permissions &= ~channel.permissionOverwrites[x].deny;
-				permissions |= channel.permissionOverwrites[x].allow;
+		for (auto value: channel.permissionOverwrites) {
+			if (value.id == guildMember.guildId) {
+				permissions &= ~value.deny;
+				permissions |= value.allow;
 				break;
 			}
 		}
-		std::vector<RoleData> guildMemberRoles{};
+		Jsonifier::Vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
 		}
 		uint64_t allow{};
 		uint64_t deny{};
 		for (auto& value: guildMemberRoles) {
-			for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-				if (value.id == channel.permissionOverwrites[x].id) {
-					allow |= channel.permissionOverwrites[x].allow;
-					deny |= channel.permissionOverwrites[x].deny;
+			for (auto value02: channel.permissionOverwrites) {
+				if (value.id == value02.id) {
+					allow |= value02.allow;
+					deny |= value02.deny;
 				}
 			}
 		}
 		permissions &= ~deny;
 		permissions |= allow;
-		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.user.id) {
-				permissions &= ~channel.permissionOverwrites[x].deny;
-				permissions |= channel.permissionOverwrites[x].allow;
+		for (auto value: channel.permissionOverwrites) {
+			if (value.id == guildMember.user.id) {
+				permissions &= ~value.deny;
+				permissions |= value.allow;
 				break;
 			}
 		}
@@ -317,7 +317,7 @@ namespace DiscordCoreAPI {
 		if (guild.ownerId == guildMember.user.id) {
 			return getAllPermissions();
 		}
-		std::vector<RoleData> guildRoles{};
+		Jsonifier::Vector<RoleData> guildRoles{};
 		for (auto& value: guild.roles) {
 			guildRoles.emplace_back(Roles::getCachedRole({ .guildId = guild.id, .roleId = value.id }));
 		}
@@ -334,7 +334,7 @@ namespace DiscordCoreAPI {
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId = guildMember.guildId;
-		std::vector<RoleData> guildMemberRoles{};
+		Jsonifier::Vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			auto valueNew = Roles::getCachedRole({ .guildId = guild.id, .roleId = value });
 			guildMemberRoles.emplace_back(valueNew);
@@ -357,33 +357,33 @@ namespace DiscordCoreAPI {
 		}
 
 		uint64_t permissions = stoull(basePermissions);
-		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
-				permissions &= ~channel.permissionOverwrites[x].deny;
-				permissions |= channel.permissionOverwrites[x].allow;
+		for (auto value: channel.permissionOverwrites) {
+			if (value.id == guildMember.guildId) {
+				permissions &= ~value.deny;
+				permissions |= value.allow;
 				break;
 			}
 		}
-		std::vector<RoleData> guildMemberRoles{};
+		Jsonifier::Vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
 		}
 		uint64_t allow{};
 		uint64_t deny{};
 		for (auto& value: guildMemberRoles) {
-			for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-				if (value.id == channel.permissionOverwrites[x].id) {
-					allow |= channel.permissionOverwrites[x].allow;
-					deny |= channel.permissionOverwrites[x].deny;
+			for (auto value02: channel.permissionOverwrites) {
+				if (value.id == value02.id) {
+					allow |= value02.allow;
+					deny |= value02.deny;
 				}
 			}
 		}
 		permissions &= ~deny;
 		permissions |= allow;
-		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.user.id) {
-				permissions &= ~channel.permissionOverwrites[x].deny;
-				permissions |= channel.permissionOverwrites[x].allow;
+		for (auto value: channel.permissionOverwrites) {
+			if (value.id == guildMember.user.id) {
+				permissions &= ~value.deny;
+				permissions |= value.allow;
 				break;
 			}
 		}
@@ -395,7 +395,7 @@ namespace DiscordCoreAPI {
 		if (guild.ownerId == guildMember.user.id) {
 			return getAllPermissions();
 		}
-		std::vector<RoleData> guildRoles{};
+		Jsonifier::Vector<RoleData> guildRoles{};
 		for (auto& value: guild.roles) {
 			guildRoles.emplace_back(Roles::getCachedRole({ .guildId = guild.id, .roleId = value.id }));
 		}
@@ -412,7 +412,7 @@ namespace DiscordCoreAPI {
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId = guildMember.guildId;
-		std::vector<RoleData> guildMemberRoles{};
+		Jsonifier::Vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			auto valueNew = Roles::getCachedRole({ .guildId = guild.id, .roleId = value });
 			guildMemberRoles.emplace_back(valueNew);
@@ -428,7 +428,7 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	std::string constructMultiPartData(const std::string& data, const std::vector<File>& files) {
+	std::string constructMultiPartData(const std::string& data, const Jsonifier::Vector<File>& files) {
 		const std::string boundary("boundary25");
 		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
 
@@ -543,7 +543,7 @@ namespace DiscordCoreAPI {
 		escaped.fill('0');
 		escaped << std::hex;
 
-		for (std::string::const_iterator x = inputString.begin(), n = inputString.end(); x != n; ++x) {
+		for (std::string::const_iterator x = inputString.begin(); x != inputString.end(); ++x) {
 			std::string::value_type c = (*x);
 
 			if (isalnum(static_cast<unsigned char>(c)) || c == '-' || c == '_' || c == '.' || c == '~') {

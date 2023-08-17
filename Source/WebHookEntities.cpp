@@ -105,8 +105,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, std::vector<ChannelType> channelTypes) {
+	ExecuteWebHookData& ExecuteWebHookData::addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options,
+		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, Jsonifier::Vector<ChannelType> channelTypes) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);
@@ -212,24 +212,24 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<WebHookData>> WebHooks::getChannelWebHooksAsync(GetChannelWebHooksData dataPackage) {
+	CoRoutine<Jsonifier::Vector<WebHookData>> WebHooks::getChannelWebHooksAsync(GetChannelWebHooksData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Webhooks };
-		co_await NewThreadAwaitable<std::vector<WebHookData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<WebHookData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/webhooks";
 		workload.callStack = "WebHooks::getChannelWebHooksAsync()";
-		std::vector<WebHookData> returnData{};
+		Jsonifier::Vector<WebHookData> returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<WebHookData>> WebHooks::getGuildWebHooksAsync(GetGuildWebHooksData dataPackage) {
+	CoRoutine<Jsonifier::Vector<WebHookData>> WebHooks::getGuildWebHooksAsync(GetGuildWebHooksData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Webhooks };
-		co_await NewThreadAwaitable<std::vector<WebHookData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<WebHookData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/webhooks";
 		workload.callStack = "WebHooks::getGuildWebHooksAsync()";
-		std::vector<WebHookData> returnData{};
+		Jsonifier::Vector<WebHookData> returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

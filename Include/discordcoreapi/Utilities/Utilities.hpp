@@ -34,6 +34,7 @@
 #include <discordcoreapi/Utilities/UnorderedSet.hpp>
 #include <discordcoreapi/Utilities/UnorderedMap.hpp>
 #include <discordcoreapi/Utilities/ObjectCache.hpp>
+#include <discordcoreapi/Utilities/RingBuffer.hpp>
 #include <discordcoreapi/Utilities/UnboundedMessageBlock.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
 #include <coroutine>
@@ -122,7 +123,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		friend struct Jsonifier::Core<DiscordCoreAPI::UpdatePresenceData>;
 		UnorderedSet<std::string> excludedKeys{};
-		std::vector<ActivityData> activities{};///< A vector of activities.
+		Jsonifier::Vector<ActivityData> activities{};///< A vector of activities.
 		PresenceUpdateState status{};///< Current status.
 		int64_t since{};///< When was the activity started?
 		bool afk{};///< Are we afk.
@@ -224,7 +225,7 @@ namespace DiscordCoreAPI {
 	/// @brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreClientConfig {
 		UpdatePresenceData presenceData{ PresenceUpdateState::Online };///< Presence data to initialize your bot with.
-		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		Jsonifier::Vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
 		GatewayIntents intents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
 		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
@@ -286,7 +287,7 @@ namespace DiscordCoreAPI {
 
 		void setConnectionPort(const uint16_t connectionPortNew);
 
-		std::vector<RepeatedFunctionData> getFunctionsToExecute() const;
+		Jsonifier::Vector<RepeatedFunctionData> getFunctionsToExecute() const;
 
 		TextFormat getTextFormat() const;
 
@@ -296,7 +297,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreClientConfig config{};
 	};
 
-	/// @brief Color constants for use in the EmbedData color values.
+	/// @brief Color constants for use in the EmbedData color data.
 	namespace Colors {
 		const std::string_view White = "FFFFFF",///< White.
 			DiscordWhite = "FFFFFE",///< Discord white.
@@ -362,7 +363,7 @@ namespace DiscordCoreAPI {
 	/// @brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-		std::vector<uint8_t> data{};///< The audio data.
+		Jsonifier::Vector<uint8_t> data{};///< The audio data.
 		uint64_t guildMemberId{};///< GuildMemberId for the sending GuildMemberData.
 		int64_t currentSize{};///< The current size of the allocated memory.
 
@@ -460,8 +461,6 @@ namespace DiscordCoreAPI {
 
 		bool operator==(const IconHash& rhs) const;
 
-		friend std::string operator+(const IconHash& lhs, std::string rhs);
-
 		operator std::string() const;
 
 		~IconHash() = default;
@@ -478,7 +477,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// @brief Permission values, for a given Channel, by RoleData or GuildMemberData.
+	/// @brief Permission data, for a given Channel, by RoleData or GuildMemberData.
 	enum class Permission : uint64_t {
 		Create_Instant_Invite = 0x0000000000000001,///< Allows creation of instant invites.
 		Kick_Members = 0x0000000000000002,///< Allows kicking members.
@@ -527,7 +526,7 @@ namespace DiscordCoreAPI {
 		Send_Voice_Messages = 0x0000400000000000,///< Allows sending voice messages.
 	};
 
-	/// @brief PermissionsBase class, for representing and manipulating Permission values.
+	/// @brief PermissionsBase class, for representing and manipulating Permission data.
 	template<typename ValueType> class PermissionsBase {
 	  public:
 		friend struct JsonifierInternal::ParseWithKeys;
@@ -568,7 +567,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Removes one or more PermissionsBase from the current PermissionsBase value.
 		/// @param permissionsToRemove A vector containing the PermissionsBase you wish to remove.
-		inline void removePermissions(const std::vector<Permission>& permissionsToRemove) {
+		inline void removePermissions(const Jsonifier::Vector<Permission>& permissionsToRemove) {
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			for (auto valueNew: permissionsToRemove) {
 				permissionsInteger &= ~static_cast<uint64_t>(valueNew);
@@ -580,7 +579,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Adds one or more PermissionsBase to the current PermissionsBase value.
 		/// @param permissionsToAdd A vector containing the PermissionsBase you wish to add.
-		inline void addPermissions(const std::vector<Permission>& permissionsToAdd) {
+		inline void addPermissions(const Jsonifier::Vector<Permission>& permissionsToAdd) {
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			for (auto valueNew: permissionsToAdd) {
 				permissionsInteger |= static_cast<uint64_t>(valueNew);
@@ -591,9 +590,9 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Displays the currently present PermissionsBase in a string, and returns a vector with each of them stored in string format.
-		/// @return std::vector A vector full of strings of the PermissionsBase that are in the input std::string's value.
-		inline std::vector<std::string> displayPermissions() {
-			std::vector<std::string> returnVector{};
+		/// @return Jsonifier::Vector A vector full of strings of the PermissionsBase that are in the input std::string's value.
+		inline Jsonifier::Vector<std::string> displayPermissions() {
+			Jsonifier::Vector<std::string> returnVector{};
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			if (permissionsInteger & (1ll << 3)) {
 				for (int64_t x = 0; x < 46; ++x) {
@@ -879,7 +878,7 @@ namespace DiscordCoreAPI {
 		int64_t value{};
 	};
 
-	DiscordCoreAPI_Dll std::string constructMultiPartData(const std::string& data, const std::vector<File>& files);
+	DiscordCoreAPI_Dll std::string constructMultiPartData(const std::string& data, const Jsonifier::Vector<File>& files);
 
 	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
 
@@ -916,6 +915,7 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType, bool timeOut = true> inline auto NewThreadAwaitable() {
 		return NewThreadAwaiter<ReturnType, timeOut>{};
 	}
+
 
 	/**@}*/
 };

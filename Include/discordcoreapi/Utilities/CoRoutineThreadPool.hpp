@@ -33,6 +33,7 @@
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 #include <coroutine>
+#include <thread>
 
 namespace DiscordCoreAPI {
 
@@ -51,7 +52,7 @@ namespace DiscordCoreAPI {
 
 			UnboundedMessageBlock<std::coroutine_handle<>> tasks{};///< Queue of coroutine tasks.
 			std::atomic_bool areWeCurrentlyWorking{};///< Atomic flag indicating if the thread is working.
-			std::jthread thread{};///< Joinable thread.
+			ThreadWrapper thread{};///< Joinable thread.
 		};
 
 		/// @brief A class representing a coroutine-based thread pool.
@@ -60,13 +61,13 @@ namespace DiscordCoreAPI {
 			friend class DiscordCoreAPI::DiscordCoreClient;///< Friend class declaration.
 
 			/// @brief Constructor to create a coroutine thread pool. Initializes the worker threads.
-			inline CoRoutineThreadPool() : threadCount(std::thread::hardware_concurrency()) {
+			inline CoRoutineThreadPool() : threadCount(ThreadWrapper::hardware_concurrency()) {
 				for (uint32_t x = 0; x < threadCount; ++x) {
 					UniquePtr<WorkerThread> workerThread{ makeUnique<WorkerThread>() };
 					currentIndex.store(currentIndex.load() + 1);
 					currentCount.store(currentCount.load() + 1);
 					uint64_t indexNew = currentIndex.load();
-					workerThread->thread = std::jthread([=, this](std::stop_token stopToken) {
+					workerThread->thread = ThreadWrapper([=, this](StopToken stopToken) {
 						threadFunction(stopToken, indexNew);
 					});
 					workerThreads.emplace(currentIndex.load(), std::move(workerThread));
@@ -95,7 +96,7 @@ namespace DiscordCoreAPI {
 					currentIndex.store(currentIndex.load() + 1);
 					currentCount.store(currentCount.load() + 1);
 					uint64_t indexNew = currentIndex.load();
-					workerThread->thread = std::jthread([=, this](std::stop_token stopToken) {
+					workerThread->thread = ThreadWrapper([=, this](StopToken stopToken) {
 						threadFunction(stopToken, indexNew);
 					});
 					lock01.unlock();
@@ -117,8 +118,8 @@ namespace DiscordCoreAPI {
 			/// @brief Thread function for each worker thread.
 			/// @param stopToken The stop token for the thread.
 			/// @param index The index of the worker thread.
-			inline void threadFunction(std::stop_token stopToken, uint64_t index) {
-				while (!stopToken.stop_requested()) {
+			inline void threadFunction(StopToken stopToken, uint64_t index) {
+				while (!stopToken.stopRequested()) {
 					if (!workerThreads.contains(index)) {
 						return;
 					}
@@ -142,7 +143,7 @@ namespace DiscordCoreAPI {
 							std::unique_lock lock{ workerAccessMutex };
 							auto oldThread = workerThreads.begin();
 							if (oldThread.operator*().second->thread.joinable()) {
-								oldThread.operator*().second->thread.request_stop();
+								oldThread.operator*().second->thread.requestStop();
 								oldThread.operator*().second->thread.detach();
 								currentCount.store(currentCount.load() - 1);
 								workerThreads.erase(oldThread.operator*().first);
@@ -152,6 +153,7 @@ namespace DiscordCoreAPI {
 					std::this_thread::sleep_for(100000ns);
 				}
 			}
+
 		};
 		/**@}*/
 	}

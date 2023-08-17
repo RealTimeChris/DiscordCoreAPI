@@ -151,9 +151,9 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<std::vector<UserData>> Reactions::getReactionsAsync(GetReactionsData dataPackage) {
+	CoRoutine<Jsonifier::Vector<UserData>> Reactions::getReactionsAsync(GetReactionsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Reactions };
-		co_await NewThreadAwaitable<std::vector<UserData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<UserData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + dataPackage.emoji;
 		if (dataPackage.afterId != 0) {
@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Reactions::getReactionsAsync()";
-		std::vector<UserData> returnData{};
+		Jsonifier::Vector<UserData> returnData{};
 		Reactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -197,13 +197,13 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<std::vector<EmojiData>> Reactions::getEmojiListAsync(GetEmojiListData dataPackage) {
+	CoRoutine<Jsonifier::Vector<EmojiData>> Reactions::getEmojiListAsync(GetEmojiListData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Emoji_List };
-		co_await NewThreadAwaitable<std::vector<EmojiData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<EmojiData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis";
 		workload.callStack = "Reactions::getEmojiListAsync()";
-		std::vector<EmojiData> returnData{};
+		Jsonifier::Vector<EmojiData> returnData{};
 		Reactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

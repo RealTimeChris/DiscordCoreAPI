@@ -31,6 +31,7 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/Utilities/LightString.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -85,13 +86,13 @@ namespace Jsonifier {
 namespace JsonifierInternal {
 
 	template<> inline void SerializeWithKeys::op<DiscordCoreAPI::Snowflake, Jsonifier::String>(DiscordCoreAPI::Snowflake& value,
-		Jsonifier::String& buffer, uint64_t& index) {
+		Jsonifier::String& buffer, size_t& index) {
 		std::string newString{ static_cast<std::string>(value) };
 		SerializeWithKeys::op(newString, buffer, index);
 	}
 
 	template<> inline void SerializeNoKeys::op<DiscordCoreAPI::Snowflake, Jsonifier::String>(DiscordCoreAPI::Snowflake& value,
-		Jsonifier::String& buffer, uint64_t& index) {
+		Jsonifier::String& buffer, size_t& index) {
 		std::string newString{ static_cast<std::string>(value) };
 		SerializeNoKeys::op(newString, buffer, index);
 	}
@@ -446,11 +447,10 @@ namespace Jsonifier {
 
 	template<> struct Core<DiscordCoreAPI::ApplicationCommandData> {
 		using ValueType = DiscordCoreAPI::ApplicationCommandData;
-		static constexpr auto parseValue =
-			object("application_id", &ValueType::applicationId, "default_member_permissions", &ValueType::defaultMemberPermissions, "description",
-				&ValueType::description, "guild_id", &ValueType::guildId, "description_localizations", &ValueType::descriptionLocalizations,
-				"dm_permission", &ValueType::dmPermission, "id", &ValueType::id, "name", &ValueType::name, "name_localizations",
-				&ValueType::nameLocalizations, "options", &ValueType::options, "type", &ValueType::type, "version", &ValueType::version);
+		static constexpr auto parseValue = object("description_localizations", &ValueType::descriptionLocalizations, "name_localizations",
+			&ValueType::nameLocalizations, "options", &ValueType::options, "default_member_permissions", &ValueType::defaultMemberPermissions, "type",
+			&ValueType::type, "application_id", &ValueType::applicationId, "description", &ValueType::description, "version", &ValueType::version,
+			"dm_permission", &ValueType::dmPermission, "guild_id", &ValueType::guildId, "name", &ValueType::name, "id", &ValueType::id);
 	};
 
 	template<> struct Core<DiscordCoreAPI::StickerData> {
@@ -756,7 +756,7 @@ namespace Jsonifier {
 	template<> struct Core<DiscordCoreAPI::ApplicationCommandOptionChoiceData> {
 		using ValueType = DiscordCoreAPI::ApplicationCommandOptionChoiceData;
 		static constexpr auto parseValue =
-			object("name", &ValueType::name, "value", &ValueType::value, "name_localized", &ValueType::nameLocalizations);
+			object("name", &ValueType::name, "value", &ValueType::value, "name_localizations", &ValueType::nameLocalizations);
 	};
 
 	template<> struct Core<DiscordCoreAPI::RoleTagsData> {

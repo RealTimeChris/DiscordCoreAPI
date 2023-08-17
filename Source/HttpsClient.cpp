@@ -41,9 +41,9 @@ namespace DiscordCoreAPI {
 			ptr = ptrNew;
 		};
 
-		std::vector<std::string> tokenize(std::string const& in, const char* sep = "\r\n") {
+		Jsonifier::Vector<std::string> tokenize(std::string const& in, const char* sep = "\r\n") {
 			std::string::size_type b = 0;
-			std::vector<std::string> result;
+			Jsonifier::Vector<std::string> result;
 
 			while ((b = in.find_first_not_of(sep, b)) != std::string::npos) {
 				auto e = in.find(sep, b);
@@ -180,7 +180,7 @@ namespace DiscordCoreAPI {
 				headers.erase(headers.begin());
 				if (headers.size()) {
 					headers.erase(headers.begin());
-					std::vector<std::string> requestStatus = tokenize(statusLine, " ");
+					Jsonifier::Vector<std::string> requestStatus = tokenize(statusLine, " ");
 					if (requestStatus.size() >= 3 && (requestStatus[0] == "HTTP/1.1" || requestStatus[0] == "HTTP/1.0") &&
 						atoi(requestStatus[1].c_str())) {
 						for (auto& hd: headers) {

@@ -164,19 +164,19 @@ namespace DiscordCoreAPI {
 		WebSocket = 2,
 	};
 
-	inline constexpr std::string_view shiftToBrightGreen() {
+	constexpr std::string_view shiftToBrightGreen() {
 		return "\033[1;40;92m";
 	}
 
-	inline constexpr std::string_view shiftToBrightBlue() {
+	constexpr std::string_view shiftToBrightBlue() {
 		return "\033[1;40;96m";
 	}
 
-	inline constexpr std::string_view shiftToBrightRed() {
+	constexpr std::string_view shiftToBrightRed() {
 		return "\033[1;40;91m";
 	}
 
-	inline constexpr std::string_view reset() {
+	constexpr std::string_view reset() {
 		return "\033[0m";
 	}
 
@@ -319,7 +319,7 @@ namespace DiscordCoreAPI {
 			return *static_cast<const ValueType*>(this) == other;
 		}
 
-		/// @brief Converts given time values into a future ISO8601 time stamp.
+		/// @brief Converts given time data into a future ISO8601 time stamp.
 		/// @param minutesToAdd Number of minutes to add.
 		/// @param hoursToAdd Number of hours to add.
 		/// @param daysToAdd Number of days to add.
@@ -776,6 +776,15 @@ namespace DiscordCoreAPI {
 		/// @brief Default constructor for Snowflake.
 		inline Snowflake() = default;
 
+		inline Snowflake& operator=(const Snowflake& other) {
+			this->id = other.id;
+			return *this;
+		}
+
+		inline Snowflake(const Snowflake& other) {
+			*this = other;
+		}
+
 		/// @brief Assignment operator to assign a string value to Snowflake.
 		/// @param other The string value to assign.
 		/// @return Reference to the modified Snowflake instance.
@@ -850,7 +859,7 @@ namespace DiscordCoreAPI {
 			return lhsNew;
 		}
 
-		/// @brief Friend function to concatenate two values.
+		/// @brief Friend function to concatenate two data.
 		/// @tparam ValueType01 The type of the first value.
 		/// @tparam ValueType02 The type of the second value.
 		/// @param lhs The first value.
@@ -884,7 +893,7 @@ namespace DiscordCoreAPI {
 		/// @brief Constructor to create a DCAException with an error message and optional source location.
 		/// @param error The error message.
 		/// @param location The source location of the exception (default: current location).
-		inline DCAException(const std::string& error, std::source_location location = std::source_location::current())
+		DCAException(const std::string& error, std::source_location location = std::source_location::current())
 			: std::runtime_error("Thrown From: " + std::string{ location.file_name() } + std::string{ " (" } + std::to_string(location.line()) + ":" +
 				  std::to_string(location.column()) + ")\n" + error){};
 	};

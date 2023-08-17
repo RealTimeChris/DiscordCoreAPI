@@ -67,9 +67,9 @@ namespace DiscordCoreAPI {
 		/// @param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// @param maxValues Maximum number of selections that are possible.
 		/// @param minValues Minimum required number of selections that are required.
-		InteractionResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
+		InteractionResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options,
 			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
-			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
+			Jsonifier::Vector<ChannelType> channelTypes = Jsonifier::Vector<ChannelType>{});
 
 		/// @brief Adds a modal to the response MessageData.
 		/// @param topTitleNew A title for the modal.
@@ -82,14 +82,14 @@ namespace DiscordCoreAPI {
 		/// @param inputStyle The input style.
 		/// @param label A label for the modal.
 		/// @param placeholder A placeholder for the modal.
-		/// @returns RespondToInputEventData& A reference to this data structure.
+		/// @return RespondToInputEventData& A reference to this data structure.
 		InteractionResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
 			const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle,
 			const std::string& label = "", const std::string& placeholder = "");
 
 		/// @brief Adds a file to the current collection of files for this message response.
 		/// @param theFile The file to be added.
-		/// @returns MessageResponseBase& A reference to this data structure.
+		/// @return MessageResponseBase& A reference to this data structure.
 		InteractionResponseBase& addFile(const File& theFile);
 
 		/// @brief For setting the allowable mentions in a response.
@@ -310,42 +310,42 @@ namespace DiscordCoreAPI {
 
 		/// @brief Creates a response to an input Interaction.
 		/// @param dataPackage A CreateInteractionResponseData structure.
-		/// @returns A CoRoutine containing a Message.
+		/// @return A CoRoutine containing a Message.
 		static CoRoutine<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage);
 
 		/// @brief Collects an Interaction response.
 		/// @param dataPackage A GetInteractionResponseData structure.
-		/// @returns A CoRoutine containing an InteractionResponseData.
+		/// @return A CoRoutine containing an InteractionResponseData.
 		static CoRoutine<MessageData> getInteractionResponseAsync(GetInteractionResponseData dataPackage);
 
 		/// @brief Edits an Interaction response.
 		/// @param dataPackage A EditInteractionResponseData structure.
-		/// @returns A CoRoutine containing a Message.
+		/// @return A CoRoutine containing a Message.
 		static CoRoutine<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage);
 
 		/// @brief Deletes an Interaction respnose.
 		/// @param dataPackage A DeleteInteractionResponseData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage);
 
 		/// @brief Creates a follow up Message to an input Interaction.
 		/// @param dataPackage A CreateFollowUpMessageData structure.
-		/// @returns A CoRoutine containing a Message.
+		/// @return A CoRoutine containing a Message.
 		static CoRoutine<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
 
 		/// @brief Creates a follow up Message to an input Interaction.
 		/// @param dataPackage A CreateFollowUpMessageData structure.
-		/// @returns A CoRoutine containing a Message.
+		/// @return A CoRoutine containing a Message.
 		static CoRoutine<MessageData> getFollowUpMessageAsync(GetFollowUpMessageData dataPackage);
 
 		/// @brief Edits a follow up MessageData.
 		/// @param dataPackage A EditFollowUpMessageData structure.
-		/// @returns A CoRoutine containing a Message.
+		/// @return A CoRoutine containing a Message.
 		static CoRoutine<MessageData> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage);
 
 		/// @brief Deletes a follow up MessageData.
 		/// @param dataPackage A DeleteFollowUpMessageData structure.
-		/// @returns A CoRoutine containing void.
+		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
 
 	  protected:
@@ -408,7 +408,7 @@ namespace DiscordCoreAPI {
 		inline SelectMenuResponseData() = default;
 
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
-		std::vector<std::string> values{};///< A vector of the chosen values.
+		Jsonifier::Vector<std::string> values{};///< A vector of the chosen values.
 		std::string selectionId{};///< Selection id.
 		Snowflake channelId{};///< The ChannelData id where it took place.
 		Snowflake messageId{};///< The Message id where it took place.
@@ -435,8 +435,8 @@ namespace DiscordCoreAPI {
 		/// @param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping.
 		/// @param errorMessageDataNew The message-data for when an individual other than the selected individual attemps to use this interaction.
 		/// @param targetUserId The id of the single UserData to collect inputs from, if getSelectMenuDataForAllNew is set to false.
-		/// @returns A vector of SelectMenuResponseData.
-		CoRoutine<std::vector<SelectMenuResponseData>, false> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
+		/// @return A vector of SelectMenuResponseData.
+		CoRoutine<Jsonifier::Vector<SelectMenuResponseData>, false> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
 			int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
 
 		/// @brief Used to collect the select-menu inputs from one or more users.
@@ -450,11 +450,11 @@ namespace DiscordCoreAPI {
 	  protected:
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> selectMenuIncomingInteractionBuffer{};
-		std::vector<SelectMenuResponseData> responseVector{};
+		Jsonifier::Vector<SelectMenuResponseData> responseVector{};
 		CreateInteractionResponseData errorMessageData{};
 		int32_t currentCollectedSelectMenuCount{};
 		int32_t maxCollectedSelectMenuCount{};
-		std::vector<std::string> values{};
+		Jsonifier::Vector<std::string> values{};
 		bool getSelectMenuDataForAll{};
 		std::string buffersMapKey{};
 		std::string selectMenuId{};
@@ -533,8 +533,8 @@ namespace DiscordCoreAPI {
 		/// @param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
 		/// @param errorMessageDataNew The message-data for when an individual other than the selected individual attemps to use this interaction.
 		/// @param targetUserId The id of the single UserData to collect inputs from, if getButtonDataForAllNew is set to false.
-		/// @returns A vector of ButtonResponseData.
-		CoRoutine<std::vector<ButtonResponseData>, false> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
+		/// @return A vector of ButtonResponseData.
+		CoRoutine<Jsonifier::Vector<ButtonResponseData>, false> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
 			int32_t maxNumberOfPressesNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
 
 		/// @brief Used to collect the button inputs from one or more users.
@@ -549,10 +549,10 @@ namespace DiscordCoreAPI {
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> buttonIncomingInteractionBuffer{};
 		CreateInteractionResponseData errorMessageData{};
-		std::vector<ButtonResponseData> responseVector{};
+		Jsonifier::Vector<ButtonResponseData> responseVector{};
 		int32_t currentCollectedButtonCount{};
 		int32_t maxCollectedButtonCount{};
-		std::vector<std::string> values{};
+		Jsonifier::Vector<std::string> values{};
 		std::string buffersMapKey{};
 		bool getButtonDataForAll{};
 		uint32_t maxTimeInMs{};
@@ -611,7 +611,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Used to collect the button inputs from one or more users.
 		/// @param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
-		/// @returns A vector of ButtonResponseData.
+		/// @return A vector of ButtonResponseData.
 		CoRoutine<ModalResponseData, false> collectModalData(int32_t maxWaitTimeInMsNew);
 
 		/// @brief Used to collect the modal from one or more users.

@@ -55,14 +55,14 @@ namespace DiscordCoreAPI {
 		AutoModerationRules::httpsClient = HttpsClientNew;
 	}
 
-	CoRoutine<std::vector<AutoModerationRuleData>> AutoModerationRules::listAutoModerationRulesForGuildAsync(
+	CoRoutine<Jsonifier::Vector<AutoModerationRuleData>> AutoModerationRules::listAutoModerationRulesForGuildAsync(
 		ListAutoModerationRulesForGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules };
-		co_await NewThreadAwaitable<std::vector<AutoModerationRuleData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<AutoModerationRuleData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/auto-moderation/rules";
 		workload.callStack = "AutoModerationRules::listAutoModerationRulesForGuildAsync()";
-		std::vector<AutoModerationRuleData> returnVector{};
+		Jsonifier::Vector<AutoModerationRuleData> returnVector{};
 		AutoModerationRules::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnVector);
 		co_return std::move(returnVector);
 	}

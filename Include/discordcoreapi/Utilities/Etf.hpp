@@ -32,6 +32,7 @@
 
 #include <discordcoreapi/Utilities/UniquePtr.hpp>
 #include <discordcoreapi/Utilities/LightString.hpp>
+#include <discordcoreapi/Utilities/ThreadWrapper.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -53,17 +54,14 @@ namespace DiscordCoreAPI {
 				// Reverse byte order using SIMD intrinsics
 				switch (sizeof(ReturnType)) {
 					case 2: {
-						net = _mm_extract_epi16(_mm_shuffle_epi8(_mm_insert_epi16(__m128i{}, net, 0), _mm_insert_epi16(__m128i{}, 0x01, 0)), 0);
-						return net;
+						return _mm_extract_epi16(_mm_shuffle_epi8(_mm_insert_epi16(__m128i{}, net, 0), _mm_insert_epi16(__m128i{}, 0x01, 0)), 0);
 					}
 					case 4: {
-						net = _mm_extract_epi32(_mm_shuffle_epi8(_mm_insert_epi32(__m128i{}, net, 0), _mm_insert_epi32(__m128i{}, 0x10203, 0)), 0);
-						return net;
+						return _mm_extract_epi32(_mm_shuffle_epi8(_mm_insert_epi32(__m128i{}, net, 0), _mm_insert_epi32(__m128i{}, 0x10203, 0)), 0);
 					}
 					case 8: {
-						net = _mm_extract_epi64(
+						return _mm_extract_epi64(
 							_mm_shuffle_epi8(_mm_insert_epi64(__m128i{}, net, 0), _mm_insert_epi64(__m128i{}, 0x102030405060708, 0)), 0);
-						return net;
 					}
 					default: {
 						return net;
@@ -81,16 +79,13 @@ namespace DiscordCoreAPI {
 				// Reverse byte order using standard network to host conversion functions
 				switch (sizeof(ReturnType)) {
 					case 2: {
-						net = static_cast<ReturnType>(ntohs(static_cast<uint16_t>(net)));
-						return net;
+						return static_cast<ReturnType>(ntohs(static_cast<uint16_t>(net)));
 					}
-					case 4: {
-						net = static_cast<ReturnType>(ntohl(static_cast<uint32_t>(net)));
-						return net;
+					case 4: { 
+						return static_cast<ReturnType>(ntohl(static_cast<uint32_t>(net)));
 					}
 					case 8: {
-						net = static_cast<ReturnType>(ntohll(static_cast<uint64_t>(net)));
-						return net;
+						return static_cast<ReturnType>(ntohll(static_cast<uint64_t>(net)));
 					}
 					default: {
 						return net;
@@ -121,7 +116,7 @@ namespace DiscordCoreAPI {
 			/// @brief Constructs an EtfParseError instance with a message and source location.
 			/// @param message The error message.
 			/// @param location The source location where the error occurred.
-			inline explicit EtfParseError(const std::string& message, std::source_location location = std::source_location::current())
+			EtfParseError(const std::string& message, std::source_location location = std::source_location::current())
 				: DCAException{ message, location } {};
 		};
 
@@ -163,7 +158,7 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			LightString<char> finalString{};///< The final JSON string.
+			String finalString{};///< The final JSON string.
 			const char* dataBuffer{};///< Pointer to ETF data buffer.
 			uint64_t currentSize{};///< Current size of the JSON string.
 			uint64_t dataSize{};///< Size of the ETF data.
@@ -457,7 +452,7 @@ namespace DiscordCoreAPI {
 			/// @brief Constructor for EtfSerializeError.
 			/// @param message The error message.
 			/// @param location Source location where the error occurred.
-			inline EtfSerializeError(const std::string& message, std::source_location location = std::source_location::current())
+			EtfSerializeError(const std::string& message, std::source_location location = std::source_location::current())
 				: DCAException{ message, location } {};
 		};
 
@@ -469,21 +464,21 @@ namespace DiscordCoreAPI {
 
 		/// @brief Concept for floating-point types excluding EtfSerializer types.
 		template<typename ValueType>
-		concept FloatT = std::floating_point<std::decay_t<ValueType>> && !EtfSerializerT<ValueType>;
+		concept FloatT = std::floating_point<std::decay_t<ValueType>>;
 
 		/// @brief Concept for signed integral types excluding EtfSerializer and boolean types.
 		template<typename ValueType>
-		concept SignedT = std::signed_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !EtfSerializerT<ValueType>;
+		concept SignedT = std::signed_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>>;
 
 		/// @brief Concept for unsigned integral types excluding EtfSerializer, boolean, and signed types.
 		template<typename ValueType>
 		concept UnsignedT =
-			std::unsigned_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !SignedT<ValueType> && !EtfSerializerT<ValueType>;
+			std::unsigned_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !SignedT<ValueType>;
 
 		/// @brief Concept for string types excluding EtfSerializer.
 		template<typename ValueType>
 		concept StringT = std::same_as<std::decay_t<ValueType>, std::string> || std::same_as<std::decay_t<ValueType>, std::string_view> ||
-			std::convertible_to<ValueType, std::string> && !std::same_as<std::decay_t<ValueType>, char> && !EtfSerializerT<ValueType>;
+			std::convertible_to<ValueType, std::string> && !std::same_as<std::decay_t<ValueType>, char>;
 
 		/// @brief Concept for types that have emplace_back method.
 		template<typename ValueType>
@@ -506,7 +501,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Concept for null types excluding EtfSerializer.
 		template<typename ValueType>
-		concept NullT = std::same_as<std::decay_t<ValueType>, std::nullptr_t> && !EtfSerializerT<ValueType>;
+		concept NullT = std::same_as<std::decay_t<ValueType>, std::nullptr_t>;
 
 		/// @brief Concept for types that are subscriptable with [] operator.
 		template<typename ValueType>
@@ -525,7 +520,7 @@ namespace DiscordCoreAPI {
 		concept ObjectT = requires(ValueType data) {
 			typename ValueType::mapped_type;
 			typename ValueType::key_type;
-		} && HasRange<ValueType> && !EtfSerializerT<ValueType>;
+		} && HasRange<ValueType>;
 
 
 		class EtfSerializer {
@@ -533,7 +528,7 @@ namespace DiscordCoreAPI {
 			template<typename ValueType> using allocator = std::allocator<ValueType>;
 			using map_allocator = allocator<std::pair<const std::string, EtfSerializer>>;
 			using object_type = std::map<std::string, EtfSerializer, std::less<>, map_allocator>;
-			using array_type = std::vector<EtfSerializer, allocator<EtfSerializer>>;
+			using array_type = Jsonifier::Vector<EtfSerializer>;
 			using string_type = std::string;
 			using float_type = double;
 			using uint_type = uint64_t;

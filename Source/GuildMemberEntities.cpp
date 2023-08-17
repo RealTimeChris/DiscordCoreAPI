@@ -175,13 +175,13 @@ namespace DiscordCoreAPI {
 		if (cache.contains(key)) {
 			return cache[key];
 		} else {
+			return GuildMembers::getGuildMemberAsync(dataPackage).get();
 		}
-		return GuildMembers::getGuildMemberAsync(dataPackage).get();
 	}
 
-	CoRoutine<std::vector<GuildMemberData>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
+	CoRoutine<Jsonifier::Vector<GuildMemberData>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Members };
-		co_await NewThreadAwaitable<std::vector<GuildMemberData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<GuildMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members";
 		if (dataPackage.after != 0) {
@@ -193,14 +193,14 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::listGuildMembersAsync()";
-		std::vector<GuildMemberData> returnData{};
+		Jsonifier::Vector<GuildMemberData> returnData{};
 		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<GuildMemberData>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
+	CoRoutine<Jsonifier::Vector<GuildMemberData>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Search_Guild_Members };
-		co_await NewThreadAwaitable<std::vector<GuildMemberData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<GuildMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/search";
 		if (dataPackage.query != "") {
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::searchGuildMembersAsync()";
-		std::vector<GuildMemberData> returnData{};
+		Jsonifier::Vector<GuildMemberData> returnData{};
 		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

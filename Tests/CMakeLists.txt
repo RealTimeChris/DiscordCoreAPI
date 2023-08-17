@@ -57,8 +57,16 @@ add_executable(
     "main.cpp" "./Commands/BotInfo.hpp"
 )
 
+target_link_options(
+	"${PROJECT_NAME}" INTERFACE	
+    "$<$<CXX_COMPILER_ID:CLANG>:-Wl,-rpath,/usr/local/opt/llvm/lib/c++>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-L/usr/local/opt/llvm/lib/c++>"
+)
+
 target_link_libraries(
-    "${PROJECT_NAME}" PUBLIC
+	"${PROJECT_NAME}" PRIVATE
+	"$<$<CXX_COMPILER_ID:CLANG>:c++abi>"
+    "$<$<CXX_COMPILER_ID:CLANG>:c++>"
     DiscordCoreAPI::DiscordCoreAPI
 )
 
