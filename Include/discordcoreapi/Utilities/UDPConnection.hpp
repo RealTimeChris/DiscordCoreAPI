@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-#ifdef _WIN32
+#if defined _WIN32
 				u_long value02{ 1 };
 				if (ioctlsocket(socket, FIONBIO, &value02)) {
 					MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::ioctlsocket(), to: " + baseUrlNew));

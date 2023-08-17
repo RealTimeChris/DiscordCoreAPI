@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		friend struct Jsonifier::Core<DiscordCoreAPI::UpdatePresenceData>;
 		UnorderedSet<std::string> excludedKeys{};
-		std::vector<ActivityData> activities{};///< A vector of activities.
+		Jsonifier::Vector<ActivityData> activities{};///< A vector of activities.
 		PresenceUpdateState status{};///< Current status.
 		int64_t since{};///< When was the activity started?
 		bool afk{};///< Are we afk.
@@ -224,7 +224,7 @@ namespace DiscordCoreAPI {
 	/// @brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreClientConfig {
 		UpdatePresenceData presenceData{ PresenceUpdateState::Online };///< Presence data to initialize your bot with.
-		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		Jsonifier::Vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
 		GatewayIntents intents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
 		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
@@ -286,7 +286,7 @@ namespace DiscordCoreAPI {
 
 		void setConnectionPort(const uint16_t connectionPortNew);
 
-		std::vector<RepeatedFunctionData> getFunctionsToExecute() const;
+		Jsonifier::Vector<RepeatedFunctionData> getFunctionsToExecute() const;
 
 		TextFormat getTextFormat() const;
 
@@ -362,7 +362,7 @@ namespace DiscordCoreAPI {
 	/// @brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-		std::vector<uint8_t> data{};///< The audio data.
+		Jsonifier::Vector<uint8_t> data{};///< The audio data.
 		uint64_t guildMemberId{};///< GuildMemberId for the sending GuildMemberData.
 		int64_t currentSize{};///< The current size of the allocated memory.
 
@@ -541,7 +541,7 @@ namespace DiscordCoreAPI {
 		/// @param guildMember The GuildMemberData who's PermissionsBase to analyze.
 		/// @param channel The ChannelData withint which to check for PermissionsBase.
 		/// @return std::string A string containing the final Permission's value for a given Channel.
-		inline static std::string getCurrentChannelPermissions(const GuildMemberData& guildMember, const ChannelData& channel) {
+		static inline std::string getCurrentChannelPermissions(const GuildMemberData& guildMember, const ChannelData& channel) {
 			return computePermissions(guildMember, channel);
 		}
 
@@ -561,14 +561,14 @@ namespace DiscordCoreAPI {
 		/// @brief Returns a string containing the currently held PermissionsBase in a given Guild.
 		/// @param guildMember The GuildMemberData who's PermissionsBase are to be evaluated.
 		/// @return std::string A string containing the current PermissionsBase.
-		inline static std::string getCurrentGuildPermissions(const GuildMemberData& guildMember) {
+		static inline std::string getCurrentGuildPermissions(const GuildMemberData& guildMember) {
 			PermissionsBase setValue(computeBasePermissions(guildMember));
 			return static_cast<ValueType*>(setValue);
 		}
 
 		/// @brief Removes one or more PermissionsBase from the current PermissionsBase value.
 		/// @param permissionsToRemove A vector containing the PermissionsBase you wish to remove.
-		inline void removePermissions(const std::vector<Permission>& permissionsToRemove) {
+		inline void removePermissions(const Jsonifier::Vector<Permission>& permissionsToRemove) {
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			for (auto valueNew: permissionsToRemove) {
 				permissionsInteger &= ~static_cast<uint64_t>(valueNew);
@@ -580,7 +580,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Adds one or more PermissionsBase to the current PermissionsBase value.
 		/// @param permissionsToAdd A vector containing the PermissionsBase you wish to add.
-		inline void addPermissions(const std::vector<Permission>& permissionsToAdd) {
+		inline void addPermissions(const Jsonifier::Vector<Permission>& permissionsToAdd) {
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			for (auto valueNew: permissionsToAdd) {
 				permissionsInteger |= static_cast<uint64_t>(valueNew);
@@ -591,9 +591,9 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Displays the currently present PermissionsBase in a string, and returns a vector with each of them stored in string format.
-		/// @return std::vector A vector full of strings of the PermissionsBase that are in the input std::string's value.
-		inline std::vector<std::string> displayPermissions() {
-			std::vector<std::string> returnVector{};
+		/// @return Jsonifier::Vector A vector full of strings of the PermissionsBase that are in the input std::string's value.
+		inline Jsonifier::Vector<std::string> displayPermissions() {
+			Jsonifier::Vector<std::string> returnVector{};
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			if (permissionsInteger & (1ll << 3)) {
 				for (int64_t x = 0; x < 46; ++x) {
@@ -747,7 +747,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Returns a string containing ALL of the possible PermissionsBase.
 		/// @return std::string A string containing all of the possible PermissionsBase.
-		inline static std::string getAllPermissions() {
+		static inline std::string getAllPermissions() {
 			uint64_t allPerms{};
 			for (int64_t x = 0; x < 46; ++x) {
 				allPerms |= 1ll << x;
@@ -764,7 +764,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI_Dll static std::string computeOverwrites(const std::string& basePermissions, const GuildMemberData& guildMember,
 			const ChannelData& channel);
 
-		inline static std::string computePermissions(const GuildMemberData& guildMember, const ChannelData& channel) {
+		static inline std::string computePermissions(const GuildMemberData& guildMember, const ChannelData& channel) {
 			std::string permissions = computeBasePermissions(guildMember);
 			permissions = computeOverwrites(permissions, guildMember, channel);
 			return permissions;
@@ -879,7 +879,7 @@ namespace DiscordCoreAPI {
 		int64_t value{};
 	};
 
-	DiscordCoreAPI_Dll std::string constructMultiPartData(const std::string& data, const std::vector<File>& files);
+	DiscordCoreAPI_Dll std::string constructMultiPartData(const std::string& data, const Jsonifier::Vector<File>& files);
 
 	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
 

@@ -39,33 +39,29 @@ namespace DiscordCoreAPI {
 	template<typename SetIterator, typename ValueType>
 	concept SetContainerIteratorT = std::is_same_v<typename UnorderedSet<ValueType>::iterator, std::decay_t<SetIterator>>;
 
-	template<typename ValueType> class UnorderedSet : protected PowerOfTwoHashPolicy<UnorderedSet<ValueType>>,
-													  protected JsonifierInternal::AllocWrapper<ObjectCore<ValueType>>,
-													  protected ObjectCompare,
-													  protected KeyHasher {
+	template<typename ValueType>
+	class UnorderedSet : protected HashPolicy<UnorderedSet<ValueType>>, protected JsonifierInternal::AllocWrapper<ValueType>, protected ObjectCompare, protected KeyAccessor {
 	  public:
-		using mapped_type = ValueType;
-		using key_type = ValueType;
-		using reference = mapped_type&;
-		using value_type = mapped_type;
-		using value_type_internal = ObjectCore<mapped_type>;
-		using const_reference = const mapped_type&;
-		using size_type = uint64_t;
-		using key_hasher = KeyHasher;
-		using object_compare = ObjectCompare;
-		using hash_policy = PowerOfTwoHashPolicy<UnorderedSet<mapped_type>>;
+		using mapped_type		= ValueType;
+		using key_type			= mapped_type;
+		using reference			= mapped_type&;
+		using value_type		= mapped_type;
+		using const_reference	= const mapped_type&;
+		using size_type			= uint64_t;
+		using object_compare	= ObjectCompare;
+		using key_accessor		= KeyAccessor;
+		using hash_policy		= HashPolicy<UnorderedSet<mapped_type>>;
+		using key_hasher		= hash_policy;
 		friend hash_policy;
 
-		using iterator = HashIterator<value_type_internal>;
+		using iterator = HashIterator<UnorderedSet<mapped_type>>;
 		friend iterator;
-		using const_iterator = const HashIterator<value_type_internal>;
+		using const_iterator = HashIterator<const UnorderedSet<mapped_type>>;
 		friend const_iterator;
 
-		using allocator = JsonifierInternal::AllocWrapper<value_type_internal>;
+		using allocator = JsonifierInternal::AllocWrapper<value_type>;
 
-		inline UnorderedSet(size_type capacityNew = 5) {
-			reserve(capacityNew);
-		};
+		inline UnorderedSet(){};
 
 		inline UnorderedSet& operator=(UnorderedSet&& other) noexcept {
 			if (this != &other) {
@@ -82,7 +78,8 @@ namespace DiscordCoreAPI {
 		inline UnorderedSet& operator=(const UnorderedSet& other) {
 			if (this != &other) {
 				clear();
-				reserve(other.capacityVal);
+
+				reserve(other.capacity());
 				for (const auto& value: other) {
 					emplace(value);
 				}
@@ -94,16 +91,23 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		template<typename... Args> iterator emplace(Args&&... value) {
-			return emplaceInternal(std::forward<Args>(value)...);
+		inline UnorderedSet(std::initializer_list<value_type> list) {
+			reserve(list.size());
+			for (auto& value: list) {
+				emplace(std::move(value));
+			}
+		};
+
+		template<typename Args> iterator emplace(Args&& value) {
+			return emplaceInternal(std::forward<Args>(value));
 		}
 
 		template<typename key_type_new> inline const_iterator find(key_type_new&& key) const {
-			if (capacityVal > 0) {
-				auto currentEntry = data + hash_policy::indexForHash(key_hasher()(key));
-				for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-					if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(key))) {
-						return { currentEntry };
+			if (sizeVal > 0) {
+				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
+				for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(key))) {
+						return { this, currentIndex };
 					}
 				}
 			}
@@ -111,11 +115,11 @@ namespace DiscordCoreAPI {
 		}
 
 		template<typename key_type_new> inline iterator find(key_type_new&& key) {
-			if (capacityVal > 0) {
-				auto currentEntry = data + hash_policy::indexForHash(key_hasher()(key));
-				for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-					if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(key))) {
-						return { currentEntry };
+			if (sizeVal > 0) {
+				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
+				for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(key))) {
+						return { this, currentIndex };
 					}
 				}
 			}
@@ -155,10 +159,10 @@ namespace DiscordCoreAPI {
 		}
 
 		template<typename key_type_new> inline bool contains(key_type_new&& key) const {
-			if (capacityVal > 0) {
-				auto currentEntry = data + hash_policy::indexForHash(key_hasher()(key));
-				for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-					if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(key))) {
+			if (sizeVal > 0) {
+				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
+				for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor().operator()(data[currentIndex]), getKeyAccessor().operator()(key))) {
 						return true;
 					}
 				}
@@ -167,13 +171,13 @@ namespace DiscordCoreAPI {
 		}
 
 		template<SetContainerIteratorT<mapped_type> SetIterator> inline iterator erase(SetIterator&& iter) {
-			if (capacityVal > 0) {
-				auto currentEntry = data + static_cast<size_type>(iter.getRawPtr() - data);
-				for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-					if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(iter.operator*()))) {
-						currentEntry->disable();
+			if (sizeVal > 0) {
+				auto currentIndex = static_cast<size_type>(iter.getRawPtr() - data);
+				for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(iter.operator*()))) {
+						sentinelVector[currentIndex] = 0;
 						sizeVal--;
-						return { ++currentEntry };
+						return { this, ++currentIndex };
 					}
 				}
 			}
@@ -181,13 +185,13 @@ namespace DiscordCoreAPI {
 		}
 
 		template<typename key_type_new> inline iterator erase(key_type_new&& key) {
-			if (capacityVal > 0) {
-				auto currentEntry = data + hash_policy::indexForHash(key_hasher()(key));
-				for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-					if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(key))) {
-						currentEntry->disable();
+			if (sizeVal > 0) {
+				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
+				for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(key))) {
+						sentinelVector[currentIndex] = 0;
 						sizeVal--;
-						return { ++currentEntry };
+						return { this, ++currentIndex };
 					}
 				}
 			}
@@ -196,28 +200,28 @@ namespace DiscordCoreAPI {
 
 		inline const_iterator begin() const {
 			for (size_type x{ 0 }; x < capacityVal; ++x) {
-				if (data[x].areWeActive()) {
-					return { data + x };
+				if (sentinelVector[x] > 0) {
+					return { this, x };
 				}
 			}
 			return end();
 		}
 
 		inline const_iterator end() const {
-			return { data + capacityVal };
+			return {};
 		}
 
 		inline iterator begin() {
 			for (size_type x{ 0 }; x < capacityVal; ++x) {
-				if (data[x].areWeActive()) {
-					return { data + x };
+				if (sentinelVector[x] > 0) {
+					return { this, x };
 				}
 			}
 			return end();
 		}
 
 		inline iterator end() {
-			return { data + capacityVal };
+			return {};
 		}
 
 		inline bool full() const {
@@ -237,6 +241,8 @@ namespace DiscordCoreAPI {
 		}
 
 		void swap(UnorderedSet& other) noexcept {
+			std::swap(maxLookAheadDistance, other.maxLookAheadDistance);
+			std::swap(sentinelVector, other.sentinelVector);
 			std::swap(capacityVal, other.capacityVal);
 			std::swap(sizeVal, other.sizeVal);
 			std::swap(data, other.data);
@@ -259,12 +265,17 @@ namespace DiscordCoreAPI {
 		}
 
 		void clear() {
-			if (data && capacityVal > 0) {
-				std::destroy(data, data + capacityVal);
-				allocator::deallocate(data, capacityVal);
-				sizeVal = 0;
+			if (data && sizeVal > 0) {
+				for (size_t x = 0; x < sentinelVector.size(); ++x) {
+					if (sentinelVector[x] > 0) {
+						getAlloc().destroy(data + x);
+					}
+				}
+				getAlloc().deallocate(data, capacityVal);
+				sentinelVector.clear();
+				sizeVal		= 0;
 				capacityVal = 0;
-				data = nullptr;
+				data		= nullptr;
 			}
 		}
 
@@ -273,48 +284,68 @@ namespace DiscordCoreAPI {
 		};
 
 	  protected:
-		value_type_internal* data{};
+		Jsonifier::Vector<int8_t> sentinelVector{};
+		int8_t maxLookAheadDistance{ minLookups };
 		size_type capacityVal{};
 		size_type sizeVal{};
+		value_type* data{};
 
 		template<typename mapped_type_new> inline iterator emplaceInternal(mapped_type_new&& value) {
 			if (full() || capacityVal == 0) {
-				resize(static_cast<uint64_t>(static_cast<double>(capacityVal) * (static_cast<float>(maxLookupDistance) / 2.0f) + 2.0f));
+				resize(capacityVal + 1);
 			}
-			auto currentEntry = data + hash_policy::indexForHash(key_hasher()(value));
-			for (size_type x{}; x < maxLookupDistance; ++x, ++currentEntry) {
-				if (currentEntry->areWeEmpty()) {
-					currentEntry->enable(std::forward<mapped_type_new>(value));
+			auto currentIndex = getKeyAccessor()(value) & (capacityVal - 1);
+			for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+				if (sentinelVector[currentIndex] == 0) {
+					new (std::addressof(data[currentIndex])) value_type{ std::forward<mapped_type_new>(value) };
+					sentinelVector[currentIndex] = 1;
 					sizeVal++;
-					return currentEntry;
-				} else if (currentEntry->areWeActive() && object_compare()(key_hasher()(currentEntry->value), key_hasher()(value))) {
-					currentEntry->value = std::forward<mapped_type_new>(value);
-					return currentEntry;
+					return { this, currentIndex };
+				} else if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(value))) {
+					if constexpr (!std::is_void_v<mapped_type_new>) {
+						new (std::addressof(data[currentIndex])) mapped_type{ std::forward<mapped_type_new>(value) };
+					}
+					return { this, currentIndex };
 				}
 			}
-			resize(static_cast<uint64_t>(static_cast<double>(capacityVal) * (static_cast<float>(maxLookupDistance) / 2.0f)));
+			resize(capacityVal + 1);
 			return emplaceInternal(std::forward<mapped_type_new>(value));
 		}
 
+		inline const allocator& getAlloc() const {
+			return *this;
+		}
+
+		inline const hash_policy& getHashPolicy() const {
+			return *this;
+		}
+
+		inline const key_accessor& getKeyAccessor() const {
+			return *this;
+		}
+
 		inline void resize(size_type capacityNew) {
-			auto newSize = hash_policy::nextSizeOver(capacityNew);
+			auto newSize = getHashPolicy().nextPowerOfTwo(capacityNew);
 			if (newSize > capacityVal) {
-				auto oldPtr = data;
-				auto oldCapacity = capacityVal;
-				auto oldSize = sizeVal;
-				sizeVal = 0;
-				data = allocator::allocate(newSize + 1 + maxLookupDistance);
-				std::uninitialized_default_construct(data, data + newSize + 1 + maxLookupDistance);
-				capacityVal = newSize;
-				new (data + capacityVal) value_type_internal{ ObjectCore<value_type>{ -1 } };
-				for (size_type x = 0, y = 0; x < oldCapacity && y < oldSize; ++x) {
-					if (oldPtr[x].areWeActive()) {
+				Jsonifier::Vector<int8_t> oldSentinelVector = std::move(sentinelVector);
+				auto oldMaxLookAheadDistance				= maxLookAheadDistance;
+				auto oldCapacity							= capacityVal;
+				auto oldSize								= sizeVal;
+				auto oldPtr									= data;
+				maxLookAheadDistance						= getHashPolicy().computeMaxLookAheadDistance(newSize);
+				sizeVal										= 0;
+				data										= getAlloc().allocate(newSize + 1 + maxLookAheadDistance);
+				sentinelVector.resize(newSize + 1 + maxLookAheadDistance);
+				sentinelVector[newSize + maxLookAheadDistance] = -1;
+				capacityVal									   = newSize;
+				for (size_type x = 0, y = 0; y < oldSize; ++x) {
+					if (oldSentinelVector[x] > 0) {
 						++y;
-						emplaceInternal(std::move(oldPtr[x].value));
+						emplaceInternal(std::move(oldPtr[x]));
 					}
 				}
 				if (oldPtr && oldCapacity) {
-					allocator::deallocate(oldPtr, oldCapacity + 1 + maxLookupDistance);
+					getAlloc().deallocate(oldPtr, oldCapacity + 1 + oldMaxLookAheadDistance);
 				}
 			}
 		}

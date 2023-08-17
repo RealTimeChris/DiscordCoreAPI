@@ -30,9 +30,7 @@
 
 #pragma once
 
-#include <discordcoreapi/Utilities/TCPConnection.hpp>
-#include <discordcoreapi/Utilities/LightString.hpp>
-#include <discordcoreapi/JsonSpecializations.hpp>
+#include <discordcoreapi/Utilities/RateLimitQueue.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -56,7 +54,7 @@ namespace DiscordCoreAPI {
 				Gatewat_Unavailable = 502,///< There was not a gateway available to process your request. Wait a bit and retry.
 			};
 
-			inline static UnorderedMap<HttpsResponseCodes, std::string_view> outputErrorValues{ { static_cast<HttpsResponseCodes>(200),
+			static inline UnorderedMap<HttpsResponseCodes, std::string_view> outputErrorValues{ { static_cast<HttpsResponseCodes>(200),
 																									"The request completed successfully" },
 				{ static_cast<HttpsResponseCodes>(201), "The entity was created successfully" },
 				{ static_cast<HttpsResponseCodes>(204), "The request completed successfully but returned no content" },
@@ -120,7 +118,7 @@ namespace DiscordCoreAPI {
 
 		class HttpsConnection;
 
-		class HttpsTCPConnection : public TCPConnection<HttpsTCPConnection>, public SSLDataInterface<HttpsTCPConnection> {
+		class HttpsTCPConnection : public TCPConnection<HttpsTCPConnection> {
 		  public:
 			HttpsTCPConnection() = default;
 
@@ -154,32 +152,12 @@ namespace DiscordCoreAPI {
 			bool parseChunk();
 		};
 
-		struct RateLimitData {
-			friend class RateLimitStackHolder;
-			friend class HttpsConnectionManager;
-			friend class HttpsRnRBuilder;
-			friend class HttpsClient;
-
-		  protected:
-			std::atomic<Milliseconds> sampledTimeInMs{ Milliseconds{} };
-			std::counting_semaphore<1> theSemaphore{ 1 };
-			std::atomic<Seconds> sRemain{ Seconds{} };
-			std::atomic_bool areWeASpecialBucket{};
-			std::atomic_bool didWeHitRateLimit{};
-			std::atomic_int64_t getsRemaining{};
-			std::atomic_bool haveWeGoneYet{};
-			std::atomic_bool doWeWait{};
-			std::string tempBucket{};
-			std::string bucket{};
-		};
-
 		class HttpsConnection : public HttpsRnRBuilder {
 		  public:
 			friend class HttpsTCPConnection;
 
-			std::counting_semaphore<1> theSemaphore{ 1 };
 			const int32_t maxReconnectTries{ 3 };
-			LightString<char> inputBufferReal{};
+			Jsonifier::String inputBufferReal{};
 			HttpsTCPConnection tcpConnection{};
 			int32_t currentReconnectTries{};
 			HttpsWorkloadData workload{};
@@ -204,10 +182,6 @@ namespace DiscordCoreAPI {
 			HttpsConnectionManager() = default;
 
 			HttpsConnection& getConnection(HttpsWorkloadType workloadType);
-
-			RateLimitData& getRateLimitData(HttpsWorkloadType workloadType);
-
-			void initialize();
 
 		  protected:
 			UnorderedMap<HttpsWorkloadType, UniquePtr<HttpsConnection>> httpsConnections{};
@@ -325,6 +299,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			HttpsConnectionManager connectionManager{};
+			RateLimitQueue rateLimitQueue{};
 
 			HttpsResponseData executeByRateLimitData(HttpsConnection& connection, RateLimitData& rateLimitData);
 

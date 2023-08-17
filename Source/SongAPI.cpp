@@ -48,18 +48,18 @@ namespace DiscordCoreAPI {
 	bool SongAPI::skip(const GuildMemberData& guildMember, bool wasItAFail) {
 		AudioFrameData dataFrame{};
 		audioDataBuffer.clearContents();
-		auto returnValue = DiscordCoreClient::getVoiceConnection(guildId).skip(wasItAFail);
+		auto returnValue		= DiscordCoreClient::getVoiceConnection(guildId).skip(wasItAFail);
 		dataFrame.guildMemberId = guildMember.user.id.operator const uint64_t&();
 		audioDataBuffer.send(std::move(dataFrame));
 		return returnValue;
 	}
 
-	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery) {
+	Jsonifier::Vector<Song> SongAPI::searchForSong(const std::string& searchQuery) {
 		std::unique_lock lock{ accessMutex };
-		auto vector01 = DiscordCoreClient::getSoundCloudAPI(guildId).searchForSong(searchQuery);
-		auto vector02 = DiscordCoreClient::getYouTubeAPI(guildId).searchForSong(searchQuery);
+		auto vector01		 = DiscordCoreClient::getSoundCloudAPI(guildId).searchForSong(searchQuery);
+		auto vector02		 = DiscordCoreClient::getYouTubeAPI(guildId).searchForSong(searchQuery);
 		uint64_t totalLength = vector01.size() + vector02.size();
-		std::vector<Song> newVector{};
+		Jsonifier::Vector<Song> newVector{};
 		uint64_t vector01Used{};
 		uint64_t vector02Used{};
 		for (uint64_t x = 0; x < totalLength; ++x) {
@@ -117,7 +117,8 @@ namespace DiscordCoreAPI {
 		}
 		onSongCompletionEvent.erase(eventToken);
 		audioDataBuffer.clearContents();
-		StopWatch<std::chrono::milliseconds> stopWatch{ 10000ms };
+		StopWatch<Milliseconds> stopWatch{ 10000ms };
+		stopWatch.resetTimer();
 		while (DiscordCoreClient::getSoundCloudAPI(guildId).areWeWorking() || DiscordCoreClient::getYouTubeAPI(guildId).areWeWorking()) {
 			if (stopWatch.hasTimePassed()) {
 				break;

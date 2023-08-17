@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 
 						msgString += "------\n__**The music commands will now work in ANY CHANNEL!**__";
 
-						discordGuild.data.musicChannelIds = std::vector<uint64_t>();
+						discordGuild.data.musicChannelIds = Jsonifier::Vector<uint64_t>();
 						discordGuild.writeDataToDB();
 					} else {
 						msgString += "------\n**Sorry, but there are no channels to remove!**\n------";

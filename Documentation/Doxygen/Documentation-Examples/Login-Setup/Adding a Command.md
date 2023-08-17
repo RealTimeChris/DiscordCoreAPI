@@ -1,7 +1,7 @@
 Adding a Command {#addingcommand}
 ============
 - First, create an instance of `Discord
-`, and then use from it the `DiscordCoreClient::registerFunction` function. Passing into it an instance of a `std::vector` of `std::string`, which will act as the command names to be triggering the commands, a `UniquePtr` containing a command function derived from the `BaseFunction` class, and an instance of either `CreateGlobalApplicationCommandData` or `CreateGuildApplicationCommandData`.
+`, and then use from it the `DiscordCoreClient::registerFunction` function. Passing into it an instance of a `Jsonifier::Vector` of `std::string`, which will act as the command names to be triggering the commands, a `UniquePtr` containing a command function derived from the `BaseFunction` class, and an instance of either `CreateGlobalApplicationCommandData` or `CreateGuildApplicationCommandData`.
 - Note that these functions will be registered with the Discord API if any of their properties change.
 
 ```cpp
@@ -15,7 +15,7 @@ Adding a Command {#addingcommand}
 int32_t main() {
 	DiscordCoreClientConfig clientConfig{};
 	clientConfig.botToken = "YOUR_BOT_TOKEN_HERE";
-	std::vector<ActivityData> activities{};
+	Jsonifier::Vector<ActivityData> activities{};
 	ActivityData activity{};
 	activity.name = "/help for my commands!";
 	activity.type = ActivityType::Game;
@@ -52,9 +52,9 @@ int32_t main() {
 	playCommandDataOptionOne.description = "The name of the song that you would like to search.";
 	playCommandDataOptionOne.required = false;
 	playCommandData.options.push_back(playCommandDataOptionOne);
-	ptr->registerFunction(std::vector<std::string>{ "play" }, makeUnique<Play>(), playCommandData);
-	ptr->registerFunction(std::vector<std::string>{ "botinfo" }, makeUnique<BotInfo>(), createBotInfoCommandData);
-	ptr->registerFunction(std::vector<std::string>{ "help" }, makeUnique<Help>(), createHelpData);
+	ptr->registerFunction(Jsonifier::Vector<std::string>{ "play" }, makeUnique<Play>(), playCommandData);
+	ptr->registerFunction(Jsonifier::Vector<std::string>{ "botinfo" }, makeUnique<BotInfo>(), createBotInfoCommandData);
+	ptr->registerFunction(Jsonifier::Vector<std::string>{ "help" }, makeUnique<Help>(), createHelpData);
 	ptr->runBot();
 	return 0;
 };

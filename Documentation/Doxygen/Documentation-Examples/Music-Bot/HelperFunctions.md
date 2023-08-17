@@ -65,7 +65,7 @@ Helper Functions {#HelperFunctions}
 
 		auto myRoles = Roles::getGuildMemberRolesAsync({.guildMember = guildMember, .guildId = guildData.data.guildId}).get();
 
-		for (auto value: myRoles) {
+		for (const auto& value: myRoles) {
 			if (value.id == guildData.data.djRoleId) {
 				doWeHaveControl = true;
 			}

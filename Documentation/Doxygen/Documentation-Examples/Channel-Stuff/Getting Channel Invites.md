@@ -1,6 +1,6 @@
 Getting Channel Invites {#gettingchannelinvites}
 ============
-- Execute the `Channels::getChannelInvitesAsync()` function, while passing in a data structure of type `GetChannelInvitesData`, with a return value of `auto` or `std::vector<InviteData>`.
+- Execute the `Channels::getChannelInvitesAsync()` function, while passing in a data structure of type `GetChannelInvitesData`, with a return value of `auto` or `Jsonifier::Vector<InviteData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 				vector<InviteData> channelInvites = Channels::getChannelInvitesAsync(dataPackage).get();
 
 				std::cout << "THE INVITES: " << std::endl;
-				for (auto value: channelInvites) {
+				for (const auto& value: channelInvites) {
 					std::cout << value.inviter.userName << std::endl;
 				}
 

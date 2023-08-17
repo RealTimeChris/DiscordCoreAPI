@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 				auto newRoles = Roles::modifyGuildRolePositionsAsync(dataPackage01).get();
 
-				for (auto value: newRoles) {
+				for (const auto& value: newRoles) {
 					std::cout << "ROLE NAME: " << value.name << std::endl;
 				}
 

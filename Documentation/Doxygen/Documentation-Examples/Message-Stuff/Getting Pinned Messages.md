@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 
 				vector<Message> messagesVector = Messages::getPinnedMessagesAsync(dataPackage).get();
 
-				for (auto value: messagesVector) {
+				for (const auto& value: messagesVector) {
 					std::cout << "THE ID: " << value.id << std::endl;
 				}
 

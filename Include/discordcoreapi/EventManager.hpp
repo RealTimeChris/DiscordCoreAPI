@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 	};
 
 	struct MessageDeletionBulkData {
-		std::vector<Snowflake> ids{};///< A vector containing the list of deleted Message ids.
+		Jsonifier::Vector<Snowflake> ids{};///< A vector containing the list of deleted Message ids.
 		Snowflake channelId{};///< The id of the Channel from which the Message was deleted.
 		Snowflake guildId{};///< The id of the Guild from which the Message was deleted.
 	};
@@ -484,8 +484,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnAutoModerationRuleCreationData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onAutoModerationRuleCreation(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleCreationData> handler);
+		DiscordCoreInternal::EventDelegateToken onAutoModerationRuleCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleCreationData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onAutoModerationRuleCreation(DiscordCoreInternal::EventDelegateToken& token);
@@ -493,8 +492,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnAutoModerationRuleUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onAutoModerationRuleUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -502,8 +500,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnAutoModerationRuleDeletionData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onAutoModerationRuleDeletion(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleDeletionData> handler);
+		DiscordCoreInternal::EventDelegateToken onAutoModerationRuleDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleDeletionData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onAutoModerationRuleDeletion(DiscordCoreInternal::EventDelegateToken& token);
@@ -511,8 +508,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnAutoModerationActionExecutionData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onAutoModerationActionExecution(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationActionExecutionData> handler);
+		DiscordCoreInternal::EventDelegateToken onAutoModerationActionExecution(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationActionExecutionData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onAutoModerationActionExecution(DiscordCoreInternal::EventDelegateToken& token);
@@ -520,8 +516,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnInputEventCreationData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onAutoCompleteEntry(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoCompleteEntryData> handler);
+		DiscordCoreInternal::EventDelegateToken onAutoCompleteEntry(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoCompleteEntryData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onAutoCompleteEntry(DiscordCoreInternal::EventDelegateToken& token);
@@ -529,8 +524,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnInputEventCreationData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onInputEventCreation(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInputEventCreationData> handler);
+		DiscordCoreInternal::EventDelegateToken onInputEventCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInputEventCreationData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onInputEventCreation(DiscordCoreInternal::EventDelegateToken& token);
@@ -562,8 +556,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnChannelPinsUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onChannelPinsUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelPinsUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onChannelPinsUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelPinsUpdateData> handler);
 		/// @brief For removing afunction from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onChannelPinsUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -603,8 +596,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnThreadMemberUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onThreadMemberUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMemberUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onThreadMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMemberUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onThreadMemberUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -612,8 +604,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnThreadMembersUpdateData structure as an argument
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onThreadMembersUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMembersUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onThreadMembersUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMembersUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onThreadMembersUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -661,8 +652,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildEmojisUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildEmojisUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildEmojisUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildEmojisUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildEmojisUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildEmojisUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -670,8 +660,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildStickersUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildStickersUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildStickersUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildStickersUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildStickersUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildStickersUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -679,8 +668,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildIntegrationsUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildIntegrationsUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildIntegrationsUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildIntegrationsUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -688,8 +676,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildMembersChunkData structure as an argument.
 		/// @return An DiscordCoreInternal::EventDelegateToken, > for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildMembersChunk(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMembersChunkData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildMembersChunk(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMembersChunkData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildMembersChunk(DiscordCoreInternal::EventDelegateToken& token);
@@ -705,8 +692,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildMemberRemoveData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildMemberRemove(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberRemoveData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildMemberRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberRemoveData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildMemberRemove(DiscordCoreInternal::EventDelegateToken& token);
@@ -714,8 +700,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildMemberUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildMemberUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildMemberUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -747,8 +732,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildScheduledEventCreationData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventCreation(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventCreationData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventCreationData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildScheduledEventCreation(DiscordCoreInternal::EventDelegateToken& token);
@@ -756,8 +740,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildScheduledEventUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildScheduledEventUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -765,8 +748,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildScheduledEventDeletionData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventDeletion(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventDeletionData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventDeletionData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildScheduledEventDeletion(DiscordCoreInternal::EventDelegateToken& token);
@@ -774,8 +756,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildScheduledEventUserAddData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventUserAdd(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserAddData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventUserAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserAddData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildScheduledEventUserAdd(DiscordCoreInternal::EventDelegateToken& token);
@@ -783,8 +764,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnGuildScheduledEventUserRemoveData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventUserRemove(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserRemoveData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventUserRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserRemoveData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildScheduledEventUserRemove(DiscordCoreInternal::EventDelegateToken& token);
@@ -792,8 +772,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnIntegrationCreationData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onIntegrationCreation(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationCreationData> handler);
+		DiscordCoreInternal::EventDelegateToken onIntegrationCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationCreationData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onIntegrationCreation(DiscordCoreInternal::EventDelegateToken& token);
@@ -801,8 +780,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnIntegrationUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onIntegrationUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onIntegrationUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onIntegrationUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -810,8 +788,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnIntegrationDeletionData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onIntegrationDeletion(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationDeletionData> handler);
+		DiscordCoreInternal::EventDelegateToken onIntegrationDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationDeletionData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onIntegrationDeletion(DiscordCoreInternal::EventDelegateToken& token);
@@ -819,8 +796,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnInteractionCreationData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onInteractionCreation(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInteractionCreationData> handler);
+		DiscordCoreInternal::EventDelegateToken onInteractionCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInteractionCreationData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onInteractionCreation(DiscordCoreInternal::EventDelegateToken& token);
@@ -868,8 +844,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnMessageDeleteBulkData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onMessageDeleteBulk(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeleteBulkData> handler);
+		DiscordCoreInternal::EventDelegateToken onMessageDeleteBulk(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeleteBulkData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onMessageDeleteBulk(DiscordCoreInternal::EventDelegateToken& token);
@@ -893,8 +868,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnReactionRemoveAllData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onReactionRemoveAll(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveAllData> handler);
+		DiscordCoreInternal::EventDelegateToken onReactionRemoveAll(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveAllData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onReactionRemoveAll(DiscordCoreInternal::EventDelegateToken& token);
@@ -902,8 +876,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnReactionRemoveEmojiData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onReactionRemoveEmoji(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveEmojiData> handler);
+		DiscordCoreInternal::EventDelegateToken onReactionRemoveEmoji(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveEmojiData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onReactionRemoveEmoji(DiscordCoreInternal::EventDelegateToken& token);
@@ -919,8 +892,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnStageInstanceCreationData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onStageInstanceCreation(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceCreationData> handler);
+		DiscordCoreInternal::EventDelegateToken onStageInstanceCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceCreationData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onStageInstanceCreation(DiscordCoreInternal::EventDelegateToken& token);
@@ -928,8 +900,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnStageInstanceUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onStageInstanceUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onStageInstanceUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onStageInstanceUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -937,8 +908,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnStageInstanceDeletionData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onStageInstanceDeletion(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceDeletionData> handler);
+		DiscordCoreInternal::EventDelegateToken onStageInstanceDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceDeletionData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onStageInstanceDeletion(DiscordCoreInternal::EventDelegateToken& token);
@@ -962,8 +932,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnVoiceStateUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onVoiceStateUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceStateUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onVoiceStateUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceStateUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onVoiceStateUpdate(DiscordCoreInternal::EventDelegateToken& token);
@@ -971,8 +940,7 @@ namespace DiscordCoreAPI {
 		/// @brief For adding a function to handle this event.
 		/// @param handler A delegate taking an OnVoiceServerUpdateData structure as an argument.
 		/// @return An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onVoiceServerUpdate(
-			DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceServerUpdateData> handler);
+		DiscordCoreInternal::EventDelegateToken onVoiceServerUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceServerUpdateData> handler);
 		/// @brief For removing a function from handling this event.
 		/// @param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onVoiceServerUpdate(DiscordCoreInternal::EventDelegateToken& token);

@@ -35,31 +35,28 @@
 namespace Jsonifier {
 
 	template<> struct Core<DiscordCoreAPI::ForumThreadMessageData> {
-		using ValueType = DiscordCoreAPI::ForumThreadMessageData;
-		static constexpr auto parseValue = object("attachments", &ValueType::attachments, "components", &ValueType::components, "allowedMentions",
-			&ValueType::allowedMentions, "stickerIds", &ValueType::stickerIds, "embeds", &ValueType::embeds, "files", &ValueType::files, "content",
-			&ValueType::content, "flags", &ValueType::flags);
+		using ValueType					 = DiscordCoreAPI::ForumThreadMessageData;
+		static constexpr auto parseValue = object("attachments", &ValueType::attachments, "components", &ValueType::components, "allowedMentions", &ValueType::allowedMentions,
+			"stickerIds", &ValueType::stickerIds, "embeds", &ValueType::embeds, "files", &ValueType::files, "content", &ValueType::content, "flags", &ValueType::flags);
 	};
 
 	template<> struct Core<DiscordCoreAPI::StartThreadWithMessageData> {
-		using ValueType = DiscordCoreAPI::StartThreadWithMessageData;
-		static constexpr auto parseValue =
-			object("autoArchiveDuration", &ValueType::autoArchiveDuration, "rateLimitPerUser", &ValueType::rateLimitPerUser, "threadName",
-				&ValueType::threadName, "messageId", &ValueType::messageId, "channelId", &ValueType::channelId, "reason", &ValueType::reason);
+		using ValueType					 = DiscordCoreAPI::StartThreadWithMessageData;
+		static constexpr auto parseValue = object("autoArchiveDuration", &ValueType::autoArchiveDuration, "rateLimitPerUser", &ValueType::rateLimitPerUser, "threadName",
+			&ValueType::threadName, "messageId", &ValueType::messageId, "channelId", &ValueType::channelId, "reason", &ValueType::reason);
 	};
 
 	template<> struct Core<DiscordCoreAPI::StartThreadWithoutMessageData> {
 		using ValueType = DiscordCoreAPI::StartThreadWithoutMessageData;
-		static constexpr auto parseValue = object("autoArchiveDuration", &ValueType::autoArchiveDuration, "type", &ValueType::type,
-			"rateLimitPerUser", &ValueType::rateLimitPerUser, "threadName", &ValueType::threadName, "channelId", &ValueType::channelId, "reason",
-			&ValueType::reason, "invitable", &ValueType::invitable);
+		static constexpr auto parseValue =
+			object("autoArchiveDuration", &ValueType::autoArchiveDuration, "type", &ValueType::type, "rateLimitPerUser", &ValueType::rateLimitPerUser, "threadName",
+				&ValueType::threadName, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "invitable", &ValueType::invitable);
 	};
 
 	template<> struct Core<DiscordCoreAPI::StartThreadInForumChannelData> {
-		using ValueType = DiscordCoreAPI::StartThreadInForumChannelData;
-		static constexpr auto parseValue =
-			object("autoArchiveDuration", &ValueType::autoArchiveDuration, "message", &ValueType::message, "rateLimitPerUser",
-				&ValueType::rateLimitPerUser, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "name", &ValueType::name);
+		using ValueType					 = DiscordCoreAPI::StartThreadInForumChannelData;
+		static constexpr auto parseValue = object("autoArchiveDuration", &ValueType::autoArchiveDuration, "message", &ValueType::message, "rateLimitPerUser",
+			&ValueType::rateLimitPerUser, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "name", &ValueType::name);
 	};
 
 }
@@ -74,7 +71,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Thread_With_Message };
 		co_await NewThreadAwaitable<ThreadData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/threads";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/threads";
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Threads::startThreadWithMessageAsync()";
 		if (dataPackage.reason != "") {
@@ -89,7 +86,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Thread_Without_Message };
 		co_await NewThreadAwaitable<ThreadData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/threads";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/threads";
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Threads::startThreadWithoutMessageAsync()";
 		if (dataPackage.reason != "") {
@@ -104,7 +101,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Thread_In_Forum_Channel };
 		co_await NewThreadAwaitable<ThreadData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/threads";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/threads";
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Threads::startThreadInForumChannelAsync()";
 		if (dataPackage.reason != "") {
@@ -119,8 +116,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Self_In_Thread };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/thread-members/@me";
-		workload.callStack = "Threads::joinThreadAsync()";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/thread-members/@me";
+		workload.callStack	   = "Threads::joinThreadAsync()";
 		Threads::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
@@ -129,8 +126,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Thread_Member };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/thread-members/" + dataPackage.userId;
-		workload.callStack = "Threads::addThreadMemberAsync()";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/thread-members/" + dataPackage.userId;
+		workload.callStack	   = "Threads::addThreadMemberAsync()";
 		Threads::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
@@ -139,8 +136,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Self_From_Thread };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/thread-members/@me";
-		workload.callStack = "Threads::leaveThreadAsync()";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/thread-members/@me";
+		workload.callStack	   = "Threads::leaveThreadAsync()";
 		Threads::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
@@ -149,8 +146,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Thread_Member };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/thread-members/" + dataPackage.userId;
-		workload.callStack = "Threads::removeThreadMemberAsync()";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/thread-members/" + dataPackage.userId;
+		workload.callStack	   = "Threads::removeThreadMemberAsync()";
 		Threads::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
@@ -159,20 +156,20 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Thread_Member };
 		co_await NewThreadAwaitable<ThreadMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/thread-members/" + dataPackage.userId;
-		workload.callStack = "Threads::getThreadMemberAsync()";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/thread-members/" + dataPackage.userId;
+		workload.callStack	   = "Threads::getThreadMemberAsync()";
 		ThreadMemberData returnData{};
 		Threads::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<ThreadMemberData>> Threads::getThreadMembersAsync(GetThreadMembersData dataPackage) {
+	CoRoutine<Jsonifier::Vector<ThreadMemberData>> Threads::getThreadMembersAsync(GetThreadMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Thread_Members };
-		co_await NewThreadAwaitable<std::vector<ThreadMemberData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<ThreadMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/thread-members";
-		workload.callStack = "Threads::getThreadMembersAsync()";
-		std::vector<ThreadMemberData> returnData{};
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/thread-members";
+		workload.callStack	   = "Threads::getThreadMembersAsync()";
+		Jsonifier::Vector<ThreadMemberData> returnData{};
 		Threads::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -181,8 +178,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Active_Threads };
 		co_await NewThreadAwaitable<ActiveThreadsData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/threads/active";
-		workload.callStack = "Threads::getActiveThreadsAsync()";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/threads/active";
+		workload.callStack	   = "Threads::getActiveThreadsAsync()";
 		ActiveThreadsData returnData{};
 		Threads::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
@@ -192,7 +189,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Public_Archived_Threads };
 		co_await NewThreadAwaitable<ArchivedThreadsData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/threads/archived/public";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/threads/archived/public";
 		if (dataPackage.before != "") {
 			workload.relativePath += "?before=" + dataPackage.before;
 			if (dataPackage.limit != 0) {
@@ -211,7 +208,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Private_Archived_Threads };
 		co_await NewThreadAwaitable<ArchivedThreadsData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/threads/archived/protected";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/threads/archived/protected";
 		if (dataPackage.before != "") {
 			workload.relativePath += "?before=" + dataPackage.before;
 			if (dataPackage.limit != 0) {
@@ -230,7 +227,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Joined_Private_Archived_Threads };
 		co_await NewThreadAwaitable<ArchivedThreadsData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/users/@me/threads/archived/protected";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/users/@me/threads/archived/protected";
 		if (dataPackage.before != "") {
 			workload.relativePath += "?before=" + dataPackage.before;
 			if (dataPackage.limit != 0) {
@@ -249,8 +246,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Active_Threads };
 		co_await NewThreadAwaitable<ActiveThreadsData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/threads/active";
-		workload.callStack = "Threads::listActiveThreadsAsync()";
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/threads/active";
+		workload.callStack	   = "Threads::listActiveThreadsAsync()";
 		ActiveThreadsData returnData{};
 		Threads::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;

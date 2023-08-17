@@ -170,12 +170,12 @@ namespace DiscordCoreAPI {
 				}
 
 
-				std::vector<Song> searchResults{};
+				Jsonifier::Vector<Song> searchResults{};
 				if (newArgs.optionsArgs.size() > 0) {
 					searchResults = SongAPI::searchForSong(newArgs.optionsArgs[0], guild.id);
 				}
 
-				std::vector<EmbedData> embedsFromSearch;
+				Jsonifier::Vector<EmbedData> embedsFromSearch;
 				int32_t x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 					song.addedByUserId = guildMember.id;
 					song.addedByUserName = guildMember.userName;
 
-					std::vector<Song> songVector{};
+					Jsonifier::Vector<Song> songVector{};
 
 					if (playlist.songQueue.size() > 0) {
 						if (playlist.currentSong.songId != "") {

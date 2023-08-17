@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include <jsonifier/Index.hpp>
+
 #include <string_view>
 #include <cstring>
 #include <cstdint>
@@ -113,7 +115,7 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			std::vector<std::decay_t<value_type>> arrayValue{};///< The underlying data array.
+			Jsonifier::Vector<std::decay_t<value_type>> arrayValue{};///< The underlying data array.
 			size_type tail{};///< The tail position in the buffer.
 			size_type head{};///< The head position in the buffer.
 		};
@@ -124,34 +126,35 @@ namespace DiscordCoreAPI {
 		template<typename ValueType, uint64_t SliceCount> class RingBuffer
 			: public RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount> {
 		  public:
+			using base_type = RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>;
 			using value_type = RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>::value_type;
 			using const_pointer = const value_type*;
 			using pointer = value_type*;
 			using size_type = uint64_t;
 
 			/// @brief Default constructor. Initializes the buffer size.
-			inline RingBuffer() : RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>{} {};
+			inline RingBuffer() : base_type{} {};
 
 			/// @brief Write data into the buffer.
 			/// @tparam ValueTypeNew The type of data to be written.
 			/// @param data Pointer to the data.
 			/// @param size Size of the data.
 			template<typename ValueTypeNew> inline void writeData(ValueTypeNew* data, size_type size) {
-				if (RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::isItFull() ||
-					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead()->getUsedSpace() +
+				if (base_type::isItFull() ||
+					base_type::getCurrentHead()->getUsedSpace() +
 							size >=
 						16384) {
-					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->clear();
-					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::modifyReadOrWritePosition(
+					base_type::getCurrentTail()->clear();
+					base_type::modifyReadOrWritePosition(
 						RingBufferAccessType::Read, 1);
 				}
 				size_type writeSize{ size };
 				std::memcpy(
-					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead()->getCurrentHead(),
+					base_type::getCurrentHead()->getCurrentHead(),
 					data, size);
-				RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead()->modifyReadOrWritePosition(
+				base_type::getCurrentHead()->modifyReadOrWritePosition(
 					RingBufferAccessType::Write, writeSize);
-				RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::modifyReadOrWritePosition(
+				base_type::modifyReadOrWritePosition(
 					RingBufferAccessType::Write, 1);
 			}
 
@@ -159,13 +162,13 @@ namespace DiscordCoreAPI {
 			/// @return A string view containing the read data.
 			inline std::basic_string_view<std::decay_t<value_type>> readData() {
 				std::basic_string_view<std::decay_t<value_type>> returnData{};
-				if (RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->getUsedSpace() > 0) {
+				if (base_type::getCurrentTail()->getUsedSpace() > 0) {
 					returnData = std::basic_string_view<std::decay_t<value_type>>{
-						RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->getCurrentTail(),
-						RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->getUsedSpace()
+						base_type::getCurrentTail()->getCurrentTail(),
+						base_type::getCurrentTail()->getUsedSpace()
 					};
-					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->clear();
-					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::modifyReadOrWritePosition(
+					base_type::getCurrentTail()->clear();
+					base_type::modifyReadOrWritePosition(
 						RingBufferAccessType::Read, 1);
 				}
 				return returnData;

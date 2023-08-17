@@ -1,6 +1,6 @@
 Batch Editing Guild Application Command's Permissions {#batcheditguildcommandpermissions}
 ============
-- Execute the `ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync()` function, while passing in a data structure of type `BatchEditGuildApplicationCommandPermissionsData`, with a return value of type `auto` or `std::vector<GuildApplicationCommandPermissionsData>`.
+- Execute the `ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync()` function, while passing in a data structure of type `BatchEditGuildApplicationCommandPermissionsData`, with a return value of type `auto` or `Jsonifier::Vector<GuildApplicationCommandPermissionsData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 			InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
 			BatchEditGuildApplicationCommandPermissionsData dataPackage01;
-			std::vector<EditGuildApplicationCommandPermissionsData> dataPackage02 {
+			Jsonifier::Vector<EditGuildApplicationCommandPermissionsData> dataPackage02 {
 				{.permissions = {{.type = ApplicationCommandPermissionType::User, .permission = false, .id = "859853159115259905"}},
 				 .commandName = "selldrugs"}};
 			dataPackage01.guildId = args.eventData.getGuildId();
@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 			auto returnVector = ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync(dataPackage01).get();
 
-			for (auto value: returnVector) {
+			for (const auto& value: returnVector) {
 				std::cout << value.applicationId << std::endl;
 			}
 		}

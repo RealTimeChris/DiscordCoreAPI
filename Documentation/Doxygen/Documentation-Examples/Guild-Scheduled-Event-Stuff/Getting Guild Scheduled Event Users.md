@@ -1,6 +1,6 @@
 Getting Guild Scheduled Event Users {#gettingguildscheduledeventusers}
 ============
-- Execute the, from the `GuildScheduledEvents::getGuildScheduledEventUsersAsync()` function, while passing in a value of type `GetGuildScheduledEventUsersData`, with a return value of type `auto` or `std::vector<GuildScheduledEventUserData>`.
+- Execute the, from the `GuildScheduledEvents::getGuildScheduledEventUsersAsync()` function, while passing in a value of type `GetGuildScheduledEventUsersData`, with a return value of type `auto` or `Jsonifier::Vector<GuildScheduledEventUserData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp

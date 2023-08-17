@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 		virtual void execute(BaseFunctionArguments& args) {
 			try {
 				vector<Guild> guilds = Guilds::getAllGuildsAsync().get();
-				for (auto value: guilds) {
+				for (const auto& value: guilds) {
 					if (value.name == "NEWER TEST GUILD TWO!") {
 						DeleteGuildData dataPackage;
 						dataPackage.guildId = value.id;

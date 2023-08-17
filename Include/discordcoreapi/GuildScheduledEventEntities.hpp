@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 		/// @brief Gets a list of a given Guild's scheduled events.
 		/// @param dataPackage A GetGuildScheduledEventsstructure.
 		/// @return A CoRoutine containing a vector<GuildScheduledEventData>.
-		static CoRoutine<std::vector<GuildScheduledEventData>> getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage);
+		static CoRoutine<Jsonifier::Vector<GuildScheduledEventData>> getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage);
 
 		/// @brief Creates a new GuildScheduledEventData within a chosen Guild.
 		/// @param dataPackage A CreateGuildScheduledEventData structure.
@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 		/// @brief Collects a list of Users for a given GuildScheduledEventData.
 		/// @param dataPackage A GetGuildScheduledEventUsersData structure.
 		/// @return A CoRoutine containing a vector<GuildScheduledEventUser>.
-		static CoRoutine<std::vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
+		static CoRoutine<Jsonifier::Vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

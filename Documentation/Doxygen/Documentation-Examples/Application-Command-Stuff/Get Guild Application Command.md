@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 
 			auto returnVector = ApplicationCommands::getGuildApplicationCommandsAsync(dataPackage).get();
 
-			for (auto value: returnVector) {
+			for (const auto& value: returnVector) {
 				std::cout << value.name << std::endl;
 			}
 

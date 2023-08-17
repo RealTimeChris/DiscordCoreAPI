@@ -1,7 +1,8 @@
 /*
 	MIT License
 
-	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
+	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++
+   CoRoutines.
 
 	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
@@ -30,72 +31,66 @@
 
 #pragma once
 
-#include <discordcoreapi/Utilities/WebSocketClient.hpp>
-#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
 #include <discordcoreapi/AutoModerationEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Utilities/EventEntities.hpp>
 #include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/EventManager.hpp>
+#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>
-#include <discordcoreapi/Utilities/HttpsClient.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/InteractionEntities.hpp>
+#include <discordcoreapi/JsonSpecializations.hpp>
 #include <discordcoreapi/MessageEntities.hpp>
 #include <discordcoreapi/ReactionEntities.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
-#include <discordcoreapi/Utilities/TCPConnection.hpp>
 #include <discordcoreapi/SongAPI.hpp>
 #include <discordcoreapi/SoundCloudAPI.hpp>
 #include <discordcoreapi/StageInstanceEntities.hpp>
 #include <discordcoreapi/StickerEntities.hpp>
 #include <discordcoreapi/ThreadEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
+#include <discordcoreapi/Utilities/EventEntities.hpp>
+#include <discordcoreapi/Utilities/HttpsClient.hpp>
+#include <discordcoreapi/Utilities/TCPConnection.hpp>
+#include <discordcoreapi/Utilities/WebSocketClient.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
 #include <discordcoreapi/WebHookEntities.hpp>
 #include <discordcoreapi/YouTubeAPI.hpp>
-#include <discordcoreapi/JsonSpecializations.hpp>
 
 namespace DiscordCoreAPI {
 
 	class SIGTERMError : public DCAException {
 	  public:
-		inline SIGTERMError(const std::string& message, std::source_location location = std::source_location::current())
-			: DCAException{ message, location } {};
+		inline SIGTERMError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGSEGVError : public DCAException {
 	  public:
-		inline SIGSEGVError(const std::string& message, std::source_location location = std::source_location::current())
-			: DCAException{ message, location } {};
+		inline SIGSEGVError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGINTError : public DCAException {
 	  public:
-		inline SIGINTError(const std::string& message, std::source_location location = std::source_location::current())
-			: DCAException{ message, location } {};
+		inline SIGINTError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGILLError : public DCAException {
 	  public:
-		inline SIGILLError(const std::string& message, std::source_location location = std::source_location::current())
-			: DCAException{ message, location } {};
+		inline SIGILLError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGABRTError : public DCAException {
 	  public:
-		inline SIGABRTError(const std::string& message, std::source_location location = std::source_location::current())
-			: DCAException{ message, location } {};
+		inline SIGABRTError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGFPEError : public DCAException {
 	  public:
-		inline SIGFPEError(const std::string& message, std::source_location location = std::source_location::current())
-			: DCAException{ message, location } {};
+		inline SIGFPEError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	using SoundCloudAPIMap = UnorderedMap<uint64_t, UniquePtr<DiscordCoreInternal::SoundCloudAPI>>;
@@ -108,12 +103,12 @@ namespace DiscordCoreAPI {
 
 	template<typename... ArgTypes> using TimeElapsedHandler = std::function<void(ArgTypes...)>;
 
-	template<typename... ArgTypes> inline static CoRoutine<void, false> threadFunction(TimeElapsedHandler<ArgTypes...> timeElapsedHandler,
-		bool repeated, int64_t timeInterval, ArgTypes... args) {
+	template<typename... ArgTypes>
+	static inline CoRoutine<void, false> threadFunction(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, bool repeated, int64_t timeInterval, ArgTypes... args) {
 		auto threadHandle = co_await NewThreadAwaitable<void, false>();
-		StopWatch<std::chrono::milliseconds> stopWatch{ Milliseconds{ timeInterval } };
+		StopWatch<Milliseconds> stopWatch{ Milliseconds{ timeInterval } };
+		stopWatch.resetTimer();
 		do {
-			stopWatch.resetTimer();
 			std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<double>(timeInterval) * 10.0f / 100.0f)) });
 			while (!stopWatch.hasTimePassed() && !threadHandle.promise().areWeStopped()) {
 				std::this_thread::sleep_for(1ms);
@@ -134,8 +129,8 @@ namespace DiscordCoreAPI {
 		co_return;
 	};
 
-	template<typename... ArgTypes> inline static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler,
-		int64_t timeDelay, bool repeated, bool blockForCompletion, ArgTypes... args) {
+	template<typename... ArgTypes> static inline void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeDelay, bool repeated,
+		bool blockForCompletion, ArgTypes... args) {
 		auto newThread = threadFunction<ArgTypes...>(timeElapsedHandler, repeated, timeDelay, args...);
 		if (blockForCompletion) {
 			newThread.get();
@@ -168,16 +163,17 @@ namespace DiscordCoreAPI {
 		static DiscordCoreClient* getInstance();
 
 		/// @brief DiscordCoreClient constructor.
-		/// \param configData A DiscordCoreClientConfig structure to select various library options.
-		DiscordCoreClient(DiscordCoreClientConfig configData);
+		/// @param configData A DiscordCoreClientConfig structure to select various library options.
+		DiscordCoreClient(const DiscordCoreClientConfig& configData);
 
 		/// @brief For registering a function with the CommandController.
-		/// \param functionNames A vector containing the possible names for activating this command/function.
-		/// \param baseFunction A unique_ptr to the command to be registered.
-		/// \param commandData A CreateApplicationCommandData structure describing the current function.
-		/// \param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of registered commands.
-		void registerFunction(const std::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction,
-			CreateApplicationCommandData commandData, bool alwaysRegister = false);
+		/// @param functionNames A vector containing the possible names for activating this command/function.
+		/// @param baseFunction A unique_ptr to the command to be registered.
+		/// @param commandData A CreateApplicationCommandData structure describing the current function.
+		/// @param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of
+		/// registered commands.
+		void registerFunction(const Jsonifier::Vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+			bool alwaysRegister = false);
 
 		/// @brief For collecting a reference to the CommandController.
 		/// @return CommandController& A reference to the CommandController.
@@ -185,14 +181,14 @@ namespace DiscordCoreAPI {
 
 		/// @brief For collecting a reference to the ConfigManager.
 		/// @return ConfigManager& A reference to the ConfigManager.
-		ConfigManager& getConfigManager();
+		const ConfigManager& getConfigManager() const;
 
 		/// @brief For collecting a reference to the EventManager.
 		/// @return EventManager& A reference to the EventManager.
 		EventManager& getEventManager();
 
 		/// @brief For collecting, the total time in milliseconds that this bot has been up for.
-		/// @return Milliseconds A count, in milliseconds, since the bot has come online.
+		/// @return Milliseconds A size, in milliseconds, since the bot has come online.
 		Milliseconds getTotalUpTime();
 
 		/// @brief For collecting a copy of the current bot's UserData.
@@ -205,28 +201,30 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient();
 
 	  protected:
-		inline static UniquePtr<DiscordCoreClient> instancePtr{};
+		static inline UniquePtr<DiscordCoreClient> instancePtr{};
 		static BotUser currentUser;
 
 		DiscordCoreClient& operator=(DiscordCoreClient&&) = delete;
-		DiscordCoreClient(DiscordCoreClient&&) = delete;
+		DiscordCoreClient(DiscordCoreClient&&)			  = delete;
 
 		DiscordCoreClient& operator=(const DiscordCoreClient&) = delete;
-		DiscordCoreClient(const DiscordCoreClient&) = delete;
+		DiscordCoreClient(const DiscordCoreClient&)			   = delete;
 
 		UnorderedMap<uint64_t, UniquePtr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
-		StopWatch<std::chrono::milliseconds> connectionStopWatch01{ 5000ms };
+		StopWatch<Milliseconds> connectionStopWatch01{ 5000ms };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
 		UniquePtr<DiscordCoreInternal::HttpsClient> httpsClient{};
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
-		std::counting_semaphore<1> theSemaphore{ 1 };
+		std::atomic_int32_t currentlyConnectingShard{};
+		std::atomic_bool areWeReadyToConnect{ false };
 		CommandController commandController{ this };
 		Milliseconds startupTimeSinceEpoch{};
 		ConfigManager configManager{};
-		std::mutex connectionMutex{};
 		EventManager eventManager{};///< An event-manager, for hooking into Discord-API-Events sent over the Websockets.
+
+		bool areWeFullyConnected();
 
 		void registerFunctionsInternal();
 
@@ -235,4 +233,4 @@ namespace DiscordCoreAPI {
 		bool instantiateWebSockets();
 	};
 	/**@}*/
-}
+}// namespace DiscordCoreAPI

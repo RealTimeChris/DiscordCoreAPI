@@ -36,21 +36,21 @@
 namespace Jsonifier {
 
 	template<> struct Core<DiscordCoreAPI::AddGuildMemberData> {
-		using ValueType = DiscordCoreAPI::AddGuildMemberData;
-		static constexpr auto parseValue = object("roles", &ValueType::roles, "access_token", &ValueType::accessToken, "guild_id",
-			&ValueType::guildId, "user_id", &ValueType::userId, "nick", &ValueType::nick, "mute", &ValueType::mute, "deaf", &ValueType::deaf);
+		using ValueType					 = DiscordCoreAPI::AddGuildMemberData;
+		static constexpr auto parseValue = object("roles", &ValueType::roles, "access_token", &ValueType::accessToken, "guild_id", &ValueType::guildId, "user_id",
+			&ValueType::userId, "nick", &ValueType::nick, "mute", &ValueType::mute, "deaf", &ValueType::deaf);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ModifyCurrentGuildMemberData> {
-		using ValueType = DiscordCoreAPI::ModifyCurrentGuildMemberData;
+		using ValueType					 = DiscordCoreAPI::ModifyCurrentGuildMemberData;
 		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "nick", &ValueType::nick, "reason", &ValueType::reason);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ModifyGuildMemberData> {
 		using ValueType = DiscordCoreAPI::ModifyGuildMemberData;
-		static constexpr auto parseValue = object("channel_id", &ValueType::currentChannelId, "deaf", &ValueType::deaf, "guild_id",
-			&ValueType::guildId, "mute", &ValueType::mute, "nick", &ValueType::nick, "roles", &ValueType::roleIds, "user_id",
-			&ValueType::guildMemberId, "voice_channel_id", &ValueType::newVoiceChannelId, "reason", &ValueType::reason);
+		static constexpr auto parseValue =
+			object("channel_id", &ValueType::currentChannelId, "deaf", &ValueType::deaf, "guild_id", &ValueType::guildId, "mute", &ValueType::mute, "nick", &ValueType::nick,
+				"roles", &ValueType::roleIds, "user_id", &ValueType::guildMemberId, "voice_channel_id", &ValueType::newVoiceChannelId, "reason", &ValueType::reason);
 	};
 }
 
@@ -124,17 +124,17 @@ namespace DiscordCoreAPI {
 
 	GuildMemberCacheData::operator GuildMemberData() {
 		GuildMemberData returnData{};
-		returnData.pending = getFlagValue(GuildMemberFlags::Pending);
+		returnData.pending	   = getFlagValue(GuildMemberFlags::Pending);
 		returnData.permissions = permissions.operator std::string();
-		returnData.deaf = getFlagValue(GuildMemberFlags::Deaf);
-		returnData.mute = getFlagValue(GuildMemberFlags::Mute);
-		returnData.joinedAt = joinedAt.operator std::string();
-		returnData.nick = nick.operator std::string();
-		returnData.guildId = guildId;
-		returnData.user.id = user.id;
-		returnData.avatar = avatar;
-		returnData.roles = roles;
-		returnData.flags = flags;
+		returnData.deaf		   = getFlagValue(GuildMemberFlags::Deaf);
+		returnData.mute		   = getFlagValue(GuildMemberFlags::Mute);
+		returnData.joinedAt	   = joinedAt.operator std::string();
+		returnData.nick		   = nick.operator std::string();
+		returnData.guildId	   = guildId;
+		returnData.user.id	   = user.id;
+		returnData.avatar	   = avatar;
+		returnData.roles	   = roles;
+		returnData.flags	   = flags;
 		return returnData;
 	}
 
@@ -144,15 +144,15 @@ namespace DiscordCoreAPI {
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
 		GuildMembers::doWeCacheGuildMembersBool = configManagerNew->doWeCacheGuildMembers();
-		GuildMembers::httpsClient = client;
+		GuildMembers::httpsClient				= client;
 	}
 
 	CoRoutine<GuildMemberData> GuildMembers::getGuildMemberAsync(GetGuildMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Member };
 		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
-		workload.callStack = "GuildMembers::getGuildMemberAsync()";
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
+		workload.callStack	   = "GuildMembers::getGuildMemberAsync()";
 		GuildMemberData data{};
 		data.user.id = dataPackage.guildMemberId;
 		data.guildId = dataPackage.guildId;
@@ -179,11 +179,11 @@ namespace DiscordCoreAPI {
 		return GuildMembers::getGuildMemberAsync(dataPackage).get();
 	}
 
-	CoRoutine<std::vector<GuildMemberData>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
+	CoRoutine<Jsonifier::Vector<GuildMemberData>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Members };
-		co_await NewThreadAwaitable<std::vector<GuildMemberData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<GuildMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members";
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members";
 		if (dataPackage.after != 0) {
 			workload.relativePath += "?after=" + dataPackage.after;
 			if (dataPackage.limit != 0) {
@@ -193,16 +193,16 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::listGuildMembersAsync()";
-		std::vector<GuildMemberData> returnData{};
+		Jsonifier::Vector<GuildMemberData> returnData{};
 		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<GuildMemberData>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
+	CoRoutine<Jsonifier::Vector<GuildMemberData>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Search_Guild_Members };
-		co_await NewThreadAwaitable<std::vector<GuildMemberData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<GuildMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/search";
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members/search";
 		if (dataPackage.query != "") {
 			workload.relativePath += "?query=" + dataPackage.query;
 			if (dataPackage.limit != 0) {
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::searchGuildMembersAsync()";
-		std::vector<GuildMemberData> returnData{};
+		Jsonifier::Vector<GuildMemberData> returnData{};
 		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Member };
 		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId;
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId;
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildMembers::addGuildMemberAsync()";
 		GuildMemberData returnData{};
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Current_Guild_Member };
 		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/@me";
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members/@me";
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildMembers::modifyCurrentGuildMemberAsync()";
 		if (dataPackage.reason != "") {
@@ -248,7 +248,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Member };
 		co_await NewThreadAwaitable<GuildMemberData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "GuildMembers::modifyGuildMemberAsync()";
 		if (dataPackage.reason != "") {
@@ -272,8 +272,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Member };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
-		workload.callStack = "GuildMembers::removeGuildMemberAsync()";
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
+		workload.callStack	   = "GuildMembers::removeGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
@@ -283,52 +283,51 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildMemberData> GuildMembers::timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMemberData>();
-		GuildMemberData guildMember =
-			GuildMembers::getCachedGuildMember({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId });
+		GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId });
 		ModifyGuildMemberData dataPackage01{};
-		dataPackage01.deaf = guildMember.getFlagValue(GuildMemberFlags::Deaf);
-		dataPackage01.guildId = guildMember.guildId;
+		dataPackage01.deaf			= guildMember.getFlagValue(GuildMemberFlags::Deaf);
+		dataPackage01.guildId		= guildMember.guildId;
 		dataPackage01.guildMemberId = guildMember.user.id;
-		dataPackage01.mute = guildMember.getFlagValue(GuildMemberFlags::Mute);
+		dataPackage01.mute			= guildMember.getFlagValue(GuildMemberFlags::Mute);
 		for (auto& value: guildMember.roles) {
 			dataPackage01.roleIds.emplace_back(value);
 		}
-		dataPackage01.nick = guildMember.nick;
+		dataPackage01.nick	 = guildMember.nick;
 		dataPackage01.reason = dataPackage.reason;
 		TimeStamp timeStamp{};
 		switch (dataPackage.numOfMinutesToTimeoutFor) {
 			case TimeoutDurations::Day: {
-				auto string = timeStamp.convertToFutureISO8601TimeStamp(0, 0, 1, 0, 0, TimeFormat::LongDateTime);
+				auto string								 = timeStamp.convertToFutureISO8601TimeStamp(0, 0, 1, 0, 0, TimeFormat::LongDateTime);
 				dataPackage01.communicationDisabledUntil = string;
 				break;
 			}
 			case TimeoutDurations::Five_Minutes: {
-				auto string = timeStamp.convertToFutureISO8601TimeStamp(5, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				auto string								 = timeStamp.convertToFutureISO8601TimeStamp(5, 0, 0, 0, 0, TimeFormat::LongDateTime);
 				dataPackage01.communicationDisabledUntil = string;
 				break;
 			}
 			case TimeoutDurations::Hour: {
-				auto string = timeStamp.convertToFutureISO8601TimeStamp(0, 1, 0, 0, 0, TimeFormat::LongDateTime);
+				auto string								 = timeStamp.convertToFutureISO8601TimeStamp(0, 1, 0, 0, 0, TimeFormat::LongDateTime);
 				dataPackage01.communicationDisabledUntil = string;
 				break;
 			}
 			case TimeoutDurations::Ten_Minutes: {
-				auto string = timeStamp.convertToFutureISO8601TimeStamp(10, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				auto string								 = timeStamp.convertToFutureISO8601TimeStamp(10, 0, 0, 0, 0, TimeFormat::LongDateTime);
 				dataPackage01.communicationDisabledUntil = string;
 				break;
 			}
 			case TimeoutDurations::Week: {
-				auto string = timeStamp.convertToFutureISO8601TimeStamp(0, 0, 7, 0, 0, TimeFormat::LongDateTime);
+				auto string								 = timeStamp.convertToFutureISO8601TimeStamp(0, 0, 7, 0, 0, TimeFormat::LongDateTime);
 				dataPackage01.communicationDisabledUntil = string;
 				break;
 			}
 			case TimeoutDurations::Minute: {
-				auto string = timeStamp.convertToFutureISO8601TimeStamp(1, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				auto string								 = timeStamp.convertToFutureISO8601TimeStamp(1, 0, 0, 0, 0, TimeFormat::LongDateTime);
 				dataPackage01.communicationDisabledUntil = string;
 				break;
 			}
 			case TimeoutDurations::None: {
-				auto string = timeStamp.convertToFutureISO8601TimeStamp(0, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				auto string								 = timeStamp.convertToFutureISO8601TimeStamp(0, 0, 0, 0, 0, TimeFormat::LongDateTime);
 				dataPackage01.communicationDisabledUntil = string;
 				break;
 			}

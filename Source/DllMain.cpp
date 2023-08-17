@@ -30,7 +30,7 @@
 
 #include <discordcoreapi/Index.hpp>
 
-#ifdef _WIN32
+#if defined _WIN32
 bool __stdcall DllMain(void*, uint64_t fdwReason, void*) {
 	switch (fdwReason) {
 		case DLL_PROCESS_ATTACH: {

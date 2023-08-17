@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 				auto threadsVector = Threads::getActiveThreadsAsync(dataPackage).get();
 
-				for (auto value: threadsVector.threads) {
+				for (const auto& value: threadsVector.threads) {
 					std::cout << "THE NAME: " << value.name << std::endl;
 				}
 

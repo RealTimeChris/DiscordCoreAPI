@@ -21,7 +21,7 @@ if (returnedMessages.messages.size() == 0) {
 	doWeQuit = true;
 	break;
 }
-std::vector<string> args2;
+Jsonifier::Vector<string> args2;
 std::string newString = convertToLowerCase(returnedMessages.objects.at(0).content);
 std::regex wordRegex("[a-z]{1,12}");
 smatch wordRegexMatch;
@@ -30,6 +30,6 @@ std::regex_search(newString, wordRegexMatch, wordRegex,
 					  std::regex_constants::match_flag_type::match_prev_avail);
 args2.emplace_back(wordRegexMatch.str());
 std::regex_iterator<const char*>::regex_type rx("\\d{1,4}");
-std::regex_iterator<const char*> next(newString.c_str(), newString.c_str() + strlen(newString.c_str()), rx);
+std::regex_iterator<const char*> next(newString.data(), newString.data() + strlen(newString.data()), rx);
 std::regex_iterator<const char*> end;
 ```

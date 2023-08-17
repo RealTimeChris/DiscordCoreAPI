@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				int32_t trackNumber = stoi(newArgs.optionsArgs[0]) - 1;
+				int32_t trackNumber = std::stoi(newArgs.optionsArgs[0]) - 1;
 
 				if (trackNumber >= SongAPI::getPlaylist(guild.id).songQueue.size()) {
 					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 				auto currentSong = SongAPI::getCurrentSong(guild.id);
 				Song currentNew = currentPlaylist.songQueue.at(trackNumber);
 				currentPlaylist.songQueue.erase(currentPlaylist.songQueue.begin() + trackNumber);
-				std::vector<Song> newVector{};
+				Jsonifier::Vector<Song> newVector{};
 				Playlist newPlaylist{};
 				newVector.emplace_back(currentNew);
 				newVector.emplace_back(currentSong);

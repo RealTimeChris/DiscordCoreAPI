@@ -1,6 +1,6 @@
 #include "VersionInfo.h"
 
-#if defined(__MINGW64__) || defined(__MINGW32__)
+#if defined __MINGW64__ || __MINGW32__
 	// MinGW-w64, MinGW
 	#if defined(__has_include) && __has_include(<winres.h>)
 		#include <winres.h>
@@ -19,7 +19,7 @@ VS_VERSION_INFO VERSIONINFO
     FILEVERSION FILE_VERSION_RESOURCE
     PRODUCTVERSION PRODUCT_VERSION_RESOURCE
     FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
+#if defined _DEBUG
     FILEFLAGS 0x1L
 #else
     FILEFLAGS 0x0L

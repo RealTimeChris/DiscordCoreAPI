@@ -67,9 +67,8 @@ namespace DiscordCoreAPI {
 		/// @param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// @param maxValues Maximum number of selections that are possible.
 		/// @param minValues Minimum required number of selections that are required.
-		InteractionResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
-			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
+		InteractionResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options, const std::string& placeholder,
+			int32_t maxValues, int32_t minValues, SelectMenuType type, Jsonifier::Vector<ChannelType> channelTypes = Jsonifier::Vector<ChannelType>{});
 
 		/// @brief Adds a modal to the response MessageData.
 		/// @param topTitleNew A title for the modal.
@@ -83,9 +82,8 @@ namespace DiscordCoreAPI {
 		/// @param label A label for the modal.
 		/// @param placeholder A placeholder for the modal.
 		/// @returns RespondToInputEventData& A reference to this data structure.
-		InteractionResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-			const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle,
-			const std::string& label = "", const std::string& placeholder = "");
+		InteractionResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
+			bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
 
 		/// @brief Adds a file to the current collection of files for this message response.
 		/// @param theFile The file to be added.
@@ -376,11 +374,11 @@ namespace DiscordCoreAPI {
 		inline SelectMenuResponseData& operator=(const SelectMenuResponseData& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
-				selectionId = other.selectionId;
-				messageId = other.messageId;
-				channelId = other.channelId;
-				values = other.values;
-				userId = other.userId;
+				selectionId		 = other.selectionId;
+				messageId		 = other.messageId;
+				channelId		 = other.channelId;
+				values			 = other.values;
+				userId			 = other.userId;
 			}
 			return *this;
 		}
@@ -392,11 +390,11 @@ namespace DiscordCoreAPI {
 		inline SelectMenuResponseData& operator=(SelectMenuResponseData& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
-				selectionId = other.selectionId;
-				messageId = other.messageId;
-				channelId = other.channelId;
-				values = other.values;
-				userId = other.userId;
+				selectionId		 = other.selectionId;
+				messageId		 = other.messageId;
+				channelId		 = other.channelId;
+				values			 = other.values;
+				userId			 = other.userId;
 			}
 			return *this;
 		}
@@ -408,7 +406,7 @@ namespace DiscordCoreAPI {
 		inline SelectMenuResponseData() = default;
 
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
-		std::vector<std::string> values{};///< A vector of the chosen values.
+		Jsonifier::Vector<std::string> values{};///< A vector of the chosen values.
 		std::string selectionId{};///< Selection id.
 		Snowflake channelId{};///< The ChannelData id where it took place.
 		Snowflake messageId{};///< The Message id where it took place.
@@ -436,25 +434,24 @@ namespace DiscordCoreAPI {
 		/// @param errorMessageDataNew The message-data for when an individual other than the selected individual attemps to use this interaction.
 		/// @param targetUserId The id of the single UserData to collect inputs from, if getSelectMenuDataForAllNew is set to false.
 		/// @returns A vector of SelectMenuResponseData.
-		CoRoutine<std::vector<SelectMenuResponseData>, false> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
+		CoRoutine<Jsonifier::Vector<SelectMenuResponseData>, false> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
 			int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
 
 		/// @brief Used to collect the select-menu inputs from one or more users.
 		/// @param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.
 		/// @param functionNew Takes a DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> as a function to be executed upon returning true from the "trigger-function".
-		void collectSelectMenuData(std::function<bool(InteractionData)> triggerFunctionNew,
-			DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
+		void collectSelectMenuData(std::function<bool(InteractionData)> triggerFunctionNew, DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
 
 		~SelectMenuCollector();
 
 	  protected:
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> selectMenuIncomingInteractionBuffer{};
-		std::vector<SelectMenuResponseData> responseVector{};
+		Jsonifier::Vector<SelectMenuResponseData> responseVector{};
 		CreateInteractionResponseData errorMessageData{};
 		int32_t currentCollectedSelectMenuCount{};
 		int32_t maxCollectedSelectMenuCount{};
-		std::vector<std::string> values{};
+		Jsonifier::Vector<std::string> values{};
 		bool getSelectMenuDataForAll{};
 		std::string buffersMapKey{};
 		std::string selectMenuId{};
@@ -476,11 +473,11 @@ namespace DiscordCoreAPI {
 		inline ButtonResponseData& operator=(const ButtonResponseData& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
-				messageId = other.messageId;
-				channelId = other.channelId;
-				emojiName = other.emojiName;
-				buttonId = other.buttonId;
-				userId = other.userId;
+				messageId		 = other.messageId;
+				channelId		 = other.channelId;
+				emojiName		 = other.emojiName;
+				buttonId		 = other.buttonId;
+				userId			 = other.userId;
 			}
 			return *this;
 		}
@@ -492,11 +489,11 @@ namespace DiscordCoreAPI {
 		inline ButtonResponseData& operator=(ButtonResponseData& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
-				messageId = other.messageId;
-				channelId = other.channelId;
-				emojiName = other.emojiName;
-				buttonId = other.buttonId;
-				userId = other.userId;
+				messageId		 = other.messageId;
+				channelId		 = other.channelId;
+				emojiName		 = other.emojiName;
+				buttonId		 = other.buttonId;
+				userId			 = other.userId;
 			}
 			return *this;
 		}
@@ -534,14 +531,13 @@ namespace DiscordCoreAPI {
 		/// @param errorMessageDataNew The message-data for when an individual other than the selected individual attemps to use this interaction.
 		/// @param targetUserId The id of the single UserData to collect inputs from, if getButtonDataForAllNew is set to false.
 		/// @returns A vector of ButtonResponseData.
-		CoRoutine<std::vector<ButtonResponseData>, false> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
-			int32_t maxNumberOfPressesNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
+		CoRoutine<Jsonifier::Vector<ButtonResponseData>, false> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
+			CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
 
 		/// @brief Used to collect the button inputs from one or more users.
 		/// @param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.
 		/// @param functionNew Takes a DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> as a function to be executed upon returning true from the "trigger-function".
-		void collectButtonData(std::function<bool(InteractionData)> triggerFunctionNew,
-			DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
+		void collectButtonData(std::function<bool(InteractionData)> triggerFunctionNew, DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
 
 		~ButtonCollector();
 
@@ -549,10 +545,10 @@ namespace DiscordCoreAPI {
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> buttonIncomingInteractionBuffer{};
 		CreateInteractionResponseData errorMessageData{};
-		std::vector<ButtonResponseData> responseVector{};
+		Jsonifier::Vector<ButtonResponseData> responseVector{};
 		int32_t currentCollectedButtonCount{};
 		int32_t maxCollectedButtonCount{};
-		std::vector<std::string> values{};
+		Jsonifier::Vector<std::string> values{};
 		std::string buffersMapKey{};
 		bool getButtonDataForAll{};
 		uint32_t maxTimeInMs{};
@@ -574,11 +570,11 @@ namespace DiscordCoreAPI {
 		inline ModalResponseData& operator=(const ModalResponseData& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
-				customIdSmall = other.customIdSmall;
-				channelId = other.channelId;
-				customId = other.customId;
-				userId = other.userId;
-				value = other.value;
+				customIdSmall	 = other.customIdSmall;
+				channelId		 = other.channelId;
+				customId		 = other.customId;
+				userId			 = other.userId;
+				value			 = other.value;
 			}
 			return *this;
 		}
@@ -617,8 +613,7 @@ namespace DiscordCoreAPI {
 		/// @brief Used to collect the modal from one or more users.
 		/// @param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.
 		/// @param functionNew Takes a DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> as a function to be executed upon returning true from the "trigger-function".
-		void collectModalData(std::function<bool(InteractionData)> triggerFunctionNew,
-			DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
+		void collectModalData(std::function<bool(InteractionData)> triggerFunctionNew, DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
 
 		~ModalCollector();
 

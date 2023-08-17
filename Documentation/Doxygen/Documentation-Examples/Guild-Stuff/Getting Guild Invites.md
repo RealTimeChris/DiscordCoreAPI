@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 				auto responseData = Guilds::getGuildInvitesAsync(dataPackage01).get();
 
-				for (auto value: responseData) {
+				for (const auto& value: responseData) {
 					std::cout << value.code << std::endl;
 				}
 

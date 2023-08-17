@@ -10,18 +10,18 @@ namespace DiscordCoreAPI {
 }
 
 void onBoot(DiscordCoreAPI::DiscordCoreClient* client) {
-	DiscordCoreAPI::doWeQuit.store(true);
+	DiscordCoreAPI::doWeQuit.store(true, std::memory_order_release);
 }
 
 int32_t main() {
 	std::string botToken = "";
-	std::vector<DiscordCoreAPI::RepeatedFunctionData> functionVector{};
+	Jsonifier::Vector<DiscordCoreAPI::RepeatedFunctionData> functionVector{};
 	functionVector.reserve(5);
 	DiscordCoreAPI::RepeatedFunctionData function01{};
 	function01.function = onBoot;
 	function01.repeated = false;
 	function01.intervalInMs = 1500;
-	functionVector.push_back(function01);
+	functionVector.emplace_back(function01);
 	DiscordCoreAPI::ShardingOptions shardOptions{};
 	shardOptions.numberOfShardsForThisProcess = 1;
 	shardOptions.startingShard = 0;
@@ -42,11 +42,11 @@ int32_t main() {
 	clientConfig.cacheOptions.cacheGuilds = true;
 	clientConfig.cacheOptions.cacheUsers = true;
 	clientConfig.cacheOptions.cacheRoles = true;
-	std::vector<DiscordCoreAPI::ActivityData> activities{};
+	Jsonifier::Vector<DiscordCoreAPI::ActivityData> activities{};
 	DiscordCoreAPI::ActivityData activity{};
 	activity.name = "/help for my commands!";
 	activity.type = DiscordCoreAPI::ActivityType::Game;
-	activities.push_back(activity);
+	activities.emplace_back(activity);
 	clientConfig.presenceData.activities = activities;
 	clientConfig.presenceData.afk = false;
 	clientConfig.presenceData.status = DiscordCoreAPI::PresenceUpdateState::Online;
@@ -59,7 +59,7 @@ int32_t main() {
 	createBotInfoCommandData.defaultMemberPermissions = DiscordCoreAPI::Permission::Use_Application_Commands;
 	createBotInfoCommandData.description = "Displays info about the current bot.";
 	createBotInfoCommandData.name = "botinfo";
-	the->registerFunction(std::vector<std::string>{ "botinfo" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::BotInfo>(), createBotInfoCommandData);
+	the->registerFunction(Jsonifier::Vector<std::string>{ "botinfo" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::BotInfo>(), createBotInfoCommandData);
 	the->runBot();
 	return 0;
 };

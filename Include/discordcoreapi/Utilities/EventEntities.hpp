@@ -67,11 +67,13 @@ namespace DiscordCoreAPI {
 
 	};
 
-	template<EventDelegateTokenT ValueType> uint64_t KeyHasher::operator()(const ValueType& data) const {
-		uint64_t values[2]{};
-		values[0] = stoull(data.eventId);
-		values[0] = stoull(data.handlerId);
-		return internalHashFunction(values, std::size(values) * sizeof(uint64_t));
+	template<EventDelegateTokenT ValueType> struct KeyHasher<ValueType> {
+		inline uint64_t operator()(const ValueType& data) const {
+			uint64_t values[2]{};
+			values[0] = stoull(data.eventId);
+			values[0] = stoull(data.handlerId);
+			return internalHashFunction(values, std::size(values) * sizeof(uint64_t));
+		};
 	};
 
 	namespace DiscordCoreInternal {

@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 		config.connectionPort = connectionPortNew;
 	}
 
-	std::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
+	Jsonifier::Vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
 		return config.functionsToExecute;
 	}
 
@@ -187,9 +187,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void AudioFrameData::clearData() {
-		type = AudioFrameType::Unset;
+		type		  = AudioFrameType::Unset;
 		guildMemberId = 0;
-		currentSize = 0;
+		currentSize	  = 0;
 		data.clear();
 	}
 
@@ -205,13 +205,13 @@ namespace DiscordCoreAPI {
 	}
 
 	RGBColorValue ColorValue::getRgbColorValue() {
-		uint8_t red = static_cast<uint8_t>(color >> 16);
+		uint8_t red	  = static_cast<uint8_t>(color >> 16);
 		uint8_t green = static_cast<uint8_t>(color >> 8);
-		uint8_t blue = static_cast<uint8_t>(color);
+		uint8_t blue  = static_cast<uint8_t>(color);
 		RGBColorValue colorNew{};
 		colorNew.green = green;
-		colorNew.blue = blue;
-		colorNew.red = red;
+		colorNew.blue  = blue;
+		colorNew.red   = red;
 		return colorNew;
 	}
 
@@ -229,7 +229,7 @@ namespace DiscordCoreAPI {
 		std::string newHash{ string };
 		if (newHash.empty() || newHash == "0") {
 			highBits = 0;
-			lowBits = 0;
+			lowBits	 = 0;
 			return *this;
 		}
 		if (newHash.length() >= 32 && newHash.find("a_") != std::string::npos) {
@@ -238,7 +238,7 @@ namespace DiscordCoreAPI {
 		if (newHash.length() != 32) {
 			throw DCAException{ "Sorry, but that is an incorrect IconHash length, it must be 32 characters long." };
 		}
-		lowBits = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
+		lowBits	 = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
 		highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
 		return *this;
 	}
@@ -272,8 +272,7 @@ namespace DiscordCoreAPI {
 		return stoull(std::string{ string });
 	}
 
-	template<> std::string PermissionsBase<Permissions>::computeOverwrites(const std::string& basePermissions, const GuildMemberData& guildMember,
-		const ChannelData& channel) {
+	template<> std::string PermissionsBase<Permissions>::computeOverwrites(const std::string& basePermissions, const GuildMemberData& guildMember, const ChannelData& channel) {
 		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) & static_cast<uint64_t>(Permission::Administrator)) {
 			return getAllPermissions();
 		}
@@ -286,7 +285,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 		}
-		std::vector<RoleData> guildMemberRoles{};
+		Jsonifier::Vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
 		}
@@ -317,7 +316,7 @@ namespace DiscordCoreAPI {
 		if (guild.ownerId == guildMember.user.id) {
 			return getAllPermissions();
 		}
-		std::vector<RoleData> guildRoles{};
+		Jsonifier::Vector<RoleData> guildRoles{};
 		for (auto& value: guild.roles) {
 			guildRoles.emplace_back(Roles::getCachedRole({ .guildId = guild.id, .roleId = value.id }));
 		}
@@ -333,8 +332,8 @@ namespace DiscordCoreAPI {
 		}
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
-		getRolesData.guildId = guildMember.guildId;
-		std::vector<RoleData> guildMemberRoles{};
+		getRolesData.guildId	 = guildMember.guildId;
+		Jsonifier::Vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			auto valueNew = Roles::getCachedRole({ .guildId = guild.id, .roleId = value });
 			guildMemberRoles.emplace_back(valueNew);
@@ -350,8 +349,8 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	template<> std::string PermissionsBase<PermissionsParse>::computeOverwrites(const std::string& basePermissions,
-		const GuildMemberData& guildMember, const ChannelData& channel) {
+	template<>
+	std::string PermissionsBase<PermissionsParse>::computeOverwrites(const std::string& basePermissions, const GuildMemberData& guildMember, const ChannelData& channel) {
 		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) & static_cast<uint64_t>(Permission::Administrator)) {
 			return getAllPermissions();
 		}
@@ -364,7 +363,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 		}
-		std::vector<RoleData> guildMemberRoles{};
+		Jsonifier::Vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
 		}
@@ -395,7 +394,7 @@ namespace DiscordCoreAPI {
 		if (guild.ownerId == guildMember.user.id) {
 			return getAllPermissions();
 		}
-		std::vector<RoleData> guildRoles{};
+		Jsonifier::Vector<RoleData> guildRoles{};
 		for (auto& value: guild.roles) {
 			guildRoles.emplace_back(Roles::getCachedRole({ .guildId = guild.id, .roleId = value.id }));
 		}
@@ -411,8 +410,8 @@ namespace DiscordCoreAPI {
 		}
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
-		getRolesData.guildId = guildMember.guildId;
-		std::vector<RoleData> guildMemberRoles{};
+		getRolesData.guildId	 = guildMember.guildId;
+		Jsonifier::Vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			auto valueNew = Roles::getCachedRole({ .guildId = guild.id, .roleId = value });
 			guildMemberRoles.emplace_back(valueNew);
@@ -428,7 +427,7 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	std::string constructMultiPartData(const std::string& data, const std::vector<File>& files) {
+	std::string constructMultiPartData(const std::string& data, const Jsonifier::Vector<File>& files) {
 		const std::string boundary("boundary25");
 		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
 
@@ -482,7 +481,8 @@ namespace DiscordCoreAPI {
 
 		std::string returnString{};
 		returnString.reserve(encodedLength);
-		StopWatch<std::chrono::milliseconds> stopWatch{ 1500ms };
+		StopWatch<Milliseconds> stopWatch{ 1500ms };
+		stopWatch.resetTimer();
 		uint64_t pos = 0;
 		while (pos < string.size()) {
 			if (stopWatch.hasTimePassed()) {
@@ -491,12 +491,10 @@ namespace DiscordCoreAPI {
 			returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < string.size()) {
-				returnString.push_back(
-					base64Chars[((string[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
+				returnString.push_back(base64Chars[((string[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
 
 				if (static_cast<uint64_t>(pos + 2) < string.size()) {
-					returnString.push_back(
-						base64Chars[((string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
+					returnString.push_back(base64Chars[((string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
 					returnString.push_back(base64Chars[string[static_cast<int64_t>(pos + 2)] & 0x3f]);
 				} else {
 					returnString.push_back(base64Chars[(string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2]);
@@ -578,7 +576,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool nanoSleep(int64_t ns) {
-#ifdef _WIN32
+#if defined _WIN32
 		HANDLE timer = CreateWaitableTimerExW(nullptr, nullptr, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
 		LARGE_INTEGER largeInt{ .QuadPart = -ns / 100 };
 		if (!timer) {

@@ -5,7 +5,7 @@ https://github.com/jothepro/doxygen-awesome-css
 
 MIT License
 
-Copyright (c) 2021 - 2022 jothepro
+Copyright (c) 2021 - 2023 jothepro
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -90,7 +90,7 @@ class DoxygenAwesomeDarkModeToggle extends HTMLElement {
      * @returns `true` for dark-mode, `false` for light-mode system preference
      */
     static get systemPreference() {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches
+        return window.matchMedia('(prefers-color-scheme: light)').matches
     }
 
     /**
@@ -122,12 +122,12 @@ class DoxygenAwesomeDarkModeToggle extends HTMLElement {
     static enableDarkMode(enable) {
         if(enable) {
             DoxygenAwesomeDarkModeToggle.darkModeEnabled = true
-            document.documentElement.classList.add("dark-mode")
-            document.documentElement.classList.remove("light-mode")
+            document.documentElement.classList.add("light-mode")
+            document.documentElement.classList.remove("dark-mode")
         } else {
             DoxygenAwesomeDarkModeToggle.darkModeEnabled = false
-            document.documentElement.classList.remove("dark-mode")
-            document.documentElement.classList.add("light-mode")
+            document.documentElement.classList.remove("light-mode")
+            document.documentElement.classList.add("dark-mode")
         }
     }
 

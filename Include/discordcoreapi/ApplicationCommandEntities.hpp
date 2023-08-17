@@ -65,11 +65,9 @@ namespace DiscordCoreAPI {
 
 	/// @brief For editing a single global ApplicationCommandData.
 	struct EditGlobalApplicationCommandData {
-		UnorderedMap<std::string, std::string>
-			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		UnorderedMap<std::string, std::string>
-			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommandData.
+		UnorderedMap<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		UnorderedMap<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		Jsonifier::Vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommandData.
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
@@ -85,7 +83,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For bulk-overwriting a collection of global ApplicationCommands.
 	struct BulkOverwriteGlobalApplicationCommandsData {
-		std::vector<CreateGlobalApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
+		Jsonifier::Vector<CreateGlobalApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
 	};
 
@@ -110,7 +108,7 @@ namespace DiscordCoreAPI {
 	struct EditGuildApplicationCommandData {
 		UnorderedMap<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales.
 		UnorderedMap<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales.
-		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommandData.
+		Jsonifier::Vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommandData.
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
@@ -128,7 +126,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For bulk-overwriting a collection of Guild ApplicationCommands.
 	struct BulkOverwriteGuildApplicationCommandsData {
-		std::vector<CreateGuildApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
+		Jsonifier::Vector<CreateGuildApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
 		Snowflake guildId{};///< The id of the Guild which you would like to overwrite the commands of.
 	};
@@ -148,7 +146,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For editing the permissions of a single Guild ApplicationCommandData.
 	struct EditGuildApplicationCommandPermissionsData {
-		std::vector<ApplicationCommandPermissionData> permissions{};///< A vector of ApplicationCommandData permissions.
+		Jsonifier::Vector<ApplicationCommandPermissionData> permissions{};///< A vector of ApplicationCommandData permissions.
 		std::string commandName{};///< The command name which you would like to edit the permissions of.
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
 		uint64_t commandId{};///< The command id which you would like to edit the permissions of.
@@ -157,7 +155,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For batch editing the permissions of a collection of Guild ApplicationCommands.
 	struct BatchEditGuildApplicationCommandPermissionsData {
-		std::vector<GuildApplicationCommandPermissionsData> permissions{};///< A vector of edit-Guild-application-permissions responseData to edit.
+		Jsonifier::Vector<GuildApplicationCommandPermissionsData> permissions{};///< A vector of edit-Guild-application-permissions responseData to edit.
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
 	};
@@ -176,7 +174,7 @@ namespace DiscordCoreAPI {
 		/// @brief Get all of the global ApplicationCommands for this bot.
 		/// @param dataPackage The info for acquiring the GlobalApplicationCommandData.
 		/// @return A CoRoutine containing a vector<ApplicationCommandData>.
-		static CoRoutine<std::vector<ApplicationCommandData>> getGlobalApplicationCommandsAsync(GetGlobalApplicationCommandsData dataPackage);
+		static CoRoutine<Jsonifier::Vector<ApplicationCommandData>> getGlobalApplicationCommandsAsync(GetGlobalApplicationCommandsData dataPackage);
 
 		/// @brief Create a global ApplicationCommandData for this bot.
 		/// @param dataPackage A CreateGlobalApplicationCommandData structure.
@@ -201,13 +199,12 @@ namespace DiscordCoreAPI {
 		/// @brief Bulk overwrites a collection of global ApplicationCommands.
 		/// @param dataPackage A BulkOverwriteGlobalApplicationCommandsData structure.
 		/// @return A CoRoutine containing a vector<ApplicationCommandData>.
-		static CoRoutine<std::vector<ApplicationCommandData>> bulkOverwriteGlobalApplicationCommandsAsync(
-			BulkOverwriteGlobalApplicationCommandsData dataPackage);
+		static CoRoutine<Jsonifier::Vector<ApplicationCommandData>> bulkOverwriteGlobalApplicationCommandsAsync(BulkOverwriteGlobalApplicationCommandsData dataPackage);
 
 		/// @brief Get all of the Guild ApplicationCommands for a single Guild for this bot.
 		/// @param dataPackage A GetGuildApplicationCommandsData structure.
 		/// @return A CoRoutine containing a vector<ApplicationCommandData>.
-		static CoRoutine<std::vector<ApplicationCommandData>> getGuildApplicationCommandsAsync(GetGuildApplicationCommandsData dataPackage);
+		static CoRoutine<Jsonifier::Vector<ApplicationCommandData>> getGuildApplicationCommandsAsync(GetGuildApplicationCommandsData dataPackage);
 
 		/// @brief Create a Guild ApplicationCommandData for a single server for this bot.
 		/// @param dataPackage A CreateGuildApplicationCommandData structure.
@@ -232,26 +229,23 @@ namespace DiscordCoreAPI {
 		/// @brief Bulkoverwrites some Guild ApplicationCommands for this bot.
 		/// @param dataPackage A BulkOverwriteGuildApplicationCommandsData structure.
 		/// @return A CoRoutine containing a vector<ApplicationCommandData>.
-		static CoRoutine<std::vector<ApplicationCommandData>> bulkOverwriteGuildApplicationCommandsAsync(
-			BulkOverwriteGuildApplicationCommandsData dataPackage);
+		static CoRoutine<Jsonifier::Vector<ApplicationCommandData>> bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage);
 
 		/// @brief Gets Guild ApplicationCommandData permissions for a single server on this bot.
 		/// @param dataPackage A GetGuildApplicationCommandPermissionsData structure.
 		/// @return A CoRoutine containing a vector<GuildApplicationCommandPermissionsData>.
-		static CoRoutine<std::vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(
+		static CoRoutine<Jsonifier::Vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(
 			GetGuildApplicationCommandPermissionsData dataPackage);
 
 		/// @brief Get ApplicationCommandData permissions for a single command on this bot.
 		/// @param dataPackage A GetApplicationCommandPermissionsData structure.
 		/// @return A CoRoutine containing a GuildApplicationCommandPermissionsData.
-		static CoRoutine<GuildApplicationCommandPermissionsData> getApplicationCommandPermissionsAsync(
-			GetApplicationCommandPermissionsData dataPackage);
+		static CoRoutine<GuildApplicationCommandPermissionsData> getApplicationCommandPermissionsAsync(GetApplicationCommandPermissionsData dataPackage);
 
 		/// @brief Edit Guild ApplicationCommandData permissions for a server on this bot.
 		/// @param dataPackage An EditGuildApplicationCommandPermissionsData structure.
 		/// @return A CoRoutine containing a GuildApplicationCommandPermissionsData.
-		static CoRoutine<GuildApplicationCommandPermissionsData> editGuildApplicationCommandPermissionsAsync(
-			EditGuildApplicationCommandPermissionsData dataPackage);
+		static CoRoutine<GuildApplicationCommandPermissionsData> editGuildApplicationCommandPermissionsAsync(EditGuildApplicationCommandPermissionsData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

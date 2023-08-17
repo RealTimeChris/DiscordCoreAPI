@@ -1,4 +1,5 @@
-name: Build-and-Test-GCC
+
+name: Build-and-Test-CLANG-MacOS
 
 on:
   push:
@@ -6,33 +7,35 @@ on:
     - main
     - dev
 
+
 jobs:
   Build:
-    runs-on: ubuntu-22.04
+    runs-on: macos-latest
     
     strategy:
       fail-fast: false
       matrix:
-        gcc: [12]
+        clang: [16]
         build_type: [Debug, Release]
         std: [20]
-    env:
-      CC: gcc-${{matrix.gcc}}
-      CXX: g++-${{matrix.gcc}}
 
     steps:
     - uses: actions/checkout@v3
 
     - name: Update Vcpkg and install other dependencies.
-      run: | 
-            sudo apt-get update --fix-missing
-            sudo apt-get upgrade --fix-missing
-            sudo apt-get install nasm
+      run: |
             cd /usr/local/share/vcpkg
             ./bootstrap-vcpkg.sh
             git stash
             git pull
             vcpkg update
+
+    - name: Install Clang16
+      run: |
+            brew install llvm
+            echo 'export PATH="/usr/local/opt/llvm/bin:$PATH"' >> ~/.bash_profile
+            export LDFLAGS="-L/usr/local/opt/llvm/lib"
+            export CPPFLAGS="-I/usr/local/opt/llvm/include"
 
     - name: Copy the Jsonifier repo over.
       run: |
@@ -41,15 +44,15 @@ jobs:
 
     - name: Install the dependencies.
       run: |
-           vcpkg install jsonifier:x64-linux
-           vcpkg install opus:x64-linux
-           vcpkg install libsodium:x64-linux
-           vcpkg install openssl:x64-linux
+           vcpkg install jsonifier:x64-osx
+           vcpkg install opus:x64-osx
+           vcpkg install libsodium:x64-osx
+           vcpkg install openssl:x64-osx
 
     - name: Configure CMake
       working-directory: Tests
       run: |
-           cmake -S . -B ./Build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DGITHUB_BRANCH_TYPE=${{github.ref}}
+           cmake -S . -B ./Build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang-16 -DGITHUB_BRANCH_TYPE=${{github.ref}}
 
     - name: Build the Test
       working-directory: Tests/Build
@@ -67,3 +70,4 @@ jobs:
             chmod u+x ./DiscordCoreAPITest
             ./DiscordCoreAPITest
       continue-on-error: true
+      

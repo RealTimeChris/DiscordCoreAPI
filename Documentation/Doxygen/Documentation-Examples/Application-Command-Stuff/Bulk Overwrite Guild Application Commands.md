@@ -1,6 +1,6 @@
 Bulk Overwriting Guild Application Commands {#bulkoverwriteguildcommands}
 ============
-- Execute the `ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync()` function and execute it, while passing in a data structure of type `BulkOverwriteGuildApplicationCommandsData`, with a return value of `auto` or `std::vector<ApplicationCommand>`.
+- Execute the `ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync()` function and execute it, while passing in a data structure of type `BulkOverwriteGuildApplicationCommandsData`, with a return value of `auto` or `Jsonifier::Vector<ApplicationCommand>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 
 			auto returnValue = ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync(dataPackage).get();
 
-			for (auto value: returnValue) {
+			for (const auto& value: returnValue) {
 				std::cout << "Command Name: " << value.name << std::endl;
 			}
 		}

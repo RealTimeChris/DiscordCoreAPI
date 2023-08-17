@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 
 		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				std::vector<WelcomeScreenChannelData> vector;
+				Jsonifier::Vector<WelcomeScreenChannelData> vector;
 				WelcomeScreenChannelData channelData;
 				channelData.channelId = args.eventData.getChannelId();
 				channelData.description = "TESTING CHANNEL!";

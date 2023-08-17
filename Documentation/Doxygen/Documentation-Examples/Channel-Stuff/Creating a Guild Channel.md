@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 				vector<Channel> channels = Channels::getGuildChannelsAsync({.guildId = args.eventData.getGuildId()}).get();
 
-				for (auto value: channels) {
+				for (const auto& value: channels) {
 					if (value.type == ChannelType::GUILD_CATEGORY) {
 						dataPackage.parentId = value.id;
 						break;

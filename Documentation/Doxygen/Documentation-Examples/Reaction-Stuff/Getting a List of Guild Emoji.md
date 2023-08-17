@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 				auto emojiList = Reactions::getEmojiListAsync(dataPackage).get();
 
-				for (auto value: emojiList) {
+				for (const auto& value: emojiList) {
 					std::cout << "THE NAME: " << value.name << std::endl;
 				}
 

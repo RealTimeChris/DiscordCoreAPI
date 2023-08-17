@@ -61,6 +61,13 @@ if (WIN32)
 	else()
 		add_library("${LIB_NAME}" STATIC "${SOURCES}" "${PRODUCT_INFO}")
 	endif()
+elseif (APPLE)
+	if (BUILD_SHARED_LIBS)
+		add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
+	else()
+		add_library("${LIB_NAME}" STATIC "${SOURCES}" "${PRODUCT_INFO}")
+	endif()
+	find_package(Threads REQUIRED)
 elseif (UNIX)
 	add_library("${LIB_NAME}" STATIC "${SOURCES}")
 	find_package(Threads REQUIRED)
@@ -93,16 +100,20 @@ target_include_directories(
 	"${LIB_NAME}" PUBLIC
 	"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Include>"
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-Wl,-rpath,/usr/local/opt/llvm/lib/c++>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-L/usr/local/opt/llvm/lib/c++>"
 )
 
 target_link_libraries(
 	"${LIB_NAME}" PUBLIC
-	$<$<TARGET_EXISTS:unofficial-sodium::sodium>:unofficial-sodium::sodium>
-	$<$<TARGET_EXISTS:Jsonifier::Jsonifier>:Jsonifier::Jsonifier>
-	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
-	$<$<TARGET_EXISTS:OpenSSL::Crypto>:OpenSSL::Crypto>
-	$<$<TARGET_EXISTS:OpenSSL::SSL>:OpenSSL::SSL>
-	$<$<TARGET_EXISTS:Opus::opus>:Opus::opus>
+	"$<$<TARGET_EXISTS:unofficial-sodium::sodium>:unofficial-sodium::sodium>"
+	"$<$<TARGET_EXISTS:Jsonifier::Jsonifier>:Jsonifier::Jsonifier>"
+	"$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>"
+	"$<$<TARGET_EXISTS:OpenSSL::Crypto>:OpenSSL::Crypto>"
+	"$<$<TARGET_EXISTS:OpenSSL::SSL>:OpenSSL::SSL>"
+	"$<$<TARGET_EXISTS:Opus::opus>:Opus::opus>"
+	"$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++abi>"
+    "$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++>"
 )
 
 target_compile_definitions(
@@ -137,6 +148,7 @@ target_link_options(
 	"$<$<CXX_COMPILER_ID:GNU>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:-fsanitize=address>>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/INCREMENTAL:NO>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/DEBUG>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/LTCG>"
 )
 
 set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")

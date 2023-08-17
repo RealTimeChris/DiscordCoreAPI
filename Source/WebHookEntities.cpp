@@ -36,38 +36,36 @@
 namespace Jsonifier {
 
 	template<> struct Core<DiscordCoreAPI::ExecuteWebHookData> {
-		using ValueType = DiscordCoreAPI::ExecuteWebHookData;
-		static constexpr auto parseValue = object("threadId", &ValueType::threadId, "wait", &ValueType::wait, "attachments", &ValueType::attachments,
-			"components", &ValueType::components, "allowedMentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files",
-			&ValueType::files, "webhookToken", &ValueType::webhookToken, "avatarUrl", &ValueType::avatarUrl, "username", &ValueType::userName,
-			"customId", &ValueType::customId, "webHookId", &ValueType::webHookId, "content", &ValueType::content, "title", &ValueType::title, "flags",
-			&ValueType::flags, "tts", &ValueType::tts);
+		using ValueType					 = DiscordCoreAPI::ExecuteWebHookData;
+		static constexpr auto parseValue = object("threadId", &ValueType::threadId, "wait", &ValueType::wait, "attachments", &ValueType::attachments, "components",
+			&ValueType::components, "allowedMentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files", &ValueType::files, "webhookToken",
+			&ValueType::webhookToken, "avatarUrl", &ValueType::avatarUrl, "username", &ValueType::userName, "customId", &ValueType::customId, "webHookId", &ValueType::webHookId,
+			"content", &ValueType::content, "title", &ValueType::title, "flags", &ValueType::flags, "tts", &ValueType::tts);
 	};
 
 	template<> struct Core<DiscordCoreAPI::CreateWebHookData> {
-		using ValueType = DiscordCoreAPI::CreateWebHookData;
+		using ValueType					 = DiscordCoreAPI::CreateWebHookData;
 		static constexpr auto parseValue = object("channelId", &ValueType::channelId, "avatar", &ValueType::avatar, "name", &ValueType::name);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ModifyWebHookData> {
-		using ValueType = DiscordCoreAPI::ModifyWebHookData;
-		static constexpr auto parseValue =
-			object("channelId", &ValueType::channelId, "webHookId", &ValueType::webHookId, "avatar", &ValueType::avatar, "name", &ValueType::name);
+		using ValueType					 = DiscordCoreAPI::ModifyWebHookData;
+		static constexpr auto parseValue = object("channelId", &ValueType::channelId, "webHookId", &ValueType::webHookId, "avatar", &ValueType::avatar, "name", &ValueType::name);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ModifyWebHookDataWithTokenData> {
-		using ValueType = DiscordCoreAPI::ModifyWebHookDataWithTokenData;
-		static constexpr auto parseValue = object("webhookToken", &ValueType::webhookToken, "channelId", &ValueType::channelId, "webHookId",
-			&ValueType::webHookId, "avatar", &ValueType::avatar, "name", &ValueType::name);
+		using ValueType					 = DiscordCoreAPI::ModifyWebHookDataWithTokenData;
+		static constexpr auto parseValue = object("webhookToken", &ValueType::webhookToken, "channelId", &ValueType::channelId, "webHookId", &ValueType::webHookId, "avatar",
+			&ValueType::avatar, "name", &ValueType::name);
 	};
 
 	template<> struct Core<DiscordCoreAPI::EditWebHookData> {
 		using ValueType = DiscordCoreAPI::EditWebHookData;
-		static constexpr auto parseValue = object("threadId", &ValueType::threadId, "wait", &ValueType::wait, "attachments", &ValueType::attachments,
-			"components", &ValueType::components, "allowedMentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files",
-			&ValueType::files, "webhookToken", &ValueType::webhookToken, "avatarUrl", &ValueType::avatarUrl, "username", &ValueType::userName,
-			"customId", &ValueType::customId, "webHookId", &ValueType::webHookId, "content", &ValueType::content, "title", &ValueType::title, "flags",
-			&ValueType::flags, "tts", &ValueType::tts, "message_id", &ValueType::messageId, "thread_id", &ValueType::threadId);
+		static constexpr auto parseValue =
+			object("threadId", &ValueType::threadId, "wait", &ValueType::wait, "attachments", &ValueType::attachments, "components", &ValueType::components, "allowedMentions",
+				&ValueType::allowedMentions, "embeds", &ValueType::embeds, "files", &ValueType::files, "webhookToken", &ValueType::webhookToken, "avatarUrl", &ValueType::avatarUrl,
+				"username", &ValueType::userName, "customId", &ValueType::customId, "webHookId", &ValueType::webHookId, "content", &ValueType::content, "title", &ValueType::title,
+				"flags", &ValueType::flags, "tts", &ValueType::tts, "message_id", &ValueType::messageId, "thread_id", &ValueType::threadId);
 	};
 }
 
@@ -76,11 +74,11 @@ namespace DiscordCoreAPI {
 
 	ExecuteWebHookData::ExecuteWebHookData(WebHookData dataNew) {
 		webhookToken = dataNew.token;
-		webHookId = dataNew.id;
+		webHookId	 = dataNew.id;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
-		ButtonStyle buttonStyle, const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	ExecuteWebHookData& ExecuteWebHookData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);
@@ -88,14 +86,14 @@ namespace DiscordCoreAPI {
 		if (components.size() < 5) {
 			if (components[components.size() - 1].components.size() < 5) {
 				ComponentData component;
-				component.type = ComponentType::Button;
+				component.type		 = ComponentType::Button;
 				component.emoji.name = emojiName;
-				component.label = buttonLabel;
-				component.style = static_cast<int32_t>(buttonStyle);
-				component.customId = customIdNew;
-				component.disabled = disabled;
-				component.emoji.id = emojiId;
-				component.url = url;
+				component.label		 = buttonLabel;
+				component.style		 = static_cast<int32_t>(buttonStyle);
+				component.customId	 = customIdNew;
+				component.disabled	 = disabled;
+				component.emoji.id	 = emojiId;
+				component.url		 = url;
 				components[components.size() - 1].components.emplace_back(component);
 			} else if (components[components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
@@ -105,8 +103,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, std::vector<ChannelType> channelTypes) {
+	ExecuteWebHookData& ExecuteWebHookData::addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options,
+		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, Jsonifier::Vector<ChannelType> channelTypes) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);
@@ -114,14 +112,14 @@ namespace DiscordCoreAPI {
 		if (components.size() < 5) {
 			if (components[components.size() - 1].components.size() < 5) {
 				ComponentData componentData;
-				componentData.type = static_cast<ComponentType>(type);
+				componentData.type		   = static_cast<ComponentType>(type);
 				componentData.channelTypes = channelTypes;
-				componentData.placeholder = placeholder;
-				componentData.customId = customIdNew;
-				componentData.maxValues = maxValues;
-				componentData.minValues = minValues;
-				componentData.disabled = disabled;
-				componentData.options = options;
+				componentData.placeholder  = placeholder;
+				componentData.customId	   = customIdNew;
+				componentData.maxValues	   = maxValues;
+				componentData.minValues	   = minValues;
+				componentData.disabled	   = disabled;
+				componentData.options	   = options;
 				components[components.size() - 1].components.emplace_back(componentData);
 			} else if (components[components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
@@ -131,10 +129,9 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label,
-		const std::string& placeholder) {
-		title = topTitleNew;
+	ExecuteWebHookData& ExecuteWebHookData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
+		bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+		title	 = topTitleNew;
 		customId = topCustomIdNew;
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
@@ -143,14 +140,14 @@ namespace DiscordCoreAPI {
 		if (components.size() < 5) {
 			if (components[components.size() - 1].components.size() < 5) {
 				ComponentData component{};
-				component.type = ComponentType::Text_Input;
-				component.customId = customIdNew;
-				component.style = static_cast<int32_t>(inputStyle);
-				component.title = titleNew;
-				component.maxLength = maxLength;
-				component.minLength = minLength;
-				component.label = label;
-				component.required = required;
+				component.type		  = ComponentType::Text_Input;
+				component.customId	  = customIdNew;
+				component.style		  = static_cast<int32_t>(inputStyle);
+				component.title		  = titleNew;
+				component.maxLength	  = maxLength;
+				component.minLength	  = minLength;
+				component.label		  = label;
+				component.required	  = required;
 				component.placeholder = placeholder;
 				components[components.size() - 1].components.emplace_back(component);
 			} else if (components[components.size() - 1].components.size() == 5) {
@@ -193,7 +190,7 @@ namespace DiscordCoreAPI {
 
 	EditWebHookData::EditWebHookData(WebHookData dataNew) {
 		webhookToken = dataNew.token;
-		webHookId = dataNew.id;
+		webHookId	 = dataNew.id;
 	}
 
 	void WebHooks::initialize(DiscordCoreInternal::HttpsClient* client) {
@@ -204,32 +201,32 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Webhook };
 		co_await NewThreadAwaitable<WebHookData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/webhooks";
-		workload.callStack = "WebHooks::createWebHookDataAsync()";
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/webhooks";
+		workload.callStack	   = "WebHooks::createWebHookDataAsync()";
 		parser.serializeJson(dataPackage, workload.content);
 		WebHookData returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<WebHookData>> WebHooks::getChannelWebHooksAsync(GetChannelWebHooksData dataPackage) {
+	CoRoutine<Jsonifier::Vector<WebHookData>> WebHooks::getChannelWebHooksAsync(GetChannelWebHooksData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Webhooks };
-		co_await NewThreadAwaitable<std::vector<WebHookData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<WebHookData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/webhooks";
-		workload.callStack = "WebHooks::getChannelWebHooksAsync()";
-		std::vector<WebHookData> returnData{};
+		workload.relativePath  = "/channels/" + dataPackage.channelId + "/webhooks";
+		workload.callStack	   = "WebHooks::getChannelWebHooksAsync()";
+		Jsonifier::Vector<WebHookData> returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<WebHookData>> WebHooks::getGuildWebHooksAsync(GetGuildWebHooksData dataPackage) {
+	CoRoutine<Jsonifier::Vector<WebHookData>> WebHooks::getGuildWebHooksAsync(GetGuildWebHooksData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Webhooks };
-		co_await NewThreadAwaitable<std::vector<WebHookData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<WebHookData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/webhooks";
-		workload.callStack = "WebHooks::getGuildWebHooksAsync()";
-		std::vector<WebHookData> returnData{};
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/webhooks";
+		workload.callStack	   = "WebHooks::getGuildWebHooksAsync()";
+		Jsonifier::Vector<WebHookData> returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -238,8 +235,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Webhook };
 		co_await NewThreadAwaitable<WebHookData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/webhooks/" + dataPackage.webHookId;
-		workload.callStack = "WebHooks::getWebHookDataAsync()";
+		workload.relativePath  = "/webhooks/" + dataPackage.webHookId;
+		workload.callStack	   = "WebHooks::getWebHookDataAsync()";
 		WebHookData returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
@@ -249,8 +246,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Webhook_With_Token };
 		co_await NewThreadAwaitable<WebHookData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken;
-		workload.callStack = "WebHooks::getWebHookDataWithTokenAsync()";
+		workload.relativePath  = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken;
+		workload.callStack	   = "WebHooks::getWebHookDataWithTokenAsync()";
 		WebHookData returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
@@ -260,7 +257,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Webhook };
 		co_await NewThreadAwaitable<WebHookData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/webhooks/" + dataPackage.webHookId;
+		workload.relativePath  = "/webhooks/" + dataPackage.webHookId;
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "WebHooks::modifyWebHookDataAsync()";
 		WebHookData returnData{};
@@ -272,7 +269,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Webhook_With_Token };
 		co_await NewThreadAwaitable<WebHookData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken;
+		workload.relativePath  = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken;
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "WebHooks::modifyWebHookDataWithTokenAsync()";
 		WebHookData returnData{};
@@ -284,8 +281,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/webhooks/" + dataPackage.webHookId;
-		workload.callStack = "WebHooks::deleteWebHookDataAsync()";
+		workload.relativePath  = "/webhooks/" + dataPackage.webHookId;
+		workload.callStack	   = "WebHooks::deleteWebHookDataAsync()";
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
@@ -294,8 +291,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook_With_Token };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken;
-		workload.callStack = "WebHooks::deleteWebHookDataWithTokenAsync()";
+		workload.relativePath  = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken;
+		workload.callStack	   = "WebHooks::deleteWebHookDataWithTokenAsync()";
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
@@ -304,8 +301,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Execute_Webhook };
 		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken;
-		workload.callStack = "WebHooks::executeWebHookDataAsync()";
+		workload.relativePath  = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken;
+		workload.callStack	   = "WebHooks::executeWebHookDataAsync()";
 		if (dataPackage.wait) {
 			workload.relativePath += "?wait=true";
 			if (dataPackage.threadId != 0) {
@@ -331,7 +328,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Webhook_Message };
 		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken + "/messages/" + dataPackage.messageId;
+		workload.relativePath  = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken + "/messages/" + dataPackage.messageId;
 		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + dataPackage.threadId;
 		}
@@ -345,7 +342,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Webhook_Message };
 		co_await NewThreadAwaitable<MessageData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken + "/messages/" + dataPackage.messageId;
+		workload.relativePath  = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken + "/messages/" + dataPackage.messageId;
 		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + dataPackage.threadId;
 		}
@@ -366,7 +363,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook_Message };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken + "/messages/" + dataPackage.messageId;
+		workload.relativePath  = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken + "/messages/" + dataPackage.messageId;
 		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + dataPackage.threadId;
 		}

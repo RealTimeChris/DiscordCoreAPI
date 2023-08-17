@@ -88,7 +88,8 @@ namespace DiscordCoreAPI {
 
 	template<typename ValueType>
 	inline bool waitForTimeToPass(UnboundedMessageBlock<std::decay_t<ValueType>>& outBuffer, ValueType& argOne, uint64_t timeInMsNew) {
-		StopWatch<std::chrono::milliseconds> stopWatchNew{ Milliseconds{ timeInMsNew } };
+		StopWatch<Milliseconds> stopWatchNew{ Milliseconds{ timeInMsNew } };
+		stopWatchNew.resetTimer();
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(1ms);
 			if (stopWatchNew.hasTimePassed()) {

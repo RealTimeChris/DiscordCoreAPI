@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		Snowflake roleId{};///< The id of the RoleData to move.
 
 	  protected:
-		std::vector<RolePositionData> rolePositions;
+		Jsonifier::Vector<RolePositionData> rolePositions;
 	};
 
 	/// @brief For updating a RoleData's options within a chosen Guild.
@@ -158,8 +158,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects the Roles that a Guild has.
 		/// @param dataPackage A GetGuildRolesData structure.
-		/// @return A CoRoutine containing a std::vector<RoleData>.
-		static CoRoutine<std::vector<RoleData>> getGuildRolesAsync(GetGuildRolesData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<RoleData>.
+		static CoRoutine<Jsonifier::Vector<RoleData>> getGuildRolesAsync(GetGuildRolesData dataPackage);
 
 		/// @brief Creates a new RoleData within the given Guild.
 		/// @param dataPackage A CreateGuildRoleData structure.
@@ -168,8 +168,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Updates a RoleData's positions.
 		/// @param dataPackage A ModifyGuildRolePositionsData structure.
-		/// @return A CoRoutine containing a std::vector<RoleData>.
-		static CoRoutine<std::vector<RoleData>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<RoleData>.
+		static CoRoutine<Jsonifier::Vector<RoleData>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
 		/// @brief Updates a given Role's properties.
 		/// @param dataPackage A ModifyGuildRoleData structure.
@@ -183,8 +183,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects the Roles that a GuildMember has.
 		/// @param dataPackage A GetGuildMemberRolesData structure.
-		/// @return A CoRoutine containing a std::vector<RoleData>.
-		static CoRoutine<std::vector<RoleData>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
+		/// @return A CoRoutine containing a Jsonifier::Vector<RoleData>.
+		static CoRoutine<Jsonifier::Vector<RoleData>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
 
 		/// @brief Collects a RoleData from the Discord servers.
 		/// @param dataPackage A GetRoleData structure.
@@ -196,12 +196,15 @@ namespace DiscordCoreAPI {
 		/// @return A CoRoutine containing a RoleData.
 		static RoleCacheData getCachedRole(GetRoleData dataPackage);
 
-		template<typename RoleType> inline static void insertRole(RoleType&& role) {
+		template<typename RoleType> static inline void insertRole(RoleType&& role) {
 			if (doWeCacheRolesBool) {
 				if (role.id == 0) {
 					throw DCAException{ "Sorry, but there was no id set for that role." };
 				}
 				cache.emplace(static_cast<RoleCacheData>(std::forward<RoleType>(role)));
+				if (cache.count() % 100 == 0) {
+					std::cout << "CURRENT ROLE COUNT: " << cache.count() << std::endl;
+				}
 			}
 		}
 

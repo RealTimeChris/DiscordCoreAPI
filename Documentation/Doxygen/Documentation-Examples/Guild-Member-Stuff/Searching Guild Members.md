@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 
 				auto guildMembers = GuildMembers::searchGuildMembersAsync(dataPackage).get();
 
-				for (auto value: guildMembers) {
+				for (const auto& value: guildMembers) {
 					std::cout << "THE NAME: " << value.user.userName << std::endl;
 				}
 

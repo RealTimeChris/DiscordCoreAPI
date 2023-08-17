@@ -30,29 +30,29 @@
 
 #pragma once
 
-#ifndef __GNUC__
+#if !defined __GNUC__
 	#pragma warning(push)
 	#pragma warning(disable : 4251)
 #endif
 
-#ifdef _WIN32
-	#ifndef DiscordCoreAPI_EXPORTS_NOPE
-		#ifdef DiscordCoreAPI_EXPORTS
-			#ifndef DiscordCoreAPI_Dll
+#if defined _WIN32
+	#if !defined DiscordCoreAPI_EXPORTS_NOPE
+		#if defined DiscordCoreAPI_EXPORTS
+			#if !defined DiscordCoreAPI_Dll
 				#define DiscordCoreAPI_Dll __declspec(dllexport)
 			#endif
 		#else
-			#ifndef DiscordCoreAPI_Dll
+			#if !defined DiscordCoreAPI_Dll
 				#define DiscordCoreAPI_Dll __declspec(dllimport)
 			#endif
 		#endif
 	#else
 		#define DiscordCoreAPI_Dll
 	#endif
-	#ifndef WIN32_LEAN_AND_MEAN
+	#if !defined WIN32_LEAN_AND_MEAN
 		#define WIN32_LEAN_AND_MEAN
 	#endif
-	#ifndef WINRT_LEAN_AND_MEAN
+	#if !defined WINRT_LEAN_AND_MEAN
 		#define WINRT_LEAN_AND_MEAN
 	#endif
 	#include <chrono>
@@ -63,7 +63,7 @@ inline std::tm getCurrentTimeVal(time_t& result) {
 }
 	#include <WinSock2.h>
 #else
-	#ifndef DiscordCoreAPI_Dll
+	#if !defined DiscordCoreAPI_Dll
 		#define DiscordCoreAPI_Dll
 	#endif
 	#include <arpa/inet.h>
@@ -101,11 +101,11 @@ inline std::tm getCurrentTimeVal(time_t& result) {
 #include <map>
 #include <set>
 
-#ifdef max
+#if defined max
 	#undef max
 #endif
 
-#ifdef min
+#if defined min
 	#undef min
 #endif
 
@@ -196,13 +196,13 @@ namespace DiscordCoreAPI {
 		/// @param outputStreamNew The output stream to print messages to (default: std::cout).
 		/// @param errorStreamNew The error stream to print messages to (default: std::cerr).
 		template<typename ValueType>
-		inline static void initialize(const ValueType& other, std::ostream& outputStreamNew = std::cout, std::ostream& errorStreamNew = std::cerr) {
-			doWePrintGeneralErrors.store(other.doWePrintGeneralErrorMessages());
-			doWePrintGeneralSuccesses.store(other.doWePrintGeneralSuccessMessages());
-			doWePrintHttpsErrors.store(other.doWePrintHttpsErrorMessages());
-			doWePrintHttpsSuccesses.store(other.doWePrintHttpsSuccessMessages());
-			doWePrintWebSocketErrors.store(other.doWePrintWebSocketErrorMessages());
-			doWePrintWebSocketSuccesses.store(other.doWePrintWebSocketSuccessMessages());
+		static inline void initialize(const ValueType& other, std::ostream& outputStreamNew = std::cout, std::ostream& errorStreamNew = std::cerr) {
+			doWePrintGeneralErrors.store(other.doWePrintGeneralErrorMessages(), std::memory_order_release);
+			doWePrintGeneralSuccesses.store(other.doWePrintGeneralSuccessMessages(), std::memory_order_release);
+			doWePrintHttpsErrors.store(other.doWePrintHttpsErrorMessages(), std::memory_order_release);
+			doWePrintHttpsSuccesses.store(other.doWePrintHttpsSuccessMessages(), std::memory_order_release);
+			doWePrintWebSocketErrors.store(other.doWePrintWebSocketErrorMessages(), std::memory_order_release);
+			doWePrintWebSocketSuccesses.store(other.doWePrintWebSocketSuccessMessages(), std::memory_order_release);
 			outputStream = &outputStreamNew;
 			errorStream = &errorStreamNew;
 		}
@@ -212,10 +212,10 @@ namespace DiscordCoreAPI {
 		/// @param what The error message.
 		/// @param where The source location where the error occurred (default: current source location).
 		template<PrintMessageType messageType>
-		inline static void printError(const std::string& what, std::source_location where = std::source_location::current()) {
+		static inline void printError(const std::string& what, std::source_location where = std::source_location::current()) {
 			switch (messageType) {
 				case PrintMessageType::General: {
-					if (doWePrintGeneralErrors.load()) {
+					if (doWePrintGeneralErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
 						*errorStream << shiftToBrightRed() << "General Error, caught at: " << where.file_name() << ", " << where.line() << ":"
 									 << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
@@ -224,7 +224,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case PrintMessageType::WebSocket: {
-					if (doWePrintWebSocketErrors.load()) {
+					if (doWePrintWebSocketErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
 						*outputStream << shiftToBrightRed() << "WebSocket Error, caught at: " << where.file_name() << ", " << where.line() << ":"
 									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case PrintMessageType::Https: {
-					if (doWePrintHttpsErrors.load()) {
+					if (doWePrintHttpsErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
 						*outputStream << shiftToBrightRed() << "Https Error, caught at: " << where.file_name() << ", " << where.line() << ":"
 									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
@@ -249,10 +249,10 @@ namespace DiscordCoreAPI {
 		/// @param what The success message.
 		/// @param where The source location where the success occurred (default: current source location).
 		template<PrintMessageType messageType>
-		inline static void printSuccess(const std::string& what, std::source_location where = std::source_location::current()) {
+		static inline void printSuccess(const std::string& what, std::source_location where = std::source_location::current()) {
 			switch (messageType) {
 				case PrintMessageType::General: {
-					if (doWePrintGeneralSuccesses.load()) {
+					if (doWePrintGeneralSuccesses.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
 						*outputStream << shiftToBrightBlue() << "General Success, caught at: " << where.file_name() << ", " << where.line() << ":"
 									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
@@ -261,7 +261,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case PrintMessageType::WebSocket: {
-					if (doWePrintWebSocketSuccesses.load()) {
+					if (doWePrintWebSocketSuccesses.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
 						*outputStream << shiftToBrightGreen() << "WebSocket Success, caught at: " << where.file_name() << ", " << where.line() << ":"
 									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case PrintMessageType::Https: {
-					if (doWePrintHttpsSuccesses.load()) {
+					if (doWePrintHttpsSuccesses.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
 						*outputStream << shiftToBrightGreen() << "Https Success, caught at: " << where.file_name() << ", " << where.line() << ":"
 									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
@@ -282,15 +282,15 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		inline static std::atomic_bool doWePrintHttpsSuccesses{};///< Flag to control printing of HTTPS success messages.
-		inline static std::atomic_bool doWePrintHttpsErrors{};///< Flag to control printing of HTTPS error messages.
-		inline static std::atomic_bool doWePrintWebSocketSuccesses{};///< Flag to control printing of WebSocket success messages.
-		inline static std::atomic_bool doWePrintWebSocketErrors{};///< Flag to control printing of WebSocket error messages.
-		inline static std::atomic_bool doWePrintGeneralSuccesses{};///< Flag to control printing of general success messages.
-		inline static std::atomic_bool doWePrintGeneralErrors{};///< Flag to control printing of general error messages.
-		inline static std::ostream* outputStream{};///< Pointer to the output stream for message printing.
-		inline static std::ostream* errorStream{};///< Pointer to the error stream for message printing.
-		inline static std::mutex accessMutex{};///< Mutex for thread-safe access to shared resources.
+		static inline std::atomic_bool doWePrintHttpsSuccesses{};///< Flag to control printing of HTTPS success messages.
+		static inline std::atomic_bool doWePrintHttpsErrors{};///< Flag to control printing of HTTPS error messages.
+		static inline std::atomic_bool doWePrintWebSocketSuccesses{};///< Flag to control printing of WebSocket success messages.
+		static inline std::atomic_bool doWePrintWebSocketErrors{};///< Flag to control printing of WebSocket error messages.
+		static inline std::atomic_bool doWePrintGeneralSuccesses{};///< Flag to control printing of general success messages.
+		static inline std::atomic_bool doWePrintGeneralErrors{};///< Flag to control printing of general error messages.
+		static inline std::ostream* outputStream{};///< Pointer to the output stream for message printing.
+		static inline std::ostream* errorStream{};///< Pointer to the error stream for message printing.
+		static inline std::mutex accessMutex{};///< Mutex for thread-safe access to shared resources.
 	};
 
 	template<typename ValueType>
@@ -327,7 +327,7 @@ namespace DiscordCoreAPI {
 		/// @param yearsToAdd Number of years to add.
 		/// @param timeFormat Format for the resulting time stamp.
 		/// @return ISO8601 time stamp string.
-		inline static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
+		static inline std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
 			int32_t yearsToAdd, TimeFormat timeFormat) {
 			std::time_t result = std::time(nullptr);
 			static constexpr int32_t secondsPerMinute{ 60 };
@@ -367,7 +367,7 @@ namespace DiscordCoreAPI {
 		/// @brief Converts the current time into an ISO8601 time stamp.
 		/// @param timeFormat Format for the resulting time stamp.
 		/// @return ISO8601 time stamp string.
-		inline static std::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
+		static inline std::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
 			std::time_t result = std::time(nullptr);
 			std::tm resultTwo{ getCurrentTimeVal(result) };
 			std::string returnString{};
@@ -419,7 +419,7 @@ namespace DiscordCoreAPI {
 		/// @brief Converts milliseconds into a human-readable duration string.
 		/// @param durationInMs Duration in milliseconds to convert.
 		/// @return Human-readable duration string.
-		inline static std::string convertMsToDurationString(uint64_t durationInMs) {
+		static inline std::string convertMsToDurationString(uint64_t durationInMs) {
 			std::string newString{};
 			static constexpr uint64_t msPerSecond{ 1000 };
 			static constexpr uint64_t secondsPerMinute{ 60 };
@@ -446,7 +446,7 @@ namespace DiscordCoreAPI {
 		/// @param timeFormat Format for the resulting time stamp.
 		/// @param inputTime Input time value.
 		/// @return ISO8601 time stamp string.
-		inline static std::string getISO8601TimeStamp(TimeFormat timeFormat, uint64_t inputTime) {
+		static inline std::string getISO8601TimeStamp(TimeFormat timeFormat, uint64_t inputTime) {
 			uint64_t timeValue = static_cast<int64_t>(inputTime) / 1000;
 			time_t rawTime(timeValue);
 			std::tm resultTwo{ getCurrentTimeVal(rawTime) };
@@ -498,7 +498,7 @@ namespace DiscordCoreAPI {
 		/// @param minute Minute.
 		/// @param second Second.
 		/// @return Time since Unix epoch in milliseconds.
-		inline static uint64_t getTimeSinceEpoch(uint64_t year, uint64_t month, uint64_t day, uint64_t hour, uint64_t minute, uint64_t second) {
+		static inline uint64_t getTimeSinceEpoch(uint64_t year, uint64_t month, uint64_t day, uint64_t hour, uint64_t minute, uint64_t second) {
 			static constexpr uint64_t secondsInJan{ 31 * 24 * 60 * 60 };
 			static constexpr uint64_t secondsInFeb{ 28 * 24 * 60 * 60 };
 			static constexpr uint64_t secondsInMar{ 31 * 24 * 60 * 60 };
@@ -578,7 +578,7 @@ namespace DiscordCoreAPI {
 		/// @brief Converts a string time stamp into a uint64_t time value.
 		/// @param originalTimeStamp Original time stamp string.
 		/// @return Converted time value in milliseconds.
-		inline static uint64_t convertTimeStampToTimeUnits(const std::string& originalTimeStamp) {
+		static inline uint64_t convertTimeStampToTimeUnits(const std::string& originalTimeStamp) {
 			if (originalTimeStamp != "" && originalTimeStamp != "0") {
 				auto newValue = getTimeSinceEpoch(stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
 					stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),

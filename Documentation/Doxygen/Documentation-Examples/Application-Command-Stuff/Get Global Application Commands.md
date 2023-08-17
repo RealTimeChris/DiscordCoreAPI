@@ -1,6 +1,6 @@
 Getting Global Application Commands {#getglobalcommands}
 =============
-- Execute the `ApplicationCommands::getGlobalApplicationCommandsAsync()` function, with a return value of type `auto` or `std::vector<ApplicationCommand>`.
+- Execute the `ApplicationCommands::getGlobalApplicationCommandsAsync()` function, with a return value of type `auto` or `Jsonifier::Vector<ApplicationCommand>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 		virtual void execute(BaseFunctionArguments& args) {
 			auto globalApplicationCommands = ApplicationCommands::getGlobalApplicationCommandsAsync().get();
 
-			for (auto value: globalApplicationCommands) {
+			for (const auto& value: globalApplicationCommands) {
 				std::cout << value.data.name << std::endl;
 			}
 		}

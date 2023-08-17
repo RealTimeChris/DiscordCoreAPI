@@ -44,16 +44,15 @@ namespace DiscordCoreAPI {
 
 	/// @brief The current status of the associated CoRoutine.
 	enum class CoRoutineStatus {
-		Idle = 0,///< Idle.
-		Running = 1,///< Running.
-		Complete = 2,///< Complete.
+		Idle	  = 0,///< Idle.
+		Running	  = 1,///< Running.
+		Complete  = 2,///< Complete.
 		Cancelled = 3///< Cancelled.
 	};
 
 	/// @brief An error type for CoRoutines.
 	struct CoRoutineError : public DCAException {
-		inline CoRoutineError(const std::string& message, std::source_location location = std::source_location::current())
-			: DCAException{ message, location } {};
+		inline CoRoutineError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	/// @brief A CoRoutine - representing a potentially asynchronous operation/function.
@@ -69,7 +68,7 @@ namespace DiscordCoreAPI {
 			}
 
 			inline bool areWeStopped() {
-				return areWeStoppedBool.load();
+				return areWeStoppedBool.load(std::memory_order_acquire);
 			}
 
 			inline void return_value(ReturnType& returnValue) {
@@ -106,7 +105,7 @@ namespace DiscordCoreAPI {
 
 			inline ~promise_type() {
 				exceptionBuffer = nullptr;
-				resultBuffer = nullptr;
+				resultBuffer	= nullptr;
 			}
 
 		  protected:
@@ -118,11 +117,11 @@ namespace DiscordCoreAPI {
 
 		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) {
 			if (this != &other) {
-				coroutineHandle = other.coroutineHandle;
-				other.coroutineHandle = nullptr;
+				coroutineHandle							  = other.coroutineHandle;
+				other.coroutineHandle					  = nullptr;
 				coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
-				coroutineHandle.promise().resultBuffer = &resultBuffer;
-				currentStatus.store(other.currentStatus.load());
+				coroutineHandle.promise().resultBuffer	  = &resultBuffer;
+				currentStatus.store(other.currentStatus.load(std::memory_order_acquire));
 				other.currentStatus.store(CoRoutineStatus::Cancelled);
 			}
 			return *this;
@@ -133,9 +132,9 @@ namespace DiscordCoreAPI {
 		inline CoRoutine(const CoRoutine<ReturnType, timeOut>& other) = delete;
 
 		inline CoRoutine& operator=(std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type> coroutineHandleNew) {
-			coroutineHandle = coroutineHandleNew;
+			coroutineHandle							  = coroutineHandleNew;
 			coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
-			coroutineHandle.promise().resultBuffer = &resultBuffer;
+			coroutineHandle.promise().resultBuffer	  = &resultBuffer;
 			return *this;
 		}
 
@@ -146,7 +145,7 @@ namespace DiscordCoreAPI {
 		inline ~CoRoutine() {
 			if (coroutineHandle) {
 				coroutineHandle.promise().exceptionBuffer = nullptr;
-				coroutineHandle.promise().resultBuffer = nullptr;
+				coroutineHandle.promise().resultBuffer	  = nullptr;
 			}
 		}
 
@@ -160,7 +159,7 @@ namespace DiscordCoreAPI {
 			} else if (coroutineHandle && coroutineHandle.done()) {
 				currentStatus.store(CoRoutineStatus::Complete);
 			}
-			return currentStatus.load();
+			return currentStatus.load(std::memory_order_acquire);
 		}
 
 		/// @brief Gets the resulting value of the CoRoutine.
@@ -240,7 +239,7 @@ namespace DiscordCoreAPI {
 			}
 
 			inline bool areWeStopped() {
-				return areWeStoppedBool.load();
+				return areWeStoppedBool.load(std::memory_order_acquire);
 			}
 
 			inline void return_void(){};
@@ -271,7 +270,7 @@ namespace DiscordCoreAPI {
 
 			inline ~promise_type() {
 				exceptionBuffer = nullptr;
-				resultBuffer = nullptr;
+				resultBuffer	= nullptr;
 			}
 
 		  protected:
@@ -284,11 +283,11 @@ namespace DiscordCoreAPI {
 
 		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) noexcept {
 			if (this != &other) {
-				coroutineHandle = other.coroutineHandle;
-				other.coroutineHandle = nullptr;
+				coroutineHandle							  = other.coroutineHandle;
+				other.coroutineHandle					  = nullptr;
 				coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
-				coroutineHandle.promise().resultBuffer = &resultBuffer;
-				currentStatus.store(other.currentStatus.load());
+				coroutineHandle.promise().resultBuffer	  = &resultBuffer;
+				currentStatus.store(other.currentStatus.load(std::memory_order_acquire));
 				other.currentStatus.store(CoRoutineStatus::Cancelled);
 			}
 			return *this;
@@ -299,9 +298,9 @@ namespace DiscordCoreAPI {
 		inline CoRoutine(const CoRoutine<ReturnType, timeOut>& other) = delete;
 
 		inline CoRoutine& operator=(std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type> coroutineHandleNew) {
-			coroutineHandle = coroutineHandleNew;
+			coroutineHandle							  = coroutineHandleNew;
 			coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
-			coroutineHandle.promise().resultBuffer = &resultBuffer;
+			coroutineHandle.promise().resultBuffer	  = &resultBuffer;
 			return *this;
 		}
 
@@ -312,7 +311,7 @@ namespace DiscordCoreAPI {
 		inline ~CoRoutine() {
 			if (coroutineHandle) {
 				coroutineHandle.promise().exceptionBuffer = nullptr;
-				coroutineHandle.promise().resultBuffer = nullptr;
+				coroutineHandle.promise().resultBuffer	  = nullptr;
 			}
 		}
 
@@ -326,7 +325,7 @@ namespace DiscordCoreAPI {
 			} else if (coroutineHandle && coroutineHandle.done()) {
 				currentStatus.store(CoRoutineStatus::Complete);
 			}
-			return currentStatus.load();
+			return currentStatus.load(std::memory_order_acquire);
 		}
 
 		/// @brief Gets the resulting value of the CoRoutine.
@@ -393,7 +392,7 @@ namespace DiscordCoreAPI {
 
 	class NewThreadAwaiterBase {
 	  public:
-		inline static DiscordCoreInternal::CoRoutineThreadPool threadPool{};
+		static inline DiscordCoreInternal::CoRoutineThreadPool threadPool{};
 	};
 
 	/// @brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.

@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 				auto guildBans = Guilds::getGuildBansAsync(dataPackage01).get();
 
-				for (auto value: guildBans) {
+				for (const auto& value: guildBans) {
 					std::cout << "THE BAN NAME: " << value.user.userName << std::endl;
 				}
 

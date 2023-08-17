@@ -1,6 +1,6 @@
 Getting Guild Voice Regions {#gettingguildvoiceregions}
 ============
-- Execute the, `Guilds::getGuildVoiceRegionsAsync()` function, while passing in a value of type `GetGuildVoiceRegionsData`, with a return value of type `auto` or `std::vector<VoiceRegionData>`.
+- Execute the, `Guilds::getGuildVoiceRegionsAsync()` function, while passing in a value of type `GetGuildVoiceRegionsData`, with a return value of type `auto` or `Jsonifier::Vector<VoiceRegionData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 				auto responseData = Guilds::getGuildVoiceRegionsAsync(dataPackage01).get();
 
-				for (auto value: responseData) {
+				for (const auto& value: responseData) {
 					std::cout << value.name << std::endl;
 				}
 

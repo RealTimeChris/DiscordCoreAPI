@@ -39,7 +39,7 @@ Instantiating/Creating a Select-Menu {#instantiatingcreatingselectmenu}
 			selectOption.description = "Select Menu";
 			selectOption.emoji.name = "🏁";
 			selectOption.value = "select_menu";
-			std::vector<SelectOptionData> selectMenuOptions {selectOption};
+			Jsonifier::Vector<SelectOptionData> selectMenuOptions {selectOption};
 			RespondToInputEventData dataPackage {args.eventData};
 			dataPackage.addSelectMenu(false, "test_button", selectMenuOptions, "Select-Menu", 1, 1);
 			dataPackage.addContent("Test Response");

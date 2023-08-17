@@ -1,6 +1,6 @@
 Listing Guild Members {#listingguildmembers}
 ============
-- Execute the, `GuildMembers::listGuildMembersAsync()` function, while passing in a value of type `ListGuildMembersData`, with a return value of type `auto` or `std::vector<GuildMember>`.
+- Execute the, `GuildMembers::listGuildMembersAsync()` function, while passing in a value of type `ListGuildMembersData`, with a return value of type `auto` or `Jsonifier::Vector<GuildMember>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 
 				auto guildMembers = GuildMembers::listGuildMembersAsync(dataPackage).get();
 
-				for (auto value: guildMembers) {
+				for (const auto& value: guildMembers) {
 					std::cout << "THE NAME: " << value.user.userName << std::endl;
 				}
 

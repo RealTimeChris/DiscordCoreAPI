@@ -9,7 +9,7 @@ Play {#Play}
 namespace DiscordCoreAPI {
 
 	MoveThroughMessagePagesData recurseThroughOptions(MoveThroughMessagePagesData returnData, int32_t currentPageIndex, InputEventData newEvent,
-		std::vector<EmbedData> embedsFromSearch, BaseFunctionArguments& newArgs, std::vector<int32_t> arrayOfIndices, GuildMember guildMember, std::vector<Song> searchResults) {
+		Jsonifier::Vector<EmbedData> embedsFromSearch, BaseFunctionArguments& newArgs, Jsonifier::Vector<int32_t> arrayOfIndices, GuildMember guildMember, Jsonifier::Vector<Song> searchResults) {
 		if (returnData.buttonId == "exit") {
 			auto currentQueue = SongAPI::getPlaylist(guildMember.guildId);
 			int32_t songSize = currentQueue.songQueue.size();
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				std::vector<Song> searchResults{};
+				Jsonifier::Vector<Song> searchResults{};
 				if (newArgs.optionsArgs.size() > 0) {
 					searchResults = SongAPI::searchForSong(newArgs.optionsArgs[0], guild.id);
 				}
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				std::vector<EmbedData> embedsFromSearch;
+				Jsonifier::Vector<EmbedData> embedsFromSearch;
 				int32_t x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
@@ -219,7 +219,7 @@ namespace DiscordCoreAPI {
 
 				uint32_t currentPageIndex = 0;
 				MoveThroughMessagePagesData returnData{};
-				std::vector<int32_t> arrayOfIndices{};
+				Jsonifier::Vector<int32_t> arrayOfIndices{};
 				if (embedsFromSearch.size() > 0) {
 					RespondToInputEventData dataPackage0(newEvent);
 					dataPackage0.setResponseType(InputEventResponseType::Follow_Up_Message);

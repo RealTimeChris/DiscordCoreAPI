@@ -32,17 +32,17 @@ namespace DiscordCoreAPI {
 
 				while (1) {
 					RespondToInputEventData responseData{ newEvent01 };
-					std::vector<std::vector<SelectOptionData>> selectOptions;
+					Jsonifier::Vector<Jsonifier::Vector<SelectOptionData>> selectOptions;
 					int32_t counter{};
 					int32_t currentHelpPage{};
 					for (auto& [key, value]: newArgs.discordCoreClient->getCommandController().getFunctions()) {
 						if (counter % 24 == 0) {
-							selectOptions.emplace_back(std::vector<SelectOptionData>());
+							selectOptions.emplace_back(Jsonifier::Vector<SelectOptionData>());
 							currentHelpPage += 1;
 						}
 						std::string newString;
 						newString.emplace_back(( char )toupper(value->commandName[0]));
-						newString += value->commandName.substr(1, value->commandName.length() - 1);
+						newString += value->commandName.substr(1, value->commandName.size() - 1);
 						SelectOptionData newData;
 						newData.label = newString;
 						newData.description = value->helpDescription;
@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 					newData.description = "Go back to the previous menu.";
 					newData.value = "go back";
 					newData.emoji.name = "❌";
-					std::vector<std::vector<SelectOptionData>> selectOptionsNew;
+					Jsonifier::Vector<Jsonifier::Vector<SelectOptionData>> selectOptionsNew;
 					for (auto& value: selectOptions) {
 						value.emplace_back(newData);
 						selectOptionsNew.emplace_back(value);
@@ -89,13 +89,13 @@ namespace DiscordCoreAPI {
 						"Please, select one of my commands from the drop-down menu below, to gain more information about them! (Or select 'Go Back' to go back "
 						"to the previous menu)\n------";
 					InputEventData newEvent{};
-					std::vector<std::string> numberEmojiNames{
+					Jsonifier::Vector<std::string> numberEmojiNames{
 						"✅",
 						"🍬",
 						"🅱",
 						"❌",
 					};
-					std::vector<std::string> numberEmojiId;
+					Jsonifier::Vector<std::string> numberEmojiId;
 
 					responseData.addMessageEmbed(msgEmbed);
 					for (int32_t x = 0; x < selectOptionsNew.size(); x += 1) {
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 					UniquePtr<ButtonCollector> button{ makeUnique<ButtonCollector>(newEvent01) };
 					auto buttonData = button->collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					int32_t counter03{};
-					std::vector<RespondToInputEventData> editInteractionResponseData00;
+					Jsonifier::Vector<RespondToInputEventData> editInteractionResponseData00;
 					for (auto& value: selectOptionsNew) {
 						EmbedData msgEmbed00;
 						msgEmbed00.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());

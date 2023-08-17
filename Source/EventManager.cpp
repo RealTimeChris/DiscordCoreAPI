@@ -36,148 +36,141 @@
 namespace Jsonifier {
 
 	template<> struct Core<DiscordCoreAPI::AutoModerationActionExecutionEventData> {
-		using ValueType = DiscordCoreAPI::AutoModerationActionExecutionEventData;
-		static constexpr auto parseValue = object("alert_system_message_id", &ValueType::alertSystemMessageId, "rule_trigger_type",
-			&ValueType::ruleTriggerType, "matched_keyword", &ValueType::matchedKeyword, "matched_content", &ValueType::matchedContent, "content",
-			&ValueType::content, "channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "action", &ValueType::action, "guild_id",
-			&ValueType::guildId, "rule_id", &ValueType::ruleId, "user_id", &ValueType::userId);
+		using ValueType					 = DiscordCoreAPI::AutoModerationActionExecutionEventData;
+		static constexpr auto parseValue = object("alert_system_message_id", &ValueType::alertSystemMessageId, "rule_trigger_type", &ValueType::ruleTriggerType, "matched_keyword",
+			&ValueType::matchedKeyword, "matched_content", &ValueType::matchedContent, "content", &ValueType::content, "channel_id", &ValueType::channelId, "message_id",
+			&ValueType::messageId, "action", &ValueType::action, "guild_id", &ValueType::guildId, "rule_id", &ValueType::ruleId, "user_id", &ValueType::userId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::VoiceStateData> {
 		using ValueType2 = DiscordCoreAPI::VoiceStateData;
-		static constexpr auto parseValue = object("request_to_speak_timestamp", &ValueType2::requestToSpeakTimestamp, "session_id",
-			&ValueType2::sessionId, "self_stream", &ValueType2::selfStream, "self_video", &ValueType2::selfVideo, "self_deaf", &ValueType2::selfDeaf,
-			"self_mute", &ValueType2::selfMute, "suppress", &ValueType2::suppress, "deaf", &ValueType2::deaf, "mute", &ValueType2::mute, "user_id",
-			&ValueType2::userId, "channel_id", &ValueType2::channelId, "guild_id", &ValueType2::guildId);
+		static constexpr auto parseValue =
+			object("request_to_speak_timestamp", &ValueType2::requestToSpeakTimestamp, "session_id", &ValueType2::sessionId, "self_stream", &ValueType2::selfStream, "self_video",
+				&ValueType2::selfVideo, "self_deaf", &ValueType2::selfDeaf, "self_mute", &ValueType2::selfMute, "suppress", &ValueType2::suppress, "deaf", &ValueType2::deaf,
+				"mute", &ValueType2::mute, "user_id", &ValueType2::userId, "channel_id", &ValueType2::channelId, "guild_id", &ValueType2::guildId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::GuildEmojisUpdateEventData> {
-		using ValueType = DiscordCoreAPI::GuildEmojisUpdateEventData;
+		using ValueType					 = DiscordCoreAPI::GuildEmojisUpdateEventData;
 		static constexpr auto parseValue = object("emojis", &ValueType::emojis, "guild_id", &ValueType::guildId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ChannelPinsUpdateEventData> {
-		using ValueType = DiscordCoreAPI::ChannelPinsUpdateEventData;
-		static constexpr auto parseValue =
-			object("last_pin_timestamp", &ValueType::lastPinTimeStamp, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
+		using ValueType					 = DiscordCoreAPI::ChannelPinsUpdateEventData;
+		static constexpr auto parseValue = object("last_pin_timestamp", &ValueType::lastPinTimeStamp, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::TypingStartData> {
-		using ValueType = DiscordCoreAPI::TypingStartData;
-		static constexpr auto parseValue = object("member", &ValueType::member, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId,
-			"timestamp", &ValueType::timeStamp, "user_id", &ValueType::userId);
+		using ValueType					 = DiscordCoreAPI::TypingStartData;
+		static constexpr auto parseValue = object("member", &ValueType::member, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId, "timestamp",
+			&ValueType::timeStamp, "user_id", &ValueType::userId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ReactionRemoveData> {
-		using ValueType = DiscordCoreAPI::ReactionRemoveData;
-		static constexpr auto parseValue = object("channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "guild_id",
-			&ValueType::guildId, "user_id", &ValueType::userId, "emoji", &ValueType::emoji);
+		using ValueType					 = DiscordCoreAPI::ReactionRemoveData;
+		static constexpr auto parseValue = object("channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "guild_id", &ValueType::guildId, "user_id",
+			&ValueType::userId, "emoji", &ValueType::emoji);
 	};
 
 	template<> struct Core<DiscordCoreAPI::GuildStickersUpdateEventData> {
-		using ValueType = DiscordCoreAPI::GuildStickersUpdateEventData;
+		using ValueType					 = DiscordCoreAPI::GuildStickersUpdateEventData;
 		static constexpr auto parseValue = object("stickers", &ValueType::stickers, "guild_id", &ValueType::guildId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::VoiceServerUpdateData> {
-		using ValueType = DiscordCoreAPI::VoiceServerUpdateData;
+		using ValueType					 = DiscordCoreAPI::VoiceServerUpdateData;
 		static constexpr auto parseValue = object("endpoint", &ValueType::endpoint, "guild_id", &ValueType::guildId, "token", &ValueType::token);
 	};
 
 	template<> struct Core<DiscordCoreAPI::GuildMembersChunkEventData> {
-		using ValueType = DiscordCoreAPI::GuildMembersChunkEventData;
-		static constexpr auto parseValue =
-			object("presences", &ValueType::presences, "members", &ValueType::members, "not_found", &ValueType::notFound, "chunk_index",
-				&ValueType::chunkIndex, "chunk_count", &ValueType::chunkCount, "guild_id", &ValueType::guildId, "nonce", &ValueType::nonce);
+		using ValueType					 = DiscordCoreAPI::GuildMembersChunkEventData;
+		static constexpr auto parseValue = object("presences", &ValueType::presences, "members", &ValueType::members, "not_found", &ValueType::notFound, "chunk_index",
+			&ValueType::chunkIndex, "chunk_count", &ValueType::chunkCount, "guild_id", &ValueType::guildId, "nonce", &ValueType::nonce);
 	};
 
 	template<> struct Core<DiscordCoreAPI::GuildMemberRemoveData> {
-		using ValueType = DiscordCoreAPI::GuildMemberRemoveData;
+		using ValueType					 = DiscordCoreAPI::GuildMemberRemoveData;
 		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "user", &ValueType::user);
 	};
 
 	template<> struct Core<DiscordCoreAPI::GuildBanAddData> {
-		using ValueType = DiscordCoreAPI::GuildBanAddData;
+		using ValueType					 = DiscordCoreAPI::GuildBanAddData;
 		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "user", &ValueType::user);
 	};
 
 	template<> struct Core<DiscordCoreAPI::GuildBanRemoveData> {
-		using ValueType = DiscordCoreAPI::GuildBanRemoveData;
+		using ValueType					 = DiscordCoreAPI::GuildBanRemoveData;
 		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "user", &ValueType::user);
 	};
 
 	template<> struct Core<DiscordCoreAPI::RoleCreationData> {
-		using ValueType = DiscordCoreAPI::RoleCreationData;
+		using ValueType					 = DiscordCoreAPI::RoleCreationData;
 		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "role", &ValueType::role);
 	};
 
 	template<> struct Core<DiscordCoreAPI::RoleUpdateData> {
-		using ValueType = DiscordCoreAPI::RoleUpdateData;
+		using ValueType					 = DiscordCoreAPI::RoleUpdateData;
 		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "role", &ValueType::role);
 	};
 
 	template<> struct Core<DiscordCoreAPI::RoleDeletionData> {
-		using ValueType = DiscordCoreAPI::RoleDeletionData;
+		using ValueType					 = DiscordCoreAPI::RoleDeletionData;
 		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "role", &ValueType::role);
 	};
 
 	template<> struct Core<DiscordCoreAPI::GuildScheduledEventUserAddData> {
-		using ValueType = DiscordCoreAPI::GuildScheduledEventUserAddData;
-		static constexpr auto parseValue =
-			object("guild_scheduled_event_id", &ValueType::guildScheduledEventId, "guild_id", &ValueType::guildId, "user_id", &ValueType::userId);
+		using ValueType					 = DiscordCoreAPI::GuildScheduledEventUserAddData;
+		static constexpr auto parseValue = object("guild_scheduled_event_id", &ValueType::guildScheduledEventId, "guild_id", &ValueType::guildId, "user_id", &ValueType::userId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::GuildScheduledEventUserRemoveData> {
-		using ValueType = DiscordCoreAPI::GuildScheduledEventUserRemoveData;
-		static constexpr auto parseValue =
-			object("guild_scheduled_event_id", &ValueType::guildScheduledEventId, "guild_id", &ValueType::guildId, "user_id", &ValueType::userId);
+		using ValueType					 = DiscordCoreAPI::GuildScheduledEventUserRemoveData;
+		static constexpr auto parseValue = object("guild_scheduled_event_id", &ValueType::guildScheduledEventId, "guild_id", &ValueType::guildId, "user_id", &ValueType::userId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::IntegrationCreationData> {
-		using ValueType = DiscordCoreAPI::IntegrationCreationData;
+		using ValueType					 = DiscordCoreAPI::IntegrationCreationData;
 		static constexpr auto parseValue = object("integration_data", &ValueType::integrationData, "guild_id", &ValueType::guildId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::IntegrationUpdateData> {
-		using ValueType = DiscordCoreAPI::IntegrationUpdateData;
+		using ValueType					 = DiscordCoreAPI::IntegrationUpdateData;
 		static constexpr auto parseValue = object("integration_data", &ValueType::integrationData, "guild_id", &ValueType::guildId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::IntegrationDeletionData> {
-		using ValueType = DiscordCoreAPI::IntegrationDeletionData;
+		using ValueType					 = DiscordCoreAPI::IntegrationDeletionData;
 		static constexpr auto parseValue = object("application_id", &ValueType::applicationId, "guild_id", &ValueType::guildId, "id", &ValueType::id);
 	};
 
 	template<> struct Core<DiscordCoreAPI::InviteDeletionData> {
-		using ValueType = DiscordCoreAPI::InviteDeletionData;
+		using ValueType					 = DiscordCoreAPI::InviteDeletionData;
 		static constexpr auto parseValue = object("channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId, "code", &ValueType::code);
 	};
 
 	template<> struct Core<DiscordCoreAPI::MessageDeletionData> {
-		using ValueType = DiscordCoreAPI::MessageDeletionData;
-		static constexpr auto parseValue =
-			object("message_id", &ValueType::messageId, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
+		using ValueType					 = DiscordCoreAPI::MessageDeletionData;
+		static constexpr auto parseValue = object("message_id", &ValueType::messageId, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::MessageDeletionBulkData> {
-		using ValueType = DiscordCoreAPI::MessageDeletionBulkData;
+		using ValueType					 = DiscordCoreAPI::MessageDeletionBulkData;
 		static constexpr auto parseValue = object("ids", &ValueType::ids, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ReactionRemoveAllData> {
-		using ValueType = DiscordCoreAPI::ReactionRemoveAllData;
-		static constexpr auto parseValue =
-			object("channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "guild_id", &ValueType::guildId);
+		using ValueType					 = DiscordCoreAPI::ReactionRemoveAllData;
+		static constexpr auto parseValue = object("channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "guild_id", &ValueType::guildId);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ReactionRemoveEmojiData> {
 		using ValueType = DiscordCoreAPI::ReactionRemoveEmojiData;
-		static constexpr auto parseValue = object("message_id", &ValueType::messageId, "channel_id", &ValueType::channelId, "guild_id",
-			&ValueType::guildId, "emoji", &ValueType::emoji);
+		static constexpr auto parseValue =
+			object("message_id", &ValueType::messageId, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId, "emoji", &ValueType::emoji);
 	};
 
 	template<> struct Core<DiscordCoreAPI::WebHookUpdateData> {
-		using ValueType = DiscordCoreAPI::WebHookUpdateData;
+		using ValueType					 = DiscordCoreAPI::WebHookUpdateData;
 		static constexpr auto parseValue = object("channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
 	};
 
@@ -193,8 +186,7 @@ namespace DiscordCoreAPI {
 		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnApplicationCommandPermissionsUpdateData::OnApplicationCommandPermissionsUpdateData(Jsonifier::JsonifierCore& parserNew,
-		std::string_view dataToParse) {
+	OnApplicationCommandPermissionsUpdateData::OnApplicationCommandPermissionsUpdateData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse) {
 		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
@@ -443,23 +435,22 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	OnVoiceServerUpdateData::OnVoiceServerUpdateData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse,
-		DiscordCoreInternal::WebSocketClient* sslShard) {
+	OnVoiceServerUpdateData::OnVoiceServerUpdateData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse, DiscordCoreInternal::WebSocketClient* sslShard) {
 		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (sslShard->areWeCollectingData.load() && !sslShard->serverUpdateCollected && !sslShard->stateUpdateCollected) {
-			sslShard->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
+		if (sslShard->areWeCollectingData.load(std::memory_order_acquire) && !sslShard->serverUpdateCollected && !sslShard->stateUpdateCollected) {
+			sslShard->voiceConnectionData		   = DiscordCoreInternal::VoiceConnectionData{};
 			sslShard->voiceConnectionData.endPoint = value.endpoint;
-			sslShard->voiceConnectionData.token = value.token;
-			sslShard->serverUpdateCollected = true;
-		} else if (sslShard->areWeCollectingData.load() && !sslShard->serverUpdateCollected) {
+			sslShard->voiceConnectionData.token	   = value.token;
+			sslShard->serverUpdateCollected		   = true;
+		} else if (sslShard->areWeCollectingData.load(std::memory_order_acquire) && !sslShard->serverUpdateCollected) {
 			sslShard->voiceConnectionData.endPoint = value.endpoint;
-			sslShard->voiceConnectionData.token = value.token;
+			sslShard->voiceConnectionData.token	   = value.token;
 			if (sslShard->voiceConnectionDataBufferMap.contains(value.guildId.operator const uint64_t&())) {
 				sslShard->voiceConnectionDataBufferMap[value.guildId.operator const uint64_t&()]->send(sslShard->voiceConnectionData);
 			}
-			sslShard->areWeCollectingData.store(false);
+			sslShard->areWeCollectingData.store(false, std::memory_order_release);
 			sslShard->serverUpdateCollected = false;
-			sslShard->stateUpdateCollected = false;
+			sslShard->stateUpdateCollected	= false;
 		}
 	};
 
@@ -495,13 +486,12 @@ namespace DiscordCoreAPI {
 		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnInteractionCreationData::OnInteractionCreationData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse,
-		DiscordCoreClient* discordCoreClient) {
+	OnInteractionCreationData::OnInteractionCreationData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse, DiscordCoreClient* discordCoreClient) {
 		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 		UniquePtr<InputEventData> eventData{ makeUnique<InputEventData>(value) };
 		switch (value.type) {
 			case InteractionType::Application_Command: {
-				eventData->responseType = InputEventResponseType::Unset;
+				eventData->responseType		= InputEventResponseType::Unset;
 				*eventData->interactionData = value;
 				UniquePtr<CommandData> commandData{ makeUnique<CommandData>(*eventData) };
 				discordCoreClient->getCommandController().checkForAndRunCommand(*commandData);
@@ -513,11 +503,10 @@ namespace DiscordCoreAPI {
 				switch (value.data.componentType) {
 					case ComponentType::Action_Row:
 					case ComponentType::Button: {
-						eventData->responseType = InputEventResponseType::Unset;
+						eventData->responseType		= InputEventResponseType::Unset;
 						*eventData->interactionData = value;
 						if (ButtonCollector::buttonInteractionBuffersMap.contains(eventData->getChannelData().id + eventData->getMessageData().id)) {
-							ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]->send(
-								value);
+							ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]->send(value);
 						}
 						ButtonCollector::buttonInteractionEventsMap.operator()(*eventData->interactionData);
 						break;
@@ -527,12 +516,10 @@ namespace DiscordCoreAPI {
 					case ComponentType::Role_Select:
 					case ComponentType::User_Select:
 					case ComponentType::String_Select: {
-						eventData->responseType = InputEventResponseType::Unset;
+						eventData->responseType		= InputEventResponseType::Unset;
 						*eventData->interactionData = value;
-						if (SelectMenuCollector::selectMenuInteractionBuffersMap.contains(
-								eventData->getChannelData().id + eventData->getMessageData().id)) {
-							SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]
-								->send(value);
+						if (SelectMenuCollector::selectMenuInteractionBuffersMap.contains(eventData->getChannelData().id + eventData->getMessageData().id)) {
+							SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]->send(value);
 						}
 						SelectMenuCollector::selectMenuInteractionEventsMap.operator()(*eventData->interactionData);
 						break;
@@ -544,7 +531,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case InteractionType::Modal_Submit: {
-				eventData->responseType = InputEventResponseType::Unset;
+				eventData->responseType		= InputEventResponseType::Unset;
 				*eventData->interactionData = value;
 				UniquePtr<OnInputEventCreationData> eventCreationData{ makeUnique<OnInputEventCreationData>(parser, dataToParse) };
 				eventCreationData->value = *eventData;
@@ -555,7 +542,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case InteractionType::Application_Command_Autocomplete: {
-				eventData->responseType = InputEventResponseType::Unset;
+				eventData->responseType		= InputEventResponseType::Unset;
 				*eventData->interactionData = value;
 				UniquePtr<OnAutoCompleteEntryData> autocompleteEntryData{ makeUnique<OnAutoCompleteEntryData>(parser, dataToParse) };
 				autocompleteEntryData->value = *eventData;
@@ -645,27 +632,26 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	OnVoiceStateUpdateData::OnVoiceStateUpdateData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse,
-		DiscordCoreInternal::WebSocketClient* sslShard) {
+	OnVoiceStateUpdateData::OnVoiceStateUpdateData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse, DiscordCoreInternal::WebSocketClient* sslShard) {
 		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (sslShard->areWeCollectingData.load() && !sslShard->stateUpdateCollected && !sslShard->serverUpdateCollected &&
+		if (sslShard->areWeCollectingData.load(std::memory_order_acquire) && !sslShard->stateUpdateCollected && !sslShard->serverUpdateCollected &&
 			value.userId == sslShard->userId) {
-			sslShard->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
+			sslShard->voiceConnectionData			= DiscordCoreInternal::VoiceConnectionData{};
 			sslShard->voiceConnectionData.sessionId = value.sessionId;
-			sslShard->stateUpdateCollected = true;
-		} else if (sslShard->areWeCollectingData.load() && !sslShard->stateUpdateCollected && value.userId == sslShard->userId) {
+			sslShard->stateUpdateCollected			= true;
+		} else if (sslShard->areWeCollectingData.load(std::memory_order_acquire) && !sslShard->stateUpdateCollected && value.userId == sslShard->userId) {
 			sslShard->voiceConnectionData.sessionId = value.sessionId;
 			if (sslShard->voiceConnectionDataBufferMap.contains(value.guildId.operator const uint64_t&())) {
 				sslShard->voiceConnectionDataBufferMap[value.guildId.operator const uint64_t&()]->send(std::move(sslShard->voiceConnectionData));
 			}
-			sslShard->areWeCollectingData.store(false);
+			sslShard->areWeCollectingData.store(false, std::memory_order_release);
 			sslShard->serverUpdateCollected = false;
-			sslShard->stateUpdateCollected = false;
+			sslShard->stateUpdateCollected	= false;
 		}
 		VoiceStateDataLight voiceDataNew{};
 		voiceDataNew.channelId = value.channelId;
-		voiceDataNew.guildId = value.guildId;
-		voiceDataNew.userId = value.userId;
+		voiceDataNew.guildId   = value.guildId;
+		voiceDataNew.userId	   = value.userId;
 		GuildMembers::insertVoiceState(std::move(voiceDataNew));
 	}
 
@@ -695,8 +681,7 @@ namespace DiscordCoreAPI {
 		return onAutoModerationRuleCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleUpdateData> handler) {
 		return onAutoModerationRuleUpdateEvent.add(std::move(handler));
 	}
 
@@ -722,8 +707,7 @@ namespace DiscordCoreAPI {
 		return onAutoModerationActionExecutionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoCompleteEntry(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoCompleteEntryData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoCompleteEntryData> handler) {
 		return onAutoCompleteEntryEvent.add(std::move(handler));
 	}
 
@@ -731,8 +715,7 @@ namespace DiscordCoreAPI {
 		return onInputEventCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInputEventCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInputEventCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInputEventCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInputEventCreationData> handler) {
 		return onInputEventCreationEvent.add(std::move(handler));
 	}
 
@@ -740,8 +723,7 @@ namespace DiscordCoreAPI {
 		return onInputEventCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelCreationData> handler) {
 		return onChannelCreationEvent.add(std::move(handler));
 	}
 
@@ -749,8 +731,7 @@ namespace DiscordCoreAPI {
 		onChannelCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelUpdateData> handler) {
 		return onChannelUpdateEvent.add(std::move(handler));
 	}
 
@@ -758,8 +739,7 @@ namespace DiscordCoreAPI {
 		onChannelUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelDeletionData> handler) {
 		return onChannelDeletionEvent.add(std::move(handler));
 	}
 
@@ -767,8 +747,7 @@ namespace DiscordCoreAPI {
 		onChannelDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelPinsUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelPinsUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelPinsUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelPinsUpdateData> handler) {
 		return onChannelPinsUpdateEvent.add(std::move(handler));
 	}
 
@@ -776,8 +755,7 @@ namespace DiscordCoreAPI {
 		return onChannelPinsUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadCreationData> handler) {
 		return onThreadCreationEvent.add(std::move(handler));
 	}
 
@@ -785,8 +763,7 @@ namespace DiscordCoreAPI {
 		return onThreadCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadUpdateData> handler) {
 		return onThreadUpdateEvent.add(std::move(handler));
 	}
 
@@ -794,8 +771,7 @@ namespace DiscordCoreAPI {
 		return onThreadUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadDeletionData> handler) {
 		return onThreadDeletionEvent.add(std::move(handler));
 	}
 
@@ -803,8 +779,7 @@ namespace DiscordCoreAPI {
 		return onThreadDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadListSync(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadListSyncData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadListSync(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadListSyncData> handler) {
 		return onThreadListSyncEvent.add(std::move(handler));
 	}
 
@@ -812,8 +787,7 @@ namespace DiscordCoreAPI {
 		return onThreadListSyncEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMemberUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMemberUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMemberUpdateData> handler) {
 		return onThreadMemberUpdateEvent.add(std::move(handler));
 	}
 
@@ -821,8 +795,7 @@ namespace DiscordCoreAPI {
 		return onThreadMemberUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMembersUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMembersUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMembersUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMembersUpdateData> handler) {
 		return onThreadMembersUpdateEvent.add(std::move(handler));
 	}
 
@@ -830,8 +803,7 @@ namespace DiscordCoreAPI {
 		return onThreadMembersUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildCreationData> handler) {
 		return onGuildCreationEvent.add(std::move(handler));
 	}
 
@@ -839,8 +811,7 @@ namespace DiscordCoreAPI {
 		onGuildCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildUpdateData> handler) {
 		return onGuildUpdateEvent.add(std::move(handler));
 	}
 
@@ -848,8 +819,7 @@ namespace DiscordCoreAPI {
 		onGuildUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData> handler) {
 		return onGuildDeletionEvent.add(std::move(handler));
 	}
 
@@ -857,8 +827,7 @@ namespace DiscordCoreAPI {
 		onGuildDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanAdd(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildBanAddData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildBanAddData> handler) {
 		return onGuildBanAddEvent.add(std::move(handler));
 	}
 
@@ -866,8 +835,7 @@ namespace DiscordCoreAPI {
 		onGuildBanAddEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanRemove(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildBanRemoveData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildBanRemoveData> handler) {
 		return onGuildBanRemoveEvent.add(std::move(handler));
 	}
 
@@ -875,8 +843,7 @@ namespace DiscordCoreAPI {
 		onGuildBanRemoveEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildEmojisUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildEmojisUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildEmojisUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildEmojisUpdateData> handler) {
 		return onGuildEmojisUpdateEvent.add(std::move(handler));
 	}
 
@@ -884,8 +851,7 @@ namespace DiscordCoreAPI {
 		onGuildEmojisUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildStickersUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildStickersUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildStickersUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildStickersUpdateData> handler) {
 		return onGuildStickersUpdateEvent.add(std::move(handler));
 	}
 
@@ -893,8 +859,7 @@ namespace DiscordCoreAPI {
 		onGuildStickersUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildIntegrationsUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildIntegrationsUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildIntegrationsUpdateData> handler) {
 		return onGuildIntegrationsUpdateEvent.add(std::move(handler));
 	}
 
@@ -902,8 +867,7 @@ namespace DiscordCoreAPI {
 		onGuildIntegrationsUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMembersChunk(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMembersChunkData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMembersChunk(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMembersChunkData> handler) {
 		return onGuildMembersChunkEvent.add(std::move(handler));
 	}
 
@@ -911,8 +875,7 @@ namespace DiscordCoreAPI {
 		onGuildMembersChunkEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberAdd(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberAddData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberAddData> handler) {
 		return onGuildMemberAddEvent.add(std::move(handler));
 	}
 
@@ -920,8 +883,7 @@ namespace DiscordCoreAPI {
 		onGuildMemberAddEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberRemove(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberRemoveData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberRemoveData> handler) {
 		return onGuildMemberRemoveEvent.add(std::move(handler));
 	}
 
@@ -929,8 +891,7 @@ namespace DiscordCoreAPI {
 		onGuildMemberRemoveEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberUpdateData> handler) {
 		return onGuildMemberUpdateEvent.add(std::move(handler));
 	}
 
@@ -938,8 +899,7 @@ namespace DiscordCoreAPI {
 		onGuildMemberUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onRoleCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleCreationData> handler) {
 		return onRoleCreationEvent.add(std::move(handler));
 	}
 
@@ -947,8 +907,7 @@ namespace DiscordCoreAPI {
 		onRoleCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onRoleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleUpdateData> handler) {
 		return onRoleUpdateEvent.add(std::move(handler));
 	}
 
@@ -956,8 +915,7 @@ namespace DiscordCoreAPI {
 		onRoleUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onRoleDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleDeletionData> handler) {
 		return onRoleDeletionEvent.add(std::move(handler));
 	}
 
@@ -1010,8 +968,7 @@ namespace DiscordCoreAPI {
 		onGuildScheduledEventUserRemoveEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationCreationData> handler) {
 		return onIntegrationCreationEvent.add(std::move(handler));
 	}
 
@@ -1019,8 +976,7 @@ namespace DiscordCoreAPI {
 		onIntegrationCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationUpdateData> handler) {
 		return onIntegrationUpdateEvent.add(std::move(handler));
 	}
 
@@ -1028,8 +984,7 @@ namespace DiscordCoreAPI {
 		onIntegrationUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationDeletionData> handler) {
 		return onIntegrationDeletionEvent.add(std::move(handler));
 	}
 
@@ -1037,8 +992,7 @@ namespace DiscordCoreAPI {
 		onIntegrationDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInteractionCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInteractionCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInteractionCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInteractionCreationData> handler) {
 		return onInteractionCreationEvent.add(std::move(handler));
 	}
 
@@ -1046,8 +1000,7 @@ namespace DiscordCoreAPI {
 		onInteractionCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInviteCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInviteCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInviteCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInviteCreationData> handler) {
 		return onInviteCreationEvent.add(std::move(handler));
 	}
 
@@ -1055,8 +1008,7 @@ namespace DiscordCoreAPI {
 		onInviteCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInviteDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInviteDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInviteDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInviteDeletionData> handler) {
 		return onInviteDeletionEvent.add(std::move(handler));
 	}
 
@@ -1064,8 +1016,7 @@ namespace DiscordCoreAPI {
 		onInviteDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageCreationData> handler) {
 		return onMessageCreationEvent.add(std::move(handler));
 	}
 
@@ -1073,8 +1024,7 @@ namespace DiscordCoreAPI {
 		onMessageCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageUpdateData> handler) {
 		return onMessageUpdateEvent.add(std::move(handler));
 	}
 
@@ -1082,8 +1032,7 @@ namespace DiscordCoreAPI {
 		onMessageUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeletionData> handler) {
 		return onMessageDeletionEvent.add(std::move(handler));
 	}
 
@@ -1091,8 +1040,7 @@ namespace DiscordCoreAPI {
 		onMessageDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeleteBulk(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeleteBulkData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeleteBulk(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeleteBulkData> handler) {
 		return onMessageDeleteBulkEvent.add(std::move(handler));
 	}
 
@@ -1100,8 +1048,7 @@ namespace DiscordCoreAPI {
 		onMessageDeleteBulkEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionAdd(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionAddData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionAddData> handler) {
 		return onReactionAddEvent.add(std::move(handler));
 	}
 
@@ -1109,8 +1056,7 @@ namespace DiscordCoreAPI {
 		onReactionAddEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemove(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveData> handler) {
 		return onReactionRemoveEvent.add(std::move(handler));
 	}
 
@@ -1118,8 +1064,7 @@ namespace DiscordCoreAPI {
 		onReactionRemoveEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveAll(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveAllData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveAll(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveAllData> handler) {
 		return onReactionRemoveAllEvent.add(std::move(handler));
 	}
 
@@ -1127,8 +1072,7 @@ namespace DiscordCoreAPI {
 		onReactionRemoveAllEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveEmoji(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveEmojiData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveEmoji(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveEmojiData> handler) {
 		return onReactionRemoveEmojiEvent.add(std::move(handler));
 	}
 
@@ -1136,8 +1080,7 @@ namespace DiscordCoreAPI {
 		onReactionRemoveEmojiEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onPresenceUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnPresenceUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onPresenceUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnPresenceUpdateData> handler) {
 		return onPresenceUpdateEvent.add(std::move(handler));
 	}
 
@@ -1145,8 +1088,7 @@ namespace DiscordCoreAPI {
 		onPresenceUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceCreationData> handler) {
 		return onStageInstanceCreationEvent.add(std::move(handler));
 	}
 
@@ -1154,8 +1096,7 @@ namespace DiscordCoreAPI {
 		onStageInstanceCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceUpdateData> handler) {
 		return onStageInstanceUpdateEvent.add(std::move(handler));
 	}
 
@@ -1163,8 +1104,7 @@ namespace DiscordCoreAPI {
 		onStageInstanceUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceDeletionData> handler) {
 		return onStageInstanceDeletionEvent.add(std::move(handler));
 	}
 
@@ -1172,8 +1112,7 @@ namespace DiscordCoreAPI {
 		onStageInstanceDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onTypingStart(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnTypingStartData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onTypingStart(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnTypingStartData> handler) {
 		return onTypingStartEvent.add(std::move(handler));
 	}
 
@@ -1181,8 +1120,7 @@ namespace DiscordCoreAPI {
 		onTypingStartEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onUserUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnUserUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onUserUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnUserUpdateData> handler) {
 		return onUserUpdateEvent.add(std::move(handler));
 	}
 
@@ -1190,8 +1128,7 @@ namespace DiscordCoreAPI {
 		onUserUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceStateUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceStateUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceStateUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceStateUpdateData> handler) {
 		return onVoiceStateUpdateEvent.add(std::move(handler));
 	}
 
@@ -1199,8 +1136,7 @@ namespace DiscordCoreAPI {
 		onVoiceStateUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceServerUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceServerUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceServerUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceServerUpdateData> handler) {
 		return onVoiceServerUpdateEvent.add(std::move(handler));
 	}
 
@@ -1208,8 +1144,7 @@ namespace DiscordCoreAPI {
 		onVoiceServerUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onWebhookUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnWebhookUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onWebhookUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnWebhookUpdateData> handler) {
 		return onWebhookUpdateEvent.add(std::move(handler));
 	}
 

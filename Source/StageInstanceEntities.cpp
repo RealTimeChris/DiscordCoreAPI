@@ -36,14 +36,14 @@ namespace Jsonifier {
 
 	template<> struct Core<DiscordCoreAPI::CreateStageInstanceData> {
 		using ValueType = DiscordCoreAPI::CreateStageInstanceData;
-		static constexpr auto parseValue = object("privacyLevel", &ValueType::privacyLevel, "channelId", &ValueType::channelId, "reason",
-			&ValueType::reason, "topic", &ValueType::topic);
+		static constexpr auto parseValue =
+			object("privacyLevel", &ValueType::privacyLevel, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "topic", &ValueType::topic);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ModifyStageInstanceData> {
 		using ValueType = DiscordCoreAPI::ModifyStageInstanceData;
-		static constexpr auto parseValue = object("privacyLevel", &ValueType::privacyLevel, "channelId", &ValueType::channelId, "reason",
-			&ValueType::reason, "topic", &ValueType::topic);
+		static constexpr auto parseValue =
+			object("privacyLevel", &ValueType::privacyLevel, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "topic", &ValueType::topic);
 	};
 
 }
@@ -58,8 +58,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Stage_Instance };
 		co_await NewThreadAwaitable<StageInstanceData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/stage-instances";
-		workload.callStack = "StageInstances::createStageInstanceAsync()";
+		workload.relativePath  = "/stage-instances";
+		workload.callStack	   = "StageInstances::createStageInstanceAsync()";
 		parser.serializeJson(dataPackage, workload.content);
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -73,8 +73,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Stage_Instance };
 		co_await NewThreadAwaitable<StageInstanceData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
-		workload.callStack = "StageInstances::getStageInstanceAsync()";
+		workload.relativePath  = "/stage-instances/" + dataPackage.channelId;
+		workload.callStack	   = "StageInstances::getStageInstanceAsync()";
 		StageInstanceData returnData{};
 		StageInstances::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Stage_Instance };
 		co_await NewThreadAwaitable<StageInstanceData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
+		workload.relativePath  = "/stage-instances/" + dataPackage.channelId;
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "StageInstances::modifyStageInstanceAsync()";
 		if (dataPackage.reason != "") {
@@ -99,8 +99,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Stage_Instance };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
-		workload.callStack = "StageInstances::deleteStageInstanceAsync()";
+		workload.relativePath  = "/stage-instances/" + dataPackage.channelId;
+		workload.callStack	   = "StageInstances::deleteStageInstanceAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}

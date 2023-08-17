@@ -32,6 +32,7 @@
 
 #include <discordcoreapi/Utilities/Base.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
+#include <discordcoreapi/Utilities/UniquePtr.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -65,15 +66,13 @@ namespace DiscordCoreAPI {
 			*this = std::move(other);
 		}
 
-		// Copy assignment and copy constructor are deleted.
-
 		/// @brief Add an object to the cache.
 		/// @tparam mapped_type_new The type of the object to be added.
 		/// @param object The object to be added to the cache.
 		/// @return An iterator pointing to the newly added object in the cache.
-		template<typename mapped_type_new> inline UnorderedSet<mapped_type>::iterator emplace(mapped_type_new&& object) {
+		template<typename mapped_type_new> inline auto emplace(mapped_type_new&& object) {
 			std::unique_lock lock(cacheMutex);
-			return cacheMap.emplace(std::forward<mapped_type_new>(object));
+			return cacheMap.emplace(makeUnique<mapped_type_new>(std::forward<mapped_type_new>(object)));
 		}
 
 		/// @brief Access an object in the cache using a key.
@@ -82,7 +81,10 @@ namespace DiscordCoreAPI {
 		/// @return Reference to the object associated with the provided key.
 		template<typename mapped_type_new> inline reference operator[](mapped_type_new&& key) {
 			std::shared_lock lock(cacheMutex);
-			return cacheMap[std::forward<mapped_type_new>(key)];
+			if (!cacheMap.contains(key)) {
+				cacheMap.emplace(makeUnique<mapped_type>());
+			}
+			return *cacheMap.operator[](key);
 		}
 
 		/// @brief Check if the cache contains an object with a given key.
@@ -99,7 +101,7 @@ namespace DiscordCoreAPI {
 		/// @param key The key used to remove the object from the cache.
 		template<typename mapped_type_new> inline void erase(mapped_type_new&& key) {
 			std::unique_lock lock(cacheMutex);
-			*cacheMap.erase(std::forward<mapped_type_new>(key));
+			cacheMap.erase(std::forward<mapped_type_new>(key));
 		}
 
 		/// @brief Get the number of objects currently in the cache.
@@ -125,7 +127,7 @@ namespace DiscordCoreAPI {
 		inline ~ObjectCache(){};
 
 	  protected:
-		UnorderedSet<mapped_type> cacheMap{};///< The underlying container for storing objects.
+		UnorderedSet<UniquePtr<mapped_type>> cacheMap{};///< The underlying container for storing objects.
 		std::shared_mutex cacheMutex{};///< Mutex for ensuring thread-safe access to the cache.
 	};
 

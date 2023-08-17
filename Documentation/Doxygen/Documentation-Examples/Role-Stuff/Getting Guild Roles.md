@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 				auto rolesVector = Roles::getGuildRolesAsync(dataPackage01).get();
 
-				for (auto value: rolesVector) {
+				for (const auto& value: rolesVector) {
 					std::cout << "ROLE NAME: " << value.name << std::endl;
 				}
 

@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UniquePtr<OpusDecoder, OpusDecoderDeleter> ptr{};///< Unique pointer to OpusDecoder instance.
-			std::vector<opus_int16> data{};///< Buffer for decoded audio samples.
+			Jsonifier::Vector<opus_int16> data{};///< Buffer for decoded audio samples.
 		};
 
 		/**@}*/

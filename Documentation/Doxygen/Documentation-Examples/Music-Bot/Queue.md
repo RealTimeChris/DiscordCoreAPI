@@ -8,15 +8,15 @@ Queue {#Queue}
 
 namespace DiscordCoreAPI {
 
-	std::vector<EmbedData> updateMessageEmbeds(std::vector<Song> playlist, DiscordGuild* discordGuild, InputEventData interaction, InputEventData originalEvent, User user,
+	Jsonifier::Vector<EmbedData> updateMessageEmbeds(Jsonifier::Vector<Song> playlist, DiscordGuild* discordGuild, InputEventData interaction, InputEventData originalEvent, User user,
 		int32_t currentPageIndex) {
-		std::vector<std::vector<EmbedFieldData>> msgEmbedFields{};
-		msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
+		Jsonifier::Vector<Jsonifier::Vector<EmbedFieldData>> msgEmbedFields{};
+		msgEmbedFields.emplace_back(Jsonifier::Vector<EmbedFieldData>());
 		int32_t msgEmbedFieldsPage{};
 		for (int32_t y = 0; y < playlist.size(); y += 1) {
 			if (y % 25 == 0 && y > 0) {
 				msgEmbedFieldsPage += 1;
-				msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
+				msgEmbedFields.emplace_back(Jsonifier::Vector<EmbedFieldData>());
 			}
 			EmbedFieldData msgEmbedField{};
 			msgEmbedField.Inline = false;
@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
 			msgEmbedFields[msgEmbedFieldsPage].emplace_back(msgEmbedField);
 		}
 		msgEmbedFieldsPage = 0;
-		std::vector<EmbedData> newMsgEmbeds{};
+		Jsonifier::Vector<EmbedData> newMsgEmbeds{};
 		for (int32_t y = 0; y < msgEmbedFields.size(); y += 1) {
 			UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 			newEmbed->setAuthor(user.userName, user.avatar);
@@ -109,15 +109,15 @@ namespace DiscordCoreAPI {
 
 				int32_t currentPageIndex = 0;
 
-				std::vector<std::vector<EmbedFieldData>> msgEmbedFields;
-				msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
+				Jsonifier::Vector<Jsonifier::Vector<EmbedFieldData>> msgEmbedFields;
+				msgEmbedFields.emplace_back(Jsonifier::Vector<EmbedFieldData>());
 				int32_t msgEmbedFieldsPage{};
 				for (int32_t y = 0; y < SongAPI::getPlaylist(guild->id).songQueue.size(); y += 1) {
 					if (y % 25 == 0 && y > 0) {
 						if (y > 0) {
 							msgEmbedFieldsPage += 1;
 						}
-						msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
+						msgEmbedFields.emplace_back(Jsonifier::Vector<EmbedFieldData>());
 					}
 					EmbedFieldData msgEmbedField{};
 					msgEmbedField.Inline = false;
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 					msgEmbedField.name = "__**" + std::to_string(y + 1) + " of " + std::to_string(SongAPI::getPlaylist(guild->id).songQueue.size()) + "**__";
 					msgEmbedFields[msgEmbedFieldsPage].emplace_back(msgEmbedField);
 				}
-				std::vector<EmbedData> msgEmbeds;
+				Jsonifier::Vector<EmbedData> msgEmbeds;
 				msgEmbedFieldsPage = 0;
 				for (int32_t y = 0; y < msgEmbedFields.size(); y += 1) {
 					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
@@ -249,7 +249,7 @@ namespace DiscordCoreAPI {
 								doWeQuit = true;
 								break;
 							}
-							std::vector<std::string> args2;
+							Jsonifier::Vector<std::string> args2;
 							std::string newString = convertToLowerCase(returnedMessages.messages.at(0).content);
 							std::regex wordRegex("[a-z]{1,12}");
 							std::smatch wordRegexMatch;
@@ -258,7 +258,7 @@ namespace DiscordCoreAPI {
 									std::regex_constants::match_flag_type::match_prev_avail);
 							args2.emplace_back(wordRegexMatch.str());
 							std::regex_iterator<const char*>::regex_type rx("\\d{1,4}");
-							std::regex_iterator<const char*> next(newString.c_str(), newString.c_str() + strlen(newString.c_str()), rx);
+							std::regex_iterator<const char*> next(newString.data(), newString.data() + strlen(newString.data()), rx);
 							std::regex_iterator<const char*> end;
 
 							for (; next != end; ++next) {
@@ -297,7 +297,7 @@ namespace DiscordCoreAPI {
 								newEvent = InputEvents::respondToInputEventAsync(dataPackage03).get();
 								continue;
 							} else if (convertToLowerCase(args2[0]) == "remove") {
-								if (args2.size() < 2 || !regex_search(args2[1].c_str(), digitRegex)) {
+								if (args2.size() < 2 || !regex_search(args2[1].data(), digitRegex)) {
 									msgEmbeds[currentPageIndex].setDescription(
 										"__**PLEASE ENTER A PROPER INPUT!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap "
 										"<sourceTrackNumber> "
@@ -353,7 +353,7 @@ namespace DiscordCoreAPI {
 								savePlaylist(*discordGuild);
 								break;
 							} else if (convertToLowerCase(args2[0]) == "swap") {
-								if (args2.size() < 3 || !regex_search(args2[1].c_str(), digitRegex) || !regex_search(args2[2].c_str(), digitRegex)) {
+								if (args2.size() < 3 || !regex_search(args2[1].data(), digitRegex) || !regex_search(args2[2].data(), digitRegex)) {
 									msgEmbeds[currentPageIndex].setDescription(
 										"__**PLEASE ENTER A PROPER INPUT!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap "
 										"<sourceTrackNumber> "
@@ -411,7 +411,7 @@ namespace DiscordCoreAPI {
 								break;
 							} else if (convertToLowerCase(args2[0]) == "shuffle") {
 								auto oldSongArray = SongAPI::getPlaylist(guild->id);
-								std::vector<Song> newVector{};
+								Jsonifier::Vector<Song> newVector{};
 								while (oldSongArray.songQueue.size() > 0) {
 									std::mt19937_64 randomEngine{ static_cast<uint32_t>(
 										std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()) };

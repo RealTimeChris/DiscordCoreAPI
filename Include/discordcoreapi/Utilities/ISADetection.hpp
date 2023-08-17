@@ -119,7 +119,7 @@ namespace DiscordCoreAPI {
 			return result[index];
 		}
 
-#ifdef T_AVX512
+#if defined T_AVX512
 
 		/// @brief A class for audio mixing operations using AVX512 instructions.
 		class AudioMixer {
@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 			/// @tparam ValueType The target value type for storage.
 			/// @param valuesToStore The 512-bit AVX vector containing values to store.
 			/// @param storageLocation Pointer to the storage location.
-			template<typename ValueType> inline static void storeValues(const Avx512Int& valuesToStore, ValueType* storageLocation) {
+			template<typename ValueType> static inline void storeValues(const Avx512Int& valuesToStore, ValueType* storageLocation) {
 				for (int64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					storageLocation[x] = static_cast<ValueType>(extractInt32FromAvx512(valuesToStore, x));
 				}
@@ -141,7 +141,7 @@ namespace DiscordCoreAPI {
 			/// @tparam ValueType The type of values being gathered.
 			/// @param values The values to gather.
 			/// @return An AVX register containing gathered values.
-			template<typename ValueType> inline static Avx512Float gatherValues(ValueType* values) {
+			template<typename ValueType> static inline Avx512Float gatherValues(ValueType* values) {
 				float newArray[byteBlocksPerRegister]{};
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					newArray[x] = static_cast<float>(values[x]);
@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 			/// @param dataOut Pointer to the output array of int16_t values.
 			/// @param currentGain The gain to be applied to the elements.
 			/// @param increment The increment value to be added to each element.
-			inline static void collectSingleRegister(int32_t* dataIn, int16_t* dataOut, float currentGain, float increment) {
+			static inline void collectSingleRegister(int32_t* dataIn, int16_t* dataOut, float currentGain, float increment) {
 				Avx512Float currentSamplesNew{ _mm512_mul_ps(gatherValues(dataIn),
 					_mm512_add_ps(_mm512_set1_ps(currentGain),
 						_mm512_mul_ps(_mm512_set1_ps(increment),
@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 			/// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. This version uses AVX51 instructions.
 			/// @param upSampledVector Pointer to the array of int32_t values.
 			/// @param decodedData Pointer to the array of int16_t values.
-			inline static void combineSamples(int32_t* upSampledVector, const int16_t* decodedData) {
+			static inline void combineSamples(int32_t* upSampledVector, const int16_t* decodedData) {
 				auto newValues{ _mm512_cvtps_epi32(_mm512_add_ps(gatherValues(upSampledVector), gatherValues(decodedData))) };
 				storeValues(newValues, upSampledVector);
 			}
@@ -188,7 +188,7 @@ namespace DiscordCoreAPI {
 			/// @tparam ValueType The target value type for storage.
 			/// @param valuesToStore The 256-bit AVX vector containing values to store.
 			/// @param storageLocation Pointer to the storage location.
-			template<typename ValueType> inline static void storeValues(const Avx2Int& valuesToStore, ValueType* storageLocation) {
+			template<typename ValueType> static inline void storeValues(const Avx2Int& valuesToStore, ValueType* storageLocation) {
 				for (int64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					storageLocation[x] = static_cast<ValueType>(extractInt32FromAvx2(valuesToStore, x));
 				}
@@ -198,7 +198,7 @@ namespace DiscordCoreAPI {
 			/// @tparam ValueType The type of values being gathered.
 			/// @param values The values to gather.
 			/// @return An AVX register containing gathered values.
-			template<typename ValueType> inline static Avx2Float gatherValues(ValueType* values) {
+			template<typename ValueType> static inline Avx2Float gatherValues(ValueType* values) {
 				float newArray[byteBlocksPerRegister]{};
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					newArray[x] = static_cast<float>(values[x]);
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 			/// @param dataOut Pointer to the output array of int16_t values.
 			/// @param currentGain The gain to be applied to the elements.
 			/// @param increment The increment value to be added to each element.
-			inline static void collectSingleRegister(int32_t* dataIn, int16_t* dataOut, float currentGain, float increment) {
+			static inline void collectSingleRegister(int32_t* dataIn, int16_t* dataOut, float currentGain, float increment) {
 				Avx2Float currentSamplesNew{ _mm256_mul_ps(gatherValues(dataIn),
 					_mm256_add_ps(_mm256_set1_ps(currentGain),
 						_mm256_mul_ps(_mm256_set1_ps(increment), _mm256_set_ps(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f)))) };
@@ -227,7 +227,7 @@ namespace DiscordCoreAPI {
 			/// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. This version uses AVX2 instructions.
 			/// @param upSampledVector Pointer to the array of int32_t values.
 			/// @param decodedData Pointer to the array of int16_t values.
-			inline static void combineSamples(int32_t* upSampledVector, const int16_t* decodedData) {
+			static inline void combineSamples(int32_t* upSampledVector, const int16_t* decodedData) {
 				auto newValues{ _mm256_cvtps_epi32(_mm256_add_ps(gatherValues(upSampledVector), gatherValues(decodedData))) };
 				storeValues(newValues, upSampledVector);
 			}
@@ -245,7 +245,7 @@ namespace DiscordCoreAPI {
 			/// @tparam ValueType The target value type for storage.
 			/// @param valuesToStore The 128-bit AVX vector containing values to store.
 			/// @param storageLocation Pointer to the storage location.
-			template<typename ValueType> inline static void storeValues(const AvxInt& valuesToStore, ValueType* storageLocation) {
+			template<typename ValueType> static inline void storeValues(const AvxInt& valuesToStore, ValueType* storageLocation) {
 				for (int64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					storageLocation[x] = static_cast<ValueType>(extractInt32FromAvx(valuesToStore, x));
 				}
@@ -255,7 +255,7 @@ namespace DiscordCoreAPI {
 			/// @tparam ValueType The type of values being gathered.
 			/// @param values The values to gather.
 			/// @return An AVX register containing gathered values.
-			template<typename ValueType> inline static AvxFloat gatherValues(ValueType* values) {
+			template<typename ValueType> static inline AvxFloat gatherValues(ValueType* values) {
 				float newArray[byteBlocksPerRegister]{};
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					newArray[x] = static_cast<float>(values[x]);
@@ -268,7 +268,7 @@ namespace DiscordCoreAPI {
 			/// @param dataOut Pointer to the output array of int16_t values.
 			/// @param currentGain The gain to be applied to the elements.
 			/// @param increment The increment value to be added to each element.
-			inline static void collectSingleRegister(int32_t* dataIn, int16_t* dataOut, float currentGain, float increment) {
+			static inline void collectSingleRegister(int32_t* dataIn, int16_t* dataOut, float currentGain, float increment) {
 				AvxFloat currentSamplesNew{ _mm_mul_ps(gatherValues(dataIn),
 					_mm_add_ps(_mm_set1_ps(currentGain), _mm_mul_ps(_mm_set1_ps(increment), _mm_set_ps(0.0f, 1.0f, 2.0f, 3.0f)))) };
 
@@ -283,7 +283,7 @@ namespace DiscordCoreAPI {
 			/// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. This version uses AVX instructions.
 			/// @param upSampledVector Pointer to the array of int32_t values.
 			/// @param decodedData Pointer to the array of int16_t values.
-			inline static void combineSamples(int32_t* upSampledVector, const int16_t* decodedData) {
+			static inline void combineSamples(int32_t* upSampledVector, const int16_t* decodedData) {
 				auto newValues{ _mm_cvtps_epi32(_mm_add_ps(gatherValues(upSampledVector), gatherValues(decodedData))) };
 				storeValues(newValues, upSampledVector);
 			}
@@ -302,7 +302,7 @@ namespace DiscordCoreAPI {
 			/// @param dataOut Pointer to the output array of int16_t values.
 			/// @param currentGain The gain to be applied to the elements.
 			/// @param increment The increment value to be added to each element.
-			inline static void collectSingleRegister(int32_t* dataIn, int16_t* dataOut, float currentGain, float increment) {
+			static inline void collectSingleRegister(int32_t* dataIn, int16_t* dataOut, float currentGain, float increment) {
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					auto incrementNew = increment * x;
 					auto currentGainNew = currentGain + incrementNew;
@@ -319,7 +319,7 @@ namespace DiscordCoreAPI {
 			/// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. This version uses x64 instructions.
 			/// @param upSampledVector Pointer to the array of int32_t values.
 			/// @param decodedData Pointer to the array of int16_t values.
-			inline static void combineSamples(int32_t* upSampledVector, const int16_t* decodedData) {
+			static inline void combineSamples(int32_t* upSampledVector, const int16_t* decodedData) {
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					upSampledVector[x] += static_cast<int32_t>(decodedData[x]);
 				}

@@ -112,6 +112,16 @@
     },
     {
       "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "DEV": true },
+      "description": "Target Linux (64-bit) with the Visual Studio development environment. (Release)",
+      "inherits": "Linux-Base",
+      "name": "Linux-Release-Dev"
+    },
+    {
+      "architecture": {
         "strategy": "external",
         "value": "x64"
       },
@@ -195,6 +205,13 @@
       "inheritConfigureEnvironment": true,
       "configuration": "Release",
       "name": "Linux-Release",
+      "verbose": true
+    },
+    {
+      "configurePreset": "Linux-Release-Dev",
+      "inheritConfigureEnvironment": true,
+      "configuration": "Release",
+      "name": "Linux-Release-Dev",
       "verbose": true
     },
     {

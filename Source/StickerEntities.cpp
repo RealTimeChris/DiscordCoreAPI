@@ -35,15 +35,15 @@
 namespace Jsonifier {
 
 	template<> struct Core<DiscordCoreAPI::CreateGuildStickerData> {
-		using ValueType = DiscordCoreAPI::CreateGuildStickerData;
-		static constexpr auto parseValue = object("description", &ValueType::description, "reason", &ValueType::reason, "guildId",
-			&ValueType::guildId, "file", &ValueType::file, "name", &ValueType::name, "tags", &ValueType::tags);
+		using ValueType					 = DiscordCoreAPI::CreateGuildStickerData;
+		static constexpr auto parseValue = object("description", &ValueType::description, "reason", &ValueType::reason, "guildId", &ValueType::guildId, "file", &ValueType::file,
+			"name", &ValueType::name, "tags", &ValueType::tags);
 	};
 
 	template<> struct Core<DiscordCoreAPI::ModifyGuildStickerData> {
-		using ValueType = DiscordCoreAPI::ModifyGuildStickerData;
-		static constexpr auto parseValue = object("description", &ValueType::description, "stickerId", &ValueType::stickerId, "reason",
-			&ValueType::reason, "guildId", &ValueType::guildId, "name", &ValueType::name, "tags", &ValueType::tags);
+		using ValueType					 = DiscordCoreAPI::ModifyGuildStickerData;
+		static constexpr auto parseValue = object("description", &ValueType::description, "stickerId", &ValueType::stickerId, "reason", &ValueType::reason, "guildId",
+			&ValueType::guildId, "name", &ValueType::name, "tags", &ValueType::tags);
 	};
 
 }
@@ -58,31 +58,31 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Sticker };
 		co_await NewThreadAwaitable<StickerData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/stickers/" + dataPackage.stickerId;
-		workload.callStack = "Stickers::getStickerAsync()";
+		workload.relativePath  = "/stickers/" + dataPackage.stickerId;
+		workload.callStack	   = "Stickers::getStickerAsync()";
 		StickerData returnData{};
 		Stickers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
+	CoRoutine<Jsonifier::Vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Nitro_Sticker_Packs };
-		co_await NewThreadAwaitable<std::vector<StickerPackData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<StickerPackData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/sticker-packs";
-		workload.callStack = "Stickers::getNitroStickerPacksAsync()";
-		std::vector<StickerPackData> returnData{};
+		workload.relativePath  = "/sticker-packs";
+		workload.callStack	   = "Stickers::getNitroStickerPacksAsync()";
+		Jsonifier::Vector<StickerPackData> returnData{};
 		Stickers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<std::vector<StickerData>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
+	CoRoutine<Jsonifier::Vector<StickerData>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Stickers };
-		co_await NewThreadAwaitable<std::vector<StickerData>>();
+		co_await NewThreadAwaitable<Jsonifier::Vector<StickerData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers";
-		workload.callStack = "Stickers::getGuildStickersAsync()";
-		std::vector<StickerData> returnData{};
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/stickers";
+		workload.callStack	   = "Stickers::getGuildStickersAsync()";
+		Jsonifier::Vector<StickerData> returnData{};
 		Stickers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Sticker };
 		co_await NewThreadAwaitable<StickerData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers";
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/stickers";
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Stickers::createGuildStickerAsync()";
 		if (dataPackage.reason != "") {
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Sticker };
 		co_await NewThreadAwaitable<StickerData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers/" + dataPackage.stickerId;
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/stickers/" + dataPackage.stickerId;
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Stickers::modifyGuildStickerAsync()";
 		if (dataPackage.reason != "") {
@@ -121,8 +121,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Sticker };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers/" + dataPackage.stickerId;
-		workload.callStack = "Stickers::deleteGuildStickerAsync()";
+		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/stickers/" + dataPackage.stickerId;
+		workload.callStack	   = "Stickers::deleteGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
