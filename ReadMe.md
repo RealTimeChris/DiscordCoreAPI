@@ -126,7 +126,6 @@ InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 ----
 - [CMake](https://cmake.org/) (Version 3.20 or greater)
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
-- [Jsonifier](https://github.com/RealTimeChris/Jsonifier) (.\\vcpkg install jsonifier:x64-windows_OR_linux)
 - [OpenSSL](https://github.com/openssl/openssl) (.\\vcpkg install openssl:x64-windows_OR_linux)
 - [Opus](https://github.com/xiph/opus) (.\\vcpkg install opus:x64-windows_OR_linux)
 - [Sodium](https://github.com/jedisct1/libsodium) (.\\vcpkg install libsodium:x64-windows_OR_linux)

@@ -24,8 +24,10 @@
 set(VCPKG_ROOT_DIR "C:/Vcpkg")
 set(Opus_DIR "C:/Vcpkg/installed/x64-windows/share/opus") # Set this one to the folder location of the file "OpusConfig.cmake".
 set(unofficial-sodium_DIR "C:/Vcpkg/installed/x64-windows/share/unofficial-sodium") # Set this one to the folder location of the file "unofficial-sodiumConfig.cmake".
-set(Jsonifier_DIR "C:/vcpkg2/installed/x64-windows/share/jsonifier/") # Set this one to the folder location of the file "JsonifierConfig.cmake".
 set(OPENSSL_ROOT_DIR "C:/Vcpkg/installed/x64-windows/") # Set this one to the folder location of the include folder and library folders of OpenSSL.
+
+# jsonifier is automatically built from source
+set(Jsonifier_DIR "${CMAKE_BINARY_DIR}/Build/_deps/jsonifier-src") # No need to change this item, Jsonifier is compiled from GitHub. "JsonifierConfig.cmake".
 
 if (EXISTS "${VCPKG_ROOT_DIR}")
 	set(ENV{VCPKG_INSTALLATION_ROOT} "${VCPKG_ROOT_DIR}")
@@ -39,6 +41,25 @@ elseif(UNIX)
 elseif(APPLE)
 	set(OS "osx")
 endif()
+
+# Jsonifier: Below is a patch for downloading Jsonifier from github, and installing it
+
+include(FetchContent)
+
+FetchContent_Declare(
+    Jsonifier
+    GIT_REPOSITORY https://github.com/RealTimeChris/Jsonifier.git
+    GIT_TAG main
+)
+
+FetchContent_GetProperties(Jsonifier)
+if(NOT Jsonifier_POPULATED)
+    FetchContent_Populate(Jsonifier)
+    add_subdirectory(${jsonifier_SOURCE_DIR} ${jsonifier_BINARY_DIR})
+endif()
+
+## Jsonifier: end of the patch
+
 if (NOT "$ENV{VCPKG_INSTALLATION_ROOT}" STREQUAL "")
 	set(VCPKG_INSTALLATION_ROOT_NEW "$ENV{VCPKG_INSTALLATION_ROOT}")
 	set(OPENSSL_ROOT_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/")
@@ -59,6 +80,8 @@ set(PROJECT_NAME "DiscordCoreAPI")
 set(LIB_NAME "${PROJECT_NAME}")
 set(PRODUCT_VERSION "${VERSION}")
 set(DESCRIPTION "A Discord bot library, written in C++, using custom asynchronous coroutines.")
+
+
 
 project(
 	"${PROJECT_NAME}"
