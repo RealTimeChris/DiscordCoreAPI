@@ -293,6 +293,8 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
+	inline StopWatch<Milliseconds> stopWatchNew{ Milliseconds{ 100 } };
+
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
@@ -488,6 +490,9 @@ namespace DiscordCoreAPI {
 					throw DCAException{ "Sorry, but there was no id set for that guild." };
 				}
 				cache.emplace(std::forward<GuildType>(guild));
+				if (cache.count() % 1000 == 0) {
+					std::cout << "GUILD COUNT: " << cache.count() << ", AFTER: " << stopWatchNew.totalTimePassed().count() << std::endl;
+				}
 			}
 		}
 

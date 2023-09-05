@@ -47,12 +47,11 @@ namespace DiscordCoreAPI {
 		static constexpr uint8_t SIMPLEBLOCK_ID{ 0xA3 };
 		static constexpr uint8_t OPUS_TRACK_ID{ 0x81 };
 
-		static constexpr std::array<uint8_t, 256> ffLog2Tab{ 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-			4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-			6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-			6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
+		static constexpr std::array<uint8_t, 256> ffLog2Tab{ 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
+			5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+			6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
 
 		/// @brief A class for demuxing Matroska-contained audio data.
 		class MatroskaDemuxer {
@@ -91,12 +90,11 @@ namespace DiscordCoreAPI {
 							}
 							return;
 						}
-						MessagePrinter::printSuccess<PrintMessageType::General>(
-							"Missing Segment, found at index: " + std::to_string(currentPosition) + ".");
+						MessagePrinter::printSuccess<PrintMessageType::General>("Missing Segment, found at index: " + std::to_string(currentPosition) + ".");
 					} else {
 						currentPosition += sizeof(uint32_t);
 					}
-					totalSize = collectElementSize();
+					totalSize		  = collectElementSize();
 					doWeHaveTotalSize = true;
 				}
 				while (currentPosition + 3 < data.size() && data.find(0xa3) != std::string::npos) {
@@ -106,8 +104,7 @@ namespace DiscordCoreAPI {
 						}
 						return;
 					}
-					if (data.at(currentPosition) == SIMPLEBLOCK_ID &&
-						((data.at(currentPosition + 2) == OPUS_TRACK_ID || data.at(currentPosition + 3) == OPUS_TRACK_ID))) {
+					if (data.at(currentPosition) == SIMPLEBLOCK_ID && ((data.at(currentPosition + 2) == OPUS_TRACK_ID || data.at(currentPosition + 3) == OPUS_TRACK_ID))) {
 						++currentPosition;
 						if (currentSize == 0) {
 							currentSize = collectElementSize();
@@ -279,11 +276,11 @@ namespace DiscordCoreAPI {
 			inline void getSegmentData() {
 				segmentCount = data.at(26);
 				currentPosition += 27;
-				for (int32_t i{}; i < segmentCount; ++i) {
-					int32_t packetLength{ data.at(27ull + i) };
-					while (data.at(27ull + i) == 255) {
-						++i;
-						packetLength += data.at(27ull + i);
+				for (int32_t x{}; x < segmentCount; ++x) {
+					int32_t packetLength{ data.at(27ull + x) };
+					while (data.at(27ull + x) == 255) {
+						++x;
+						packetLength += data.at(27ull + x);
 					}
 					segmentTable.emplace_back(packetLength);
 				}
@@ -306,8 +303,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Verifies that the data represents a valid Ogg page.
 			inline void verifyAsOggPage() {
-				while (data.at(currentPosition) != 'O' || data.at(currentPosition + 1) != 'g' || data.at(currentPosition + 2) != 'g' ||
-					data.at(currentPosition + 3) != 'S') {
+				while (data.at(currentPosition) != 'O' || data.at(currentPosition + 1) != 'g' || data.at(currentPosition + 2) != 'g' || data.at(currentPosition + 3) != 'S') {
 					++currentPosition;
 					if (currentPosition >= data.size()) {
 						return;
@@ -410,7 +406,7 @@ namespace DiscordCoreAPI {
 					AudioFrameData newFrame{};
 					newFrame += std::basic_string_view<uint8_t>{ newPacket.data(), newPacket.size() };
 					newFrame.currentSize = newPacket.size();
-					newFrame.type = AudioFrameType::Encoded;
+					newFrame.type		 = AudioFrameType::Encoded;
 					frames.emplace_back(std::move(newFrame));
 				}
 			}

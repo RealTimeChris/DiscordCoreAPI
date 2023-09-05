@@ -200,7 +200,6 @@ namespace DiscordCoreAPI {
 			areWeHeartBeating		   = other.areWeHeartBeating;
 			areWeResuming			   = other.areWeResuming;
 			configManager			   = other.configManager;
-			currentSize				   = other.currentSize;
 			dataOpCode				   = other.dataOpCode;
 			shard[0]				   = other.shard[0];
 			shard[1]				   = other.shard[1];
@@ -270,6 +269,7 @@ namespace DiscordCoreAPI {
 			std::string webSocketTitle{ wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket" };
 			MessagePrinter::printSuccess<PrintMessageType::WebSocket>("Sending " + webSocketTitle + " [" + std::to_string(shard[0]) + "," + std::to_string(shard[1]) + "]" +
 				std::string{ "'s Message: " } + static_cast<std::string>(dataToSend));
+			std::unique_lock lock{ accessMutex };
 			if (areWeConnected()) {
 				tcpConnection.writeData(static_cast<std::string_view>(dataToSend), priority);
 				if (tcpConnection.currentStatus != ConnectionStatus::NO_Error) {
@@ -321,9 +321,13 @@ namespace DiscordCoreAPI {
 				WebSocketOpCode opcode = static_cast<WebSocketOpCode>(currentMessage[0] & ~webSocketMaskBit);
 				switch (opcode) {
 					case WebSocketOpCode::Op_Continuation:
+						[[fallthrough]];
 					case WebSocketOpCode::Op_Text:
+						[[fallthrough]];
 					case WebSocketOpCode::Op_Binary:
+						[[fallthrough]];
 					case WebSocketOpCode::Op_Ping:
+						[[fallthrough]];
 					case WebSocketOpCode::Op_Pong: {
 						uint8_t length00	   = currentMessage[1];
 						uint32_t messageOffset = 2;
@@ -481,14 +485,6 @@ namespace DiscordCoreAPI {
 			if (!sendMessage(string, true)) {
 				return;
 			}
-			StopWatch<Milliseconds> stopWatch{ 5500ms };
-			stopWatch.resetTimer();
-			while (areWeCollectingData.load(std::memory_order_acquire)) {
-				if (stopWatch.hasTimePassed()) {
-					break;
-				}
-				std::this_thread::sleep_for(1ms);
-			}
 		}
 
 		bool WebSocketClient::onMessageReceived(std::string_view dataNew) {
@@ -524,7 +520,7 @@ namespace DiscordCoreAPI {
 											data.d.excludedKeys.emplace("shard");
 										}
 										currentState.store(WebSocketState::Authenticated, std::memory_order_release);
-										parser.parseJson<true, true, true>(data, dataNew);
+										parser.parseJson<true, true>(data, dataNew);
 										sessionId = data.d.sessionId;
 										if (data.d.resumeGatewayUrl.find("wss://") != std::string::npos) {
 											resumeUrl = data.d.resumeGatewayUrl.substr(data.d.resumeGatewayUrl.find("wss://") + std::string{ "wss://" }.size());
@@ -1075,7 +1071,6 @@ namespace DiscordCoreAPI {
 
 		void WebSocketClient::onClosed() {
 			if (maxReconnectTries > currentReconnectTries) {
-				discordCoreClient->currentlyConnectingShard.store(shard[0], std::memory_order_release);
 				disconnect();
 			} else {
 				if (doWeQuit) {
@@ -1091,85 +1086,72 @@ namespace DiscordCoreAPI {
 		BaseSocketAgent::BaseSocketAgent(DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, uint64_t currentBaseSocketAgentNew) {
 			currentBaseSocketAgent = currentBaseSocketAgentNew;
 			discordCoreClient	   = discordCoreClientNew;
-			this->doWeQuit		   = doWeQuitNew;
+			doWeQuit			   = doWeQuitNew;
 			taskThread			   = ThreadWrapper([this](StopToken token) {
 				run(token);
 			});
 		}
 
-		bool BaseSocketAgent::waitForState(ConnectionPackage& packageNew, WebSocketState state) {
-			StopWatch<Milliseconds> stopWatch{ 10000ms };
-			stopWatch.resetTimer();
-			if (getClient(packageNew.currentShard).areWeConnected()) {
-				while (!doWeQuit->load(std::memory_order_acquire)) {
-					if (getClient(packageNew.currentShard).tcpConnection.processIO(10) != ConnectionStatus::NO_Error) {
-						return false;
-					}
-
-					if (getClient(packageNew.currentShard).currentState.load(std::memory_order_acquire) != state) {
-						break;
-					}
-					if (stopWatch.hasTimePassed()) {
-						MessagePrinter::printError<PrintMessageType::WebSocket>("Connection failed for WebSocket [" + std::to_string(packageNew.currentShard) + "," +
-							std::to_string(discordCoreClient->configManager.getTotalShardCount()) +
-							"], while waiting for the state: " + std::to_string(static_cast<uint64_t>(state)) + "... reconnecting.");
-						getClient(packageNew.currentShard).onClosed();
-						return false;
-					}
-					std::this_thread::sleep_for(1ms);
-				}
-			}
-			return true;
-		}
-
-		void BaseSocketAgent::connect(WebSocketClient& dValueNew) {
-			discordCoreClient->currentlyConnectingShard.fetch_add(1, std::memory_order_release);
-			discordCoreClient->connectionStopWatch01.resetTimer();
-			std::string connectionUrl{ dValueNew.areWeResuming ? getClient(dValueNew.shard[0]).resumeUrl : discordCoreClient->configManager.getConnectionAddress() };
-			MessagePrinter::printSuccess<PrintMessageType::General>("Connecting Shard " + std::to_string(dValueNew.shard[0] + 1) + " of " +
-				std::to_string(discordCoreClient->configManager.getShardCountForThisProcess()) + std::string{ " Shards for this process. (" } +
-				std::to_string(dValueNew.shard[0] + 1) + " of " + std::to_string(discordCoreClient->configManager.getTotalShardCount()) +
-				std::string{ " Shards total across all processes)" });
+		void BaseSocketAgent::connect(WebSocketClient& value) {
+			std::string connectionUrl{ value.areWeResuming ? value.resumeUrl : discordCoreClient->configManager.getConnectionAddress() };
+			MessagePrinter::printSuccess<PrintMessageType::General>("Connecting Shard " + std::to_string(value.shard[0] + 1) + " of " +
+				std::to_string(discordCoreClient->configManager.getShardCountForThisProcess()) + std::string{ " Shards for this process. (" } + std::to_string(value.shard[0] + 1) +
+				" of " + std::to_string(discordCoreClient->configManager.getTotalShardCount()) + std::string{ " Shards total across all processes)" });
 			std::string relativePath{ "/?v=10&encoding=" + std::string{ discordCoreClient->configManager.getTextFormat() == TextFormat::Etf ? "etf" : "json" } };
-			dValueNew.connect(connectionUrl, relativePath, discordCoreClient->getConfigManager().getConnectionPort());
-		}
 
-		WebSocketClient& BaseSocketAgent::getClient(uint32_t index) {
-			return shardMap[index];
+			value = WebSocketClient{ discordCoreClient, value.shard[0], doWeQuit };
+			value.connect(connectionUrl, relativePath, discordCoreClient->configManager.getConnectionPort());
+			if (value.tcpConnection.currentStatus != ConnectionStatus::NO_Error) {
+				value.onClosed();
+			}
+			value.tcpConnection.processIO(0);
+			discordCoreClient->connectionStopWatch01.resetTimer();
 		}
 
 		void BaseSocketAgent::run(StopToken token) {
+			UnorderedMap<uint64_t, WebSocketTCPConnection*> processIOMapNew{};
 			while (!discordCoreClient->areWeReadyToConnect.load(std::memory_order_acquire)) {
 				std::this_thread::sleep_for(1ms);
 			}
+			for (auto& [key, value]: shardMap) {
+				while (key != discordCoreClient->currentlyConnectingShard.load(std::memory_order_acquire) || !discordCoreClient->connectionStopWatch01.hasTimePassed()) {
+					processIOMapNew.reserve(shardMap.size());
+					for (auto& [keyNew, valueNew]: shardMap) {
+						if (valueNew.areWeConnected()) {
+							processIOMapNew.emplace(keyNew, &valueNew.tcpConnection);
+						}
+					}
+					TCPConnection<WebSocketTCPConnection>::processIO(processIOMapNew);
+					processIOMapNew.clear();
+					std::this_thread::sleep_for(1ms);
+				}
+				connect(value);
+				discordCoreClient->currentlyConnectingShard.fetch_add(1, std::memory_order_release);
+			}
 			while (!token.stopRequested() && !doWeQuit->load(std::memory_order_acquire)) {
-				UnorderedMap<uint64_t, WebSocketTCPConnection*> processIOMapNew{};
-				processIOMapNew.reserve(shardMap.size());
 				try {
 					for (auto& [key, value]: shardMap) {
 						if (value.areWeConnected()) {
 							processIOMapNew.emplace(key, &value.tcpConnection);
 						}
 					}
-					auto result = TCPConnection<WebSocketTCPConnection>::processIO(processIOMapNew);
+					TCPConnection<WebSocketTCPConnection>::processIO(processIOMapNew);
 					processIOMapNew.clear();
-					for (auto& [key, value]: result) {
-						MessagePrinter::printError<PrintMessageType::WebSocket>("Connection lost for WebSocket [" + std::to_string(shardMap[key].shard[0]) + "," +
-							std::to_string(discordCoreClient->configManager.getTotalShardCount()) + "]... reconnecting.");
-						shardMap[key].onClosed();
-					}
 					bool areWeConnected{};
-					for (auto& [key, dValueNew]: shardMap) {
-						if (dValueNew.areWeConnected()) {
-							if (dValueNew.checkForAndSendHeartBeat()) {
+					for (auto& [key, value]: shardMap) {
+						if (value.areWeConnected()) {
+							if (value.checkForAndSendHeartBeat()) {
 								OnGatewayPingData dataNew{};
-								dataNew.timeUntilNextPing = dValueNew.heartBeatStopWatch.getTotalWaitTime().count();
+								dataNew.timeUntilNextPing = value.heartBeatStopWatch.getTotalWaitTime().count();
 								discordCoreClient->eventManager.onGatewayPingEvent(dataNew);
 							}
 							areWeConnected = true;
 						} else {
-							if (discordCoreClient->connectionStopWatch01.hasTimePassed() && discordCoreClient->currentlyConnectingShard.load(std::memory_order_acquire) == key) {
-								connect(dValueNew);
+							MessagePrinter::printError<PrintMessageType::WebSocket>("Connection lost for WebSocket [" + std::to_string(value.shard[0]) + "," +
+								std::to_string(discordCoreClient->configManager.getTotalShardCount()) + "]... reconnecting.");
+							std::this_thread::sleep_for(1s);
+							if (discordCoreClient->connectionStopWatch01.hasTimePassed()) {
+								connect(value);
 							}
 						}
 					}

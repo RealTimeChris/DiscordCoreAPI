@@ -32,7 +32,6 @@
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/CoRoutineThreadPool.hpp>
-#include <discordcoreapi/Utilities/UnboundedMessageBlock.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 
 namespace DiscordCoreAPI {
@@ -55,6 +54,35 @@ namespace DiscordCoreAPI {
 		inline CoRoutineError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
+	template<typename ValueType> class ResultHolder {
+	  public:
+		inline ResultHolder() noexcept {};
+
+		template<typename ValueTypeNew> inline void setResult(ValueTypeNew&& newResult) {
+			new (&result) ValueType{ std::forward<ValueTypeNew>(newResult) };
+			sentYet.store(true, std::memory_order_release);
+		}
+
+		inline ValueType getResult() {
+			sentYet.store(false, std::memory_order_release);
+			return std::move(result);
+		}
+
+		inline bool checkForResult() {
+			return sentYet.load(std::memory_order_acquire);
+		}
+
+		inline ~ResultHolder() {
+			if (sentYet.load(std::memory_order_acquire)) {
+				std::destroy_at(&result);
+			}
+		}
+
+	  protected:
+		std::atomic_bool sentYet{};
+		ValueType result;
+	};
+
 	/// @brief A CoRoutine - representing a potentially asynchronous operation/function.
 	/// \tparam ReturnType The type of parameter that is returned by the CoRoutine.
 	template<typename ReturnType, bool timeOut> class CoRoutine {
@@ -64,23 +92,21 @@ namespace DiscordCoreAPI {
 			template<typename ReturnType02, bool timeOut02> friend class CoRoutine;
 
 			inline void requestStop() {
-				areWeStoppedBool.store(true);
+				areWeStoppedBool.store(true, std::memory_order_release);
 			}
 
-			inline bool areWeStopped() {
+			inline bool stopRequested() {
 				return areWeStoppedBool.load(std::memory_order_acquire);
 			}
 
-			inline void return_value(ReturnType& returnValue) {
-				result = returnValue;
-			}
-
-			inline void return_value(ReturnType&& returnValue) {
-				result = std::move(returnValue);
+			template<typename ReturnTypeNew> inline void return_value(ReturnTypeNew&& returnValue) {
+				if (resultBuffer) {
+					resultBuffer->setResult(std::forward<ReturnTypeNew>(returnValue));
+				}
 			}
 
 			inline auto get_return_object() {
-				return CoRoutine<ReturnType, timeOut>{ std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type>::from_promise(*this) };
+				return CoRoutine<ReturnType, timeOut>{ std::coroutine_handle<promise_type>::from_promise(*this) };
 			}
 
 			inline std::suspend_never initial_suspend() {
@@ -91,15 +117,12 @@ namespace DiscordCoreAPI {
 			}
 
 			inline std::suspend_always final_suspend() noexcept {
-				if (resultBuffer) {
-					resultBuffer->send(std::move(result));
-				}
 				return {};
 			}
 
 			inline void unhandled_exception() {
 				if (exceptionBuffer) {
-					exceptionBuffer->send(std::current_exception());
+					exceptionBuffer->setResult(std::current_exception());
 				}
 			}
 
@@ -109,11 +132,12 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{};
-			UnboundedMessageBlock<ReturnType>* resultBuffer{};
+			ResultHolder<std::exception_ptr>* exceptionBuffer{};
+			ResultHolder<ReturnType>* resultBuffer{};
 			std::atomic_bool areWeStoppedBool{};
-			ReturnType result{};
 		};
+
+		inline CoRoutine() = default;
 
 		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) {
 			if (this != &other) {
@@ -121,24 +145,27 @@ namespace DiscordCoreAPI {
 				other.coroutineHandle					  = nullptr;
 				coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
 				coroutineHandle.promise().resultBuffer	  = &resultBuffer;
-				currentStatus.store(other.currentStatus.load(std::memory_order_acquire));
-				other.currentStatus.store(CoRoutineStatus::Cancelled);
+				currentStatus.store(other.currentStatus.load(std::memory_order_acquire), std::memory_order_release);
+				other.currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
 			}
 			return *this;
 		}
 
+		inline CoRoutine(CoRoutine<ReturnType, timeOut>&& other) {
+			*this = std::move(other);
+		}
+
 		inline CoRoutine& operator=(const CoRoutine<ReturnType, timeOut>& other) = delete;
+		inline CoRoutine(const CoRoutine<ReturnType, timeOut>& other)			 = delete;
 
-		inline CoRoutine(const CoRoutine<ReturnType, timeOut>& other) = delete;
-
-		inline CoRoutine& operator=(std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type> coroutineHandleNew) {
+		inline CoRoutine& operator=(std::coroutine_handle<promise_type> coroutineHandleNew) {
 			coroutineHandle							  = coroutineHandleNew;
 			coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
 			coroutineHandle.promise().resultBuffer	  = &resultBuffer;
 			return *this;
 		}
 
-		inline explicit CoRoutine(std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type> coroutineHandleNew) {
+		inline explicit CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) {
 			*this = coroutineHandleNew;
 		};
 
@@ -153,11 +180,11 @@ namespace DiscordCoreAPI {
 		/// @return CoRoutineStatus The status of the CoRoutine.
 		inline CoRoutineStatus getStatus() {
 			if (!coroutineHandle) {
-				currentStatus.store(CoRoutineStatus::Cancelled);
+				currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
 			} else if (coroutineHandle && !coroutineHandle.done()) {
-				currentStatus.store(CoRoutineStatus::Running);
+				currentStatus.store(CoRoutineStatus::Running, std::memory_order_release);
 			} else if (coroutineHandle && coroutineHandle.done()) {
-				currentStatus.store(CoRoutineStatus::Complete);
+				currentStatus.store(CoRoutineStatus::Complete, std::memory_order_release);
 			}
 			return currentStatus.load(std::memory_order_acquire);
 		}
@@ -166,23 +193,26 @@ namespace DiscordCoreAPI {
 		/// @return The final value resulting from the CoRoutine's execution.
 		inline ReturnType get() {
 			if (coroutineHandle) {
-				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
-					while (!resultBuffer.tryReceive(result)) {
-						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
-						uint64_t timeOutNew{ timeOut };
-						if (timeOutNew && (now - startTime).count() >= 15000) {
-							return std::move(result);
+					StopWatch<Milliseconds> stopWatch{ 15000 };
+					stopWatch.resetTimer();
+					while (!resultBuffer.checkForResult()) {
+						if (exceptionBuffer.checkForResult()) {
+							std::rethrow_exception(exceptionBuffer.getResult());
+						}
+						if constexpr (timeOut) {
+							if (stopWatch.hasTimePassed()) {
+								return resultBuffer.getResult();
+							}
 						}
 						std::this_thread::sleep_for(1ms);
 					}
 				}
-				currentStatus.store(CoRoutineStatus::Complete);
-				std::exception_ptr exception{};
-				while (exceptionBuffer.tryReceive(exception)) {
-					std::rethrow_exception(exception);
+				currentStatus.store(CoRoutineStatus::Complete, std::memory_order_release);
+				if (exceptionBuffer.checkForResult()) {
+					std::rethrow_exception(exceptionBuffer.getResult());
 				}
-				return std::move(result);
+				return resultBuffer.getResult();
 			} else {
 				throw CoRoutineError{ "CoRoutine::get(), You called get() on a CoRoutine that is "
 									  "not in a valid state." };
@@ -193,25 +223,26 @@ namespace DiscordCoreAPI {
 		/// @return The final value resulting from the CoRoutine's execution.
 		inline ReturnType cancel() {
 			if (coroutineHandle) {
-				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
-					coroutineHandle.promise().requestStop();
-					while (!resultBuffer.tryReceive(result)) {
-						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
-						uint64_t timeOutNew{ timeOut };
-						if (timeOutNew && (now - startTime).count() >= 15000) {
-							return std::move(result);
+					StopWatch<Milliseconds> stopWatch{ 15000 };
+					stopWatch.resetTimer();
+					while (!resultBuffer.checkForResult()) {
+						if (exceptionBuffer.checkForResult()) {
+							std::rethrow_exception(exceptionBuffer.getResult());
+						}
+						if constexpr (timeOut) {
+							if (stopWatch.hasTimePassed()) {
+								return resultBuffer.getResult();
+							}
 						}
 						std::this_thread::sleep_for(1ms);
 					}
 				}
-				currentStatus.store(CoRoutineStatus::Cancelled);
-				std::exception_ptr exception{};
-				while (exceptionBuffer.tryReceive(exception)) {
-					std::rethrow_exception(exception);
-					std::this_thread::sleep_for(1ms);
+				currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
+				if (exceptionBuffer.checkForResult()) {
+					std::rethrow_exception(exceptionBuffer.getResult());
 				}
-				return std::move(result);
+				return resultBuffer.getResult();
 			} else {
 				throw CoRoutineError{ "CoRoutine::cancel(), You called cancel() on a CoRoutine that is "
 									  "not in a valid state." };
@@ -219,11 +250,10 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type> coroutineHandle{};
 		std::atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
-		UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
-		UnboundedMessageBlock<ReturnType> resultBuffer{};
-		ReturnType result{};
+		std::coroutine_handle<promise_type> coroutineHandle{};
+		ResultHolder<std::exception_ptr> exceptionBuffer{};
+		ResultHolder<ReturnType> resultBuffer{};
 	};
 
 	/// @brief A CoRoutine - representing a potentially asynchronous operation/function.
@@ -235,17 +265,21 @@ namespace DiscordCoreAPI {
 			template<typename ReturnType02, bool timeOut02> friend class CoRoutine;
 
 			inline void requestStop() {
-				areWeStoppedBool.store(true);
+				areWeStoppedBool.store(true, std::memory_order_release);
 			}
 
-			inline bool areWeStopped() {
+			inline bool stopRequested() {
 				return areWeStoppedBool.load(std::memory_order_acquire);
 			}
 
-			inline void return_void(){};
+			inline void return_void() {
+				if (resultBuffer) {
+					resultBuffer->setResult(true);
+				}
+			};
 
 			inline auto get_return_object() {
-				return CoRoutine<ReturnType, timeOut>{ std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type>::from_promise(*this) };
+				return CoRoutine<ReturnType, timeOut>{ std::coroutine_handle<promise_type>::from_promise(*this) };
 			}
 
 			inline std::suspend_never initial_suspend() {
@@ -256,15 +290,12 @@ namespace DiscordCoreAPI {
 			}
 
 			inline std::suspend_always final_suspend() noexcept {
-				if (resultBuffer) {
-					resultBuffer->send(true);
-				}
 				return {};
 			}
 
 			inline void unhandled_exception() {
 				if (exceptionBuffer) {
-					exceptionBuffer->send(std::current_exception());
+					exceptionBuffer->setResult(std::current_exception());
 				}
 			}
 
@@ -274,37 +305,40 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{};
-			UnboundedMessageBlock<bool>* resultBuffer{};
+			ResultHolder<std::exception_ptr>* exceptionBuffer{};
 			std::atomic_bool areWeStoppedBool{};
+			ResultHolder<bool>* resultBuffer{};
 		};
 
 		inline CoRoutine() = default;
 
-		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) noexcept {
+		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) {
 			if (this != &other) {
 				coroutineHandle							  = other.coroutineHandle;
 				other.coroutineHandle					  = nullptr;
 				coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
 				coroutineHandle.promise().resultBuffer	  = &resultBuffer;
-				currentStatus.store(other.currentStatus.load(std::memory_order_acquire));
-				other.currentStatus.store(CoRoutineStatus::Cancelled);
+				currentStatus.store(other.currentStatus.load(std::memory_order_acquire), std::memory_order_release);
+				other.currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
 			}
 			return *this;
 		}
 
+		inline CoRoutine(CoRoutine<ReturnType, timeOut>&& other) {
+			*this = std::move(other);
+		}
+
 		inline CoRoutine& operator=(const CoRoutine<ReturnType, timeOut>& other) = delete;
+		inline CoRoutine(const CoRoutine<ReturnType, timeOut>& other)			 = delete;
 
-		inline CoRoutine(const CoRoutine<ReturnType, timeOut>& other) = delete;
-
-		inline CoRoutine& operator=(std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type> coroutineHandleNew) {
+		inline CoRoutine& operator=(std::coroutine_handle<promise_type> coroutineHandleNew) {
 			coroutineHandle							  = coroutineHandleNew;
 			coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
 			coroutineHandle.promise().resultBuffer	  = &resultBuffer;
 			return *this;
 		}
 
-		inline explicit CoRoutine(std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type> coroutineHandleNew) {
+		inline explicit CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) {
 			*this = coroutineHandleNew;
 		};
 
@@ -319,11 +353,11 @@ namespace DiscordCoreAPI {
 		/// @return CoRoutineStatus The status of the CoRoutine.
 		inline CoRoutineStatus getStatus() {
 			if (!coroutineHandle) {
-				currentStatus.store(CoRoutineStatus::Cancelled);
+				currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
 			} else if (coroutineHandle && !coroutineHandle.done()) {
-				currentStatus.store(CoRoutineStatus::Running);
+				currentStatus.store(CoRoutineStatus::Running, std::memory_order_release);
 			} else if (coroutineHandle && coroutineHandle.done()) {
-				currentStatus.store(CoRoutineStatus::Complete);
+				currentStatus.store(CoRoutineStatus::Complete, std::memory_order_release);
 			}
 			return currentStatus.load(std::memory_order_acquire);
 		}
@@ -331,22 +365,24 @@ namespace DiscordCoreAPI {
 		/// @brief Gets the resulting value of the CoRoutine.
 		inline void get() {
 			if (coroutineHandle) {
-				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
-					bool result{};
-					while (!resultBuffer.tryReceive(result)) {
-						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
-						uint64_t timeOutNew{ timeOut };
-						if (timeOutNew && (now - startTime).count() >= 15000) {
-							return;
+					StopWatch<Milliseconds> stopWatch{ 15000 };
+					stopWatch.resetTimer();
+					while (!resultBuffer.checkForResult()) {
+						if (exceptionBuffer.checkForResult()) {
+							std::rethrow_exception(exceptionBuffer.getResult());
+						}
+						if constexpr (timeOut) {
+							if (stopWatch.hasTimePassed()) {
+								return;
+							}
 						}
 						std::this_thread::sleep_for(1ms);
 					}
 				}
-				currentStatus.store(CoRoutineStatus::Complete);
-				std::exception_ptr exception{};
-				while (exceptionBuffer.tryReceive(exception)) {
-					std::rethrow_exception(exception);
+				currentStatus.store(CoRoutineStatus::Complete, std::memory_order_release);
+				if (exceptionBuffer.checkForResult()) {
+					std::rethrow_exception(exceptionBuffer.getResult());
 				}
 				return;
 			} else {
@@ -358,23 +394,24 @@ namespace DiscordCoreAPI {
 		/// @brief Cancels the currently executing CoRoutine and returns the current result.
 		inline void cancel() {
 			if (coroutineHandle) {
-				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
-					coroutineHandle.promise().requestStop();
-					bool result{};
-					while (!resultBuffer.tryReceive(result)) {
-						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
-						uint64_t timeOutNew{ timeOut };
-						if (timeOutNew && (now - startTime).count() >= 15000) {
-							return;
+					StopWatch<Milliseconds> stopWatch{ 15000 };
+					stopWatch.resetTimer();
+					while (!resultBuffer.checkForResult()) {
+						if (exceptionBuffer.checkForResult()) {
+							std::rethrow_exception(exceptionBuffer.getResult());
+						}
+						if constexpr (timeOut) {
+							if (stopWatch.hasTimePassed()) {
+								return;
+							}
 						}
 						std::this_thread::sleep_for(1ms);
 					}
 				}
-				currentStatus.store(CoRoutineStatus::Cancelled);
-				std::exception_ptr exception{};
-				while (exceptionBuffer.tryReceive(exception)) {
-					std::rethrow_exception(exception);
+				currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
+				if (exceptionBuffer.checkForResult()) {
+					std::rethrow_exception(exceptionBuffer.getResult());
 				}
 				return;
 			} else {
@@ -384,10 +421,10 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::coroutine_handle<CoRoutine<ReturnType, timeOut>::promise_type> coroutineHandle{};
 		std::atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
-		UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
-		UnboundedMessageBlock<bool> resultBuffer{};
+		std::coroutine_handle<promise_type> coroutineHandle{};
+		ResultHolder<std::exception_ptr> exceptionBuffer{};
+		ResultHolder<bool> resultBuffer{};
 	};
 
 	class NewThreadAwaiterBase {

@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 	/// @brief For executing a WebHook.
 	class DiscordCoreAPI_Dll ExecuteWebHookData {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::ExecuteWebHookData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class CreateEphemeralFollowUpMessageData;
 		friend class CreateFollowUpMessageData;
 		friend class EditFollowUpMessageData;
@@ -139,8 +139,8 @@ namespace DiscordCoreAPI {
 		Jsonifier::Vector<ActionRowData> components{};///< Array of message component the components to include with the message.
 		AllowedMentionsData allowedMentions{};///< Allowed mention object.
 		Jsonifier::Vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
-		std::string webhookToken{};///< The WebHookData token you would like to execute.
 		Jsonifier::Vector<File> files{};///< File contents the contents of the file being sent.
+		std::string webhookToken{};///< The WebHookData token you would like to execute.
 		std::string avatarUrl{};///< Override the default avatar of the webhook.
 		std::string userName{};///< Override the default username of the webhook.
 		std::string customId{};///< Custom id for the modal.
@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 	/// @brief For editing a WebHook MessageData.
 	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::EditWebHookData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class EditInteractionResponseData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;

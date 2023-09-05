@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 			}
 
 			inline RateLimitData* getEndpointAccess(HttpsWorkloadType workloadType) {
-				if (rateLimits[buckets[workloadType]]->getsRemaining.load(std::memory_order_acquire)<= 0) {
+				if (rateLimits[buckets[workloadType]]->getsRemaining.load(std::memory_order_acquire) <= 0) {
 					while (HRClock::now().time_since_epoch() - rateLimits[buckets[workloadType]]->sampledTimeInMs.load(std::memory_order_acquire) <=
 						std::chrono::duration_cast<Milliseconds>(rateLimits[buckets[workloadType]]->sRemain.load(std::memory_order_acquire))) {
 						std::this_thread::sleep_for(1ms);

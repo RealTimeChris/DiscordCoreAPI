@@ -56,8 +56,8 @@ namespace DiscordCoreAPI {
 		template<typename ValueType, uint64_t Size> class RingBufferInterface {
 		  public:
 			using value_type = ValueType;
-			using pointer = value_type*;
-			using size_type = uint64_t;
+			using pointer	 = value_type*;
+			using size_type	 = uint64_t;
 
 			/// @brief Constructor. Initializes the buffer size.
 			inline RingBufferInterface() {
@@ -123,14 +123,13 @@ namespace DiscordCoreAPI {
 		/// @brief A template implementation of a ring buffer using RingBufferInterface.
 		/// @tparam ValueType The type of data stored in the buffer.
 		/// @tparam SliceCount The number of slices.
-		template<typename ValueType, uint64_t SliceCount> class RingBuffer
-			: public RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount> {
+		template<typename ValueType, uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount> {
 		  public:
-			using base_type = RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>;
-			using value_type = RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>::value_type;
+			using base_type		= RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>;
+			using value_type	= RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>::value_type;
 			using const_pointer = const value_type*;
-			using pointer = value_type*;
-			using size_type = uint64_t;
+			using pointer		= value_type*;
+			using size_type		= uint64_t;
 
 			/// @brief Default constructor. Initializes the buffer size.
 			inline RingBuffer() : base_type{} {};
@@ -140,22 +139,14 @@ namespace DiscordCoreAPI {
 			/// @param data Pointer to the data.
 			/// @param size Size of the data.
 			template<typename ValueTypeNew> inline void writeData(ValueTypeNew* data, size_type size) {
-				if (base_type::isItFull() ||
-					base_type::getCurrentHead()->getUsedSpace() +
-							size >=
-						16384) {
+				if (base_type::isItFull() || base_type::getCurrentHead()->getUsedSpace() + size >= 16384) {
 					base_type::getCurrentTail()->clear();
-					base_type::modifyReadOrWritePosition(
-						RingBufferAccessType::Read, 1);
+					base_type::modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 				}
 				size_type writeSize{ size };
-				std::memcpy(
-					base_type::getCurrentHead()->getCurrentHead(),
-					data, size);
-				base_type::getCurrentHead()->modifyReadOrWritePosition(
-					RingBufferAccessType::Write, writeSize);
-				base_type::modifyReadOrWritePosition(
-					RingBufferAccessType::Write, 1);
+				std::memcpy(base_type::getCurrentHead()->getCurrentHead(), data, size);
+				base_type::getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, writeSize);
+				base_type::modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 			}
 
 			/// @brief Read data from the buffer.
@@ -163,13 +154,9 @@ namespace DiscordCoreAPI {
 			inline std::basic_string_view<std::decay_t<value_type>> readData() {
 				std::basic_string_view<std::decay_t<value_type>> returnData{};
 				if (base_type::getCurrentTail()->getUsedSpace() > 0) {
-					returnData = std::basic_string_view<std::decay_t<value_type>>{
-						base_type::getCurrentTail()->getCurrentTail(),
-						base_type::getCurrentTail()->getUsedSpace()
-					};
+					returnData = std::basic_string_view<std::decay_t<value_type>>{ base_type::getCurrentTail()->getCurrentTail(), base_type::getCurrentTail()->getUsedSpace() };
 					base_type::getCurrentTail()->clear();
-					base_type::modifyReadOrWritePosition(
-						RingBufferAccessType::Read, 1);
+					base_type::modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 				}
 				return returnData;
 			}

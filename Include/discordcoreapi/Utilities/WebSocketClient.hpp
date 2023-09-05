@@ -213,6 +213,7 @@ namespace DiscordCoreAPI {
 			ConfigManager* configManager{};
 			uint32_t lastNumberReceived{};
 			WebSocketOpCode dataOpCode{};
+			std::mutex accessMutex{};
 			bool areWeHeartBeating{};
 			WebSocketType wsType{};
 			bool areWeResuming{};
@@ -267,11 +268,7 @@ namespace DiscordCoreAPI {
 
 			BaseSocketAgent(DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, uint64_t currentBaseSocket);
 
-			bool waitForState(ConnectionPackage& packageNew, WebSocketState state);
-
-			WebSocketClient& getClient(uint32_t index);
-
-			void connect(WebSocketClient& dValueNew);
+			void connect(WebSocketClient& value);
 
 			~BaseSocketAgent();
 

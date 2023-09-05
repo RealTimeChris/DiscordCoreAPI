@@ -11,9 +11,14 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 alt="DiscordCoreAPI WebSite" width="500"/></p>
 
 ## Compiler Support
-![MSVC_20922](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/MSVC_2022.yml?color=00ff90&label=MSVC_2022)
-![GCC_12](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_12.yml?color=00ff90&label=GCC_12)
-![CLANG_16](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_17.yml?color=00ff90&label=CLANG_17)
+![MSVC_20922](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/MSVC_2022-Windows.yml?style=plastic&logo=microsoft&logoColor=green&label=MSVC_2022&labelColor=pewter&color=blue)
+![CLANG_18](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/CLANG_18-Ubuntu.yml?style=plastic&logo=linux&logoColor=green&label=CLANG_18&labelColor=pewter&color=blue)
+![GCC_13](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/GCC_13-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=GCC_13&labelColor=pewter&color=blue)
+
+## Operating System Support
+![Windows](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/MSVC_2022-Windows.yml?style=plastic&logo=microsoft&logoColor=green&label=Windows&labelColor=pewter&color=blue)
+![Linux](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/CLANG_18-Ubuntu.yml?style=plastic&logo=linux&logoColor=green&label=Linux&labelColor=pewter&color=blue)
+![Mac](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/GCC_13-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=MacOS&labelColor=pewter&color=blue)
 
 # Documentation/Examples
 [Documentation/Examples](https://discordcoreapi.org/da/d26/a08215.html)
@@ -114,14 +119,14 @@ InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 - [Install vcpkg](https://vcpkg.io/en/getting-started.html), if need be.
 - Make sure to run `vcpkg integrate install`.
 - Enter within a terminal `vcpkg install discordcoreapi:x64-windows_OR_linux`.
-- Set up a console project in your IDE and make sure to set the C++ standard to C++23 or later - and include `discordcoreapi/Index.hpp`.
+- Set up a console project in your IDE and make sure to set the C++ standard to C++20 or later - and include `discordcoreapi/Index.hpp`.
 - Build and run!
 
 # Dependencies
 ----
 - [CMake](https://cmake.org/) (Version 3.20 or greater)
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
-- [Jsonifier](https://github.com/RealTimeChris/Jsonifier) (.\\vcpkg install jsonifier:x64-windows_OR_linux)
+- [DiscordCoreAPI](https://github.com/RealTimeChris/DiscordCoreAPI) (.\\vcpkg install jsonifier:x64-windows_OR_linux)
 - [OpenSSL](https://github.com/openssl/openssl) (.\\vcpkg install openssl:x64-windows_OR_linux)
 - [Opus](https://github.com/xiph/opus) (.\\vcpkg install opus:x64-windows_OR_linux)
 - [Sodium](https://github.com/jedisct1/libsodium) (.\\vcpkg install libsodium:x64-windows_OR_linux)

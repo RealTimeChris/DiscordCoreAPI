@@ -2490,34 +2490,34 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class Guilds;
 
-		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notifications level.
 		Jsonifier::Vector<GuildScheduledEventData> guildScheduledEvents{};///< Scheduled events in the guild.
-		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notifications level.
 		Jsonifier::Vector<StageInstanceData> stageInstances{};///< Stage instances in the guild.
 		Jsonifier::Vector<VoiceStateDataLight> voiceStates{};///< Voice states for the current GuildMembers.
+		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		Jsonifier::Vector<PresenceUpdateData> presences{};///< Presences of the members in the guild.
-		SystemChannelFlags systemChannelFlags{};///< System channel flags.
-		DiscordCoreClient* discordCoreClient{};///< A pointer to the DiscordCoreClient.
 		Jsonifier::Vector<GuildMemberData> members{};///< Custom guild emojis.
-		VerificationLevel verificationLevel{};///< Verification level required for the guild.
 		Jsonifier::Vector<ChannelData> channels{};///< Custom guild emojis.
 		Jsonifier::Vector<std::string> features{};///< Enabled guild features.
 		Jsonifier::Vector<StickerData> stickers{};///< Custom guild stickers.
+		Jsonifier::Vector<ChannelData> threads{};///< All active threads in the guild that the current user has permission to view.
+		SystemChannelFlags systemChannelFlags{};///< System channel flags.
+		DiscordCoreClient* discordCoreClient{};///< A pointer to the DiscordCoreClient.
+		VerificationLevel verificationLevel{};///< Verification level required for the guild.
+		Jsonifier::Vector<EmojiData> emoji{};///< Custom guild emojis.
+		Jsonifier::Vector<RoleData> roles{};///< Roles in the guild.
 		int32_t maxStageVideoChannelUsers{};///< The maximum amount of users in a stage video channel.
 		Snowflake publicUpdatesChannelId{};///< The id of the channel where admins and moderators of Community guilds receive notices from Discord.
 		int32_t premiumSubscriptionCount{};///< The number of boosts this guild currently has.
 		int32_t approximatePresenceCount{};///< Approximate number of non-offline members in this guild, returned sometimes.
-		Jsonifier::Vector<ChannelData> threads{};///< All active threads in the guild that the current user has permission to view.
 		VoiceConnection* voiceConnection{};///< Voice connection potentially held by the current Guild.
 		WelcomeScreenData welcomeScreen{};///< The welcome screen of a Community guild, shown to new members, returned in an Invite's guild object.
 		Snowflake safetyAlertsChannelId{};///< The id of the channel where admins and moderators of Community guilds receive safety alerts.
 		int32_t approximateMemberCount{};///< Approximate number of members in this guild, returned from the GET /guilds/id and /users/me/guilds.
 		bool premiumProgressBarEnabled{};///< Whether the guild has the boost progress bar enabled.
 		int32_t maxVideoChannelUsers{};///< The maximum amount of users in a video channel.
-		Jsonifier::Vector<EmojiData> emoji{};///< Custom guild emojis.
 		PermissionsParse permissions{};///< Total permissions for the user in the guild (excludes overwrites).
 		std::string preferredLocale{};///< The preferred locale of a Community guild; used in server discovery and notices from Discord.
-		Jsonifier::Vector<RoleData> roles{};///< Roles in the guild.
 		std::string discoverySplash{};///< Discovery splash hash; only present for guilds with the "DISCOVERABLE" feature.
 		std::string vanityUrlCode{};///< The vanity url code for the guild.
 		Snowflake systemChannelId{};///< The id of the channel where guild notices such as welcome messages and boost events are posted.
@@ -2569,12 +2569,12 @@ namespace DiscordCoreAPI {
 											  public GetGuildImageUrl<GuildCacheData>,
 											  public ConnectToVoice<GuildCacheData, DiscordCoreClient, GuildMembers> {
 	  public:
+		Jsonifier::Vector<Snowflake> channels{};///< Array of Guild channels.
+		Jsonifier::Vector<Snowflake> members{};///< Array of GuildMembers.
 		DiscordCoreClient* discordCoreClient{};///< A pointer to the DiscordCoreClient.
+		Jsonifier::Vector<Snowflake> emoji{};///< Array of Guild channels.
+		Jsonifier::Vector<Snowflake> roles{};///< Array of Guild roles.
 		VoiceConnection* voiceConnection{};///< A pointer to the VoiceConnection, if present.
-		UnorderedSet<Snowflake> channels{};///< Array of Guild channels.
-		UnorderedSet<Snowflake> members{};///< Array of GuildMembers.
-		UnorderedSet<Snowflake> emoji{};///< Array of Guild channels.
-		UnorderedSet<Snowflake> roles{};///< Array of Guild roles.
 		IconHash discoverySplash{};///< Url to the Guild's icon.
 		Jsonifier::String name{};///< The Guild's name.
 		uint32_t memberCount{};///< Member count.
@@ -2693,7 +2693,7 @@ namespace DiscordCoreAPI {
 	/// @brief Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input.
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::InputEventData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend struct EventData<InteractionData>;
 		friend struct OnInteractionCreationData;
 		friend struct BaseFunctionArguments;
@@ -2897,7 +2897,7 @@ namespace DiscordCoreAPI {
 	/// @brief Message response base, for responding to messages.
 	class DiscordCoreAPI_Dll MessageResponseBase {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::MessageResponseBase>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		/// @brief Adds a button to the response MessageData.
 		/// @param disabled Whether the button is active or not.
 		/// @param customIdNew A custom id to give for identifying the button.

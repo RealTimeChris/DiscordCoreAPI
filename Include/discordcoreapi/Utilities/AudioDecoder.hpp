@@ -42,10 +42,9 @@ namespace DiscordCoreAPI {
 		 * @{
 		 */
 
-		
-		 /// @brief A wrapper class for the Opus audio decoder.
-		struct OpusDecoderWrapper {
 
+		/// @brief A wrapper class for the Opus audio decoder.
+		struct OpusDecoderWrapper {
 			/// @brief Deleter for OpusDecoder instances.
 			struct OpusDecoderDeleter {
 				/// @brief Operator to destroy an OpusDecoder instance.
@@ -81,8 +80,7 @@ namespace DiscordCoreAPI {
 			/// @return A basic_string_view containing the decoded audio samples.
 			/// @throws DCAException if decoding fails.
 			inline std::basic_string_view<opus_int16> decodeData(std::basic_string_view<uint8_t> dataToDecode) {
-				const int64_t sampleCount =
-					opus_decode(ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
+				const int64_t sampleCount = opus_decode(ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
 
 				// Check for successful decoding
 				if (sampleCount > 0) {

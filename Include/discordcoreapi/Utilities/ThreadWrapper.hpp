@@ -82,8 +82,8 @@ namespace DiscordCoreAPI {
 			/// @param other The other ThreadWrapper to copy from.
 			/// @return The new ThreadWrapper instance.
 			inline ThreadWrapper& operator=(ThreadWrapper&& other) noexcept {
-				this->currentThread.swap(other.currentThread);
-				this->atomicBool.swap(other.atomicBool);
+				currentThread.swap(other.currentThread);
+				atomicBool.swap(other.atomicBool);
 				return *this;
 			}
 
@@ -107,13 +107,13 @@ namespace DiscordCoreAPI {
 			/// @brief Detach the managed thread if joinable.
 			inline void detach() {
 				if (currentThread.joinable()) {
-					this->currentThread.detach();
+					currentThread.detach();
 				}
 			}
 
 			/// @brief Request the managed thread to stop.
 			inline void requestStop() {
-				this->atomicBool->store(true, std::memory_order_release);
+				atomicBool->store(true, std::memory_order_release);
 			}
 
 			/// @brief Get the hardware concurrency available.

@@ -210,7 +210,7 @@ namespace DiscordCoreAPI {
 		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 		if (Channels::doWeCacheChannels()) {
 			if (Guilds::getCache().contains(value.guildId)) {
-				Guilds::getCache()[value.guildId].channels.emplace(value.id);
+				Guilds::getCache()[value.guildId].channels.emplace_back(value.id);
 			}
 			Channels::insertChannel(static_cast<ChannelCacheData>(value));
 		}
@@ -228,8 +228,10 @@ namespace DiscordCoreAPI {
 		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 		if (Channels::doWeCacheChannels()) {
 			if (Guilds::getCache().contains(value.guildId)) {
-				if (Guilds::getCache().operator[](value.guildId).channels.contains(value.id)) {
-					Guilds::getCache().operator[](value.guildId).channels.erase(value.id);
+				for (uint64_t x = 0; x < Guilds::getCache().operator[](value.guildId).channels.size(); ++x) {
+					if (Guilds::getCache().operator[](value.guildId).channels[x] == value.id) {
+						Guilds::getCache().operator[](value.guildId).channels.erase(Guilds::getCache().operator[](value.guildId).channels.begin() + x);
+					}
 				}
 			}
 			Channels::removeChannel(static_cast<ChannelCacheData>(value));
@@ -340,9 +342,11 @@ namespace DiscordCoreAPI {
 	OnGuildBanAddData::OnGuildBanAddData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse) {
 		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::getCache().contains(value.guildId)) {
-			if (Guilds::getCache().operator[](value.guildId).members.contains(value.user.id)) {
-				Guilds::getCache().operator[](value.guildId).members.erase(value.user.id);
-				--Guilds::getCache()[value.guildId].memberCount;
+			for (uint64_t x = 0; x < Guilds::getCache().operator[](value.guildId).members.size(); ++x) {
+				if (Guilds::getCache().operator[](value.guildId).members[x] == value.user.id) {
+					Guilds::getCache().operator[](value.guildId).members.erase(Guilds::getCache().operator[](value.guildId).members.begin() + x);
+					--Guilds::getCache()[value.guildId].memberCount;
+				}
 			}
 		}
 	}
@@ -356,7 +360,7 @@ namespace DiscordCoreAPI {
 		if (Guilds::getCache().contains(value.guildId)) {
 			Guilds::getCache()[value.guildId].emoji.clear();
 			for (auto& valueNew: value.emojis) {
-				Guilds::getCache()[value.guildId].emoji.emplace(valueNew.id);
+				Guilds::getCache()[value.guildId].emoji.emplace_back(valueNew.id);
 			}
 		}
 	}
@@ -370,8 +374,8 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildMemberAddData::OnGuildMemberAddData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 		if (GuildMembers::doWeCacheGuildMembers()) {
+			parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 			GuildMembers::insertGuildMember(static_cast<GuildMemberCacheData>(value));
 			if (Guilds::getCache().contains(value.guildId)) {
 				++Guilds::getCache()[value.guildId].memberCount;
@@ -380,13 +384,15 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildMemberRemoveData::OnGuildMemberRemoveData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 		if (GuildMembers::doWeCacheGuildMembers()) {
+			parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+			GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 			if (Guilds::getCache().contains(value.guildId)) {
-				if (Guilds::getCache().operator[](value.guildId).members.contains(value.user.id)) {
-					Guilds::getCache().operator[](value.guildId).members.erase(value.user.id);
-					--Guilds::getCache()[value.guildId].memberCount;
+				for (uint64_t x = 0; x < Guilds::getCache().operator[](value.guildId).members.size(); ++x) {
+					if (Guilds::getCache().operator[](value.guildId).members[x] == value.user.id) {
+						Guilds::getCache().operator[](value.guildId).members.erase(Guilds::getCache().operator[](value.guildId).members.begin() + x);
+						--Guilds::getCache()[value.guildId].memberCount;
+					}
 				}
 			}
 			GuildMembers::removeGuildMember(guildMember);
@@ -394,9 +400,9 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildMemberUpdateData::OnGuildMemberUpdateData(Jsonifier::JsonifierCore& parserNew, std::string_view dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<UpdatedEventData*>(this), dataToParse);
-		oldValue = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 		if (GuildMembers::doWeCacheGuildMembers()) {
+			parserNew.parseJson<true, true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+			oldValue = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 			GuildMembers::insertGuildMember(static_cast<GuildMemberCacheData>(value));
 		}
 	}
@@ -410,7 +416,7 @@ namespace DiscordCoreAPI {
 		if (Roles::doWeCacheRoles()) {
 			if (Guilds::getCache().contains(value.guildId)) {
 				Roles::insertRole(static_cast<RoleCacheData>(value.role));
-				Guilds::getCache()[value.guildId].roles.emplace(value.role.id);
+				Guilds::getCache()[value.guildId].roles.emplace_back(value.role.id);
 			}
 		}
 	}
@@ -427,8 +433,10 @@ namespace DiscordCoreAPI {
 		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
 		if (Roles::doWeCacheRoles()) {
 			if (Guilds::getCache().contains(value.guildId)) {
-				if (Guilds::getCache().operator[](value.guildId).channels.contains(value.role.id)) {
-					Guilds::getCache().operator[](value.guildId).channels.erase(value.role.id);
+				for (uint64_t x = 0; x < Guilds::getCache().operator[](value.guildId).roles.size(); ++x) {
+					if (Guilds::getCache().operator[](value.guildId).roles[x] == value.role.id) {
+						Guilds::getCache().operator[](value.guildId).roles.erase(Guilds::getCache().operator[](value.guildId).roles.begin() + x);
+					}
 				}
 			}
 			Roles::removeRole(static_cast<RoleCacheData>(value.role));
@@ -502,6 +510,7 @@ namespace DiscordCoreAPI {
 			case InteractionType::Message_Component: {
 				switch (value.data.componentType) {
 					case ComponentType::Action_Row:
+						[[fallthrough]];
 					case ComponentType::Button: {
 						eventData->responseType		= InputEventResponseType::Unset;
 						*eventData->interactionData = value;
@@ -512,9 +521,13 @@ namespace DiscordCoreAPI {
 						break;
 					}
 					case ComponentType::Channel_Select:
+						[[fallthrough]];
 					case ComponentType::Mentionable_Select:
+						[[fallthrough]];
 					case ComponentType::Role_Select:
+						[[fallthrough]];
 					case ComponentType::User_Select:
+						[[fallthrough]];
 					case ComponentType::String_Select: {
 						eventData->responseType		= InputEventResponseType::Unset;
 						*eventData->interactionData = value;

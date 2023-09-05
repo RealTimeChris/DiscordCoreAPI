@@ -254,7 +254,7 @@ namespace DiscordCoreAPI {
 				dataPackage02.headersToInsert["User-Agent"] = "com.google.android.youtube/17.10.35 (Linux; U; Android 12; US) gzip";
 				dataPackage02.headersToInsert["Origin"]		= "https://music.youtube.com";
 				dataPackage02.relativePath					= "/youtubei/v1/player?key=AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w";
-				parser.serializeJson(requestData, dataPackage02.content);
+				parser.serializeJson<true>(requestData, dataPackage02.content);
 				dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 				responseData				= submitWorkloadAndGetResult(std::move(dataPackage02));
 				if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200) {
@@ -337,7 +337,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void, false> YouTubeAPI::downloadAndStreamAudio(const Song songNew, NewThreadAwaiter<void, false> threadHandle, uint64_t currentReconnectTries) {
 			try {
-				areWeWorkingBool.store(true);
+				areWeWorkingBool.store(true, std::memory_order_release);
 				std::coroutine_handle<CoRoutine<void, false>::promise_type> coroHandle{};
 				if (currentReconnectTries == 0) {
 					threadHandle = NewThreadAwaitable<void, false>();
@@ -393,7 +393,7 @@ namespace DiscordCoreAPI {
 					do {
 						AudioFrameData frameData{};
 						didWeReceive = demuxer.collectFrame(frameData);
-						if (coroHandle.promise().areWeStopped()) {
+						if (coroHandle.promise().stopRequested()) {
 							areWeWorkingBool.store(false, std::memory_order_release);
 							co_return;
 						}

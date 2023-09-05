@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 				data.d			= dcData;
 				data.op			= 4;
 				if (static_cast<DiscordCoreInternal::WebSocketOpCode>(
-						baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).dataOpCode) ==
+						baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode) ==
 					DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 					auto serializer = data.operator DiscordCoreInternal::EtfSerializer();
 					string			= serializer.operator std::string();
@@ -223,7 +223,7 @@ namespace DiscordCoreAPI {
 				data.d	= dataPackage;
 				data.op = 4;
 				if (static_cast<DiscordCoreInternal::WebSocketOpCode>(
-						baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).dataOpCode) ==
+						baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode) ==
 					DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 					auto serializer = data.operator DiscordCoreInternal::EtfSerializer();
 					string			= serializer.operator std::string();
@@ -231,9 +231,9 @@ namespace DiscordCoreAPI {
 					parser.serializeJson(data, string);
 				}
 			}
-			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).createHeader(string,
-				baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).dataOpCode);
-			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).sendMessage(string, false);
+			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].createHeader(string,
+				baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode);
+			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].sendMessage(string, false);
 		}
 	}
 
@@ -251,16 +251,16 @@ namespace DiscordCoreAPI {
 				}
 			}
 			data.op = 3;
-			if (static_cast<DiscordCoreInternal::WebSocketOpCode>(baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).dataOpCode) ==
+			if (static_cast<DiscordCoreInternal::WebSocketOpCode>(baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode) ==
 				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 				auto serializer = data.operator DiscordCoreInternal::EtfSerializer();
 				string			= serializer.operator std::string();
 			} else {
 				parser.serializeJson<true>(data, string);
 			}
-			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).createHeader(string,
-				baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).dataOpCode);
-			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).sendMessage(string, true);
+			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].createHeader(string,
+				baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode);
+			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].sendMessage(string, true);
 		}
 	}
 

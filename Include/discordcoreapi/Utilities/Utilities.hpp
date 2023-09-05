@@ -47,20 +47,24 @@ namespace DiscordCoreAPI {
 
 	/// @brief Activity types.
 	enum class ActivityType : uint8_t {
-		Game = 0,///< Game.
+		Game	  = 0,///< Game.
 		Streaming = 1,///< Streaming.
 		Listening = 2,///< Listening.
-		Watching = 3,///< Watching.
-		Custom = 4,///< Custom.
+		Watching  = 3,///< Watching.
+		Custom	  = 4,///< Custom.
 		Competing = 5///< Competing.
 	};
 
 	/// @brief Activity data.
 	struct ActivityData {
 		UnorderedSet<std::string> excludedKeys{};
-		ActivityType type{};///< Activity data.
+		Snowflake applicationId{};///< Application ID for the game.
+		TimeStamp created_at{};///< Unix timestamp(in milliseconds) of when the activity was added to the user's session.
+		std::string details{};///< What the player is currently doing.
+		ActivityType type{};///< Activity's type.
+		std::string state{};///< User's current party status, or text used for a custom status.
 		std::string name{};///< Name of the activity.
-		std::string url{};///< Url associated with the activity.
+		std::string url{};///< Stream URL, is validated when type is 1.
 
 		ActivityData() = default;
 
@@ -120,7 +124,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
-		friend struct Jsonifier::Core<DiscordCoreAPI::UpdatePresenceData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		UnorderedSet<std::string> excludedKeys{};
 		Jsonifier::Vector<ActivityData> activities{};///< A vector of activities.
 		PresenceUpdateState status{};///< Current status.
@@ -140,45 +144,45 @@ namespace DiscordCoreAPI {
 
 	/// @brief Input event response types.
 	enum class InputEventResponseType : uint8_t {
-		Unset = 0,///< Unset.
-		Deferred_Response = 1,
-		Ephemeral_Deferred_Response = 2,///< Deferred ephemeral response.
-		Interaction_Response = 3,///< Interaction response.
-		Ephemeral_Interaction_Response = 4,///< Ephemeral Interaction response.
-		Edit_Interaction_Response = 5,///< Interaction response edit.
-		Follow_Up_Message = 6,///< Follow-up MessageData.
-		Ephemeral_Follow_Up_Message = 7,///< Ephemeral follow-up MessageData.
-		Edit_Follow_Up_Message = 8,///< Follow-up Message edit.
+		Unset									= 0,///< Unset.
+		Deferred_Response						= 1,
+		Ephemeral_Deferred_Response				= 2,///< Deferred ephemeral response.
+		Interaction_Response					= 3,///< Interaction response.
+		Ephemeral_Interaction_Response			= 4,///< Ephemeral Interaction response.
+		Edit_Interaction_Response				= 5,///< Interaction response edit.
+		Follow_Up_Message						= 6,///< Follow-up MessageData.
+		Ephemeral_Follow_Up_Message				= 7,///< Ephemeral follow-up MessageData.
+		Edit_Follow_Up_Message					= 8,///< Follow-up Message edit.
 		Application_Command_AutoComplete_Result = 9,///< Respond to an autocomplete interaction with suggested choices.
-		Modal_Interaction_Response = 10,///< Respond to an interaction with a popup modal.
+		Modal_Interaction_Response				= 10,///< Respond to an interaction with a popup modal.
 	};
 
 	/// @brief Gateway intents.
 	enum class GatewayIntents : uint32_t {
-		Guilds = 1 << 0,///< Intent for receipt of Guild information.
-		Guild_Members = 1 << 1,///< Intent for receipt of Guild members.
-		Guild_Bans = 1 << 2,///< Intent for receipt of Guild bans.
-		Guild_Emojis = 1 << 3,///< Intent for receipt of Guild emojis.
-		Guild_Integrations = 1 << 4,///< Intent for receipt of Guild integrations.
-		Guild_Webhooks = 1 << 5,///< Intent for receipt of Guild webhooks.
-		Guild_Invites = 1 << 6,///< Intent for receipt of Guild invites.
-		Guild_VoiceStates = 1 << 7,///< Intent for receipt of Guild voice states.
-		Guild_Presences = 1 << 8,///< Intent for receipt of Guild presences.
-		Guild_Messages = 1 << 9,///< Intent for receipt of Guild messages.
-		Guild_Message_Reactions = 1 << 10,///< Intent for receipt of Guild message reactions.
-		Guild_Message_Typing = 1 << 11,///< Intent for receipt of Guild message typing notifications.
-		Direct_Messages = 1 << 12,///< Intent for receipt of direct messages (DMs).
-		Direct_Message_Reactions = 1 << 13,///< Intent for receipt of direct message reactions.
-		Direct_Message_Typing = 1 << 14,///< Intent for receipt of direct message typing notifications.
-		Message_Content = 1 << 15,///< Intent for receipt of message content.
-		Guild_Scheduled_Events = 1 << 16,///< Scheduled events.
+		Guilds						  = 1 << 0,///< Intent for receipt of Guild information.
+		Guild_Members				  = 1 << 1,///< Intent for receipt of Guild members.
+		Guild_Bans					  = 1 << 2,///< Intent for receipt of Guild bans.
+		Guild_Emojis				  = 1 << 3,///< Intent for receipt of Guild emojis.
+		Guild_Integrations			  = 1 << 4,///< Intent for receipt of Guild integrations.
+		Guild_Webhooks				  = 1 << 5,///< Intent for receipt of Guild webhooks.
+		Guild_Invites				  = 1 << 6,///< Intent for receipt of Guild invites.
+		Guild_VoiceStates			  = 1 << 7,///< Intent for receipt of Guild voice states.
+		Guild_Presences				  = 1 << 8,///< Intent for receipt of Guild presences.
+		Guild_Messages				  = 1 << 9,///< Intent for receipt of Guild messages.
+		Guild_Message_Reactions		  = 1 << 10,///< Intent for receipt of Guild message reactions.
+		Guild_Message_Typing		  = 1 << 11,///< Intent for receipt of Guild message typing notifications.
+		Direct_Messages				  = 1 << 12,///< Intent for receipt of direct messages (DMs).
+		Direct_Message_Reactions	  = 1 << 13,///< Intent for receipt of direct message reactions.
+		Direct_Message_Typing		  = 1 << 14,///< Intent for receipt of direct message typing notifications.
+		Message_Content				  = 1 << 15,///< Intent for receipt of message content.
+		Guild_Scheduled_Events		  = 1 << 16,///< Scheduled events.
 		Auto_Moderation_Configuration = 1 << 20,/// Auto moderation configuration.
-		Auto_Moderation_Execution = 1 << 21,///< Auto moderation execution.
-		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates |
-			Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing |
-			Guild_Scheduled_Events | Auto_Moderation_Configuration | Auto_Moderation_Execution,///< Default intents (all non-privileged intents).
+		Auto_Moderation_Execution	  = 1 << 21,///< Auto moderation execution.
+		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates | Guild_Messages | Guild_Message_Reactions |
+			Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events | Auto_Moderation_Configuration |
+			Auto_Moderation_Execution,///< Default intents (all non-privileged intents).
 		Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
-		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
+		All_Intents		   = Default_Intents | Privileged_Intents///< Every single intent.
 	};
 
 	/// @brief Function data for repeated functions to be loaded.
@@ -191,7 +195,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief Represents which text format to use for websocket transfer.
 	enum class TextFormat : uint8_t {
-		Etf = 0x00,///< Etf format.
+		Etf	 = 0x00,///< Etf format.
 		Json = 0x01///< Json format.
 	};
 
@@ -298,51 +302,51 @@ namespace DiscordCoreAPI {
 
 	/// @brief Color constants for use in the EmbedData color values.
 	namespace Colors {
-		const std::string_view White = "FFFFFF",///< White.
-			DiscordWhite = "FFFFFE",///< Discord white.
-			LightGray = "C0C0C0",///< Light gray.
-			Gray = "808080",///< Gray.
-			DarkGray = "404040",///< Dark gray.
-			Black = "000000",///< Black.
-			DiscordBlack = "000001",///< Discord black.
-			Red = "FF0000",///< Red.
-			Pink = "FFAFAF",///< Pink.
-			Orange = "FFC800",///< Orange.
-			Yellow = "FFFF00",///< Yellow.
-			Green = "00FF00",///< Green.
-			Magenta = "FF00FF",///< Magenta.
-			Cyan = "00FFFF",///< Cyan.
-			Blue = "0000FF",///< Blue.
-			LightSeaGreen = "1ABC9C",///< Light sea green.
-			MediumSeaGreen = "2ECC71",///< Medium sea green.
-			SummerSky = "3498DB",///< Summer skye.
-			DeepLilac = "9B59B6",///< Deep lilac.
-			Ruby = "E91E63",///< Ruby.
-			MoonYellow = "F1C40F",///< Moon yellow.
-			TahitiGold = "E67E22",///< Tahiti gold.
-			Cinnabar = "E74C3C",///< Cinnabar.
-			Submarine = "95A5A6",///< Submarine.
-			BlueAquamarine = "607D8B",///< Blue aquamarine.
-			DeepSea = "11806A",///< Deep sea.
-			SeaGreen = "1F8B4C",///< Sea green.
-			Endeavour = "206694",///< Endeavor.
-			VividViolet = "71368A",///< Vivid violet.
-			JazzberryJam = "AD1457",///< Jazzberry jam.
-			DarkGoldenrod = "C27C0E",///< Dark goldenrod.
-			Rust = "A84300",///< Rust.
-			Brown = "992D22",///< Brown.
-			GrayChateau = "979C9F",///< Gray chateau.
-			Bismark = "546E7A",///< Bismark.
-			StiBlue = "0E4BEF",///< Sti blue.
-			WrxBlue = "00247D",///< Wrx blue.
-			RalliArtCrimson = "E60012",///< Ralliart crimson.
-			Lime = "00FF00",///< Lime.
-			ForestGreen = "228B22",///< Forest green.
-			CadmiumGreen = "097969",///< Cadmium green.
-			Aquamarine = "7FFFD4",///< Aquamarine.
-			BlueGreen = "088F8F",///< Blue green.
-			Raspberry = "E30B5C",///< Raspberry.
-			ScarletRed = "FF2400";///< Scarlet red.
+		const std::string_view White{ "FFFFFF" },///< White.
+			DiscordWhite{ "FFFFFE" },///< Discord white.
+			LightGray{ "C0C0C0" },///< Light gray.
+			Gray{ "808080" },///< Gray.
+			DarkGray{ "404040" },///< Dark gray.
+			Black{ "000000" },///< Black.
+			DiscordBlack{ "000001" },///< Discord black.
+			Red{ "FF0000" },///< Red.
+			Pink{ "FFAFAF" },///< Pink.
+			Orange{ "FFC800" },///< Orange.
+			Yellow{ "FFFF00" },///< Yellow.
+			Green{ "00FF00" },///< Green.
+			Magenta{ "FF00FF" },///< Magenta.
+			Cyan{ "00FFFF" },///< Cyan.
+			Blue{ "0000FF" },///< Blue.
+			LightSeaGreen{ "1ABC9C" },///< Light sea green.
+			MediumSeaGreen{ "2ECC71" },///< Medium sea green.
+			SummerSky{ "3498DB" },///< Summer skye.
+			DeepLilac{ "9B59B6" },///< Deep lilac.
+			Ruby{ "E91E63" },///< Ruby.
+			MoonYellow{ "F1C40F" },///< Moon yellow.
+			TahitiGold{ "E67E22" },///< Tahiti gold.
+			Cinnabar{ "E74C3C" },///< Cinnabar.
+			Submarine{ "95A5A6" },///< Submarine.
+			BlueAquamarine{ "607D8B" },///< Blue aquamarine.
+			DeepSea{ "11806A" },///< Deep sea.
+			SeaGreen{ "1F8B4C" },///< Sea green.
+			Endeavour{ "206694" },///< Endeavor.
+			VividViolet{ "71368A" },///< Vivid violet.
+			JazzberryJam{ "AD1457" },///< Jazzberry jam.
+			DarkGoldenrod{ "C27C0E" },///< Dark goldenrod.
+			Rust{ "A84300" },///< Rust.
+			Brown{ "992D22" },///< Brown.
+			GrayChateau{ "979C9F" },///< Gray chateau.
+			Bismark{ "546E7A" },///< Bismark.
+			StiBlue{ "0E4BEF" },///< Sti blue.
+			WrxBlue{ "00247D" },///< Wrx blue.
+			RalliArtCrimson{ "E60012" },///< Ralliart crimson.
+			Lime{ "00FF00" },///< Lime.
+			ForestGreen{ "228B22" },///< Forest green.
+			CadmiumGreen{ "097969" },///< Cadmium green.
+			Aquamarine{ "7FFFD4" },///< Aquamarine.
+			BlueGreen{ "088F8F" },///< Blue green.
+			Raspberry{ "E30B5C" },///< Raspberry.
+			ScarletRed{ "FF2400" };///< Scarlet red.
 	};
 
 	/**@}*/
@@ -354,8 +358,8 @@ namespace DiscordCoreAPI {
 
 	/// @brief Audio frame types.
 	enum class AudioFrameType : uint8_t {
-		Unset = 0,///< Unset.
-		RawPCM = 1,///< Raw PCM.
+		Unset	= 0,///< Unset.
+		RawPCM	= 1,///< Raw PCM.
 		Encoded = 2,///< Encoded audio data.
 	};
 
@@ -422,7 +426,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ColorValue {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::ColorValue>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 
 		ColorValue(std::string hexColorValue);
 
@@ -438,15 +442,7 @@ namespace DiscordCoreAPI {
 		uint32_t color{};
 	};
 
-	enum class HashType {
-		User_Avatar = 0,
-		Channel_Icon = 1,
-		GuildMember_Avatar = 2,
-		Guild_Icon = 3,
-		Guild_Splash = 4,
-		Guild_Banner = 5,
-		Guild_Discovery = 6
-	};
+	enum class HashType { User_Avatar = 0, Channel_Icon = 1, GuildMember_Avatar = 2, Guild_Icon = 3, Guild_Splash = 4, Guild_Banner = 5, Guild_Discovery = 6 };
 
 	class DiscordCoreAPI_Dll IconHash {
 	  public:
@@ -480,58 +476,57 @@ namespace DiscordCoreAPI {
 
 	/// @brief Permission values, for a given Channel, by RoleData or GuildMemberData.
 	enum class Permission : uint64_t {
-		Create_Instant_Invite = 0x0000000000000001,///< Allows creation of instant invites.
-		Kick_Members = 0x0000000000000002,///< Allows kicking members.
-		Ban_Members = 0x0000000000000004,///< Allows banning members.
-		Administrator = 0x0000000000000008,///< Allows all permissions and bypasses channel permission overwrites.
-		Manage_Channels = 0x0000000000000010,///< Allows management and editing of channels.
-		Manage_Guild = 0x0000000000000020,///< Allows management and editing of the guild.
-		Add_Reactions = 0x0000000000000040,///< Allows for the addition of reactions to messages.
-		View_Audit_Log = 0x0000000000000080,///< Allows for viewing of audit logs.
-		Priority_Speaker = 0x0000000000000100,///< Allows for using priority speaker in a voice channel.
-		Stream = 0x0000000000000200,///< Allows the user to go live.
-		View_Channel = 0x0000000000000400,///< Allows guild members to view a channel, which includes reading messages in text channels.
-		Send_Messages = 0x0000000000000800,///< Allows for sending messages in a channel and creating threads in a forum.
-		Send_TTS_Messages = 0x0000000000001000,///< Allows for sending of /tts messages.
-		Manage_Messages = 0x0000000000002000,///< Allows for deletion of other users messages.
-		Embed_Links = 0x0000000000004000,///< Links sent by users with this permission will be auto-embedded.
-		Attach_Files = 0x0000000000008000,///< Allows for uploading images and files.
-		Read_Message_History = 0x0000000000010000,///< Allows for reading of message history.
-		Mention_Everyone = 0x0000000000020000,///< Allows for using the AT-everyone tag to notify all users in a channel.
-		Use_External_Emojis = 0x0000000000040000,///< Allows the usage of custom emojis from other servers.
-		View_Guild_Insights = 0x0000000000080000,///< Allows for viewing guild insights.
-		Connect = 0x0000000000100000,///< Allows for joining of a voice channel.
-		Speak = 0x0000000000200000,///< Allows for speaking in a voice channel.
-		Mute_Members = 0x0000000000400000,///< Allows for muting members in a voice channel.
-		Deafen_Members = 0x0000000000800000,///< Allows for deafening of members in a voice channel.
-		Move_Members = 0x0000000001000000,///< Allows for moving of members between voice channels.
-		Use_VAD = 0x0000000002000000,///< Allows for using voice-activity-detection in a voice channel.
-		Change_Nickname = 0x0000000004000000,///< Allows for modification of own nickname.
-		Manage_Nicknames = 0x0000000008000000,///< Allows for modification of other users nicknames.
-		Manage_Roles = 0x0000000010000000,///< Allows management and editing of roles.
-		Manage_Webhooks = 0x0000000020000000,///< Allows management and editing of webhooks.
-		Manage_Guild_Expressions = 0x0000000040000000,///< Allows management and editing of emojis, stickers, and soundboard sounds.
-		Use_Application_Commands = 0x0000000080000000,///< Allows members to use application commands, including slash commands and context menu.
-		Request_to_Speak = 0x0000000100000000,///< Allows for requesting to speak in stage channels. (This permission is under active development).
-		Manage_Events = 0x0000000200000000,///< Allows for creating, editing, and deleting scheduled events.
-		Manage_Threads = 0x0000000400000000,///< Allows for deleting and archiving threads, and viewing all protected threads.
-		Create_Public_Threads = 0x0000000800000000,///< Allows for creating public and announcement threads.
-		Create_Private_Threads = 0x0000001000000000,///< Allows for creating protected threads.
-		Use_External_Stickers = 0x0000002000000000,///< Allows the usage of custom stickers from other servers.
-		Send_Messages_in_Threads = 0x0000004000000000,///< Allows for sending messages in threads.
-		Use_Embedded_Activities = 0x0000008000000000,///< Allows for using Activities (applications with the EMBEDDED flag) in a voice channel.
-		Moderate_Members = 0x0000010000000000,///< Allows for timing out users to prevent them from sending or reacting to messages in chat.
+		Create_Instant_Invite				= 0x0000000000000001,///< Allows creation of instant invites.
+		Kick_Members						= 0x0000000000000002,///< Allows kicking members.
+		Ban_Members							= 0x0000000000000004,///< Allows banning members.
+		Administrator						= 0x0000000000000008,///< Allows all permissions and bypasses channel permission overwrites.
+		Manage_Channels						= 0x0000000000000010,///< Allows management and editing of channels.
+		Manage_Guild						= 0x0000000000000020,///< Allows management and editing of the guild.
+		Add_Reactions						= 0x0000000000000040,///< Allows for the addition of reactions to messages.
+		View_Audit_Log						= 0x0000000000000080,///< Allows for viewing of audit logs.
+		Priority_Speaker					= 0x0000000000000100,///< Allows for using priority speaker in a voice channel.
+		Stream								= 0x0000000000000200,///< Allows the user to go live.
+		View_Channel						= 0x0000000000000400,///< Allows guild members to view a channel, which includes reading messages in text channels.
+		Send_Messages						= 0x0000000000000800,///< Allows for sending messages in a channel and creating threads in a forum.
+		Send_TTS_Messages					= 0x0000000000001000,///< Allows for sending of /tts messages.
+		Manage_Messages						= 0x0000000000002000,///< Allows for deletion of other users messages.
+		Embed_Links							= 0x0000000000004000,///< Links sent by users with this permission will be auto-embedded.
+		Attach_Files						= 0x0000000000008000,///< Allows for uploading images and files.
+		Read_Message_History				= 0x0000000000010000,///< Allows for reading of message history.
+		Mention_Everyone					= 0x0000000000020000,///< Allows for using the AT-everyone tag to notify all users in a channel.
+		Use_External_Emojis					= 0x0000000000040000,///< Allows the usage of custom emojis from other servers.
+		View_Guild_Insights					= 0x0000000000080000,///< Allows for viewing guild insights.
+		Connect								= 0x0000000000100000,///< Allows for joining of a voice channel.
+		Speak								= 0x0000000000200000,///< Allows for speaking in a voice channel.
+		Mute_Members						= 0x0000000000400000,///< Allows for muting members in a voice channel.
+		Deafen_Members						= 0x0000000000800000,///< Allows for deafening of members in a voice channel.
+		Move_Members						= 0x0000000001000000,///< Allows for moving of members between voice channels.
+		Use_VAD								= 0x0000000002000000,///< Allows for using voice-activity-detection in a voice channel.
+		Change_Nickname						= 0x0000000004000000,///< Allows for modification of own nickname.
+		Manage_Nicknames					= 0x0000000008000000,///< Allows for modification of other users nicknames.
+		Manage_Roles						= 0x0000000010000000,///< Allows management and editing of roles.
+		Manage_Webhooks						= 0x0000000020000000,///< Allows management and editing of webhooks.
+		Manage_Guild_Expressions			= 0x0000000040000000,///< Allows management and editing of emojis, stickers, and soundboard sounds.
+		Use_Application_Commands			= 0x0000000080000000,///< Allows members to use application commands, including slash commands and context menu.
+		Request_to_Speak					= 0x0000000100000000,///< Allows for requesting to speak in stage channels. (This permission is under active development).
+		Manage_Events						= 0x0000000200000000,///< Allows for creating, editing, and deleting scheduled events.
+		Manage_Threads						= 0x0000000400000000,///< Allows for deleting and archiving threads, and viewing all protected threads.
+		Create_Public_Threads				= 0x0000000800000000,///< Allows for creating public and announcement threads.
+		Create_Private_Threads				= 0x0000001000000000,///< Allows for creating protected threads.
+		Use_External_Stickers				= 0x0000002000000000,///< Allows the usage of custom stickers from other servers.
+		Send_Messages_in_Threads			= 0x0000004000000000,///< Allows for sending messages in threads.
+		Use_Embedded_Activities				= 0x0000008000000000,///< Allows for using Activities (applications with the EMBEDDED flag) in a voice channel.
+		Moderate_Members					= 0x0000010000000000,///< Allows for timing out users to prevent them from sending or reacting to messages in chat.
 		View_Creator_Monetization_Analytics = 0x0000020000000000,///< Allows for viewing role subscription insights.
-		Use_Soundboard = 0x0000040000000000,///< Allows for using soundboard in a voice channel.
-		Use_External_Sounds = 0x0000200000000000,///< Allows the usage of custom soundboard sounds from other servers.
-		Send_Voice_Messages = 0x0000400000000000,///< Allows sending voice messages.
+		Use_Soundboard						= 0x0000040000000000,///< Allows for using soundboard in a voice channel.
+		Use_External_Sounds					= 0x0000200000000000,///< Allows the usage of custom soundboard sounds from other servers.
+		Send_Voice_Messages					= 0x0000400000000000,///< Allows sending voice messages.
 	};
 
 	/// @brief PermissionsBase class, for representing and manipulating Permission values.
 	template<typename ValueType> class PermissionsBase {
 	  public:
-		friend struct JsonifierInternal::ParseWithKeys;
-		friend struct JsonifierInternal::ParseNoKeys;
+		friend class JsonifierInternal::Parser;
 
 		inline bool operator==(const std::string& other) const {
 			return *static_cast<const ValueType*>(this) == other;
@@ -759,14 +754,13 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		inline ~PermissionsBase() = default;
-		inline PermissionsBase() = default;
+		inline PermissionsBase()  = default;
 
-		DiscordCoreAPI_Dll static std::string computeOverwrites(const std::string& basePermissions, const GuildMemberData& guildMember,
-			const ChannelData& channel);
+		DiscordCoreAPI_Dll static std::string computeOverwrites(const std::string& basePermissions, const GuildMemberData& guildMember, const ChannelData& channel);
 
 		static inline std::string computePermissions(const GuildMemberData& guildMember, const ChannelData& channel) {
 			std::string permissions = computeBasePermissions(guildMember);
-			permissions = computeOverwrites(permissions, guildMember, channel);
+			permissions				= computeOverwrites(permissions, guildMember, channel);
 			return permissions;
 		}
 
@@ -808,11 +802,11 @@ namespace DiscordCoreAPI {
 			*this = valueNew;
 		}
 
-		inline PermissionsParse substr(uint64_t offset, uint64_t count) {
+		inline PermissionsParse substr(uint64_t offset, uint64_t count) const {
 			return substr(offset, count);
 		}
 
-		inline uint64_t size() {
+		inline uint64_t size() const {
 			return std::string::size();
 		}
 

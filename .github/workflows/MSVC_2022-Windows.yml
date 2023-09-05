@@ -13,6 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        msvc: [2022]
         build_type: [Debug, Release]
         std: [20]
 

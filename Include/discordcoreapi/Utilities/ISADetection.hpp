@@ -43,11 +43,11 @@ namespace DiscordCoreAPI {
 		 */
 
 		using Avx512Float = __m512;
-		using Avx512Int = __m512i;
-		using Avx2Float = __m256;
-		using Avx2Int = __m256i;
-		using AvxFloat = __m128;
-		using AvxInt = __m128i;
+		using Avx512Int	  = __m512i;
+		using Avx2Float	  = __m256;
+		using Avx2Int	  = __m256i;
+		using AvxFloat	  = __m128;
+		using AvxInt	  = __m128i;
 
 		/// @brief Extracts a 32-bit integer from a 128-bit AVX2 register.
 		/// @param value The AVX2 register containing packed 16-bit integers.
@@ -213,13 +213,11 @@ namespace DiscordCoreAPI {
 			/// @param increment The increment value to be added to each element.
 			static inline void collectSingleRegister(int32_t* dataIn, int16_t* dataOut, float currentGain, float increment) {
 				Avx2Float currentSamplesNew{ _mm256_mul_ps(gatherValues(dataIn),
-					_mm256_add_ps(_mm256_set1_ps(currentGain),
-						_mm256_mul_ps(_mm256_set1_ps(increment), _mm256_set_ps(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f)))) };
+					_mm256_add_ps(_mm256_set1_ps(currentGain), _mm256_mul_ps(_mm256_set1_ps(increment), _mm256_set_ps(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f)))) };
 
-				currentSamplesNew =
-					_mm256_blendv_ps(_mm256_max_ps(currentSamplesNew, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::min()))),
-						_mm256_min_ps(currentSamplesNew, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::max()))),
-						_mm256_cmp_ps(currentSamplesNew, _mm256_set1_ps(0.0f), _CMP_GE_OQ));
+				currentSamplesNew = _mm256_blendv_ps(_mm256_max_ps(currentSamplesNew, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::min()))),
+					_mm256_min_ps(currentSamplesNew, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::max()))),
+					_mm256_cmp_ps(currentSamplesNew, _mm256_set1_ps(0.0f), _CMP_GE_OQ));
 
 				storeValues(_mm256_cvtps_epi32(currentSamplesNew), dataOut);
 			}
@@ -272,10 +270,9 @@ namespace DiscordCoreAPI {
 				AvxFloat currentSamplesNew{ _mm_mul_ps(gatherValues(dataIn),
 					_mm_add_ps(_mm_set1_ps(currentGain), _mm_mul_ps(_mm_set1_ps(increment), _mm_set_ps(0.0f, 1.0f, 2.0f, 3.0f)))) };
 
-				currentSamplesNew =
-					_mm_blendv_ps(_mm_max_ps(currentSamplesNew, _mm_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::min()))),
-						_mm_min_ps(currentSamplesNew, _mm_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::max()))),
-						_mm_cmp_ps(currentSamplesNew, _mm_set1_ps(0.0f), _CMP_GE_OQ));
+				currentSamplesNew = _mm_blendv_ps(_mm_max_ps(currentSamplesNew, _mm_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::min()))),
+					_mm_min_ps(currentSamplesNew, _mm_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::max()))),
+					_mm_cmp_ps(currentSamplesNew, _mm_set1_ps(0.0f), _CMP_GE_OQ));
 
 				storeValues(_mm_cvtps_epi32(currentSamplesNew), dataOut);
 			}
@@ -304,8 +301,8 @@ namespace DiscordCoreAPI {
 			/// @param increment The increment value to be added to each element.
 			static inline void collectSingleRegister(int32_t* dataIn, int16_t* dataOut, float currentGain, float increment) {
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
-					auto incrementNew = increment * x;
-					auto currentGainNew = currentGain + incrementNew;
+					auto incrementNew	  = increment * x;
+					auto currentGainNew	  = currentGain + incrementNew;
 					auto currentSampleNew = dataIn[x] * currentGainNew;
 					if (currentSampleNew >= std::numeric_limits<int16_t>::max()) {
 						currentSampleNew = std::numeric_limits<int16_t>::max();

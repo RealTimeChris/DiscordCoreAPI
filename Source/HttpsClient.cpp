@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 		HttpsTCPConnection::HttpsTCPConnection(const std::string& baseUrlNew, const uint16_t portNew, HttpsConnection* ptrNew)
 			: TCPConnection<HttpsTCPConnection>{ baseUrlNew, portNew } {
 			ptr = ptrNew;
-		};
+		}
 
 		Jsonifier::Vector<std::string> tokenize(std::string const& in, const char* sep = "\r\n") {
 			std::string::size_type b = 0;
@@ -50,8 +50,7 @@ namespace DiscordCoreAPI {
 				result.emplace_back(static_cast<std::string>(in.substr(b, e - b)));
 				b = e;
 			}
-			result.shrinkToFit();
-			return std::move(result);
+			return result;
 		}
 
 		void HttpsTCPConnection::handleBuffer() {
@@ -109,7 +108,7 @@ namespace DiscordCoreAPI {
 			if (rateLimitData.getsRemaining.load(std::memory_order_acquire) <= 1 || rateLimitData.areWeASpecialBucket.load(std::memory_order_acquire)) {
 				rateLimitData.doWeWait.store(true, std::memory_order_release);
 			}
-		};
+		}
 
 		HttpsResponseData HttpsRnRBuilder::finalizeReturnValues(RateLimitData& rateLimitData) {
 			auto connection{ static_cast<HttpsConnection*>(this) };
@@ -118,8 +117,8 @@ namespace DiscordCoreAPI {
 			} else {
 				auto pos1 = connection->data.responseData.find_first_of('{');
 				auto pos2 = connection->data.responseData.find_last_of('}');
-				auto pos3 = connection->data.responseData.find_first_of('(');
-				auto pos4 = connection->data.responseData.find_last_of(')');
+				auto pos3 = connection->data.responseData.find_first_of('[');
+				auto pos4 = connection->data.responseData.find_last_of(']');
 				if (pos1 != std::string::npos && pos2 != std::string::npos && pos1 < pos3) {
 					connection->data.responseData = connection->data.responseData.substr(pos1, pos2 + 1);
 				} else if (pos3 != std::string::npos && pos4 != std::string::npos) {
@@ -182,7 +181,7 @@ namespace DiscordCoreAPI {
 				if (headers.size()) {
 					Jsonifier::Vector<std::string> requestStatus = tokenize(statusLine, " ");
 					if (requestStatus.size() >= 3 && (requestStatus.at(0) == "HTTP/1.1" || requestStatus.at(0) == "HTTP/1.0") && atoi(requestStatus.at(1).c_str())) {
-						for (uint64_t x = 0; x < headers.size();++x) {
+						for (uint64_t x = 0; x < headers.size(); ++x) {
 							std::string::size_type sep = headers[x].find(": ");
 							if (sep != std::string::npos) {
 								std::string key	  = headers[x].substr(0, sep);
@@ -331,7 +330,7 @@ namespace DiscordCoreAPI {
 
 		HttpsClient::HttpsClient(const std::string& botTokenNew) : HttpsClientCore(botTokenNew), connectionManager() {
 			rateLimitQueue.initialize();
-		};
+		}
 
 		HttpsResponseData HttpsClient::httpsRequest(HttpsConnection& connection) {
 			auto rateLimitData = rateLimitQueue.getEndpointAccess(connection.workload.workloadType);

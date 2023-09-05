@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 		}
 
 		inline UnboundedMessageBlock<std::decay_t<ValueType>>& operator=(const UnboundedMessageBlock<std::decay_t<ValueType>>&) = delete;
-		inline UnboundedMessageBlock(const UnboundedMessageBlock&) = delete;
+		inline UnboundedMessageBlock(const UnboundedMessageBlock&)																= delete;
 
 		inline ~UnboundedMessageBlock() = default;
 
@@ -86,13 +86,12 @@ namespace DiscordCoreAPI {
 		std::mutex accessMutex{};
 	};
 
-	template<typename ValueType>
-	inline bool waitForTimeToPass(UnboundedMessageBlock<std::decay_t<ValueType>>& outBuffer, ValueType& argOne, uint64_t timeInMsNew) {
-		StopWatch<Milliseconds> stopWatchNew{ Milliseconds{ timeInMsNew } };
-		stopWatchNew.resetTimer();
+	template<typename ValueType> inline bool waitForTimeToPass(UnboundedMessageBlock<std::decay_t<ValueType>>& outBuffer, ValueType& argOne, uint64_t timeInMsNew) {
+		StopWatch<Milliseconds> stopWatch{ Milliseconds{ timeInMsNew } };
+		stopWatch.resetTimer();
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(1ms);
-			if (stopWatchNew.hasTimePassed()) {
+			if (stopWatch.hasTimePassed()) {
 				return true;
 			}
 		};

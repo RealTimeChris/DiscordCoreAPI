@@ -39,11 +39,10 @@ namespace DiscordCoreAPI {
 		/**
 		 * \addtogroup utilities
 		 * @{
-		 */		
+		 */
 
 		/// @brief Struct representing an event delegate token, associated with an event.
 		struct EventDelegateToken {
-
 			/// @brief Equality operator for comparing EventDelegateToken instances.
 			/// @param rhs The right-hand side EventDelegateToken to compare against.
 			/// @return bool True if the EventDelegateToken instances are equal, otherwise false.
@@ -148,7 +147,7 @@ namespace DiscordCoreAPI {
 			std::function<ReturnType(ArgTypes...)> function{};
 		};
 
-		 /// @brief Template class representing an event that executes event functions.
+		/// @brief Template class representing an event that executes event functions.
 		template<typename ReturnType, typename... ArgTypes> class Event {
 		  public:
 			UnorderedMap<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> functions;
@@ -194,8 +193,8 @@ namespace DiscordCoreAPI {
 			EventDelegateToken add(EventDelegate<ReturnType, ArgTypes...> eventDelegate) {
 				std::unique_lock lock{ accessMutex };
 				EventDelegateToken eventToken{};
-				eventToken.handlerId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
-				eventToken.eventId = eventId;
+				eventToken.handlerId  = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+				eventToken.eventId	  = eventId;
 				functions[eventToken] = std::move(eventDelegate);
 				return eventToken;
 			}
@@ -357,8 +356,8 @@ namespace DiscordCoreAPI {
 			EventDelegateToken add(TriggerEventDelegate<ReturnType, ArgTypes...> eventDelegate) {
 				std::unique_lock lock{ accessMutex };
 				EventDelegateToken eventToken{};
-				eventToken.handlerId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
-				eventToken.eventId = eventId;
+				eventToken.handlerId  = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+				eventToken.eventId	  = eventId;
 				functions[eventToken] = std::move(eventDelegate);
 				return eventToken;
 			}

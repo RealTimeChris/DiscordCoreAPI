@@ -42,30 +42,29 @@ namespace DiscordCoreAPI {
 	template<typename ValueType>
 	class UnorderedSet : protected HashPolicy<UnorderedSet<ValueType>>, protected JsonifierInternal::AllocWrapper<ValueType>, protected ObjectCompare, protected KeyAccessor {
 	  public:
-		using mapped_type		= ValueType;
-		using key_type			= mapped_type;
-		using reference			= mapped_type&;
-		using value_type		= mapped_type;
-		using const_reference	= const mapped_type&;
-		using size_type			= uint64_t;
-		using object_compare	= ObjectCompare;
-		using key_accessor		= KeyAccessor;
-		using hash_policy		= HashPolicy<UnorderedSet<mapped_type>>;
-		using key_hasher		= hash_policy;
+		using mapped_type	  = ValueType;
+		using key_type		  = mapped_type;
+		using reference		  = mapped_type&;
+		using value_type	  = mapped_type;
+		using const_reference = const mapped_type&;
+		using size_type		  = uint64_t;
+		using object_compare  = ObjectCompare;
+		using key_accessor	  = KeyAccessor;
+		using hash_policy	  = HashPolicy<UnorderedSet<mapped_type>>;
+		using key_hasher	  = hash_policy;
+		using iterator		  = HashIterator<UnorderedSet<mapped_type>>;
+		using const_iterator  = HashIterator<const UnorderedSet<mapped_type>>;
+		using allocator		  = JsonifierInternal::AllocWrapper<value_type>;
+
 		friend hash_policy;
-
-		using iterator = HashIterator<UnorderedSet<mapped_type>>;
 		friend iterator;
-		using const_iterator = HashIterator<const UnorderedSet<mapped_type>>;
 		friend const_iterator;
-
-		using allocator = JsonifierInternal::AllocWrapper<value_type>;
 
 		inline UnorderedSet(){};
 
 		inline UnorderedSet& operator=(UnorderedSet&& other) noexcept {
 			if (this != &other) {
-				clear();
+				reset();
 				swap(other);
 			}
 			return *this;
@@ -77,7 +76,7 @@ namespace DiscordCoreAPI {
 
 		inline UnorderedSet& operator=(const UnorderedSet& other) {
 			if (this != &other) {
-				clear();
+				reset();
 
 				reserve(other.capacity());
 				for (const auto& value: other) {
@@ -105,7 +104,7 @@ namespace DiscordCoreAPI {
 		template<typename key_type_new> inline const_iterator find(key_type_new&& key) const {
 			if (sizeVal > 0) {
 				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
-				for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(key))) {
 						return { this, currentIndex };
 					}
@@ -117,7 +116,7 @@ namespace DiscordCoreAPI {
 		template<typename key_type_new> inline iterator find(key_type_new&& key) {
 			if (sizeVal > 0) {
 				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
-				for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(key))) {
 						return { this, currentIndex };
 					}
@@ -161,7 +160,7 @@ namespace DiscordCoreAPI {
 		template<typename key_type_new> inline bool contains(key_type_new&& key) const {
 			if (sizeVal > 0) {
 				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
-				for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor().operator()(data[currentIndex]), getKeyAccessor().operator()(key))) {
 						return true;
 					}
@@ -173,7 +172,7 @@ namespace DiscordCoreAPI {
 		template<SetContainerIteratorT<mapped_type> SetIterator> inline iterator erase(SetIterator&& iter) {
 			if (sizeVal > 0) {
 				auto currentIndex = static_cast<size_type>(iter.getRawPtr() - data);
-				for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(iter.operator*()))) {
 						sentinelVector[currentIndex] = 0;
 						sizeVal--;
@@ -187,7 +186,7 @@ namespace DiscordCoreAPI {
 		template<typename key_type_new> inline iterator erase(key_type_new&& key) {
 			if (sizeVal > 0) {
 				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
-				for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(key))) {
 						sentinelVector[currentIndex] = 0;
 						sizeVal--;
@@ -240,7 +239,7 @@ namespace DiscordCoreAPI {
 			resize(sizeNew);
 		}
 
-		void swap(UnorderedSet& other) noexcept {
+		inline void swap(UnorderedSet& other) noexcept {
 			std::swap(maxLookAheadDistance, other.maxLookAheadDistance);
 			std::swap(sentinelVector, other.sentinelVector);
 			std::swap(capacityVal, other.capacityVal);
@@ -264,23 +263,18 @@ namespace DiscordCoreAPI {
 			return true;
 		}
 
-		void clear() {
-			if (data && sizeVal > 0) {
-				for (size_t x = 0; x < sentinelVector.size(); ++x) {
-					if (sentinelVector[x] > 0) {
-						getAlloc().destroy(data + x);
-					}
+		inline void clear() {
+			for (size_type x = 0; x < sentinelVector.size(); ++x) {
+				if (sentinelVector[x] > 0) {
+					getAlloc().destroy(data + x);
+					sentinelVector[x] = 0;
 				}
-				getAlloc().deallocate(data, capacityVal);
-				sentinelVector.clear();
-				sizeVal		= 0;
-				capacityVal = 0;
-				data		= nullptr;
 			}
+			sizeVal = 0;
 		}
 
 		inline ~UnorderedSet() {
-			clear();
+			reset();
 		};
 
 	  protected:
@@ -295,7 +289,7 @@ namespace DiscordCoreAPI {
 				resize(capacityVal + 1);
 			}
 			auto currentIndex = getKeyAccessor()(value) & (capacityVal - 1);
-			for (size_type x{}; x < maxLookAheadDistance; ++x, ++currentIndex) {
+			for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 				if (sentinelVector[currentIndex] == 0) {
 					new (std::addressof(data[currentIndex])) value_type{ std::forward<mapped_type_new>(value) };
 					sentinelVector[currentIndex] = 1;
@@ -303,7 +297,7 @@ namespace DiscordCoreAPI {
 					return { this, currentIndex };
 				} else if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(value))) {
 					if constexpr (!std::is_void_v<mapped_type_new>) {
-						new (std::addressof(data[currentIndex])) mapped_type{ std::forward<mapped_type_new>(value) };
+						data[currentIndex] = std::forward<mapped_type_new>(value);
 					}
 					return { this, currentIndex };
 				}
@@ -312,7 +306,7 @@ namespace DiscordCoreAPI {
 			return emplaceInternal(std::forward<mapped_type_new>(value));
 		}
 
-		inline const allocator& getAlloc() const {
+		inline allocator& getAlloc() {
 			return *this;
 		}
 
@@ -347,6 +341,21 @@ namespace DiscordCoreAPI {
 				if (oldPtr && oldCapacity) {
 					getAlloc().deallocate(oldPtr, oldCapacity + 1 + oldMaxLookAheadDistance);
 				}
+			}
+		}
+
+		inline void reset() {
+			if (data && sizeVal > 0) {
+				for (size_t x = 0; x < sentinelVector.size(); ++x) {
+					if (sentinelVector[x] > 0) {
+						getAlloc().destroy(data + x);
+					}
+				}
+				getAlloc().deallocate(data, capacityVal + 1 + maxLookAheadDistance);
+				sentinelVector.clear();
+				sizeVal		= 0;
+				capacityVal = 0;
+				data		= nullptr;
 			}
 		}
 	};

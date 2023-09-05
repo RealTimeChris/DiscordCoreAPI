@@ -40,10 +40,10 @@ namespace DiscordCoreAPI {
 	/// @tparam ValueType The type of values stored in the cache.
 	template<typename ValueType> class ObjectCache {
 	  public:
-		using mapped_type = ValueType;
-		using reference = mapped_type&;
+		using mapped_type	  = ValueType;
+		using reference		  = mapped_type&;
 		using const_reference = const mapped_type&;
-		using pointer = mapped_type*;
+		using pointer		  = mapped_type*;
 
 		/// @brief Default constructor for the ObjectCache class.
 		inline ObjectCache() : cacheMap{} {};

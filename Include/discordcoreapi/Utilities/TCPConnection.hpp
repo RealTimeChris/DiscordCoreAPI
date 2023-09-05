@@ -115,8 +115,8 @@ namespace DiscordCoreAPI {
 			stream << errorPosition << " Error: ";
 #ifdef _WIN32
 			char string[1024]{};
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-				static_cast<LPTSTR>(string), 1024, nullptr);
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string,
+				static_cast<DWORD>(std::size(string)), nullptr);
 			stream << WSAGetLastError() << ", " << string;
 #else
 			stream << strerror(errno);

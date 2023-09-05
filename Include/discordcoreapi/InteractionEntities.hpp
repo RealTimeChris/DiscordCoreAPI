@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll InteractionResponseBase {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::InteractionResponseBase>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 
 		UnorderedSet<std::string_view> excludedKeys{};
 
@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 	/// @brief For creating an Interaction response.
 	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponseBase {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::CreateInteractionResponseData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class SelectMenuCollector;
 		friend class ButtonCollector;
 		friend class ModalCollector;
@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 	/// @brief For editing an Interaction response.
 	class DiscordCoreAPI_Dll EditInteractionResponseData : public EditWebHookData {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::EditInteractionResponseData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class Interactions;
 		friend class InputEvents;
 
@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 	/// @brief For creating a follow up MessageData.
 	class DiscordCoreAPI_Dll CreateFollowUpMessageData : public ExecuteWebHookData {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::CreateFollowUpMessageData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class SelectMenuCollector;
 		friend class ButtonCollector;
 		friend class Interactions;
@@ -261,7 +261,7 @@ namespace DiscordCoreAPI {
 	/// @brief For editing a follow up MessageData.
 	class DiscordCoreAPI_Dll EditFollowUpMessageData : public EditWebHookData {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::EditFollowUpMessageData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class Interactions;
 		friend class InputEvents;
 

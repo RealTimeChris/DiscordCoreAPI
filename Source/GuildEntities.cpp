@@ -126,16 +126,16 @@ namespace DiscordCoreAPI {
 			flags = other.flags;
 		}
 		for (auto& value: other.channels) {
-			channels.emplace(value.id);
+			channels.emplace_back(value.id);
 		}
 		for (auto& value: other.members) {
-			members.emplace(value.user.id);
+			members.emplace_back(value.user.id);
 		}
 		for (auto& value: other.roles) {
-			roles.emplace(value.id);
+			roles.emplace_back(value.id);
 		}
 		for (auto& value: other.emoji) {
-			emoji.emplace(value.id);
+			emoji.emplace_back(value.id);
 		}
 		if (other.discoverySplash != "") {
 			discoverySplash = other.discoverySplash;
@@ -193,16 +193,16 @@ namespace DiscordCoreAPI {
 			discovery = std::move(other.discovery);
 		}
 		for (auto& value: other.channels) {
-			channels.emplace(value.id);
+			channels.emplace_back(value.id);
 		}
 		for (auto& value: other.members) {
-			members.emplace(value.user.id);
+			members.emplace_back(value.user.id);
 		}
 		for (auto& value: other.roles) {
-			roles.emplace(value.id);
+			roles.emplace_back(value.id);
 		}
 		for (auto& value: other.emoji) {
-			emoji.emplace(value.id);
+			emoji.emplace_back(value.id);
 		}
 		if (other.memberCount != 0) {
 			memberCount = other.memberCount;
@@ -290,6 +290,7 @@ namespace DiscordCoreAPI {
 		Guilds::doWeCacheGuildsBool = configManagerNew->doWeCacheGuilds();
 		Guilds::discordCoreClient	= discordCoreClientNew;
 		Guilds::httpsClient			= client;
+		stopWatchNew.resetTimer();
 	}
 
 	CoRoutine<AuditLogData> Guilds::getGuildAuditLogsAsync(GetGuildAuditLogsData dataPackage) {

@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 					throw DCAException{ "Sorry, but there was no id set for that user." };
 				}
 				cache.emplace(std::forward<UserType>(user));
-				if (cache.count() % 100 == 0) {
+				if (cache.count() % 1000 == 0) {
 					std::cout << "CURRENT USER COUNT: " << cache.count() << std::endl;
 				}
 			}

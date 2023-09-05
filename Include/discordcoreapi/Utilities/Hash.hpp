@@ -192,7 +192,7 @@ namespace DiscordCoreAPI {
 
 		template<uint64_t size> inline uint64_t operator()(const char (&other)[size]) const {
 			return KeyHasher<char[size]>{}.operator()(other);
-		};
+		}
 
 		template<JsonifierInternal::StringT ValueType> uint64_t operator()(const ValueType& other) const {
 			return KeyHasher<ValueType>{}.operator()(other);
@@ -257,14 +257,17 @@ namespace DiscordCoreAPI {
 		second_type second;
 
 		template<typename FirstTypeNew, typename SecondTypeNew> inline Pair(FirstTypeNew&& firstNew, SecondTypeNew&& secondNew)
-			: first{ std::forward<FirstTypeNew>(firstNew) }, second{ std::forward<SecondTypeNew>(secondNew) } {};
+			: first{ std::forward<FirstTypeNew>(firstNew) }, second{ std::forward<SecondTypeNew>(secondNew) } {
+		}
 
-		template<typename FirstTypeNew> inline Pair(FirstTypeNew&& firstNew) : first{ std::forward<FirstTypeNew>(firstNew) } {};
+		template<typename FirstTypeNew> inline Pair(FirstTypeNew&& firstNew) : first{ std::forward<FirstTypeNew>(firstNew) } {
+		}
 
-		template<typename... Args> inline Pair(Args&&... args) : Pair{ std::forward<Args>(args)... } {};
+		template<typename... Args> inline Pair(Args&&... args) : Pair{ std::forward<Args>(args)... } {
+		}
 
 		inline bool operator==(const Pair& other) const {
-			return this->first == other.first && second == other.second;
+			return first == other.first && second == other.second;
 		}
 	};
 

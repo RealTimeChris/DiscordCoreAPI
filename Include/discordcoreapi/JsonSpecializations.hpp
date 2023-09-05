@@ -84,41 +84,20 @@ namespace Jsonifier {
 
 namespace JsonifierInternal {
 
-	template<> inline void SerializeWithKeys::op<DiscordCoreAPI::Snowflake, Jsonifier::String>(DiscordCoreAPI::Snowflake& value, Jsonifier::String& buffer, uint64_t& index) {
-		std::string newString{ static_cast<std::string>(value) };
-		SerializeWithKeys::op(newString, buffer, index);
-	}
+	template<bool excludeKeys> struct SerializeImpl<excludeKeys, DiscordCoreAPI::Snowflake> {
+		template<VectorLike BufferType> static void op(const DiscordCoreAPI::Snowflake& value, BufferType& buffer, uint64_t& index) {
+			std::string newString{ static_cast<std::string>(value) };
+			Serialize<excludeKeys>::op(newString, buffer, index);
+		}
+	};
 
-	template<> inline void SerializeNoKeys::op<DiscordCoreAPI::Snowflake, Jsonifier::String>(DiscordCoreAPI::Snowflake& value, Jsonifier::String& buffer, uint64_t& index) {
-		std::string newString{ static_cast<std::string>(value) };
-		SerializeNoKeys::op(newString, buffer, index);
-	}
-
-	template<> inline void ParseWithKeys::op<true, DiscordCoreAPI::Snowflake>(DiscordCoreAPI::Snowflake& value, StructuralIterator& it) {
-		std::string newString{};
-		ParseWithKeys::op<true>(newString, it);
-		value = newString;
-	}
-
-	template<> inline void ParseWithKeys::op<false, DiscordCoreAPI::Snowflake>(DiscordCoreAPI::Snowflake& value, StructuralIterator& it) {
-		std::string newString{};
-		ParseWithKeys::op<false>(newString, it);
-		value = newString;
-	}
-
-	template<> inline void ParseNoKeys::op<true, DiscordCoreAPI::Snowflake>(DiscordCoreAPI::Snowflake& value, StructuralIterator& it) {
-		std::string newString{};
-		ParseNoKeys::op<true>(newString, it);
-		value = newString;
-		return;
-	}
-
-	template<> inline void ParseNoKeys::op<false, DiscordCoreAPI::Snowflake>(DiscordCoreAPI::Snowflake& value, StructuralIterator& it) {
-		std::string newString{};
-		ParseNoKeys::op<false>(newString, it);
-		value = newString;
-		return;
-	}
+	template<bool printErrors, bool excludeKeys> struct ParseImpl<printErrors, excludeKeys, DiscordCoreAPI::Snowflake> {
+		inline static void op(DiscordCoreAPI::Snowflake&& value, StructuralIterator& iter) {
+			std::string newString{};
+			Parse<printErrors, excludeKeys>::op(newString, iter);
+			value = newString;
+		};
+	};
 }
 
 namespace Jsonifier {

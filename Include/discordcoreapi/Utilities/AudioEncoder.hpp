@@ -97,15 +97,14 @@ namespace DiscordCoreAPI {
 				}
 				std::memcpy(resampleVector.data(), inputFrame.data(), inputFrame.size());
 				uint64_t sampleCount = inputFrame.size() / 2 / 2;
-				int32_t count =
-					opus_encode(ptr.get(), resampleVector.data(), static_cast<int32_t>(inputFrame.size() / 2 / 2), encodedData.data(), maxBufferSize);
+				int32_t count		 = opus_encode(ptr.get(), resampleVector.data(), static_cast<int32_t>(inputFrame.size() / 2 / 2), encodedData.data(), maxBufferSize);
 				if (count <= 0) {
 					throw DCAException{ "Failed to encode the bitstream, Reason: " + std::string{ opus_strerror(count) } };
 				}
 
 				EncoderReturnData returnData{};
 				returnData.sampleCount = sampleCount;
-				returnData.data = std::basic_string_view<uint8_t>{ encodedData.data(), encodedData.size() };
+				returnData.data		   = std::basic_string_view<uint8_t>{ encodedData.data(), encodedData.size() };
 				return returnData;
 			}
 

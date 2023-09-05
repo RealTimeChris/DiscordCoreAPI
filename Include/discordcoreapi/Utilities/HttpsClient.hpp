@@ -41,21 +41,20 @@ namespace DiscordCoreAPI {
 		  public:
 			/// \brief Voice Websocket close codes.
 			enum class HttpsResponseCodes : uint32_t {
-				Ok = 200,///< The request completed successfully.
-				Created = 201,///< The entity was created successfully.
-				No_Content = 204,///< The request completed successfully but returned no content.
-				Not_Modifies = 304,///< The entity was not modified (no action was taken).
-				Bad_Request = 400,///< The request was improperly formatted, or the server couldn't understand it.
-				Unauthorized = 401,///< The Authorization header was missing or invalid.
-				Forbidden = 403,///< The Authorization token you passed did not have permission to the resource.
-				Not_Found = 404,///< The resource at the location specified doesn't exist.
-				Method_Not_Allowed = 405,///< The HTTPS method used is not valid for the location specified.
-				Too_Many_Requests = 429,///< You are being rate limited, see Rate Limits.
+				Ok					= 200,///< The request completed successfully.
+				Created				= 201,///< The entity was created successfully.
+				No_Content			= 204,///< The request completed successfully but returned no content.
+				Not_Modifies		= 304,///< The entity was not modified (no action was taken).
+				Bad_Request			= 400,///< The request was improperly formatted, or the server couldn't understand it.
+				Unauthorized		= 401,///< The Authorization header was missing or invalid.
+				Forbidden			= 403,///< The Authorization token you passed did not have permission to the resource.
+				Not_Found			= 404,///< The resource at the location specified doesn't exist.
+				Method_Not_Allowed	= 405,///< The HTTPS method used is not valid for the location specified.
+				Too_Many_Requests	= 429,///< You are being rate limited, see Rate Limits.
 				Gatewat_Unavailable = 502,///< There was not a gateway available to process your request. Wait a bit and retry.
 			};
 
-			static inline UnorderedMap<HttpsResponseCodes, std::string_view> outputErrorValues{ { static_cast<HttpsResponseCodes>(200),
-																									"The request completed successfully" },
+			static inline UnorderedMap<HttpsResponseCodes, std::string_view> outputErrorValues{ { static_cast<HttpsResponseCodes>(200), "The request completed successfully" },
 				{ static_cast<HttpsResponseCodes>(201), "The entity was created successfully" },
 				{ static_cast<HttpsResponseCodes>(204), "The request completed successfully but returned no content" },
 				{ static_cast<HttpsResponseCodes>(304), "The entity was not modified (no action was taken)" },
@@ -97,8 +96,7 @@ namespace DiscordCoreAPI {
 		class HttpsError : public DCAException {
 		  public:
 			int32_t errorCode{};
-			inline HttpsError(std::string message, std::source_location location = std::source_location::current())
-				: DCAException{ message, location } {};
+			inline HttpsError(std::string message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 		};
 
 		struct HttpsResponseData {
@@ -231,8 +229,7 @@ namespace DiscordCoreAPI {
 					if (connection.workload.callStack != "") {
 						errorMessage += connection.workload.callStack + " ";
 					}
-					errorMessage +=
-						"Https Error: " + returnData.responseCode.operator std::string() + "\nThe Request: Base Url: " + connection.workload.baseUrl;
+					errorMessage += "Https Error: " + returnData.responseCode.operator std::string() + "\nThe Request: Base Url: " + connection.workload.baseUrl;
 					if (!connection.workload.relativePath.empty()) {
 						errorMessage += "\nRelative Url: " + connection.workload.relativePath;
 					}
@@ -265,7 +262,7 @@ namespace DiscordCoreAPI {
 
 			template<typename... Args> void submitWorkloadAndGetResult(HttpsWorkloadData&& workload, Args&... args) {
 				HttpsConnectionStackHolder stackHolder{ connectionManager, std::move(workload) };
-				auto& connection = stackHolder.getConnection();
+				auto& connection				= stackHolder.getConnection();
 				HttpsResponseData returnDataNew = httpsRequest(connection);
 
 				if (static_cast<uint32_t>(returnDataNew.responseCode) != 200 && static_cast<uint32_t>(returnDataNew.responseCode) != 204 &&
@@ -274,8 +271,7 @@ namespace DiscordCoreAPI {
 					if (connection.workload.callStack != "") {
 						errorMessage += connection.workload.callStack + " ";
 					}
-					errorMessage += "Https Error: " + returnDataNew.responseCode.operator std::string() +
-						"\nThe Request: Base Url: " + connection.workload.baseUrl + "\n";
+					errorMessage += "Https Error: " + returnDataNew.responseCode.operator std::string() + "\nThe Request: Base Url: " + connection.workload.baseUrl + "\n";
 					if (!connection.workload.relativePath.empty()) {
 						errorMessage += "Relative Url: " + connection.workload.relativePath + "\n";
 					}

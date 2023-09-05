@@ -287,7 +287,7 @@ namespace DiscordCoreAPI {
 			}
 			baseSocketAgentsMap[x % workerCount]->shardMap[x] = DiscordCoreInternal::WebSocketClient{ this, x, &doWeQuit };
 		}
-		areWeReadyToConnect.store(true);
+		areWeReadyToConnect.store(true, std::memory_order_release);
 		while (!areWeFullyConnected()) {
 			std::this_thread::sleep_for(1ms);
 		}

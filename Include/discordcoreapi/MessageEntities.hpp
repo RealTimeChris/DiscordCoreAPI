@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 	/// @brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::CreateMessageData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class InputEvents;
 		friend class Messages;
 
@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 	/// @brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
-		friend struct Jsonifier::Core<DiscordCoreAPI::EditMessageData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class InputEvents;
 		friend class Messages;
 

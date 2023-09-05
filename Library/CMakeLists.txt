@@ -22,10 +22,6 @@
 # May 13, 2021
 # https://discordcoreapi.com
 
-set(T_AVX_EXITCODE "0" CACHE STRING INTERNAL FORCE)
-set(T_AVX2_EXITCODE "0" CACHE STRING INTERNAL FORCE)
-set(T_AVX512_EXITCODE "0" CACHE STRING INTERNAL FORCE)
-
 include("CollectVersion")
 collect_version()
 
@@ -44,12 +40,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(NOT DEFINED AVX_NAME)
-	include("${CMAKE_CURRENT_SOURCE_DIR}/../CMake/DetectArchitecture.cmake")
-endif()
-
 if (NOT DEFINED BUILD_SHARED_LIBS)
 	set(BUILD_SHARED_LIBS TRUE)
+endif()
+
+if(NOT DEFINED AVX_TYPE)
+	include("${CMAKE_CURRENT_SOURCE_DIR}/../CMake/DetectArchitecture.cmake")
 endif()
 
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/Utilities/*.hpp")
@@ -100,8 +96,8 @@ target_include_directories(
 	"${LIB_NAME}" PUBLIC
 	"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Include>"
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
-	"$<$<CXX_COMPILER_ID:CLANG>:-Wl,-rpath,/usr/local/opt/llvm/lib/c++>"
-	"$<$<CXX_COMPILER_ID:CLANG>:-L/usr/local/opt/llvm/lib/c++>"
+	"$<$<TARGET_EXISTS:c++abi>:-Wl,-rpath,/usr/local/opt/llvm/lib/c++>"
+	"$<$<TARGET_EXISTS:c++>:-L/usr/local/opt/llvm/lib/c++>"
 )
 
 target_link_libraries(
@@ -112,14 +108,14 @@ target_link_libraries(
 	"$<$<TARGET_EXISTS:OpenSSL::Crypto>:OpenSSL::Crypto>"
 	"$<$<TARGET_EXISTS:OpenSSL::SSL>:OpenSSL::SSL>"
 	"$<$<TARGET_EXISTS:Opus::opus>:Opus::opus>"
-	"$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++abi>"
-    "$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++>"
+	"$<$<TARGET_EXISTS:c++abi>:c++abi>"
+	"$<$<TARGET_EXISTS:c++>:c++>"
 )
 
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:DiscordCoreAPI_EXPORTS_NOPE>"
-	"${AVX_NAME}"
+	"${AVX_TYPE}"
 )
 
 include(ProcessorCount)
@@ -134,7 +130,7 @@ target_compile_options(
 	"$<$<CXX_COMPILER_ID:CLANG>:-Wall>"
 	"$<$<CXX_COMPILER_ID:GNU>:-Wextra>"
 	"$<$<CXX_COMPILER_ID:GNU>:-Wall>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/W4>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/Wall>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"

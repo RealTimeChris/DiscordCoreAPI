@@ -109,11 +109,12 @@ namespace DiscordCoreAPI {
 		StopWatch<Milliseconds> stopWatch{ Milliseconds{ timeInterval } };
 		stopWatch.resetTimer();
 		do {
-			std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<double>(timeInterval) * 10.0f / 100.0f)) });
-			while (!stopWatch.hasTimePassed() && !threadHandle.promise().areWeStopped()) {
+			std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * 10.0f / 100.0f)) });
+			while (!stopWatch.hasTimePassed() && !threadHandle.promise().stopRequested()) {
 				std::this_thread::sleep_for(1ms);
 			}
-			if (threadHandle.promise().areWeStopped()) {
+			stopWatch.resetTimer();
+			if (threadHandle.promise().stopRequested()) {
 				co_return;
 			}
 			try {
@@ -121,7 +122,7 @@ namespace DiscordCoreAPI {
 			} catch (const DCAException& error) {
 				MessagePrinter::printError<PrintMessageType::General>(error.what());
 			}
-			if (threadHandle.promise().areWeStopped()) {
+			if (threadHandle.promise().stopRequested()) {
 				co_return;
 			}
 			std::this_thread::sleep_for(1ms);

@@ -331,7 +331,7 @@ namespace DiscordCoreAPI {
 						demuxer.writeData({ buffer.back().data(), buffer.back().size() });
 						demuxer.proceedDemuxing();
 					}
-					if (coroHandle.promise().areWeStopped()) {
+					if (coroHandle.promise().stopRequested()) {
 						areWeWorkingBool.store(false, std::memory_order_release);
 						co_return;
 					}
@@ -339,7 +339,7 @@ namespace DiscordCoreAPI {
 					do {
 						AudioFrameData frameData{};
 						didWeReceive = demuxer.collectFrame(frameData);
-						if (coroHandle.promise().areWeStopped()) {
+						if (coroHandle.promise().stopRequested()) {
 							areWeWorkingBool.store(false, std::memory_order_release);
 							co_return;
 						}
@@ -348,7 +348,7 @@ namespace DiscordCoreAPI {
 							DiscordCoreClient::getSongAPI(guildId).audioDataBuffer.send(std::move(frameData));
 						}
 					} while (didWeReceive);
-					if (coroHandle.promise().areWeStopped()) {
+					if (coroHandle.promise().stopRequested()) {
 						areWeWorkingBool.store(false, std::memory_order_release);
 						co_return;
 					}

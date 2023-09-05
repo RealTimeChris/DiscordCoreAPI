@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For updating the RoleData positions.
 	struct ModifyGuildRolePositionsData {
-		friend struct Jsonifier::Core<DiscordCoreAPI::ModifyGuildRolePositionsData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class Roles;
 
 		int32_t newPosition{};///< The new position of the RoleData.
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 					throw DCAException{ "Sorry, but there was no id set for that role." };
 				}
 				cache.emplace(static_cast<RoleCacheData>(std::forward<RoleType>(role)));
-				if (cache.count() % 100 == 0) {
+				if (cache.count() % 1000 == 0) {
 					std::cout << "CURRENT ROLE COUNT: " << cache.count() << std::endl;
 				}
 			}

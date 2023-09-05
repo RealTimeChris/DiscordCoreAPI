@@ -1,4 +1,4 @@
-name: Build-and-Test-GCC-Ubuntu
+name: Build-and-Test-GCC-MacOS
 
 on:
   push:
@@ -8,31 +8,21 @@ on:
 
 jobs:
   Build:
-    runs-on: ubuntu-22.04
+    runs-on: macos-latest
     
     strategy:
       fail-fast: false
       matrix:
-        gcc: [12]
+        gcc: [13]
         build_type: [Debug, Release]
         std: [20]
-    env:
-      CC: gcc-${{matrix.gcc}}
-      CXX: g++-${{matrix.gcc}}
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Update Vcpkg and install other dependencies.
-      run: | 
-            sudo apt-get update --fix-missing
-            sudo apt-get upgrade --fix-missing
-            sudo apt-get install nasm
-            cd /usr/local/share/vcpkg
-            ./bootstrap-vcpkg.sh
-            git stash
-            git pull
-            vcpkg update
+    - name: Install the latest g++ compiler.
+      run: |
+            brew install gcc
 
     - name: Copy the Jsonifier repo over.
       run: |
@@ -41,15 +31,15 @@ jobs:
 
     - name: Install the dependencies.
       run: |
-           vcpkg install jsonifier:x64-linux
-           vcpkg install opus:x64-linux
-           vcpkg install libsodium:x64-linux
-           vcpkg install openssl:x64-linux
+           vcpkg install jsonifier:x64-osx
+           vcpkg install opus:x64-osx
+           vcpkg install libsodium:x64-osx
+           vcpkg install openssl:x64-osx
 
     - name: Configure CMake
       working-directory: Tests
       run: |
-           cmake -S . -B ./Build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DGITHUB_BRANCH_TYPE=${{github.ref}}
+           cmake -S . -B ./Build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=/usr/local/opt/gcc@13/bin/g++-13 -DGITHUB_BRANCH_TYPE=${{github.ref}}
 
     - name: Build the Test
       working-directory: Tests/Build

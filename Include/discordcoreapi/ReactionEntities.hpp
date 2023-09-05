@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Guild Emoji.
 	struct CreateGuildEmojiData {
-		friend struct Jsonifier::Core<CreateGuildEmojiData>;
+		template<typename ValueType> friend struct Jsonifier::Core;
 		friend class Reactions;
 
 		Jsonifier::Vector<Snowflake> roles{};///< Roles that can use this Emoji.

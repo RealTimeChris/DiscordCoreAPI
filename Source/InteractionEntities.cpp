@@ -469,7 +469,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.type != InteractionCallbackType::Application_Command_Autocomplete_Result) {
 			co_return Interactions::getInteractionResponseAsync(dataPackage01).get();
 		} else {
-			co_return {};
+			co_return MessageData{};
 		}
 	}
 

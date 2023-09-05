@@ -59,14 +59,14 @@ add_executable(
 
 target_link_options(
 	"${PROJECT_NAME}" INTERFACE	
-    "$<$<CXX_COMPILER_ID:CLANG>:-Wl,-rpath,/usr/local/opt/llvm/lib/c++>"
-	"$<$<CXX_COMPILER_ID:CLANG>:-L/usr/local/opt/llvm/lib/c++>"
+	"$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:-Wl,-rpath,/usr/local/opt/llvm/lib/c++>"
+    "$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:-L/usr/local/opt/llvm/lib/c++>"
 )
 
 target_link_libraries(
 	"${PROJECT_NAME}" PRIVATE
-	"$<$<CXX_COMPILER_ID:CLANG>:c++abi>"
-    "$<$<CXX_COMPILER_ID:CLANG>:c++>"
+	"$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++abi>"
+    "$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++>"
     DiscordCoreAPI::DiscordCoreAPI
 )
 

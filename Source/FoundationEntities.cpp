@@ -73,15 +73,15 @@ namespace DiscordCoreAPI {
 
 		HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadData&& other) noexcept {
 			if (this != &other) {
+				thisWorkerId.store(thisWorkerId.load(std::memory_order_acquire), std::memory_order_release);
 				headersToInsert = std::move(other.headersToInsert);
 				relativePath	= std::move(other.relativePath);
-				thisWorkerId.store(thisWorkerId.load(std::memory_order_acquire), std::memory_order_release);
-				callStack	  = std::move(other.callStack);
-				workloadClass = other.workloadClass;
-				baseUrl		  = std::move(other.baseUrl);
-				content		  = std::move(other.content);
-				workloadType  = other.workloadType;
-				payloadType	  = other.payloadType;
+				callStack		= std::move(other.callStack);
+				baseUrl			= std::move(other.baseUrl);
+				content			= std::move(other.content);
+				workloadClass	= other.workloadClass;
+				workloadType	= other.workloadType;
+				payloadType		= other.payloadType;
 			}
 			return *this;
 		}
@@ -897,8 +897,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options, const std::string& placeholder,
-		uint64_t maxValues, uint64_t minValues, SelectMenuType type, Jsonifier::Vector<ChannelType> channelTypes) {
+	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options,
+		const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType type, Jsonifier::Vector<ChannelType> channelTypes) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);

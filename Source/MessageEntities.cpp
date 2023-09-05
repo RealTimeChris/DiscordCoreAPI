@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 			coroHandle) {
 		int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 		int64_t elapsedTime{};
-		while (elapsedTime < msToCollectFor && !coroHandle.promise().areWeStopped()) {
+		while (elapsedTime < msToCollectFor && !coroHandle.promise().stopRequested()) {
 			MessageData message{};
 			waitForTimeToPass<MessageData>(objectsBuffer, message, static_cast<uint64_t>(msToCollectFor - static_cast<uint64_t>(elapsedTime)));
 			if (filteringFunction(message)) {

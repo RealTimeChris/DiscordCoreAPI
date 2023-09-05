@@ -140,12 +140,18 @@ namespace DiscordCoreAPI {
 		/// @brief Dereference operator.
 		/// @return A reference to the managed object.
 		inline reference operator*() const {
+			if (!ptr) {
+				throw DCAException{ "Sorry, but you attempted to access a UniquePtr that is nullptr." };
+			}
 			return *ptr;
 		}
 
 		/// @brief Member access operator.
 		/// @return The managed raw pointer.
 		inline pointer operator->() const {
+			if (!ptr) {
+				throw DCAException{ "Sorry, but you attempted to access a UniquePtr that is nullptr." };
+			}
 			return ptr;
 		}
 
@@ -298,12 +304,18 @@ namespace DiscordCoreAPI {
 		/// @brief Dereference operator.
 		/// @return A reference to the managed object.
 		inline reference operator*() const {
+			if (!ptr) {
+				throw DCAException{ "Sorry, but you attempted to access a UniquePtr that is nullptr." };
+			}
 			return *ptr;
 		}
 
 		/// @brief Member access operator.
 		/// @return The managed raw pointer.
 		inline pointer operator->() const {
+			if (!ptr) {
+				throw DCAException{ "Sorry, but you attempted to access a UniquePtr that is nullptr." };
+			}
 			return ptr;
 		}
 

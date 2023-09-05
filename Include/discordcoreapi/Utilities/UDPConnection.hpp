@@ -47,15 +47,15 @@ namespace DiscordCoreAPI {
 			UDPConnection() = default;
 
 			inline UDPConnection& operator=(UDPConnection&& other) noexcept {
-				outputBuffer = std::move(other.outputBuffer);
-				inputBuffer = std::move(other.inputBuffer);
+				outputBuffer  = std::move(other.outputBuffer);
+				inputBuffer	  = std::move(other.inputBuffer);
+				address		  = std::move(other.address);
+				baseUrl		  = std::move(other.baseUrl);
+				socket		  = std::move(other.socket);
 				currentStatus = other.currentStatus;
-				address = std::move(other.address);
-				baseUrl = std::move(other.baseUrl);
-				socket = std::move(other.socket);
-				streamType = other.streamType;
-				bytesRead = other.bytesRead;
-				port = other.port;
+				streamType	  = other.streamType;
+				bytesRead	  = other.bytesRead;
+				port		  = other.port;
 				return *this;
 			};
 
@@ -66,17 +66,17 @@ namespace DiscordCoreAPI {
 			inline UDPConnection(const std::string& baseUrlNew, uint16_t portNew, StreamType streamTypeNew,
 				std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* token) {
 				streamType = streamTypeNew;
-				baseUrl = baseUrlNew;
-				port = portNew;
+				baseUrl	   = baseUrlNew;
+				port	   = portNew;
 				addrinfoWrapper hints{};
-				hints->ai_family = AF_INET;
+				hints->ai_family   = AF_INET;
 				hints->ai_socktype = SOCK_DGRAM;
 				hints->ai_protocol = IPPROTO_UDP;
 
 				if (socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); socket.operator SOCKET() == INVALID_SOCKET) {
 					MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::socket(), to: " + baseUrlNew));
 					currentStatus = ConnectionStatus::CONNECTION_Error;
-					socket = INVALID_SOCKET;
+					socket		  = INVALID_SOCKET;
 					return;
 				}
 
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 				if (auto returnData = setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, optVal.get(), sizeof(optVal)); returnData < 0) {
 					MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::setsockopt(), to: " + baseUrlNew));
 					currentStatus = ConnectionStatus::CONNECTION_Error;
-					socket = INVALID_SOCKET;
+					socket		  = INVALID_SOCKET;
 					return;
 				}
 
@@ -93,14 +93,14 @@ namespace DiscordCoreAPI {
 				if (ioctlsocket(socket, FIONBIO, &value02)) {
 					MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::ioctlsocket(), to: " + baseUrlNew));
 					currentStatus = ConnectionStatus::CONNECTION_Error;
-					socket = INVALID_SOCKET;
+					socket		  = INVALID_SOCKET;
 					return;
 				}
 #else
 				if (fcntl(socket, F_SETFL, fcntl(socket, F_GETFL, 0) | O_NONBLOCK)) {
 					MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::ioctlsocket(), to: " + baseUrlNew));
 					currentStatus = ConnectionStatus::CONNECTION_Error;
-					socket = INVALID_SOCKET;
+					socket		  = INVALID_SOCKET;
 					return;
 				}
 #endif
@@ -109,34 +109,33 @@ namespace DiscordCoreAPI {
 					if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, address)) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::getaddrinfo(), to: " + baseUrlNew));
 						currentStatus = ConnectionStatus::CONNECTION_Error;
-						socket = INVALID_SOCKET;
+						socket		  = INVALID_SOCKET;
 						return;
 					}
 					if (::connect(socket, address->ai_addr, static_cast<uint32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::connect(), to: " + baseUrlNew));
 						currentStatus = ConnectionStatus::CONNECTION_Error;
-						socket = INVALID_SOCKET;
+						socket		  = INVALID_SOCKET;
 						return;
 					}
 				} else if (streamType == StreamType::Client) {
 					if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, address)) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::getaddrinfo(), to: " + baseUrlNew));
 						currentStatus = ConnectionStatus::CONNECTION_Error;
-						socket = INVALID_SOCKET;
+						socket		  = INVALID_SOCKET;
 						return;
 					}
 					std::string connectionString{ "connecting" };
 					int32_t result{};
-					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().areWeStopped()) {
-						result = sendto(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr,
-							static_cast<int32_t>(address->ai_addrlen));
+					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().stopRequested()) {
+						result =
+							sendto(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr, static_cast<int32_t>(address->ai_addrlen));
 						std::this_thread::sleep_for(1ns);
 					}
 					socklen_t currentSize{ static_cast<socklen_t>(address->ai_addrlen) };
 					result = 0;
-					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().areWeStopped()) {
-						result = recvfrom(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr,
-							&currentSize);
+					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().stopRequested()) {
+						result = recvfrom(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr, &currentSize);
 						std::this_thread::sleep_for(1ns);
 					}
 				} else {
@@ -144,29 +143,28 @@ namespace DiscordCoreAPI {
 					if (getaddrinfo(nullptr, std::to_string(portNew).c_str(), hints, address)) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::getaddrinfo(), to: " + baseUrlNew));
 						currentStatus = ConnectionStatus::CONNECTION_Error;
-						socket = INVALID_SOCKET;
+						socket		  = INVALID_SOCKET;
 						return;
 					}
 					if (auto result = bind(socket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); result != 0) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::bind(), to: " + baseUrlNew));
 						currentStatus = ConnectionStatus::CONNECTION_Error;
-						socket = INVALID_SOCKET;
+						socket		  = INVALID_SOCKET;
 						return;
 					}
 					std::string connectionString{};
 					int32_t result{};
 					socklen_t currentSize{ static_cast<socklen_t>(address->ai_addrlen) };
 					connectionString.resize(10);
-					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().areWeStopped()) {
-						result = recvfrom(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr,
-							&currentSize);
+					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().stopRequested()) {
+						result = recvfrom(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr, &currentSize);
 						std::this_thread::sleep_for(1ns);
 					}
 					connectionString = "connected1";
-					result = 0;
-					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().areWeStopped()) {
-						result = sendto(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr,
-							static_cast<int32_t>(address->ai_addrlen));
+					result			 = 0;
+					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().stopRequested()) {
+						result =
+							sendto(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr, static_cast<int32_t>(address->ai_addrlen));
 						std::this_thread::sleep_for(1ns);
 					}
 				}
@@ -186,7 +184,7 @@ namespace DiscordCoreAPI {
 				if (auto returnValue = poll(&readWriteSet, 1, 0); returnValue == SOCKET_ERROR) {
 					MessagePrinter::printError<PrintMessageType::WebSocket>(reportSSLError("processIO() 00") + reportError("processIO() 00"));
 					currentStatus = ConnectionStatus::SOCKET_Error;
-					socket = INVALID_SOCKET;
+					socket		  = INVALID_SOCKET;
 					return currentStatus;
 				} else if (returnValue == 0) {
 					return currentStatus;
@@ -195,7 +193,7 @@ namespace DiscordCoreAPI {
 						if (!processWriteData()) {
 							MessagePrinter::printError<PrintMessageType::WebSocket>(reportSSLError("processIO() 01") + reportError("processIO() 01"));
 							currentStatus = ConnectionStatus::WRITE_Error;
-							socket = INVALID_SOCKET;
+							socket		  = INVALID_SOCKET;
 							return currentStatus;
 						}
 					}
@@ -203,23 +201,23 @@ namespace DiscordCoreAPI {
 						if (!processReadData()) {
 							MessagePrinter::printError<PrintMessageType::WebSocket>(reportSSLError("processIO() 02") + reportError("processIO() 02"));
 							currentStatus = ConnectionStatus::READ_Error;
-							socket = INVALID_SOCKET;
+							socket		  = INVALID_SOCKET;
 							return currentStatus;
 						}
 					}
 					if (readWriteSet.revents & POLLERR) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportSSLError("processIO() 03") + reportError("processIO() 03"));
 						currentStatus = ConnectionStatus::POLLERR_Error;
-						socket = INVALID_SOCKET;
+						socket		  = INVALID_SOCKET;
 					}
 					if (readWriteSet.revents & POLLNVAL) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportSSLError("processIO() 04") + reportError("processIO() 04"));
 						currentStatus = ConnectionStatus::POLLNVAL_Error;
-						socket = INVALID_SOCKET;
+						socket		  = INVALID_SOCKET;
 					}
 					if (readWriteSet.revents & POLLHUP) {
 						currentStatus = ConnectionStatus::POLLHUP_Error;
-						socket = INVALID_SOCKET;
+						socket		  = INVALID_SOCKET;
 					}
 				}
 				return currentStatus;
@@ -236,7 +234,7 @@ namespace DiscordCoreAPI {
 							amountToCollect = dataToWrite.size();
 						}
 						outputBuffer.writeData(dataToWrite.data(), amountToCollect);
-						dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
+						dataToWrite	   = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
 						remainingBytes = dataToWrite.size();
 					}
 				}
@@ -249,7 +247,7 @@ namespace DiscordCoreAPI {
 			inline bool areWeStillConnected() {
 				if (socket.operator SOCKET() != INVALID_SOCKET) {
 					pollfd fdEvent = {};
-					fdEvent.fd = socket;
+					fdEvent.fd	   = socket;
 					fdEvent.events = POLLOUT;
 					int32_t result = poll(&fdEvent, 1, 1);
 					if (result == SOCKET_ERROR || fdEvent.revents & POLLHUP || fdEvent.revents & POLLNVAL || fdEvent.revents & POLLERR) {
@@ -282,8 +280,7 @@ namespace DiscordCoreAPI {
 					if (!inputBuffer.isItFull()) {
 						socklen_t currentSize{ static_cast<socklen_t>(address->ai_addrlen) };
 						uint64_t bytesToRead{ maxBufferSize };
-						readBytes = recvfrom(static_cast<SOCKET>(socket), resampleVector.data(), static_cast<int32_t>(bytesToRead), 0,
-							address->ai_addr, &currentSize);
+						readBytes = recvfrom(static_cast<SOCKET>(socket), resampleVector.data(), static_cast<int32_t>(bytesToRead), 0, address->ai_addr, &currentSize);
 						if (readBytes <= 0 && errno != EWOULDBLOCK && errno != EINPROGRESS) {
 							return false;
 						} else if (readBytes > 0) {

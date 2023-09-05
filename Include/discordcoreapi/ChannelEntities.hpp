@@ -245,7 +245,7 @@ namespace DiscordCoreAPI {
 					throw DCAException{ "Sorry, but there was no id set for that channel." };
 				}
 				cache.emplace(std::forward<ChannelType>(channel));
-				if (cache.count() % 100 == 0) {
+				if (cache.count() % 1000 == 0) {
 					std::cout << "CURRENT CHANNEL COUNT: " << cache.count() << std::endl;
 				}
 			}

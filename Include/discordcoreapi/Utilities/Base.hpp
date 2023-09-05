@@ -98,8 +98,6 @@ inline std::tm getCurrentTimeVal(time_t& result) {
 #include <mutex>
 #include <queue>
 #include <array>
-#include <map>
-#include <set>
 
 #if defined max
 	#undef max
@@ -151,16 +149,16 @@ namespace DiscordCoreAPI {
 	inline thread_local Jsonifier::JsonifierCore parser{};
 
 	template<typename ValueType> using StopWatch = JsonifierInternal::StopWatch<ValueType>;
-	using SysClock = std::chrono::system_clock;
-	using HRClock = std::chrono::high_resolution_clock;
-	using Milliseconds = std::chrono::milliseconds;
-	using Microseconds = std::chrono::microseconds;
-	using Nanoseconds = std::chrono::nanoseconds;
-	using Seconds = std::chrono::seconds;
+	using SysClock								 = std::chrono::system_clock;
+	using HRClock								 = std::chrono::high_resolution_clock;
+	using Milliseconds							 = std::chrono::milliseconds;
+	using Microseconds							 = std::chrono::microseconds;
+	using Nanoseconds							 = std::chrono::nanoseconds;
+	using Seconds								 = std::chrono::seconds;
 
 	enum class PrintMessageType {
-		General = 0,
-		Https = 1,
+		General	  = 0,
+		Https	  = 1,
 		WebSocket = 2,
 	};
 
@@ -195,8 +193,7 @@ namespace DiscordCoreAPI {
 		/// @param other An instance of ValueType with configuration settings.
 		/// @param outputStreamNew The output stream to print messages to (default: std::cout).
 		/// @param errorStreamNew The error stream to print messages to (default: std::cerr).
-		template<typename ValueType>
-		static inline void initialize(const ValueType& other, std::ostream& outputStreamNew = std::cout, std::ostream& errorStreamNew = std::cerr) {
+		template<typename ValueType> static inline void initialize(const ValueType& other, std::ostream& outputStreamNew = std::cout, std::ostream& errorStreamNew = std::cerr) {
 			doWePrintGeneralErrors.store(other.doWePrintGeneralErrorMessages(), std::memory_order_release);
 			doWePrintGeneralSuccesses.store(other.doWePrintGeneralSuccessMessages(), std::memory_order_release);
 			doWePrintHttpsErrors.store(other.doWePrintHttpsErrorMessages(), std::memory_order_release);
@@ -204,21 +201,20 @@ namespace DiscordCoreAPI {
 			doWePrintWebSocketErrors.store(other.doWePrintWebSocketErrorMessages(), std::memory_order_release);
 			doWePrintWebSocketSuccesses.store(other.doWePrintWebSocketSuccessMessages(), std::memory_order_release);
 			outputStream = &outputStreamNew;
-			errorStream = &errorStreamNew;
+			errorStream	 = &errorStreamNew;
 		}
 
 		/// @brief Print an error message of the specified type.
 		/// @tparam messageType The type of message to print.
 		/// @param what The error message.
 		/// @param where The source location where the error occurred (default: current source location).
-		template<PrintMessageType messageType>
-		static inline void printError(const std::string& what, std::source_location where = std::source_location::current()) {
+		template<PrintMessageType messageType> static inline void printError(const std::string& what, std::source_location where = std::source_location::current()) {
 			switch (messageType) {
 				case PrintMessageType::General: {
 					if (doWePrintGeneralErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*errorStream << shiftToBrightRed() << "General Error, caught at: " << where.file_name() << ", " << where.line() << ":"
-									 << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
+						*errorStream << shiftToBrightRed() << "General Error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+									 << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									 << reset() << std::endl;
 					}
 					break;
@@ -226,8 +222,8 @@ namespace DiscordCoreAPI {
 				case PrintMessageType::WebSocket: {
 					if (doWePrintWebSocketErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*outputStream << shiftToBrightRed() << "WebSocket Error, caught at: " << where.file_name() << ", " << where.line() << ":"
-									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
+						*outputStream << shiftToBrightRed() << "WebSocket Error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+									  << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									  << reset() << std::endl;
 					}
 					break;
@@ -235,8 +231,8 @@ namespace DiscordCoreAPI {
 				case PrintMessageType::Https: {
 					if (doWePrintHttpsErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*outputStream << shiftToBrightRed() << "Https Error, caught at: " << where.file_name() << ", " << where.line() << ":"
-									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
+						*outputStream << shiftToBrightRed() << "Https Error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+									  << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									  << reset() << std::endl;
 					}
 					break;
@@ -248,14 +244,13 @@ namespace DiscordCoreAPI {
 		/// @tparam messageType The type of message to print.
 		/// @param what The success message.
 		/// @param where The source location where the success occurred (default: current source location).
-		template<PrintMessageType messageType>
-		static inline void printSuccess(const std::string& what, std::source_location where = std::source_location::current()) {
+		template<PrintMessageType messageType> static inline void printSuccess(const std::string& what, std::source_location where = std::source_location::current()) {
 			switch (messageType) {
 				case PrintMessageType::General: {
 					if (doWePrintGeneralSuccesses.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*outputStream << shiftToBrightBlue() << "General Success, caught at: " << where.file_name() << ", " << where.line() << ":"
-									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
+						*outputStream << shiftToBrightBlue() << "General Success, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+									  << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									  << reset() << std::endl;
 					}
 					break;
@@ -263,8 +258,8 @@ namespace DiscordCoreAPI {
 				case PrintMessageType::WebSocket: {
 					if (doWePrintWebSocketSuccesses.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*outputStream << shiftToBrightGreen() << "WebSocket Success, caught at: " << where.file_name() << ", " << where.line() << ":"
-									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
+						*outputStream << shiftToBrightGreen() << "WebSocket Success, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+									  << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									  << reset() << std::endl;
 					}
 					break;
@@ -272,8 +267,8 @@ namespace DiscordCoreAPI {
 				case PrintMessageType::Https: {
 					if (doWePrintHttpsSuccesses.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*outputStream << shiftToBrightGreen() << "Https Success, caught at: " << where.file_name() << ", " << where.line() << ":"
-									  << where.column() << ", in: " << where.function_name() << ", it is: " << what << std::endl
+						*outputStream << shiftToBrightGreen() << "Https Success, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+									  << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									  << reset() << std::endl;
 					}
 					break;
@@ -298,12 +293,12 @@ namespace DiscordCoreAPI {
 
 	/// @brief Time formatting methods.
 	enum class TimeFormat : char {
-		LongDate = 'D',///< "20 April 2021" - Long Date
-		LongDateTime = 'F',///< "Tuesday, 20 April 2021 16:20" - Long Date/Time
-		LongTime = 'T',///< "16:20:30" - Long Time
-		ShortDate = 'd',///< "20/04/2021" - Short Date
+		LongDate	  = 'D',///< "20 April 2021" - Long Date
+		LongDateTime  = 'F',///< "Tuesday, 20 April 2021 16:20" - Long Date/Time
+		LongTime	  = 'T',///< "16:20:30" - Long Time
+		ShortDate	  = 'd',///< "20/04/2021" - Short Date
 		ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
-		ShortTime = 't',///< "16:20" - Short Time
+		ShortTime	  = 't',///< "16:20" - Short Time
 	};
 
 	class TimeStampParse;
@@ -327,8 +322,8 @@ namespace DiscordCoreAPI {
 		/// @param yearsToAdd Number of years to add.
 		/// @param timeFormat Format for the resulting time stamp.
 		/// @return ISO8601 time stamp string.
-		static inline std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
-			int32_t yearsToAdd, TimeFormat timeFormat) {
+		static inline std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
+			TimeFormat timeFormat) {
 			std::time_t result = std::time(nullptr);
 			static constexpr int32_t secondsPerMinute{ 60 };
 			static constexpr int32_t minutesPerHour{ 60 };
@@ -339,8 +334,8 @@ namespace DiscordCoreAPI {
 			static constexpr int32_t secondsPerMonth{ secondsPerDay * daysPerMonth };
 			static constexpr int32_t daysPerYear{ 365 };
 			static constexpr int32_t secondsPerYear{ secondsPerDay * daysPerYear };
-			int32_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) +
-				((hoursToAdd + 8) * secondsPerHour) + (minutesToAdd * secondsPerMinute);
+			int32_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + ((hoursToAdd + 8) * secondsPerHour) +
+				(minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
 			std::tm resultTwo{ getCurrentTimeVal(result) };
 			std::string returnString{};
@@ -349,17 +344,17 @@ namespace DiscordCoreAPI {
 					resultTwo.tm_hour = resultTwo.tm_hour - 24;
 					++resultTwo.tm_mday;
 				}
-				auto newValue = getTimeSinceEpoch(static_cast<int64_t>(resultTwo.tm_year) + 1900, static_cast<int64_t>(resultTwo.tm_mon) + 1,
-					resultTwo.tm_mday, static_cast<int64_t>(resultTwo.tm_hour) + 4, resultTwo.tm_min, resultTwo.tm_sec);
-				returnString = getISO8601TimeStamp(timeFormat, newValue);
+				auto newValue = getTimeSinceEpoch(static_cast<int64_t>(resultTwo.tm_year) + 1900, static_cast<int64_t>(resultTwo.tm_mon) + 1, resultTwo.tm_mday,
+					static_cast<int64_t>(resultTwo.tm_hour) + 4, resultTwo.tm_min, resultTwo.tm_sec);
+				returnString  = getISO8601TimeStamp(timeFormat, newValue);
 			} else {
 				if (resultTwo.tm_hour + 5 >= 24) {
 					resultTwo.tm_hour = resultTwo.tm_hour - 24;
 					++resultTwo.tm_mday;
 				}
-				auto newValue = getTimeSinceEpoch(static_cast<int64_t>(resultTwo.tm_year) + 1900, static_cast<int64_t>(resultTwo.tm_mon) + 1,
-					resultTwo.tm_mday, static_cast<int64_t>(resultTwo.tm_hour) + 5, resultTwo.tm_min, resultTwo.tm_sec);
-				returnString = getISO8601TimeStamp(timeFormat, newValue);
+				auto newValue = getTimeSinceEpoch(static_cast<int64_t>(resultTwo.tm_year) + 1900, static_cast<int64_t>(resultTwo.tm_mon) + 1, resultTwo.tm_mday,
+					static_cast<int64_t>(resultTwo.tm_hour) + 5, resultTwo.tm_min, resultTwo.tm_sec);
+				returnString  = getISO8601TimeStamp(timeFormat, newValue);
 			}
 			return returnString;
 		}
@@ -376,17 +371,17 @@ namespace DiscordCoreAPI {
 					resultTwo.tm_hour = resultTwo.tm_hour - 24;
 					++resultTwo.tm_mday;
 				}
-				auto newValue = getTimeSinceEpoch(static_cast<int64_t>(resultTwo.tm_year) + 1900, static_cast<int64_t>(resultTwo.tm_mon) + 1,
-					resultTwo.tm_mday, static_cast<int64_t>(resultTwo.tm_hour) + 4, resultTwo.tm_min, resultTwo.tm_sec);
-				returnString = getISO8601TimeStamp(timeFormat, newValue);
+				auto newValue = getTimeSinceEpoch(static_cast<int64_t>(resultTwo.tm_year) + 1900, static_cast<int64_t>(resultTwo.tm_mon) + 1, resultTwo.tm_mday,
+					static_cast<int64_t>(resultTwo.tm_hour) + 4, resultTwo.tm_min, resultTwo.tm_sec);
+				returnString  = getISO8601TimeStamp(timeFormat, newValue);
 			} else {
 				if (resultTwo.tm_hour + 5 >= 24) {
 					resultTwo.tm_hour = resultTwo.tm_hour - 24;
 					++resultTwo.tm_mday;
 				}
-				auto newValue = getTimeSinceEpoch(static_cast<int64_t>(resultTwo.tm_year) + 1900, static_cast<int64_t>(resultTwo.tm_mon) + 1,
-					resultTwo.tm_mday, static_cast<int64_t>(resultTwo.tm_hour) + 5, resultTwo.tm_min, resultTwo.tm_sec);
-				returnString = getISO8601TimeStamp(timeFormat, newValue);
+				auto newValue = getTimeSinceEpoch(static_cast<int64_t>(resultTwo.tm_year) + 1900, static_cast<int64_t>(resultTwo.tm_mon) + 1, resultTwo.tm_mday,
+					static_cast<int64_t>(resultTwo.tm_hour) + 5, resultTwo.tm_min, resultTwo.tm_sec);
+				returnString  = getISO8601TimeStamp(timeFormat, newValue);
 			}
 			return returnString;
 		}
@@ -398,13 +393,12 @@ namespace DiscordCoreAPI {
 		/// @return True if the specified time has elapsed, otherwise false.
 		inline bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) const {
 			uint64_t startTimeRaw{ convertTimeStampToTimeUnits(*static_cast<const ValueType*>(this)) };
-			auto currentTime = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+			auto currentTime						   = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			static constexpr uint64_t secondsPerMinute = 60;
-			static constexpr uint64_t secondsPerHour = secondsPerMinute * 60;
-			static constexpr uint64_t secondsPerDay = secondsPerHour * 24;
-			auto targetElapsedTime = ((static_cast<int64_t>(days) * secondsPerDay) + (static_cast<int64_t>(hours) * secondsPerHour) +
-										 (static_cast<int64_t>(minutes) * secondsPerMinute)) *
-				1000;
+			static constexpr uint64_t secondsPerHour   = secondsPerMinute * 60;
+			static constexpr uint64_t secondsPerDay	   = secondsPerHour * 24;
+			auto targetElapsedTime =
+				((static_cast<int64_t>(days) * secondsPerDay) + (static_cast<int64_t>(hours) * secondsPerHour) + (static_cast<int64_t>(minutes) * secondsPerMinute)) * 1000;
 			auto actualElapsedTime = currentTime - startTimeRaw;
 			if (actualElapsedTime <= 0) {
 				return false;
@@ -426,7 +420,7 @@ namespace DiscordCoreAPI {
 			static constexpr uint64_t minutesPerHour{ 60 };
 			static constexpr uint64_t msPerMinute{ msPerSecond * secondsPerMinute };
 			static constexpr uint64_t msPerHour{ msPerMinute * minutesPerHour };
-			uint64_t hoursLeft = static_cast<uint64_t>(trunc(durationInMs / msPerHour));
+			uint64_t hoursLeft	 = static_cast<uint64_t>(trunc(durationInMs / msPerHour));
 			uint64_t minutesLeft = static_cast<uint64_t>(trunc((durationInMs % msPerHour) / msPerMinute));
 			uint64_t secondsLeft = static_cast<uint64_t>(trunc(((durationInMs % msPerHour) % msPerMinute) / msPerSecond));
 			if (hoursLeft >= 1) {
@@ -580,9 +574,8 @@ namespace DiscordCoreAPI {
 		/// @return Converted time value in milliseconds.
 		static inline uint64_t convertTimeStampToTimeUnits(const std::string& originalTimeStamp) {
 			if (originalTimeStamp != "" && originalTimeStamp != "0") {
-				auto newValue = getTimeSinceEpoch(stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
-					stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),
-					stoi(originalTimeStamp.substr(17, 18)));
+				auto newValue = getTimeSinceEpoch(stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)), stoi(originalTimeStamp.substr(8, 9)),
+					stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)), stoi(originalTimeStamp.substr(17, 18)));
 				return newValue;
 			} else {
 				return std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
@@ -660,13 +653,13 @@ namespace DiscordCoreAPI {
 		/// @param offset The starting position of the substring.
 		/// @param count The length of the substring.
 		/// @return A new TimeStampParse instance representing the substring.
-		inline TimeStampParse substr(uint64_t offset, uint64_t count) {
+		inline TimeStampParse substr(uint64_t offset, uint64_t count) const {
 			return substr(offset, count);
 		}
 
 		/// @brief Returns the size of the TimeStampParse instance.
 		/// @return The size of the TimeStampParse instance.
-		inline uint64_t size() {
+		inline uint64_t size() const {
 			return std::string::size();
 		}
 
@@ -873,7 +866,6 @@ namespace DiscordCoreAPI {
 		uint64_t id{};///< The Snowflake ID.
 	};
 
-
 	inline std::ostream& operator<<(std::ostream& os, Snowflake sf) {
 		os << sf.operator std::string();
 		return os;
@@ -900,32 +892,4 @@ namespace DiscordCoreAPI {
 	enum class StreamType { None = 0, Client = 1, Server = 2 };
 
 	/**@}*/
-
-	namespace DiscordCoreInternal {
-
-		/**
-		 * \addtogroup discord_core_internal
-		 * @{
-		 */
-			
-		/// @brief A class representing a lock for a counting semaphore.
-		class SemaphoreLock {
-		  public:
-			/// @brief Constructor to acquire a lock on the semaphore.
-			/// @param semaphoreNew The counting semaphore to lock.
-			inline SemaphoreLock(std::counting_semaphore<1>& semaphoreNew) : semaphore{ semaphoreNew } {
-				semaphore.acquire();
-			};
-
-			/// @brief Destructor to release the lock on the semaphore.
-			inline ~SemaphoreLock() {
-				semaphore.release();
-			}
-
-		  protected:
-			std::counting_semaphore<1>& semaphore;///< Reference to the counting semaphore.
-		};
-
-		/**@}*/
-	}
 }

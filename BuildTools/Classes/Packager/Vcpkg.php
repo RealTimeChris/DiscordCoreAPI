@@ -89,7 +89,7 @@ class Vcpkg
 
     /**
      * Check out a repository by tag or branch name to ~/discordcoreapi,
-     * using the personal access token and userName passed in as command line parameters.
+     * using the personal access token and username passed in as command line parameters.
      * 
      * @param string $tag Tag to clone
      * @return bool false if the repository could not be cloned
@@ -102,7 +102,7 @@ class Vcpkg
             /* Empty tag means use the main branch */
             $tag = `{$this->git} config --get init.defaultBranch || echo main`;
         }
-	$repositoryUrl = 'https://' . urlencode($argv[1]) . ':' . urlencode($argv[2]) . '@github.com/realtimechris/DiscordCoreAPI';
+	$repositoryUrl = 'https://' . urlencode($argv[1]) . ':' . urlencode($argv[2]) . '@github.com/RealTimeChris/DiscordCoreAPI';
 
         echo GREEN . "Check out repository: $tag (user: ". $argv[1] . " branch: " . $tag . ")\n" . WHITE;
 
@@ -160,9 +160,8 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
 endif()
 
-vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/License.md")
-';
-        // ./Vcpkg/ports/discordcoreapi/vcpkg.json
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/License.md")';
+
         $versionFileContent = '{
   "name": "discordcoreapi",
   "version": ' . json_encode($this->getVersion()) . ',
@@ -248,20 +247,21 @@ vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/License.md")
 
         echo GREEN . "vcpkg x-add-version...\n" . WHITE;
         chdir('/usr/local/share/vcpkg');
-        $this->sudo('./vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json');
+        $this->sudo('./Vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json');
         /* Note: We commit this in /usr/local, but we never push it (we can't) */
         $this->git('add .', true);
-        $this->git('commit -m "VCPKG info update"', true);
+        $this->git('commit -m "[bot] VCPKG info update"', true);
         $this->sudo('/usr/local/share/vcpkg/vcpkg x-add-version discordcoreapi');
 
         echo GREEN . "Copy back port files from /usr/local/share...\n" . WHITE;
         chdir(getenv('HOME') . '/discordcoreapi');
         system('cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json');
+        system('cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./Vcpkg/versions/baseline.json');
         system('cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json');
 
         echo GREEN . "Commit and push changes to main branch\n" . WHITE;
         $this->git('add .');
-        $this->git('commit -m "VCPKG info update [skip ci]"');
+        $this->git('commit -m "[bot] VCPKG info update [skip ci]"');
         $this->git('config pull.rebase false');
         $this->git('pull');
         $this->git('push origin main');

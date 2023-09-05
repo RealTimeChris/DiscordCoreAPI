@@ -9,7 +9,7 @@ namespace DiscordCoreAPI {
 	extern std::atomic_bool doWeQuit;
 }
 
-void onBoot(DiscordCoreAPI::DiscordCoreClient* client) {
+void onBoot(DiscordCoreAPI::DiscordCoreClient* ) {
 	DiscordCoreAPI::doWeQuit.store(true, std::memory_order_release);
 }
 
