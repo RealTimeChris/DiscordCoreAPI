@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include <discordcoreapi/Utilities/Utilities.hpp>
+#include <discordcoreapi/Utilities.hpp>
 #include <opus/opus.h>
 #include <fstream>
 
@@ -43,15 +43,15 @@ namespace DiscordCoreAPI {
 		* @{
 		*/
 
-		static constexpr uint32_t SEGMENT_ID{ 0x18538067 };
-		static constexpr uint8_t SIMPLEBLOCK_ID{ 0xA3 };
-		static constexpr uint8_t OPUS_TRACK_ID{ 0x81 };
+		static constexpr uint32_t segmentId{ 0x18538067 };
+		static constexpr uint8_t simpleBlockId{ 0xA3 };
+		static constexpr uint8_t opusTrackId{ 0x81 };
 
-		static constexpr std::array<uint8_t, 256> ffLog2Tab{ 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
-			5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-			6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+		static constexpr uint8_t ffLog2Tab[]{ 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+			5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+			6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
 			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
+			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
 
 		/// @brief A class for demuxing Matroska-contained audio data.
 		class MatroskaDemuxer {
@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Writes data to the Matroska demuxer.
 			/// @param dataNew The data to be written.
-			inline void writeData(std::basic_string_view<uint8_t> dataNew) {
+			inline void writeData(jsonifier::string_view_base<uint8_t> dataNew) {
 				data = dataNew;
 			}
 
@@ -81,39 +81,40 @@ namespace DiscordCoreAPI {
 			/// @brief Proceed with the demuxing process.
 			inline void proceedDemuxing() {
 				if (!doWeHaveTotalSize) {
-					if (reverseBytes<uint32_t>() != SEGMENT_ID) {
+					if (reverseBytes<uint32_t>() != segmentId) {
 						MessagePrinter::printError<PrintMessageType::General>(
-							"Missing a Segment, which was expected at index: " + std::to_string(currentPosition) + std::string{ "..." });
-						if (!findNextId(SEGMENT_ID)) {
-							if ((totalSize > 0 && currentPosition >= totalSize)) {
+							jsonifier::string{ "Missing a Segment, which was expected at index: " + jsonifier::toString(currentPosition) + jsonifier::string{ "..." } });
+						if (!findNextId(segmentId)) {
+							if ((totalSize > 0 && static_cast<int64_t>(currentPosition) >= totalSize)) {
 								areWeDoneVal = true;
 							}
 							return;
 						}
-						MessagePrinter::printSuccess<PrintMessageType::General>("Missing Segment, found at index: " + std::to_string(currentPosition) + ".");
+						MessagePrinter::printSuccess<PrintMessageType::General>(
+							jsonifier::string{ "Missing Segment, found at index: " + jsonifier::toString(currentPosition) + "." });
 					} else {
 						currentPosition += sizeof(uint32_t);
 					}
 					totalSize		  = collectElementSize();
 					doWeHaveTotalSize = true;
 				}
-				while (currentPosition + 3 < data.size() && data.find(0xa3) != std::string::npos) {
+				while (currentPosition + 3 < data.size() && data.find(static_cast<uint8_t>(0xa3)) != jsonifier::string::npos) {
 					if (currentPosition >= data.size() - 8) {
-						if ((totalSize > 0 && currentPosition >= totalSize)) {
+						if ((totalSize > 0 && static_cast<int64_t>(currentPosition) >= totalSize)) {
 							areWeDoneVal = true;
 						}
 						return;
 					}
-					if (data.at(currentPosition) == SIMPLEBLOCK_ID && ((data.at(currentPosition + 2) == OPUS_TRACK_ID || data.at(currentPosition + 3) == OPUS_TRACK_ID))) {
+					if (data.at(currentPosition) == simpleBlockId && ((data.at(currentPosition + 2) == opusTrackId || data.at(currentPosition + 3) == opusTrackId))) {
 						++currentPosition;
 						if (currentSize == 0) {
-							currentSize = collectElementSize();
-							if (currentSize >= totalSize || currentSize >= 1276 || currentSize < 4) {
+							currentSize = static_cast<uint64_t>(collectElementSize());
+							if (static_cast<int64_t>(currentSize) >= totalSize || static_cast<int64_t>(currentSize) >= 1276 || static_cast<int64_t>(currentSize) < 4) {
 								++currentPosition;
 								currentSize = 0;
 								continue;
 							} else if (currentSize == static_cast<uint64_t>(-1) || currentPosition + currentSize >= data.size()) {
-								if ((totalSize > 0 && currentPosition >= totalSize)) {
+								if ((totalSize > 0 && static_cast<int64_t>(currentPosition) >= totalSize)) {
 									areWeDoneVal = true;
 								}
 								return;
@@ -127,7 +128,7 @@ namespace DiscordCoreAPI {
 						++currentPosition;
 					}
 				}
-				if ((totalSize > 0 && currentPosition >= totalSize)) {
+				if ((totalSize > 0 && static_cast<int64_t>(currentPosition) >= totalSize)) {
 					areWeDoneVal = true;
 				}
 				return;
@@ -140,13 +141,13 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			std::basic_string_view<uint8_t> data{};///< Input data for demuxing.
+			jsonifier::string_view_base<uint8_t> data{};///< Input data for demuxing.
 			std::deque<AudioFrameData> frames{};///< Queue to store collected frames.
 			bool doWeHaveTotalSize{ false };///< Flag indicating if total size has been determined.
 			bool areWeDoneVal{ false };///< Flag indicating if demuxing is complete.
 			uint64_t currentPosition{};///< Current position in the data.
 			uint64_t currentSize{};///< Current size of the element being processed.
-			uint64_t totalSize{};///< Total size of the segment.
+			int64_t totalSize{};///< Total size of the segment.
 
 			/// @brief Finds the next occurrence of the specified value in the data.
 			/// @tparam ObjectType The type of value to search for.
@@ -207,8 +208,8 @@ namespace DiscordCoreAPI {
 			/// @brief Parses an Opus frame.
 			inline void parseOpusFrame() {
 				AudioFrameData frameNew{};
-				frameNew.currentSize = currentSize - 4;
-				frameNew += std::basic_string_view<uint8_t>{ data.data() + currentPosition + 4, static_cast<uint64_t>(frameNew.currentSize) };
+				frameNew.currentSize = static_cast<int64_t>(currentSize - 4);
+				frameNew += jsonifier::string_view_base<uint8_t>{ data.data() + currentPosition + 4, static_cast<uint64_t>(frameNew.currentSize) };
 				frameNew.type = AudioFrameType::Encoded;
 				currentPosition += currentSize;
 				frames.emplace_back(std::move(frameNew));
@@ -223,7 +224,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Constructor for OpusPacket.
 			/// @param newData The data for the Opus packet.
-			inline OpusPacket(Jsonifier::Vector<uint8_t> newData) {
+			inline OpusPacket(jsonifier::vector<uint8_t> newData) {
 				dataVal = newData;
 			};
 
@@ -240,7 +241,7 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			Jsonifier::Vector<uint8_t> dataVal{};///< The data for the Opus packet.
+			jsonifier::vector<uint8_t> dataVal{};///< The data for the Opus packet.
 		};
 
 		/// @brief A class representing an Ogg page for demuxing.
@@ -248,7 +249,7 @@ namespace DiscordCoreAPI {
 		  public:
 			/// @brief Constructor for OggPage.
 			/// @param newData The data for the Ogg page.
-			inline OggPage(Jsonifier::Vector<uint8_t>& newData) {
+			inline OggPage(jsonifier::vector<uint8_t>& newData) {
 				data = std::move(newData);
 				verifyAsOggPage();
 				getSegmentData();
@@ -259,9 +260,9 @@ namespace DiscordCoreAPI {
 			/// @return True if an Opus packet was retrieved, false otherwise.
 			inline bool getOpusPacket(OpusPacket& newPacket) {
 				if (segmentTable.size() > 0) {
-					auto newSpace = segmentTable.front();
+					auto newSpace = static_cast<uint64_t>(segmentTable.front());
 					segmentTable.pop_front();
-					Jsonifier::Vector<uint8_t> returnValue{};
+					jsonifier::vector<uint8_t> returnValue{};
 					returnValue.resize(newSpace);
 					std::memcpy(returnValue.data(), data.data() + currentPosition, newSpace);
 					currentPosition += newSpace;
@@ -296,7 +297,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			std::deque<int32_t> segmentTable{};///< Segment table storing Opus packet sizes.
-			Jsonifier::Vector<uint8_t> data{};///< The data for the Ogg page.
+			jsonifier::vector<uint8_t> data{};///< The data for the Ogg page.
 			uint64_t totalPacketSize{};///< Total size of Opus packets in the page.
 			uint64_t currentPosition{};///< Current position in the page data.
 			int32_t segmentCount{};///< Number of segments in the Ogg page.
@@ -332,7 +333,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Writes data to the Ogg demuxer and processes it.
 			/// @param inputData The data to be written and processed.
-			inline void writeData(std::string_view inputData) {
+			inline void writeData(jsonifier::string_view inputData) {
 				uint64_t pos = 0;
 				data.clear();
 				data.resize(inputData.size());
@@ -340,17 +341,17 @@ namespace DiscordCoreAPI {
 				uint64_t collectedLength{};
 				while (pos < inputData.size()) {
 					uint64_t oggPos = inputData.find("OggS", pos);
-					if (oggPos != std::string::npos) {
+					if (oggPos != jsonifier::string::npos) {
 						uint64_t nextOggPos = inputData.find("OggS", oggPos + 1);
-						if (nextOggPos != std::string::npos) {
+						if (nextOggPos != jsonifier::string::npos) {
 							collectedLength += nextOggPos - oggPos;
-							Jsonifier::Vector<uint8_t> newerString{};
+							jsonifier::vector<uint8_t> newerString{};
 							newerString.resize(nextOggPos - oggPos);
 							std::memcpy(newerString.data(), data.data() + oggPos, nextOggPos - oggPos);
 							pages.emplace_back(newerString);
 							pos = nextOggPos;
 						} else {
-							Jsonifier::Vector<uint8_t> newerString{};
+							jsonifier::vector<uint8_t> newerString{};
 							newerString.resize(inputData.size() - collectedLength);
 							std::memcpy(newerString.data(), data.data() + oggPos, inputData.size() - collectedLength);
 							pages.emplace_back(newerString);
@@ -358,7 +359,7 @@ namespace DiscordCoreAPI {
 							break;
 						}
 					} else {
-						Jsonifier::Vector<uint8_t> newerString{};
+						jsonifier::vector<uint8_t> newerString{};
 						newerString.resize(inputData.size() - collectedLength);
 						std::memcpy(newerString.data(), data.data() + oggPos, inputData.size() - collectedLength);
 						pages.emplace_back(newerString);
@@ -381,8 +382,8 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			std::deque<AudioFrameData> frames{};///< Queue to store collected audio frames.
+			jsonifier::string_base<uint8_t> data{};///< Input data for demuxing.
 			std::deque<OpusPacket> packets{};///< Queue to store Opus packets.
-			Jsonifier::StringBase<uint8_t> data{};///< Input data for demuxing.
 			std::deque<OggPage> pages{};///< Queue to store Ogg pages.
 
 			/// @brief Processes an Ogg page for demuxing.
@@ -404,8 +405,8 @@ namespace DiscordCoreAPI {
 					OpusPacket newPacket = packets.front();
 					packets.pop_front();
 					AudioFrameData newFrame{};
-					newFrame += std::basic_string_view<uint8_t>{ newPacket.data(), newPacket.size() };
-					newFrame.currentSize = newPacket.size();
+					newFrame += jsonifier::string_view_base<uint8_t>{ newPacket.data(), newPacket.size() };
+					newFrame.currentSize = static_cast<int64_t>(newPacket.size());
 					newFrame.type		 = AudioFrameType::Encoded;
 					frames.emplace_back(std::move(newFrame));
 				}

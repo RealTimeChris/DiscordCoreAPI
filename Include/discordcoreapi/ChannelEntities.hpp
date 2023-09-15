@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 	/// @brief For deleting or closing a Channel.
 	struct DeleteOrCloseChannelData {
 		Snowflake channelId{};///< The id of the ChannelData to close/delete.
-		std::string reason{};///< The reason for deleting/closing the ChannelData.
+		jsonifier::string reason{};///< The reason for deleting/closing the ChannelData.
 	};
 
 	/// @brief For editing the PermissionTypes overwrites of a given Channel, for a given Role or UserData.
@@ -56,9 +56,9 @@ namespace DiscordCoreAPI {
 		PermissionOverwritesType type{};///< The type of overwrite.
 		Snowflake roleOrUserId{};///< The RoleData or UserData Snowflake to modify the permissions for.
 		Snowflake channelId{};///< The ChannelData id of the desired ChannelData to modify the permissions for.
-		std::string reason{};///< Reason for editing the permission overwrites.
-		std::string allow{};///< The permissions to list as "allowed".
-		std::string deny{};///< The permissions to list as "deny".
+		jsonifier::string reason{};///< Reason for editing the permission overwrites.
+		jsonifier::string allow{};///< The permissions to list as "allowed".
+		jsonifier::string deny{};///< The permissions to list as "deny".
 	};
 
 	/// @brief For collecting the invites to a given Channel.
@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
 		InviteTargetTypes targetType{};///<	The type of target for this voice ChannelData invite.
 		Snowflake targetUserId{};///< Snowflake of the user whose stream to display for this invite, required if target_type is 1.
 		Snowflake channelId{};///< The id of the ChannelData to create the invite for.
-		std::string reason{};///< Reason for creating the invite.
+		jsonifier::string reason{};///< Reason for creating the invite.
 		int32_t maxUses{};///< Max number of uses or 0 for unlimited.between 0 and 100.
 		int32_t maxAge{};///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
 		bool temporary{};///< Whether this invite only grants temporary membership.
@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 	struct DeleteChannelPermissionOverwritesData {
 		Snowflake roleOrUserId{};///< The RoleData or UserData id for whom to delete the PermissionTypes overwrites.
 		Snowflake channelId{};///< The id of the ChannelData to modify permissions for.
-		std::string reason{};///< Reason for deleting these permission overwrites.
+		jsonifier::string reason{};///< Reason for deleting these permission overwrites.
 	};
 
 	/// @brief For following a news ChannelData.
@@ -104,16 +104,16 @@ namespace DiscordCoreAPI {
 
 	/// @brief For creating a new ChannelData within a chosen Guild.
 	struct CreateGuildChannelData {
-		Jsonifier::Vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the ChannelData's permission overwrites.
+		jsonifier::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the ChannelData's permission overwrites.
 		int32_t defaultAutoArchiveDuration{};///< Defualt duration of time before archiving a thread.
 		int32_t rateLimitPerUser{};///< Amount of seconds a user has to wait before sending another message(0 - 21600).
-		std::string reason{};///< Reason for creating the ChannelData.
+		jsonifier::string reason{};///< Reason for creating the ChannelData.
 		Snowflake parentId{};///< Snowflake of the parent category for a Channel.
-		std::string topic{};///< ChannelData topic(0 - 1024 characters).
+		jsonifier::string topic{};///< ChannelData topic(0 - 1024 characters).
 		int32_t userLimit{};///< The user limit of the voice ChannelData(voice only).
 		Snowflake guildId{};///< The Guild within which to create the ChannelData.
 		int32_t position{};///< Sorting position of the ChannelData.
-		std::string name{};///< The name of the ChannelData.
+		jsonifier::string name{};///< The name of the ChannelData.
 		ChannelType type{};///< The type of ChannelData.
 		int32_t bitrate{};///< The bitrate(in bits) of the voice ChannelData(voice only).
 		bool nsfw{};///<  Whether the ChannelData is nsfw.
@@ -129,8 +129,8 @@ namespace DiscordCoreAPI {
 
 	/// @brief For modifying the current positions of one or more Channels in the Guild.
 	struct ModifyGuildChannelPositionsData {
-		Jsonifier::Vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new ChannelData position's responseData.
-		std::string reason{};///< Reason for re-ordering the ChannelData positions.
+		jsonifier::vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new ChannelData position's responseData.
+		jsonifier::string reason{};///< Reason for re-ordering the ChannelData positions.
 		Snowflake guildId{};///< Guild within which to re-order the ChannelData positions.
 	};
 
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		UpdateChannelData channelData{};///< The responseData of the ChannelData to be updated.
 		Snowflake channelId{};///< The id of the ChannelData to modify.
-		std::string reason{};///< A reason for modifying the ChannelData.
+		jsonifier::string reason{};///< A reason for modifying the ChannelData.
 
 		ModifyChannelData(ChannelData newData);
 	};
@@ -185,22 +185,22 @@ namespace DiscordCoreAPI {
 		/// @return A CoRoutine containing a Channel.
 		static CoRoutine<void> deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage);
 
-		/// @brief Edit the given std::string overwrites for a given User or RoleData.
+		/// @brief Edit the given jsonifier::string overwrites for a given User or RoleData.
 		/// @param dataPackage An EditChannelPermissionOverwritesData structure.
 		/// @return A CoRoutine containing void.
 		static CoRoutine<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
 
 		/// @brief Collects a vector of the invites to a given Channel.
 		/// @param dataPackage A GetChannelInvitesData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<InviteData>.
-		static CoRoutine<Jsonifier::Vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<InviteData>.
+		static CoRoutine<jsonifier::vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
 
 		/// @brief Creates an invite to a selected ChannelData.
 		/// @param dataPackage A CreateChannelInviteData structure.
 		/// @return A CoRoutine containing an InviteData.
 		static CoRoutine<InviteData> createChannelInviteAsync(CreateChannelInviteData dataPackage);
 
-		/// @brief Delete the given std::string overwrites for a given User or RoleData.
+		/// @brief Delete the given jsonifier::string overwrites for a given User or RoleData.
 		/// @param dataPackage A DeleteChannelPermissionOverwritesData structure
 		/// @return A CoRoutine containing void.
 		static CoRoutine<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);
@@ -217,8 +217,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects a list of Channels from a chosen Guild.
 		/// @param dataPackage A GetGuildChannelsData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<ChannelData>.
-		static CoRoutine<Jsonifier::Vector<ChannelData>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<ChannelData>.
+		static CoRoutine<jsonifier::vector<ChannelData>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
 
 		/// @brief Creates a new ChannelData within a chosen Guild.
 		/// @param dataPackage A CreateGuildChannelData structure.
@@ -237,9 +237,9 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
 		/// @return A CoRoutine containing a VoiceRegionDataVector.
-		static CoRoutine<Jsonifier::Vector<VoiceRegionData>> getVoiceRegionsAsync();
+		static CoRoutine<jsonifier::vector<VoiceRegionData>> getVoiceRegionsAsync();
 
-		template<typename ChannelType> static inline void insertChannel(ChannelType&& channel) {
+		template<typename ChannelType> inline static void insertChannel(ChannelType&& channel) {
 			if (doWeCacheChannelsBool) {
 				if (channel.id == 0) {
 					throw DCAException{ "Sorry, but there was no id set for that channel." };

@@ -33,39 +33,40 @@
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::ExecuteWebHookData> {
+	template<> struct core<DiscordCoreAPI::ExecuteWebHookData> {
 		using ValueType					 = DiscordCoreAPI::ExecuteWebHookData;
-		static constexpr auto parseValue = object("threadId", &ValueType::threadId, "wait", &ValueType::wait, "attachments", &ValueType::attachments, "components",
+		static constexpr auto parseValue = createObject("threadId", &ValueType::threadId, "wait", &ValueType::wait, "attachments", &ValueType::attachments, "components",
 			&ValueType::components, "allowedMentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files", &ValueType::files, "webhookToken",
 			&ValueType::webhookToken, "avatarUrl", &ValueType::avatarUrl, "username", &ValueType::userName, "customId", &ValueType::customId, "webHookId", &ValueType::webHookId,
 			"content", &ValueType::content, "title", &ValueType::title, "flags", &ValueType::flags, "tts", &ValueType::tts);
 	};
 
-	template<> struct Core<DiscordCoreAPI::CreateWebHookData> {
+	template<> struct core<DiscordCoreAPI::CreateWebHookData> {
 		using ValueType					 = DiscordCoreAPI::CreateWebHookData;
-		static constexpr auto parseValue = object("channelId", &ValueType::channelId, "avatar", &ValueType::avatar, "name", &ValueType::name);
+		static constexpr auto parseValue = createObject("channelId", &ValueType::channelId, "avatar", &ValueType::avatar, "name", &ValueType::name);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyWebHookData> {
-		using ValueType					 = DiscordCoreAPI::ModifyWebHookData;
-		static constexpr auto parseValue = object("channelId", &ValueType::channelId, "webHookId", &ValueType::webHookId, "avatar", &ValueType::avatar, "name", &ValueType::name);
+	template<> struct core<DiscordCoreAPI::ModifyWebHookData> {
+		using ValueType = DiscordCoreAPI::ModifyWebHookData;
+		static constexpr auto parseValue =
+			createObject("channelId", &ValueType::channelId, "webHookId", &ValueType::webHookId, "avatar", &ValueType::avatar, "name", &ValueType::name);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyWebHookDataWithTokenData> {
+	template<> struct core<DiscordCoreAPI::ModifyWebHookDataWithTokenData> {
 		using ValueType					 = DiscordCoreAPI::ModifyWebHookDataWithTokenData;
-		static constexpr auto parseValue = object("webhookToken", &ValueType::webhookToken, "channelId", &ValueType::channelId, "webHookId", &ValueType::webHookId, "avatar",
+		static constexpr auto parseValue = createObject("webhookToken", &ValueType::webhookToken, "channelId", &ValueType::channelId, "webHookId", &ValueType::webHookId, "avatar",
 			&ValueType::avatar, "name", &ValueType::name);
 	};
 
-	template<> struct Core<DiscordCoreAPI::EditWebHookData> {
+	template<> struct core<DiscordCoreAPI::EditWebHookData> {
 		using ValueType = DiscordCoreAPI::EditWebHookData;
 		static constexpr auto parseValue =
-			object("threadId", &ValueType::threadId, "wait", &ValueType::wait, "attachments", &ValueType::attachments, "components", &ValueType::components, "allowedMentions",
-				&ValueType::allowedMentions, "embeds", &ValueType::embeds, "files", &ValueType::files, "webhookToken", &ValueType::webhookToken, "avatarUrl", &ValueType::avatarUrl,
-				"username", &ValueType::userName, "customId", &ValueType::customId, "webHookId", &ValueType::webHookId, "content", &ValueType::content, "title", &ValueType::title,
-				"flags", &ValueType::flags, "tts", &ValueType::tts, "message_id", &ValueType::messageId, "thread_id", &ValueType::threadId);
+			createObject("threadId", &ValueType::threadId, "wait", &ValueType::wait, "attachments", &ValueType::attachments, "components", &ValueType::components,
+				"allowedMentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files", &ValueType::files, "webhookToken", &ValueType::webhookToken, "avatarUrl",
+				&ValueType::avatarUrl, "username", &ValueType::userName, "customId", &ValueType::customId, "webHookId", &ValueType::webHookId, "content", &ValueType::content,
+				"title", &ValueType::title, "flags", &ValueType::flags, "tts", &ValueType::tts, "message_id", &ValueType::messageId, "thread_id", &ValueType::threadId);
 	};
 }
 
@@ -77,8 +78,8 @@ namespace DiscordCoreAPI {
 		webHookId	 = dataNew.id;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	ExecuteWebHookData& ExecuteWebHookData::addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, ButtonStyle buttonStyle,
+		jsonifier::string_view emojiName, Snowflake emojiId, jsonifier::string_view url) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);
@@ -103,8 +104,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, Jsonifier::Vector<ChannelType> channelTypes) {
+	ExecuteWebHookData& ExecuteWebHookData::addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<SelectOptionData> options,
+		jsonifier::string_view placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, jsonifier::vector<ChannelType> channelTypes) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);
@@ -129,8 +130,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
-		bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+	ExecuteWebHookData& ExecuteWebHookData::addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew, jsonifier::string_view customIdNew,
+		bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, jsonifier::string_view label, jsonifier::string_view placeholder) {
 		title	 = topTitleNew;
 		customId = topCustomIdNew;
 		if (components.size() == 0) {
@@ -178,7 +179,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addContent(const std::string& dataPackage) {
+	ExecuteWebHookData& ExecuteWebHookData::addContent(jsonifier::string_view dataPackage) {
 		content = dataPackage;
 		return *this;
 	}
@@ -209,24 +210,24 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<Jsonifier::Vector<WebHookData>> WebHooks::getChannelWebHooksAsync(GetChannelWebHooksData dataPackage) {
+	CoRoutine<jsonifier::vector<WebHookData>> WebHooks::getChannelWebHooksAsync(GetChannelWebHooksData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Webhooks };
-		co_await NewThreadAwaitable<Jsonifier::Vector<WebHookData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<WebHookData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/webhooks";
 		workload.callStack	   = "WebHooks::getChannelWebHooksAsync()";
-		Jsonifier::Vector<WebHookData> returnData{};
+		jsonifier::vector<WebHookData> returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<Jsonifier::Vector<WebHookData>> WebHooks::getGuildWebHooksAsync(GetGuildWebHooksData dataPackage) {
+	CoRoutine<jsonifier::vector<WebHookData>> WebHooks::getGuildWebHooksAsync(GetGuildWebHooksData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Webhooks };
-		co_await NewThreadAwaitable<Jsonifier::Vector<WebHookData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<WebHookData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/webhooks";
 		workload.callStack	   = "WebHooks::getGuildWebHooksAsync()";
-		Jsonifier::Vector<WebHookData> returnData{};
+		jsonifier::vector<WebHookData> returnData{};
 		WebHooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

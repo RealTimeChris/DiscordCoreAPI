@@ -9,7 +9,7 @@ Helper Functions {#HelperFunctions}
 		auto currentChannelType = channel.type;
 		if (currentChannelType == ChannelType::DM) {
 			if (displayResponse) {
-				std::string msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
+				jsonifier::string msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
 				UniquePtr<EmbedData> msgEmbed(makeUnique<EmbedData>());
 				msgEmbed->setAuthor(eventData.getMessageData().interaction.user.userName, eventData.getMessageData().author.avatar);
 				msgEmbed->setColor("FEFEFE");
@@ -30,7 +30,7 @@ Helper Functions {#HelperFunctions}
 		bool isItFound = true;
 		if (discordGuild.data.musicChannelIds.size() > 0) {
 			isItFound = false;
-			std::string msgString = "------\n**Sorry, but please do that in one of the following channels:**\n------\n";
+			jsonifier::string msgString = "------\n**Sorry, but please do that in one of the following channels:**\n------\n";
 			UniquePtr<EmbedData> msgEmbed(makeUnique<EmbedData>());
 			for (auto& value: discordGuild.data.musicChannelIds) {
 				if (eventData.getChannelId() == value) {
@@ -72,7 +72,7 @@ Helper Functions {#HelperFunctions}
 		}
 
 		if (!doWeHaveControl) {
-			std::string msgString = "------\n**Sorry, but you lack the permissions to do that!**\n------";
+			jsonifier::string msgString = "------\n**Sorry, but you lack the permissions to do that!**\n------";
 			UniquePtr<EmbedData> msgEmbed(makeUnique<EmbedData>());
 			msgEmbed->setAuthor(guildMember.user.userName, guildMember.user.avatar);
 			msgEmbed->setDescription(msgString);
@@ -108,14 +108,14 @@ Helper Functions {#HelperFunctions}
 		}
 
 		bool areWeACommander =
-			checkForBotCommanderStatus(guildMember, DiscordUser(args.discordCoreClient->getBotUser().userName, args.discordCoreClient->getBotUser().id));
+			checkForBotCommanderStatus(guildMember, DiscordUser(DiscordCoreClient::getInstance()->getBotUser().userName, DiscordCoreClient::getInstance()->getBotUser().id));
 
 		if (areWeACommander) {
 			return true;
 		}
 
 		if (displayResponse) {
-			std::string msgString = "------\n**Sorry, but you don't have the permissions required for that!**\n------";
+			jsonifier::string msgString = "------\n**Sorry, but you don't have the permissions required for that!**\n------";
 			UniquePtr<EmbedData> msgEmbed(makeUnique<EmbedData>());
 			msgEmbed->setAuthor(guildMember.user.userName, guildMember.user.avatar);
 			msgEmbed->setColor(discordGuild.data.borderColor);

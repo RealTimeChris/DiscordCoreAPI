@@ -1,6 +1,6 @@
 Bulk Overwriting Global Application Commands {#bulkoverwriteglobalcommands}
 ============
-- Execute the `ApplicationCommands::bulkOverwriteGlobalApplicationCommandsAsync()` function, while passing in a data structure of type `BulkOverwriteGlobalApplicationCommandsData`, with a return value of `auto` or `Jsonifier::Vector<ApplicationCommand>`.
+- Execute the `ApplicationCommands::bulkOverwriteGlobalApplicationCommandsAsync()` function, while passing in a data structure of type `BulkOverwriteGlobalApplicationCommandsData`, with a return value of `auto` or `jsonifier::vector<ApplicationCommand>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp

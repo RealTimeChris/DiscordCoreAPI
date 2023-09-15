@@ -6,7 +6,7 @@ Collecting Select-Menu Input {#collectingselectmenuinput}
 `maxWaitTimeInMsNew` = The maximum number of milliseconds that the collector will wait for select-menu entries.   
 `maxCollectSelectMenuCountNew` = The maximum number of select-menu entries that the collector will collect.   
 `targetUser` = The target user, if `getSelectMenuDataForAllNew` is disabled.
-- Collect a result of type `Jsonifier::Vector<SelectMenuResponseData>` and deal with the button responses as you see fit! Keep in mind that you could set up a voting message by using `getSelectMenuDataForAllNew` and having multiple entries allowed.
+- Collect a result of type `jsonifier::vector<SelectMenuResponseData>` and deal with the button responses as you see fit! Keep in mind that you could set up a voting message by using `getSelectMenuDataForAllNew` and having multiple entries allowed.
 ```cpp
 /// Test.hpp-Header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 			selectOption.description = "Select Menu";
 			selectOption.emoji.name = "🏁";
 			selectOption.value = "select_menu";
-			Jsonifier::Vector<SelectOptionData> selectMenuOptions {selectOption};
+			jsonifier::vector<SelectOptionData> selectMenuOptions {selectOption};
 			RespondToInputEventData dataPackage {args.eventData};
 			dataPackage.addSelectMenu(false, "test_button", selectMenuOptions, "Select-Menu", 1, 1);
 			dataPackage.addContent("Test Response");

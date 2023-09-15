@@ -17,7 +17,7 @@ CoRoutine<void> onGuildCreation(OnGuildCreationData dataPackage) {
 }
 
 int32_t main() {
-	std::string botToken {"YOUR_BOT_TOKEN_HERE"};
+	jsonifier::string botToken {"YOUR_BOT_TOKEN_HERE"};
 	auto ptr = makeUnique<DiscordCoreClient>(botToken, "!");
 	ptr->eventManager->onGuildCreation(&onGuildCreation);
 	ptr->runBot();

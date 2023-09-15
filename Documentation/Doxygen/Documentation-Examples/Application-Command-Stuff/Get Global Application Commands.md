@@ -1,6 +1,6 @@
 Getting Global Application Commands {#getglobalcommands}
 =============
-- Execute the `ApplicationCommands::getGlobalApplicationCommandsAsync()` function, with a return value of type `auto` or `Jsonifier::Vector<ApplicationCommand>`.
+- Execute the `ApplicationCommands::getGlobalApplicationCommandsAsync()` function, with a return value of type `auto` or `jsonifier::vector<ApplicationCommand>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp

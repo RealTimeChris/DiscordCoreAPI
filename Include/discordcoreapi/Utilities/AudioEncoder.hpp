@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Structure to hold the encoded data and sample count returned by the encoder.
 		struct EncoderReturnData {
-			std::basic_string_view<uint8_t> data{};///< Encoded data.
+			jsonifier::string_view_base<uint8_t> data{};///< Encoded data.
 			uint64_t sampleCount{};///< Number of audio samples in the input frame.
 		};
 
@@ -70,13 +70,13 @@ namespace DiscordCoreAPI {
 				// Set Opus signal type to music
 				auto result = opus_encoder_ctl(ptr.get(), OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
 				if (result != OPUS_OK) {
-					throw DCAException{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) } };
+					throw DCAException{ "Failed to set the Opus signal type, Reason: " + jsonifier::string{ opus_strerror(result) } };
 				}
 
 				// Set Opus bitrate to maximum
 				result = opus_encoder_ctl(ptr.get(), OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
 				if (result != OPUS_OK) {
-					throw DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
+					throw DCAException{ "Failed to set the Opus bitrate, Reason: " + jsonifier::string{ opus_strerror(result) } };
 				}
 			}
 
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 			/// @param inputFrame The audio data to encode.
 			/// @return Encoded data and sample count.
 			/// @throws DCAException if encoding fails.
-			inline EncoderReturnData encodeData(std::basic_string_view<uint8_t> inputFrame) {
+			inline EncoderReturnData encodeData(jsonifier::string_view_base<uint8_t> inputFrame) {
 				if (inputFrame.size() == 0) {
 					return {};
 				}
@@ -99,22 +99,22 @@ namespace DiscordCoreAPI {
 				uint64_t sampleCount = inputFrame.size() / 2 / 2;
 				int32_t count		 = opus_encode(ptr.get(), resampleVector.data(), static_cast<int32_t>(inputFrame.size() / 2 / 2), encodedData.data(), maxBufferSize);
 				if (count <= 0) {
-					throw DCAException{ "Failed to encode the bitstream, Reason: " + std::string{ opus_strerror(count) } };
+					throw DCAException{ "Failed to encode the bitstream, Reason: " + jsonifier::string{ opus_strerror(count) } };
 				}
 
 				EncoderReturnData returnData{};
 				returnData.sampleCount = sampleCount;
-				returnData.data		   = std::basic_string_view<uint8_t>{ encodedData.data(), encodedData.size() };
+				returnData.data		   = jsonifier::string_view_base<uint8_t>{ encodedData.data(), encodedData.size() };
 				return returnData;
 			}
 
 		  protected:
 			UniquePtr<OpusEncoder, OpusEncoderDeleter> ptr{};///< Unique pointer to OpusEncoder instance.
-			std::basic_string<uint8_t> encodedData{};///< Buffer for encoded audio data.
-			Jsonifier::Vector<opus_int16> resampleVector{};///< For properly copying the values without type-punning.
-			const int32_t maxBufferSize{ 1276 };///< Maximum size of the encoded data buffer.
-			const int32_t sampleRate{ 48000 };///< Sample rate of the audio data.
-			const int32_t nChannels{ 2 };///< Number of audio channels.
+			jsonifier::vector<opus_int16> resampleVector{};///< For properly copying the values without type-punning.
+			jsonifier::string_base<uint8_t> encodedData{};///< Buffer for encoded audio data.
+			inline static constexpr uint64_t maxBufferSize{ 1276 };///< Maximum size of the encoded data buffer.
+			inline static constexpr int64_t sampleRate{ 48000 };///< Sample rate of the audio data.
+			inline static constexpr int64_t nChannels{ 2 };///< Number of audio channels.
 		};
 
 		/**@}*/

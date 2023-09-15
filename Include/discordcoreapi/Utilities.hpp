@@ -27,7 +27,6 @@
 /// Jun 28, 2022
 /// https://discordcoreapi.com
 /// \file Utilities.hpp
-
 #pragma once
 
 #include <discordcoreapi/Utilities/Base.hpp>
@@ -57,14 +56,14 @@ namespace DiscordCoreAPI {
 
 	/// @brief Activity data.
 	struct ActivityData {
-		UnorderedSet<std::string> excludedKeys{};
+		UnorderedSet<jsonifier::string> excludedKeys{};
 		Snowflake applicationId{};///< Application ID for the game.
-		TimeStamp created_at{};///< Unix timestamp(in milliseconds) of when the activity was added to the user's session.
-		std::string details{};///< What the player is currently doing.
+		jsonifier::string created_at{};///< Unix timestamp(in milliseconds) of when the activity was added to the user's session.
+		jsonifier::string details{};///< What the player is currently doing.
 		ActivityType type{};///< Activity's type.
-		std::string state{};///< User's current party status, or text used for a custom status.
-		std::string name{};///< Name of the activity.
-		std::string url{};///< Stream URL, is validated when type is 1.
+		jsonifier::string state{};///< User's current party status, or text used for a custom status.
+		jsonifier::string name{};///< Name of the activity.
+		jsonifier::string url{};///< Stream URL, is validated when type is 1.
 
 		ActivityData() = default;
 
@@ -74,7 +73,7 @@ namespace DiscordCoreAPI {
 	/// @brief For connecting two bots to stream the VC contents between the two.
 	struct StreamInfo {
 		bool streamBotAudio{};///< Do we stream the audio coming from other bots?
-		std::string address{};///< The address to connect to.
+		jsonifier::string address{};///< The address to connect to.
 		StreamType type{};///< The type of streamer that this is. Set one to client and one to server.
 		uint16_t port{};///< The port to connect to.
 	};
@@ -124,9 +123,9 @@ namespace DiscordCoreAPI {
 
 	/// @brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
-		template<typename ValueType> friend struct Jsonifier::Core;
-		UnorderedSet<std::string> excludedKeys{};
-		Jsonifier::Vector<ActivityData> activities{};///< A vector of activities.
+		template<typename ValueType> friend struct jsonifier::core;
+		jsonifier::vector<ActivityData> activities{};///< A vector of activities.
+		UnorderedSet<jsonifier::string> excludedKeys{};
 		PresenceUpdateState status{};///< Current status.
 		int64_t since{};///< When was the activity started?
 		bool afk{};///< Are we afk.
@@ -137,10 +136,10 @@ namespace DiscordCoreAPI {
 		operator DiscordCoreInternal::EtfSerializer();
 
 	  protected:
-		std::string statusReal{};
+		jsonifier::string statusReal{};
 	};
 
-	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void ));
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, jsonifier::string_view (*function)( void ));
 
 	/// @brief Input event response types.
 	enum class InputEventResponseType : uint8_t {
@@ -219,6 +218,7 @@ namespace DiscordCoreAPI {
 	/// @brief For selecting the caching style of the library.
 	struct CacheOptions {
 		bool cacheGuildMembers{ true };///< Do we cache GuildMembers?
+		bool cacheVoiceStates{ true };///< Do we cache Voices States?
 		bool cacheChannels{ true };///< Do we cache Channels?
 		bool cacheGuilds{ true };///< Do we cache Guilds?
 		bool cacheRoles{ true };///< Do we cache Roles?
@@ -228,20 +228,20 @@ namespace DiscordCoreAPI {
 	/// @brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreClientConfig {
 		UpdatePresenceData presenceData{ PresenceUpdateState::Online };///< Presence data to initialize your bot with.
-		Jsonifier::Vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		jsonifier::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
 		GatewayIntents intents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
-		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
+		jsonifier::string connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
 		LoggingOptions logOptions{};///< Options for the output/logging of the library.
 		CacheOptions cacheOptions{};///< Options for the cache of the library.
 		uint16_t connectionPort{};///< A potentially alternative connection port for the websocket.
-		std::string botToken{};///< Your bot's token.
+		jsonifier::string botToken{};///< Your bot's token.
 	};
 
 	struct JsonStringValue {
 		DiscordCoreInternal::JsonType type{};
-		Jsonifier::RawJsonData value{};
+		jsonifier::raw_json_data value{};
 	};
 
 	class DiscordCoreAPI_Dll ConfigManager {
@@ -264,6 +264,8 @@ namespace DiscordCoreAPI {
 
 		bool doWeCacheGuildMembers() const;
 
+		bool doWeCacheVoiceStates() const;
+
 		bool doWeCacheChannels() const;
 
 		bool doWeCacheUsers() const;
@@ -274,23 +276,23 @@ namespace DiscordCoreAPI {
 
 		UpdatePresenceData getPresenceData() const;
 
-		std::string getBotToken() const;
+		jsonifier::string getBotToken() const;
 
-		uint32_t getTotalShardCount() const;
+		uint64_t getTotalShardCount() const;
 
-		uint32_t getStartingShard() const;
+		uint64_t getStartingShard() const;
 
-		uint32_t getShardCountForThisProcess() const;
+		uint64_t getShardCountForThisProcess() const;
 
-		std::string getConnectionAddress() const;
+		jsonifier::string getConnectionAddress() const;
 
-		void setConnectionAddress(const std::string& connectionAddressNew);
+		void setConnectionAddress(jsonifier::string_view connectionAddressNew);
 
 		uint16_t getConnectionPort() const;
 
 		void setConnectionPort(const uint16_t connectionPortNew);
 
-		Jsonifier::Vector<RepeatedFunctionData> getFunctionsToExecute() const;
+		jsonifier::vector<RepeatedFunctionData> getFunctionsToExecute() const;
 
 		TextFormat getTextFormat() const;
 
@@ -302,7 +304,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief Color constants for use in the EmbedData color values.
 	namespace Colors {
-		const std::string_view White{ "FFFFFF" },///< White.
+		static constexpr jsonifier::string_view White{ "FFFFFF" },///< White.
 			DiscordWhite{ "FFFFFE" },///< Discord white.
 			LightGray{ "C0C0C0" },///< Light gray.
 			Gray{ "808080" },///< Gray.
@@ -366,18 +368,18 @@ namespace DiscordCoreAPI {
 	/// @brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-		Jsonifier::Vector<uint8_t> data{};///< The audio data.
+		jsonifier::vector<uint8_t> data{};///< The audio data.
+		int64_t currentSize{ -5 };///< The current size of the allocated memory.
 		uint64_t guildMemberId{};///< GuildMemberId for the sending GuildMemberData.
-		int64_t currentSize{};///< The current size of the allocated memory.
 
 		AudioFrameData() = default;
 
 		AudioFrameData(AudioFrameType frameType);
 
-		AudioFrameData& operator+=(std::basic_string_view<uint8_t>);
+		AudioFrameData& operator+=(jsonifier::string_view_base<uint8_t>);
 
 		inline bool operator==(const AudioFrameData& rhs) const {
-			return currentSize == rhs.currentSize;
+			return currentSize == rhs.currentSize && data == rhs.data;
 		}
 
 		void clearData();
@@ -402,17 +404,17 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename ReturnType> inline ReturnType fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
+	template<typename ReturnType> inline ReturnType fromString(jsonifier::string_view string, std::ios_base& (*type)( std::ios_base& )) {
 		ReturnType value{};
-		std::istringstream stream(string);
+		std::istringstream stream(std::string{ string });
 		stream >> type, stream >> value;
 		return value;
 	}
 
-	template<typename ReturnType> inline std::string toHex(ReturnType inputValue) {
+	template<typename ReturnType> inline jsonifier::string toHex(ReturnType inputValue) {
 		std::stringstream stream{};
 		stream << std::setfill('0') << std::setw(sizeof(ReturnType) * 2) << std::hex << inputValue;
-		return stream.str();
+		return jsonifier::string{ stream.str() };
 	}
 
 	class RGBColorValue {
@@ -422,19 +424,19 @@ namespace DiscordCoreAPI {
 		uint8_t red{};
 	};
 
-	using HexColorValue = std::string;
+	using HexColorValue = jsonifier::string;
 
 	class DiscordCoreAPI_Dll ColorValue {
 	  public:
-		template<typename ValueType> friend struct Jsonifier::Core;
+		template<typename ValueType> friend struct jsonifier::core;
 
-		ColorValue(std::string hexColorValue);
-
-		ColorValue(uint32_t colorValue);
+		ColorValue(jsonifier::string_view hexColorValue);
 
 		RGBColorValue getRgbColorValue();
 
 		HexColorValue getHexColorValue();
+
+		ColorValue(uint32_t colorValue);
 
 		uint32_t getIntColorValue();
 
@@ -448,19 +450,17 @@ namespace DiscordCoreAPI {
 	  public:
 		IconHash() = default;
 
-		IconHash& operator=(const std::string& string);
+		IconHash& operator=(jsonifier::string_view string);
 
-		IconHash(const std::string& string);
+		IconHash(jsonifier::string_view string);
 
-		bool operator==(const std::string& rhs) const;
+		bool operator==(jsonifier::string_view rhs) const;
 
 		bool operator==(const IconHash& rhs) const;
 
-		friend std::string operator+(const IconHash& lhs, std::string rhs);
+		friend jsonifier::string operator+(const IconHash& lhs, jsonifier::string rhs);
 
-		operator std::string() const;
-
-		~IconHash() = default;
+		operator jsonifier::string() const;
 
 	  protected:
 		uint64_t highBits{};
@@ -526,17 +526,13 @@ namespace DiscordCoreAPI {
 	/// @brief PermissionsBase class, for representing and manipulating Permission values.
 	template<typename ValueType> class PermissionsBase {
 	  public:
-		friend class JsonifierInternal::Parser;
-
-		inline bool operator==(const std::string& other) const {
-			return *static_cast<const ValueType*>(this) == other;
-		}
+		friend class jsonifier_internal::parser;
 
 		/// @brief Returns a string containing all of a given User's PermissionsBase for a given Channel.
 		/// @param guildMember The GuildMemberData who's PermissionsBase to analyze.
 		/// @param channel The ChannelData withint which to check for PermissionsBase.
-		/// @return std::string A string containing the final Permission's value for a given Channel.
-		static inline std::string getCurrentChannelPermissions(const GuildMemberData& guildMember, const ChannelData& channel) {
+		/// @return jsonifier::string A string containing the final Permission's value for a given Channel.
+		inline static jsonifier::string getCurrentChannelPermissions(const GuildMemberData& guildMember, const ChannelData& channel) {
 			return computePermissions(guildMember, channel);
 		}
 
@@ -546,7 +542,7 @@ namespace DiscordCoreAPI {
 		/// @param permission A Permission to check the current ChannelData for.
 		/// @return bool A bool suggesting the presence of the chosen Permission.
 		inline bool checkForPermission(const GuildMemberData& guildMember, const ChannelData& channel, Permission permission) {
-			if ((stoull(computePermissions(guildMember, channel)) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
+			if ((std::stoull(computePermissions(guildMember, channel).data()) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
 				return true;
 			} else {
 				return false;
@@ -555,40 +551,40 @@ namespace DiscordCoreAPI {
 
 		/// @brief Returns a string containing the currently held PermissionsBase in a given Guild.
 		/// @param guildMember The GuildMemberData who's PermissionsBase are to be evaluated.
-		/// @return std::string A string containing the current PermissionsBase.
-		static inline std::string getCurrentGuildPermissions(const GuildMemberData& guildMember) {
+		/// @return jsonifier::string A string containing the current PermissionsBase.
+		inline static jsonifier::string getCurrentGuildPermissions(const GuildMemberData& guildMember) {
 			PermissionsBase setValue(computeBasePermissions(guildMember));
 			return static_cast<ValueType*>(setValue);
 		}
 
 		/// @brief Removes one or more PermissionsBase from the current PermissionsBase value.
 		/// @param permissionsToRemove A vector containing the PermissionsBase you wish to remove.
-		inline void removePermissions(const Jsonifier::Vector<Permission>& permissionsToRemove) {
+		inline void removePermissions(const jsonifier::vector<Permission>& permissionsToRemove) {
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			for (auto valueNew: permissionsToRemove) {
 				permissionsInteger &= ~static_cast<uint64_t>(valueNew);
 			}
 			std::stringstream sstream{};
 			sstream << permissionsInteger;
-			*static_cast<ValueType*>(this) = sstream.str();
+			*static_cast<ValueType*>(this) = jsonifier::string{ sstream.str() };
 		}
 
 		/// @brief Adds one or more PermissionsBase to the current PermissionsBase value.
 		/// @param permissionsToAdd A vector containing the PermissionsBase you wish to add.
-		inline void addPermissions(const Jsonifier::Vector<Permission>& permissionsToAdd) {
+		inline void addPermissions(const jsonifier::vector<Permission>& permissionsToAdd) {
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			for (auto valueNew: permissionsToAdd) {
 				permissionsInteger |= static_cast<uint64_t>(valueNew);
 			}
 			std::stringstream sstream{};
 			sstream << permissionsInteger;
-			*static_cast<ValueType*>(this) = sstream.str();
+			*static_cast<ValueType*>(this) = jsonifier::string{ sstream.str() };
 		}
 
 		/// @brief Displays the currently present PermissionsBase in a string, and returns a vector with each of them stored in string format.
-		/// @return Jsonifier::Vector A vector full of strings of the PermissionsBase that are in the input std::string's value.
-		inline Jsonifier::Vector<std::string> displayPermissions() {
-			Jsonifier::Vector<std::string> returnVector{};
+		/// @return jsonifier::vector A vector full of strings of the PermissionsBase that are in the input jsonifier::string's value.
+		inline jsonifier::vector<jsonifier::string> displayPermissions() {
+			jsonifier::vector<jsonifier::string> returnVector{};
 			uint64_t permissionsInteger = *static_cast<ValueType*>(this);
 			if (permissionsInteger & (1ll << 3)) {
 				for (int64_t x = 0; x < 46; ++x) {
@@ -734,71 +730,60 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Returns a string containing the currently held PermissionsBase.
-		/// @return std::string A string containing the current PermissionsBase.
-		inline std::string getCurrentPermissionString() {
-			std::string returnString = *static_cast<ValueType*>(this);
+		/// @return jsonifier::string A string containing the current PermissionsBase.
+		inline jsonifier::string getCurrentPermissionString() {
+			jsonifier::string returnString = *static_cast<ValueType*>(this);
 			return returnString;
 		}
 
 		/// @brief Returns a string containing ALL of the possible PermissionsBase.
-		/// @return std::string A string containing all of the possible PermissionsBase.
-		static inline std::string getAllPermissions() {
+		/// @return jsonifier::string A string containing all of the possible PermissionsBase.
+		inline static jsonifier::string getAllPermissions() {
 			uint64_t allPerms{};
 			for (int64_t x = 0; x < 46; ++x) {
 				allPerms |= 1ll << x;
 			}
 			std::stringstream stream{};
 			stream << allPerms;
-			return stream.str();
+			return jsonifier::string{ stream.str() };
 		}
 
 	  protected:
-		inline ~PermissionsBase() = default;
-		inline PermissionsBase()  = default;
+		inline PermissionsBase() = default;
 
-		DiscordCoreAPI_Dll static std::string computeOverwrites(const std::string& basePermissions, const GuildMemberData& guildMember, const ChannelData& channel);
+		DiscordCoreAPI_Dll static jsonifier::string computeOverwrites(jsonifier::string_view basePermissions, const GuildMemberData& guildMember, const ChannelData& channel);
 
-		static inline std::string computePermissions(const GuildMemberData& guildMember, const ChannelData& channel) {
-			std::string permissions = computeBasePermissions(guildMember);
-			permissions				= computeOverwrites(permissions, guildMember, channel);
+		inline static jsonifier::string computePermissions(const GuildMemberData& guildMember, const ChannelData& channel) {
+			jsonifier::string permissions = computeBasePermissions(guildMember);
+			permissions					  = computeOverwrites(permissions, guildMember, channel);
 			return permissions;
 		}
 
-		DiscordCoreAPI_Dll static std::string computeBasePermissions(const GuildMemberData& guildMember);
+		DiscordCoreAPI_Dll static jsonifier::string computeBasePermissions(const GuildMemberData& guildMember);
 	};
 
-	class PermissionsParse : public PermissionsBase<PermissionsParse>, public std::string {
+	class PermissionsParse : public PermissionsBase<PermissionsParse>, public jsonifier::string {
 	  public:
 		template<typename ValueType> friend class PermissionsBase;
 
 		inline PermissionsParse() = default;
 
-		inline PermissionsParse& operator=(const std::string& valueNew) {
+		inline PermissionsParse& operator=(jsonifier::string_view valueNew) {
 			resize(valueNew.size());
 			std::memcpy(data(), valueNew.data(), size());
 			return *this;
 		}
 
-		inline PermissionsParse(const std::string& valueNew) {
+		inline PermissionsParse(jsonifier::string_view valueNew) {
 			*this = valueNew;
 		}
 
-		inline PermissionsParse& operator=(std::string&& valueNew) {
-			resize(valueNew.size());
-			std::memcpy(data(), valueNew.data(), size());
+		inline PermissionsParse& operator=(uint64_t valueNew) {
+			*this = jsonifier::toString(valueNew);
 			return *this;
 		}
 
-		inline PermissionsParse(std::string&& valueNew) {
-			*this = std::move(valueNew);
-		}
-
-		inline PermissionsParse& operator=(int64_t valueNew) {
-			*this = std::to_string(valueNew);
-			return *this;
-		}
-
-		inline PermissionsParse(int64_t valueNew) {
+		inline PermissionsParse(uint64_t valueNew) {
 			*this = valueNew;
 		}
 
@@ -807,15 +792,15 @@ namespace DiscordCoreAPI {
 		}
 
 		inline uint64_t size() const {
-			return std::string::size();
+			return jsonifier::string::size();
 		}
 
-		inline char* data() {
-			return std::string::data();
+		inline char* data() const {
+			return jsonifier::string::data();
 		}
 
-		inline operator int64_t() const {
-			return std::stoull(*this);
+		inline operator uint64_t() const {
+			return std::stoull(this->data());
 		}
 	};
 
@@ -826,7 +811,7 @@ namespace DiscordCoreAPI {
 		inline Permissions() = default;
 
 		inline Permissions& operator=(const PermissionsParse& other) {
-			value = other.operator int64_t();
+			value = other.operator uint64_t();
 			return *this;
 		}
 
@@ -834,66 +819,66 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		inline Permissions& operator=(const std::string& valueNew) {
-			value = stoull(valueNew);
+		inline Permissions& operator=(jsonifier::string_view valueNew) {
+			value = std::stoull(valueNew.data());
 			return *this;
 		}
 
-		inline Permissions(const std::string& valueNew) {
+		inline Permissions(jsonifier::string_view valueNew) {
 			*this = valueNew;
 		}
 
-		inline Permissions& operator=(std::string&& valueNew) {
-			value = stoull(valueNew);
+		inline Permissions& operator=(jsonifier::string&& valueNew) {
+			value = std::stoull(valueNew.data());
 			return *this;
 		}
 
-		inline Permissions(std::string&& valueNew) {
+		inline Permissions(jsonifier::string&& valueNew) {
 			*this = std::move(valueNew);
 		}
 
-		inline Permissions& operator=(int64_t valueNew) {
+		inline Permissions& operator=(uint64_t valueNew) {
 			value = valueNew;
 			return *this;
 		}
 
-		inline Permissions(int64_t valueNew) {
+		inline Permissions(uint64_t valueNew) {
 			*this = valueNew;
 		}
 
-		inline operator int64_t() const {
+		inline operator uint64_t() const {
 			return value;
 		}
 
-		inline operator std::string() const {
-			return std::to_string(value);
+		inline operator jsonifier::string() const {
+			return jsonifier::toString(value);
 		}
 
 	  protected:
-		int64_t value{};
+		uint64_t value{};
 	};
 
-	DiscordCoreAPI_Dll std::string constructMultiPartData(const std::string& data, const Jsonifier::Vector<File>& files);
+	DiscordCoreAPI_Dll jsonifier::string constructMultiPartData(jsonifier::string_view data, const jsonifier::vector<File>& files);
 
-	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
+	DiscordCoreAPI_Dll jsonifier::string convertToLowerCase(jsonifier::string_view stringToConvert);
 
-	DiscordCoreAPI_Dll std::string base64Encode(const std::string&, bool = false);
+	DiscordCoreAPI_Dll jsonifier::string base64Encode(jsonifier::string_view, bool = false);
 
-	DiscordCoreAPI_Dll std::string loadFileContents(const std::string& filePath);
+	DiscordCoreAPI_Dll jsonifier::string loadFileContents(jsonifier::string_view filePath);
 
-	DiscordCoreAPI_Dll std::string utf8MakeValid(const std::string& inputString);
+	DiscordCoreAPI_Dll jsonifier::string utf8MakeValid(jsonifier::string_view inputString);
 
-	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
+	DiscordCoreAPI_Dll jsonifier::string urlEncode(jsonifier::string_view inputString);
 
 	DiscordCoreAPI_Dll void spinLock(uint64_t timeInNsToSpinLockFor);
 
-	DiscordCoreAPI_Dll std::string generateBase64EncodedKey();
+	DiscordCoreAPI_Dll jsonifier::string generateBase64EncodedKey();
 
 	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
 	/// @brief Acquires a timeStamp with the current time and date - suitable for use in message-embeds.
-	/// @return std::string A string containing the current date-time stamp.
-	DiscordCoreAPI_Dll std::string getTimeAndDate();
+	/// @return jsonifier::string A string containing the current date-time stamp.
+	DiscordCoreAPI_Dll jsonifier::string getTimeAndDate();
 
 	/**@}*/
 

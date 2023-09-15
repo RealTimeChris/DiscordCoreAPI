@@ -21,7 +21,7 @@ jobs:
     - uses: actions/checkout@v3
   
     - name: Install the latest Clang compiler.
-      working-directory: Tests
+      working-directory: ./
       run:  |
             wget https://apt.llvm.org/llvm.sh
             chmod +x llvm.sh
@@ -38,35 +38,24 @@ jobs:
             git pull
             vcpkg update
 
-    - name: Copy the Jsonifier repo over.
-      run: |
-           sudo git clone https://github.com/RealTimeChris/Jsonifier
-           sudo cp -r -v ./Jsonifier/Vcpkg/* /usr/local/share/vcpkg/
-
     - name: Install the dependencies.
       run: |
-           vcpkg install jsonifier:x64-linux
            vcpkg install opus:x64-linux
            vcpkg install libsodium:x64-linux
            vcpkg install openssl:x64-linux
 
     - name: Configure CMake
-      working-directory: Tests
+      working-directory: ./
       run: |
-           cmake -S . -B ./Build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=/usr/bin/clang++-18 -DGITHUB_BRANCH_TYPE=${{github.ref}}
+           cmake -S . -B ./Build -DCMAKE_CXX_COMPILER=/usr/bin/clang++-18 -DDEV=true -DDISCORDCOREAPI_TEST=true -DVCPKG_ROOT_DIR=/usr/local/share/vcpkg
 
     - name: Build the Test
-      working-directory: Tests/Build
+      working-directory: ./Build
       run: |
            cmake --build . --config=${{matrix.build_type}}
 
-    - name: Install the Test
-      working-directory: Tests/Build
-      run: |
-           cmake --install ./ --config=${{matrix.build_type}}
-
     - name: Run the Test
-      working-directory: Tests/Install/${{matrix.build_type}}
+      working-directory: ./Build/Tests
       run: |
             chmod u+x ./DiscordCoreAPITest
             ./DiscordCoreAPITest

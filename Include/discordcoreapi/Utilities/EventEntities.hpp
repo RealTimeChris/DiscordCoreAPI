@@ -54,23 +54,23 @@ namespace DiscordCoreAPI {
 			/// @param rhs The right-hand side EventDelegateToken to compare against.
 			/// @return bool True if this EventDelegateToken is less than rhs, otherwise false.
 			inline bool operator<(const EventDelegateToken& rhs) const {
-				return stoull(handlerId) < stoull(rhs.handlerId);
+				return handlerId < rhs.handlerId;
 			}
 
 			/// @brief Default constructor for EventDelegateToken.
 			inline EventDelegateToken() = default;
 
-			std::string handlerId{};///< Identifier for the handler.
-			std::string eventId{};///< Identifier for the event.
+			uint64_t handlerId{};///< Identifier for the handler.
+			uint64_t eventId{};///< Identifier for the event.
 		};
 
 	};
 
 	template<EventDelegateTokenT ValueType> struct KeyHasher<ValueType> {
-		inline uint64_t operator()(const ValueType& data) const {
+		inline static uint64_t getHashKey(const ValueType& data) {
 			uint64_t values[2]{};
-			values[0] = stoull(data.eventId);
-			values[0] = stoull(data.handlerId);
+			values[0] = data.eventId;
+			values[0] = data.handlerId;
 			return internalHashFunction(values, std::size(values) * sizeof(uint64_t));
 		};
 	};
@@ -82,17 +82,20 @@ namespace DiscordCoreAPI {
 		  public:
 			template<typename RTy02, typename... ArgTypes02> friend class Event;
 
+			/// @brief Default constructor for EventDelegate class.
+			EventDelegate() = default;
+
+			inline EventDelegate& operator=(const EventDelegate& other) = delete;
+			inline EventDelegate(const EventDelegate& other)			= delete;
+
 			/// @brief Move assignment operator for the EventDelegate class.
 			/// This operator moves the contents of another EventDelegate instance, 'other', into the current instance.
 			/// It swaps the 'function' member between 'other' and the current instance, and then clears 'other' function.
 			/// @param other The EventDelegate instance to be moved from.
 			/// @returns Reference to the current EventDelegate instance after the move assignment.
-			EventDelegate& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
+			inline EventDelegate& operator=(EventDelegate&& other) noexcept {
 				if (this != &other) {
-					// Swap the 'function' member between 'other' and the current instance.
 					function.swap(other.function);
-					// Clear 'other' function.
-					other.function = std::function<ReturnType(ArgTypes...)>{};
 				}
 				return *this;
 			}
@@ -101,7 +104,7 @@ namespace DiscordCoreAPI {
 			/// This constructor moves the contents of another EventDelegate instance, 'other', into the current instance.
 			/// It performs a move assignment using the 'operator=' function.
 			/// @param other The EventDelegate instance to be moved from.
-			EventDelegate(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
+			inline EventDelegate(EventDelegate&& other) noexcept {
 				// Perform move assignment using the 'operator=' function.
 				*this = std::move(other);
 			}
@@ -110,14 +113,14 @@ namespace DiscordCoreAPI {
 			/// This operator assigns a new std::function, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew The std::function to assign as the current event.
 			/// @returns Reference to the current EventDelegate instance after the assignment.
-			EventDelegate& operator=(std::function<ReturnType(ArgTypes...)> functionNew) {
+			inline EventDelegate& operator=(std::function<ReturnType(ArgTypes...)> functionNew) {
 				function = functionNew;
 				return *this;
 			}
 
 			/// @brief Constructor, taking a std::function<ReturnType(ArgTypes...)> as an argument.
 			/// @param functionNew The function to construct as the current event.
-			EventDelegate(std::function<ReturnType(ArgTypes...)> functionNew) {
+			inline EventDelegate(std::function<ReturnType(ArgTypes...)> functionNew) {
 				*this = functionNew;
 			}
 
@@ -125,7 +128,7 @@ namespace DiscordCoreAPI {
 			/// This operator assigns a new function pointer, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew The function pointer to assign as the current event.
 			/// @returns Reference to the current EventDelegate instance after the assignment.
-			EventDelegate& operator=(ReturnType (*functionNew)(ArgTypes...)) {
+			inline EventDelegate& operator=(ReturnType (*functionNew)(ArgTypes...)) {
 				function = functionNew;
 				return *this;
 			}
@@ -134,14 +137,10 @@ namespace DiscordCoreAPI {
 			/// This constructor initializes the EventDelegate instance with the provided function pointer.
 			/// It calls the assignment operator to set the delegate function using the provided function pointer.
 			/// @param functionNew The function to construct as the current event.
-			EventDelegate(ReturnType (*functionNew)(ArgTypes...)) {
+			inline EventDelegate(ReturnType (*functionNew)(ArgTypes...)) {
 				// Call the assignment operator to set the delegate function using the provided function pointer.
 				*this = functionNew;
 			}
-
-
-			/// @brief Default constructor for EventDelegate class.
-			EventDelegate() = default;
 
 		  protected:
 			std::function<ReturnType(ArgTypes...)> function{};
@@ -150,24 +149,20 @@ namespace DiscordCoreAPI {
 		/// @brief Template class representing an event that executes event functions.
 		template<typename ReturnType, typename... ArgTypes> class Event {
 		  public:
-			UnorderedMap<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> functions;
+			UnorderedMap<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> functions{};
+
+			inline Event& operator=(const Event& other) = delete;
+			inline Event(const Event& other)			= delete;
 
 			/// @brief Move assignment operator for the Event class.
 			/// This operator moves the contents of another Event instance, 'other', into the current instance.
 			/// It transfers the functions and eventId from 'other' to the current instance, clearing 'other' in the process.
 			/// @param other The Event instance to be moved from.
 			/// @returns Reference to the current Event instance after the move assignment.
-			Event<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) noexcept {
+			inline Event& operator=(Event&& other) noexcept {
 				if (this != &other) {
-					// Move the functions from 'other' to the current instance.
-					functions = std::move(other.functions);
-					// Clear 'other' functions.
-					other.functions.clear();
-
-					// Move the eventId from 'other' to the current instance.
-					eventId = std::move(other.eventId);
-					// Clear 'other' eventId.
-					other.eventId.clear();
+					std::swap(functions, other.functions);
+					std::swap(eventId, other.eventId);
 				}
 				return *this;
 			}
@@ -176,24 +171,24 @@ namespace DiscordCoreAPI {
 			/// This constructor moves the contents of another Event instance, 'other', into the current instance.
 			/// It performs a move assignment using the 'operator=' function.
 			/// @param other The Event instance to be moved from.
-			Event(Event<ReturnType, ArgTypes...>&& other) noexcept {
+			inline Event(Event&& other) noexcept {
 				// Perform move assignment using the 'operator=' function.
 				*this = std::move(other);
 			}
 
 			/// @brief Default constructor for Event class.
-			Event() {
+			inline Event() {
 				std::unique_lock lock{ accessMutex };
-				eventId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+				eventId = std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count();
 			}
 
 			/// @brief Add an event delegate to the event.
 			/// @param eventDelegate The event delegate to add.
 			/// @return EventDelegateToken The token representing the added event delegate.
-			EventDelegateToken add(EventDelegate<ReturnType, ArgTypes...> eventDelegate) {
+			inline EventDelegateToken add(EventDelegate<ReturnType, ArgTypes...>&& eventDelegate) {
 				std::unique_lock lock{ accessMutex };
 				EventDelegateToken eventToken{};
-				eventToken.handlerId  = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+				eventToken.handlerId  = std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count();
 				eventToken.eventId	  = eventId;
 				functions[eventToken] = std::move(eventDelegate);
 				return eventToken;
@@ -201,7 +196,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Remove an event delegate from the event.
 			/// @param eventToken The token representing the event delegate to remove.
-			void erase(EventDelegateToken eventToken) {
+			inline void erase(const EventDelegateToken& eventToken) {
 				std::unique_lock lock{ accessMutex };
 				if (eventToken.eventId == eventId) {
 					if (functions.contains(eventToken)) {
@@ -212,7 +207,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Invoke the event with provided arguments.
 			/// @param args The arguments to pass to the event delegates.
-			void operator()(const ArgTypes... args) {
+			template<typename... ArgTypesNew> inline void operator()(ArgTypesNew&&... args) {
 				std::unique_lock lock{ accessMutex };
 				for (auto& [key, value]: functions) {
 					try {
@@ -226,7 +221,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			std::mutex accessMutex{};
-			std::string eventId{};
+			uint64_t eventId{};
 		};
 
 		/// @brief Event-delegate, for representing an event-function to be executed conditionally.
@@ -234,16 +229,17 @@ namespace DiscordCoreAPI {
 		  public:
 			template<typename RTy02, typename... ArgTypes02> friend class TriggerEvent;
 
+			inline TriggerEventDelegate& operator=(const TriggerEventDelegate& other) = delete;
+			inline TriggerEventDelegate(const TriggerEventDelegate& other)			  = delete;
+
 			/// @brief Move assignment operator for TriggerEventDelegate class.
 			/// This operator moves the contents of another TriggerEventDelegate instance ('other') into the current instance.
 			/// @param other The TriggerEventDelegate instance to be moved.
 			/// @returns Reference to the current TriggerEventDelegate instance after the move assignment.
-			TriggerEventDelegate& operator=(TriggerEventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
+			inline TriggerEventDelegate& operator=(TriggerEventDelegate&& other) noexcept {
 				if (this != &other) {
 					function.swap(other.function);
-					other.function = std::function<ReturnType(ArgTypes...)>{};
 					testFunction.swap(other.testFunction);
-					other.testFunction = std::function<bool(ArgTypes...)>{};
 				}
 				return *this;
 			}
@@ -251,7 +247,7 @@ namespace DiscordCoreAPI {
 			/// @brief Move constructor for TriggerEventDelegate class.
 			/// This constructor moves the contents of another TriggerEventDelegate instance ('other') into the current instance.
 			/// @param other The TriggerEventDelegate instance to be moved.
-			TriggerEventDelegate(TriggerEventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
+			inline TriggerEventDelegate(TriggerEventDelegate&& other) noexcept {
 				*this = std::move(other);
 			}
 
@@ -259,7 +255,7 @@ namespace DiscordCoreAPI {
 			/// This operator assigns a new std::function, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew The std::function to assign as the current event.
 			/// @returns Reference to the current TriggerEventDelegate instance after the assignment.
-			TriggerEventDelegate& operator=(std::function<ReturnType(ArgTypes...)> functionNew) {
+			inline TriggerEventDelegate& operator=(std::function<ReturnType(ArgTypes...)> functionNew) {
 				function = functionNew;
 				return *this;
 			}
@@ -269,7 +265,7 @@ namespace DiscordCoreAPI {
 			/// This constructor initializes the TriggerEventDelegate instance with the provided std::function.
 			/// It calls the assignment operator to set the delegate function using the provided std::function.
 			/// @param functionNew The function to construct as the current event.
-			TriggerEventDelegate(std::function<ReturnType(ArgTypes...)> functionNew) {
+			inline TriggerEventDelegate(std::function<ReturnType(ArgTypes...)> functionNew) {
 				// Call the assignment operator to set the delegate function using the provided std::function.
 				*this = functionNew;
 			}
@@ -278,7 +274,7 @@ namespace DiscordCoreAPI {
 			/// This operator assigns a new function pointer, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew The function pointer to assign as the current event.
 			/// @returns Reference to the current TriggerEventDelegate instance after the assignment.
-			TriggerEventDelegate<ReturnType, ArgTypes...>& operator=(ReturnType (*functionNew)(ArgTypes...)) {
+			inline TriggerEventDelegate& operator=(ReturnType (*functionNew)(ArgTypes...)) {
 				function = functionNew;
 				return *this;
 			}
@@ -286,51 +282,47 @@ namespace DiscordCoreAPI {
 
 			/// @brief Constructor for TriggerEventDelegate class, taking a function pointer as argument.
 			/// @param functionNew The function to construct as the current event.
-			TriggerEventDelegate(ReturnType (*functionNew)(ArgTypes...)) {
+			inline TriggerEventDelegate(ReturnType (*functionNew)(ArgTypes...)) {
 				*this = functionNew;
 			}
 
 			/// @brief Default constructor for TriggerEventDelegate class.
-			TriggerEventDelegate() = default;
+			inline TriggerEventDelegate() = default;
 
 			/// @brief Sets the test function to determine conditional execution.
 			/// @param testFunctionNew The test function to set.
-			void setTestFunction(std::function<bool(ArgTypes...)> testFunctionNew) {
+			inline void setTestFunction(std::function<bool(ArgTypes...)> testFunctionNew) {
 				testFunction = testFunctionNew;
 			}
 
 			/// @brief Sets the test function using a function pointer.
 			/// @param testFunctionNew The test function to set.
-			void setTestFunction(bool (*testFunctionNew)(ArgTypes...)) {
+			inline void setTestFunction(bool (*testFunctionNew)(ArgTypes...)) {
 				testFunction = testFunctionNew;
 			}
 
 		  protected:
-			std::function<bool(ArgTypes...)> testFunction{};
 			std::function<ReturnType(ArgTypes...)> function{};
+			std::function<bool(ArgTypes...)> testFunction{};
 		};
 
 		/// @brief A trigger event that fires based on the result of trigger-function return value.
 		template<typename ReturnType, typename... ArgTypes> class TriggerEvent {
 		  public:
-			UnorderedMap<EventDelegateToken, TriggerEventDelegate<ReturnType, ArgTypes...>> functions;
+			UnorderedMap<EventDelegateToken, TriggerEventDelegate<ReturnType, ArgTypes...>> functions{};
+
+			inline TriggerEvent& operator=(const TriggerEvent& other) = delete;
+			inline TriggerEvent(const TriggerEvent& other)			  = delete;
 
 			/// @brief Move assignment operator for the TriggerEvent class.
 			/// This operator moves the contents of another TriggerEvent instance, 'other', into the current instance.
 			/// It transfers the functions and eventId from 'other' to the current instance, clearing 'other' in the process.
 			/// @param other The TriggerEvent instance to be moved from.
 			/// @returns Reference to the current TriggerEvent instance after the move assignment.
-			TriggerEvent<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) {
+			inline TriggerEvent& operator=(TriggerEvent&& other) noexcept {
 				if (this != &other) {
-					// Move the functions from 'other' to the current instance.
-					functions = std::move(other.functions);
-					// Clear 'other' functions.
-					other.functions = UnorderedMap<EventDelegateToken, TriggerEventDelegate<ReturnType, ArgTypes...>>{};
-
-					// Move the eventId from 'other' to the current instance.
-					eventId = std::move(other.eventId);
-					// Clear 'other' eventId.
-					other.eventId = std::string{};
+					std::swap(functions, other.functions);
+					std::swap(eventId, other.eventId);
 				}
 				return *this;
 			}
@@ -339,24 +331,24 @@ namespace DiscordCoreAPI {
 			/// This constructor moves the contents of another TriggerEvent instance, 'other', into the current instance.
 			/// It performs a move assignment using the 'operator=' function.
 			/// @param other The TriggerEvent instance to be moved from.
-			TriggerEvent(Event<ReturnType, ArgTypes...>&& other) {
+			inline TriggerEvent(TriggerEvent&& other) noexcept {
 				// Perform move assignment using the 'operator=' function.
 				*this = std::move(other);
 			}
 
 			/// @brief Default constructor for TriggerEvent class.
-			TriggerEvent() {
+			inline TriggerEvent() {
 				std::unique_lock lock{ accessMutex };
-				eventId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+				eventId = std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count();
 			}
 
 			/// @brief Add an event delegate to the event.
 			/// @param eventDelegate The event delegate to add.
 			/// @return EventDelegateToken The token representing the added event delegate.
-			EventDelegateToken add(TriggerEventDelegate<ReturnType, ArgTypes...> eventDelegate) {
+			inline EventDelegateToken add(TriggerEventDelegate<ReturnType, ArgTypes...>&& eventDelegate) {
 				std::unique_lock lock{ accessMutex };
 				EventDelegateToken eventToken{};
-				eventToken.handlerId  = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+				eventToken.handlerId  = std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count();
 				eventToken.eventId	  = eventId;
 				functions[eventToken] = std::move(eventDelegate);
 				return eventToken;
@@ -364,7 +356,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Remove an event delegate from the event.
 			/// @param eventToken The token representing the event delegate to remove.
-			void erase(EventDelegateToken eventToken) {
+			inline void erase(const EventDelegateToken& eventToken) {
 				std::unique_lock lock{ accessMutex };
 				if (eventToken.eventId == eventId) {
 					if (functions.contains(eventToken)) {
@@ -375,7 +367,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Invoke the trigger event with provided arguments.
 			/// @param args The arguments to pass to the trigger event delegates.
-			void operator()(ArgTypes&... args) {
+			template<typename... ArgTypesNew> inline void operator()(ArgTypesNew&&... args) {
 				std::unique_lock lock{ accessMutex };
 				for (auto iterator = functions.begin(); iterator != functions.end(); ++iterator) {
 					if (iterator.operator*().second.testFunction(args...)) {
@@ -388,7 +380,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			std::mutex accessMutex{};
-			std::string eventId{};
+			uint64_t eventId{};
 		};
 
 		/**@}*/

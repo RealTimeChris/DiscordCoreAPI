@@ -8,32 +8,32 @@ Queue {#Queue}
 
 namespace DiscordCoreAPI {
 
-	Jsonifier::Vector<EmbedData> updateMessageEmbeds(Jsonifier::Vector<Song> playlist, DiscordGuild* discordGuild, InputEventData interaction, InputEventData originalEvent, User user,
+	jsonifier::vector<EmbedData> updateMessageEmbeds(jsonifier::vector<Song> playlist, DiscordGuild* discordGuild, InputEventData interaction, InputEventData originalEvent, User user,
 		int32_t currentPageIndex) {
-		Jsonifier::Vector<Jsonifier::Vector<EmbedFieldData>> msgEmbedFields{};
-		msgEmbedFields.emplace_back(Jsonifier::Vector<EmbedFieldData>());
+		jsonifier::vector<jsonifier::vector<EmbedFieldData>> msgEmbedFields{};
+		msgEmbedFields.emplace_back(jsonifier::vector<EmbedFieldData>());
 		int32_t msgEmbedFieldsPage{};
 		for (int32_t y = 0; y < playlist.size(); y += 1) {
 			if (y % 25 == 0 && y > 0) {
 				msgEmbedFieldsPage += 1;
-				msgEmbedFields.emplace_back(Jsonifier::Vector<EmbedFieldData>());
+				msgEmbedFields.emplace_back(jsonifier::vector<EmbedFieldData>());
 			}
 			EmbedFieldData msgEmbedField{};
 			msgEmbedField.Inline = false;
 			msgEmbedField.value = "__**Title:**__ [" + playlist.at(y).songTitle + "](" + playlist.at(y).viewUrl + ")\n__**Added By:**__ <@!" +
-				std::to_string(playlist.at(y).addedByUserId) + "> (" + playlist.at(y).addedByUserName + ")";
+				jsonifier::toString(playlist.at(y).addedByUserId) + "> (" + playlist.at(y).addedByUserName + ")";
 
-			msgEmbedField.name = "__**" + std::to_string(y + 1) + " of " + std::to_string(playlist.size()) + "**__";
+			msgEmbedField.name = "__**" + jsonifier::toString(y + 1) + " of " + jsonifier::toString(playlist.size()) + "**__";
 			msgEmbedFields[msgEmbedFieldsPage].emplace_back(msgEmbedField);
 		}
 		msgEmbedFieldsPage = 0;
-		Jsonifier::Vector<EmbedData> newMsgEmbeds{};
+		jsonifier::vector<EmbedData> newMsgEmbeds{};
 		for (int32_t y = 0; y < msgEmbedFields.size(); y += 1) {
 			UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 			newEmbed->setAuthor(user.userName, user.avatar);
 			newEmbed->setColor(discordGuild->data.borderColor);
 			newEmbed->setTimeStamp(getTimeAndDate());
-			newEmbed->setTitle("__**Playlist, Page " + std::to_string(y + 1) + " of " + std::to_string(msgEmbedFields.size()) + "**__");
+			newEmbed->setTitle("__**Playlist, Page " + jsonifier::toString(y + 1) + " of " + jsonifier::toString(msgEmbedFields.size()) + "**__");
 			newEmbed->setFooter("React with ✅ to edit the contents of the current page. React with ❌ to exit!");
 			newEmbed->setDescription("__**React with ✅ to edit the contents of the current page. React with ❌ to exit!**__").fields = msgEmbedFields[y];
 			newMsgEmbeds.emplace_back(*newEmbed);
@@ -109,33 +109,33 @@ namespace DiscordCoreAPI {
 
 				int32_t currentPageIndex = 0;
 
-				Jsonifier::Vector<Jsonifier::Vector<EmbedFieldData>> msgEmbedFields;
-				msgEmbedFields.emplace_back(Jsonifier::Vector<EmbedFieldData>());
+				jsonifier::vector<jsonifier::vector<EmbedFieldData>> msgEmbedFields;
+				msgEmbedFields.emplace_back(jsonifier::vector<EmbedFieldData>());
 				int32_t msgEmbedFieldsPage{};
 				for (int32_t y = 0; y < SongAPI::getPlaylist(guild->id).songQueue.size(); y += 1) {
 					if (y % 25 == 0 && y > 0) {
 						if (y > 0) {
 							msgEmbedFieldsPage += 1;
 						}
-						msgEmbedFields.emplace_back(Jsonifier::Vector<EmbedFieldData>());
+						msgEmbedFields.emplace_back(jsonifier::vector<EmbedFieldData>());
 					}
 					EmbedFieldData msgEmbedField{};
 					msgEmbedField.Inline = false;
 					msgEmbedField.value = "__**Title:**__ [" + SongAPI::getPlaylist(guild->id).songQueue.at(y).songTitle + "](" +
 						SongAPI::getPlaylist(guild->id).songQueue.at(y).viewUrl + ")\n__**Added By:**__ <@!" +
-						std::to_string(SongAPI::getPlaylist(guild->id).songQueue.at(y).addedByUserId) + "> (" + SongAPI::getPlaylist(guild->id).songQueue.at(y).addedByUserName +
+						jsonifier::toString(SongAPI::getPlaylist(guild->id).songQueue.at(y).addedByUserId) + "> (" + SongAPI::getPlaylist(guild->id).songQueue.at(y).addedByUserName +
 						")";
-					msgEmbedField.name = "__**" + std::to_string(y + 1) + " of " + std::to_string(SongAPI::getPlaylist(guild->id).songQueue.size()) + "**__";
+					msgEmbedField.name = "__**" + jsonifier::toString(y + 1) + " of " + jsonifier::toString(SongAPI::getPlaylist(guild->id).songQueue.size()) + "**__";
 					msgEmbedFields[msgEmbedFieldsPage].emplace_back(msgEmbedField);
 				}
-				Jsonifier::Vector<EmbedData> msgEmbeds;
+				jsonifier::vector<EmbedData> msgEmbeds;
 				msgEmbedFieldsPage = 0;
 				for (int32_t y = 0; y < msgEmbedFields.size(); y += 1) {
 					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setColor(discordGuild->data.borderColor)
 						.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl())
 						.setTimeStamp(getTimeAndDate())
-						.setTitle("__**Playlist, Page " + std::to_string(y + 1) + " of " + std::to_string(msgEmbedFields.size()) + "**__")
+						.setTitle("__**Playlist, Page " + jsonifier::toString(y + 1) + " of " + jsonifier::toString(msgEmbedFields.size()) + "**__")
 						.setFooter("React with ✅ to edit the contents of the current page. React with ❌ to exit!")
 						.setDescription("__**React with ✅ to edit the contents of the current page. React with ❌ to exit!**__")
 						.fields = msgEmbedFields[y];
@@ -249,8 +249,8 @@ namespace DiscordCoreAPI {
 								doWeQuit = true;
 								break;
 							}
-							Jsonifier::Vector<std::string> args2;
-							std::string newString = convertToLowerCase(returnedMessages.messages.at(0).content);
+							jsonifier::vector<jsonifier::string> args2;
+							jsonifier::string newString = convertToLowerCase(returnedMessages.messages.at(0).content);
 							std::regex wordRegex("[a-z]{1,12}");
 							std::smatch wordRegexMatch;
 							regex_search(newString, wordRegexMatch, wordRegex,
@@ -411,7 +411,7 @@ namespace DiscordCoreAPI {
 								break;
 							} else if (convertToLowerCase(args2[0]) == "shuffle") {
 								auto oldSongArray = SongAPI::getPlaylist(guild->id);
-								Jsonifier::Vector<Song> newVector{};
+								jsonifier::vector<Song> newVector{};
 								while (oldSongArray.songQueue.size() > 0) {
 									std::mt19937_64 randomEngine{ static_cast<uint32_t>(
 										std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()) };

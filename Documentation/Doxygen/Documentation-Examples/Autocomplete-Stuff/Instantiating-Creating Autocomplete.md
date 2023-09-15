@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 				
 				CreateGlobalApplicationCommandData createTestData;
 				createTestData.dmPermission = true;
-				createTestData.applicationId = newArgs.discordCoreClient->getBotUser().id;
+				createTestData.applicationId = DiscordCoreClient::getInstance()->getBotUser().id;
 				createTestData.type = ApplicationCommandType::Chat_Input;
 				createTestData.name = "test";
 				createTestData.description = "Test command.";
@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 				testOptionOne.description = "Test attachment!";
 				createTestData.options.emplace_back(testOptionOne);
 				ApplicationCommandOptionData testOptionTwo;
-				testOptionTwo.type = ApplicationCommandOptionType::std::string;
+				testOptionTwo.type = ApplicationCommandOptionType::jsonifier::string;
 				testOptionTwo.name = "test_string";
 				testOptionTwo.required = false;
 				testOptionTwo.autocomplete = true;

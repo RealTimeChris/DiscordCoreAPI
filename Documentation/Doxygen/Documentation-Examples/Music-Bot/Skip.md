@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (!guild.areWeConnected() || !SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					std::string msgString = "------\n**There's no music playing to be skipped!**\n------";
+					jsonifier::string msgString = "------\n**There's no music playing to be skipped!**\n------";
 					EmbedData msgEmbed;
 					msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					msgEmbed.setColor(discordGuild.data.borderColor);
@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (!SongAPI::isThereAnySongs(guild.id)) {
-					std::string msgString = "------\n**There's no more songs for us to skip to!**\n------";
+					jsonifier::string msgString = "------\n**There's no more songs for us to skip to!**\n------";
 					EmbedData msgEmbed02;
 					msgEmbed02.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					msgEmbed02.setColor(discordGuild.data.borderColor);
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 					return;
 				} else {
 					if (SongAPI::areWeCurrentlyPlaying(guild.id) && SongAPI::isThereAnySongs(guild.id)) {
-						std::string msgString = "------\n**We're skipping to the next song!**\n------";
+						jsonifier::string msgString = "------\n**We're skipping to the next song!**\n------";
 						EmbedData msgEmbed02{};
 						msgEmbed02.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl())
 							.setColor(discordGuild.data.borderColor)
@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 						InputEvents::respondToInputEventAsync(dataPackage02).get();
 						return;
 					} else {
-						std::string msgString = "------\n**There's no music playing to be skipped!**\n------";
+						jsonifier::string msgString = "------\n**There's no music playing to be skipped!**\n------";
 						EmbedData msgEmbed02;
 						msgEmbed02.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 						msgEmbed02.setColor(discordGuild.data.borderColor);

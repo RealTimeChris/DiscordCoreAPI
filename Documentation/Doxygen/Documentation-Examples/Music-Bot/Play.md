@@ -9,7 +9,7 @@ Play {#Play}
 namespace DiscordCoreAPI {
 
 	MoveThroughMessagePagesData recurseThroughOptions(MoveThroughMessagePagesData returnData, int32_t currentPageIndex, InputEventData newEvent,
-		Jsonifier::Vector<EmbedData> embedsFromSearch, BaseFunctionArguments& newArgs, Jsonifier::Vector<int32_t> arrayOfIndices, GuildMember guildMember, Jsonifier::Vector<Song> searchResults) {
+		jsonifier::vector<EmbedData> embedsFromSearch, BaseFunctionArguments& newArgs, jsonifier::vector<int32_t> arrayOfIndices, GuildMember guildMember, jsonifier::vector<Song> searchResults) {
 		if (returnData.buttonId == "exit") {
 			auto currentQueue = SongAPI::getPlaylist(guildMember.guildId);
 			int32_t songSize = currentQueue.songQueue.size();
@@ -20,12 +20,12 @@ namespace DiscordCoreAPI {
 				}
 			}
 			UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
-			std::string descriptionString{};
+			jsonifier::string descriptionString{};
 			currentQueue = SongAPI::getPlaylist(guildMember.guildId);
 			descriptionString = "------\n__**Added the following songs to the queue:\n";
 			for (int32_t x = 0; x < arrayOfIndices.size(); x += 1) {
 				descriptionString += "[" + searchResults[arrayOfIndices[x]].songTitle + "](" + searchResults[arrayOfIndices[x]].viewUrl + ")\n" +
-					"Position: " + std::to_string(songSize + x + 1) + "\n";
+					"Position: " + jsonifier::toString(songSize + x + 1) + "\n";
 			}
 			descriptionString += "**__\n------";
 			newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 			return returnData;
 		} else {
 			returnData =
-				moveThroughMessagePages(std::to_string(newArgs.eventData.getAuthorId()), InputEventData(newEvent), currentPageIndex, embedsFromSearch, false, 120000, true);
+				moveThroughMessagePages(jsonifier::toString(newArgs.eventData.getAuthorId()), InputEventData(newEvent), currentPageIndex, embedsFromSearch, false, 120000, true);
 			arrayOfIndices.emplace_back(returnData.currentPageIndex);
 			return recurseThroughOptions(returnData, returnData.currentPageIndex, returnData.inputEventData, embedsFromSearch, newArgs, arrayOfIndices, guildMember, searchResults);
 		}
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				Jsonifier::Vector<Song> searchResults{};
+				jsonifier::vector<Song> searchResults{};
 				if (newArgs.optionsArgs.size() > 0) {
 					searchResults = SongAPI::searchForSong(newArgs.optionsArgs[0], guild.id);
 				}
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				Jsonifier::Vector<EmbedData> embedsFromSearch;
+				jsonifier::vector<EmbedData> embedsFromSearch;
 				int32_t x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 					newEmbed->setDescription("__**Title:**__ [" + value.songTitle + "](" + value.viewUrl + ")" + "\n__**Description:**__ " + value.description +
 						"\n__**Duration:**__ " + value.duration);
 					newEmbed->setTimeStamp(getTimeAndDate());
-					newEmbed->setTitle("__**" + std::to_string(x) + " of " + std::to_string(searchResults.size()) + "**__");
+					newEmbed->setTitle("__**" + jsonifier::toString(x) + " of " + jsonifier::toString(searchResults.size()) + "**__");
 					newEmbed->setImage(value.thumbnailUrl);
 					newEmbed->setColor(discordGuild.data.borderColor);
 					embedsFromSearch.emplace_back(*newEmbed);
@@ -219,7 +219,7 @@ namespace DiscordCoreAPI {
 
 				uint32_t currentPageIndex = 0;
 				MoveThroughMessagePagesData returnData{};
-				Jsonifier::Vector<int32_t> arrayOfIndices{};
+				jsonifier::vector<int32_t> arrayOfIndices{};
 				if (embedsFromSearch.size() > 0) {
 					RespondToInputEventData dataPackage0(newEvent);
 					dataPackage0.setResponseType(InputEventResponseType::Follow_Up_Message);
@@ -248,7 +248,7 @@ namespace DiscordCoreAPI {
 								newEmbed->setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(eventData.guild.id).songTitle + "](" +
 									SongAPI::getCurrentSong(eventData.guild.id).viewUrl + ")" + "\n__**Description:**__ " +
 									SongAPI::getCurrentSong(eventData.guild.id).description + "\n__**Duration:**__ " + SongAPI::getCurrentSong(eventData.guild.id).duration +
-									"\n__**Added By:**__ <@!" + std::to_string(SongAPI::getCurrentSong(guild.id).addedByUserId) + "> (" +
+									"\n__**Added By:**__ <@!" + jsonifier::toString(SongAPI::getCurrentSong(guild.id).addedByUserId) + "> (" +
 									SongAPI::getCurrentSong(eventData.guild.id).addedByUserName + ")");
 								newEmbed->setImage(SongAPI::getCurrentSong(eventData.guild.id).thumbnailUrl);
 								newEmbed->setTimeStamp(getTimeAndDate());
@@ -278,7 +278,7 @@ namespace DiscordCoreAPI {
 								newEmbed->setDescription("__**It appears as though there was an error when trying to play the following track!**__\n__**Title:**__ [" +
 									eventData.previousSong.songTitle + "](" + eventData.previousSong.viewUrl + ")" + "\n__**Description:**__ " +
 									eventData.previousSong.description + "\n__**Duration:**__ " + eventData.previousSong.duration + "\n__**Added By:**__ <@!" +
-									std::to_string(eventData.previousSong.addedByUserId) + "> (" + eventData.previousSong.addedByUserName + ")");
+									jsonifier::toString(eventData.previousSong.addedByUserId) + "> (" + eventData.previousSong.addedByUserName + ")");
 								newEmbed->setImage(eventData.previousSong.thumbnailUrl);
 								newEmbed->setTimeStamp(getTimeAndDate());
 								newEmbed->setTitle("__**Playing Error:**__");
@@ -304,7 +304,7 @@ namespace DiscordCoreAPI {
 									newEmbed->setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(eventData.guild.id).songTitle + "](" +
 										SongAPI::getCurrentSong(eventData.guild.id).viewUrl + ")" + "\n__**Description:**__ " +
 										SongAPI::getCurrentSong(eventData.guild.id).description + "\n__**Duration:**__ " + SongAPI::getCurrentSong(eventData.guild.id).duration +
-										"\n__**Added By:**__ <@!" + std::to_string(SongAPI::getCurrentSong(eventData.guild.id).addedByUserId) + "> (" +
+										"\n__**Added By:**__ <@!" + jsonifier::toString(SongAPI::getCurrentSong(eventData.guild.id).addedByUserId) + "> (" +
 										SongAPI::getCurrentSong(eventData.guild.id).addedByUserName + ")");
 									newEmbed->setImage(SongAPI::getCurrentSong(eventData.guild.id).thumbnailUrl);
 									newEmbed->setTimeStamp(getTimeAndDate());
@@ -359,7 +359,7 @@ namespace DiscordCoreAPI {
 						newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 						newEmbed->setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewUrl + ")" +
 							"\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " + SongAPI::getCurrentSong(guild.id).duration +
-							"\n__**Added By:**__ <@!" + std::to_string(SongAPI::getCurrentSong(guild.id).addedByUserId) + "> (" +
+							"\n__**Added By:**__ <@!" + jsonifier::toString(SongAPI::getCurrentSong(guild.id).addedByUserId) + "> (" +
 							SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
 						newEmbed->setImage(SongAPI::getCurrentSong(guild.id).thumbnailUrl);
 						newEmbed->setTimeStamp(getTimeAndDate());
@@ -425,7 +425,7 @@ namespace DiscordCoreAPI {
 						searchResults[returnData.currentPageIndex].viewUrl + ")\n__**Duration:**__ " + searchResults[returnData.currentPageIndex].duration +
 						"\n__**Description:**__ " + searchResults[returnData.currentPageIndex].description + "\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
-					newEmbed->setTitle("__**Song Added To Queue Position: " + std::to_string(SongAPI::getPlaylist(guild.id).songQueue.size()) + "**__ ");
+					newEmbed->setTitle("__**Song Added To Queue Position: " + jsonifier::toString(SongAPI::getPlaylist(guild.id).songQueue.size()) + "**__ ");
 					newEmbed->setColor(discordGuild.data.borderColor);
 					newEmbed->setThumbnail(searchResults[returnData.currentPageIndex].thumbnailUrl);
 					embedsFromSearch.emplace_back(*newEmbed);
