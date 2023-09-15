@@ -52,28 +52,28 @@ namespace DiscordCoreAPI {
 
 	/// @brief For creating a single StickerData.
 	struct CreateGuildStickerData {
-		std::string description{};///< Description of the StickerData.
-		std::string reason{};///< The reason for creating the StickerData.
+		jsonifier::string description{};///< Description of the StickerData.
+		jsonifier::string reason{};///< The reason for creating the StickerData.
 		Snowflake guildId{};///< The Guild within which to create the StickerData.
-		std::string file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
-		std::string name{};///< Name of the StickerData.
-		std::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
+		jsonifier::string file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
+		jsonifier::string name{};///< Name of the StickerData.
+		jsonifier::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
 	/// @brief For modifying a single StickerData.
 	struct ModifyGuildStickerData {
-		std::string description{};///< Description of the StickerData.
+		jsonifier::string description{};///< Description of the StickerData.
 		Snowflake stickerId{};///< The StickerData you wish to modify.
-		std::string reason{};///< The reason for modifying the StickerData.
+		jsonifier::string reason{};///< The reason for modifying the StickerData.
 		Snowflake guildId{};///< The Guild within which to modify the StickerData.
-		std::string name{};///< Name of the StickerData.
-		std::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
+		jsonifier::string name{};///< Name of the StickerData.
+		jsonifier::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
 	/// @brief For deleting a single StickerData.
 	struct DeleteGuildStickerData {
 		Snowflake stickerId{};///< The StickerData you wish to delete.
-		std::string reason{};///< The reason for deleting the StickerData.
+		jsonifier::string reason{};///< The reason for deleting the StickerData.
 		Snowflake guildId{};///< The Guild within which to delete the StickerData.
 	};
 
@@ -96,12 +96,12 @@ namespace DiscordCoreAPI {
 
 		/// @brief Gets a list of nitro-available StickerData packs
 		/// @return A CoRoutine containing a StickerPackData
-		static CoRoutine<Jsonifier::Vector<StickerPackData>> getNitroStickerPacksAsync();
+		static CoRoutine<jsonifier::vector<StickerPackData>> getNitroStickerPacksAsync();
 
 		/// @brief Gets a list of Stickers from a Guild.
 		/// @param dataPackage A GetGuildStickersData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<StickerData>.
-		static CoRoutine<Jsonifier::Vector<StickerData>> getGuildStickersAsync(GetGuildStickersData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<StickerData>.
+		static CoRoutine<jsonifier::vector<StickerData>> getGuildStickersAsync(GetGuildStickersData dataPackage);
 
 		/// @brief Creates a new StickerData within a chosen Guild.
 		/// @param dataPackage A CreateGuildStickerData structure.

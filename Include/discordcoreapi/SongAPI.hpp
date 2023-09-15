@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		/// @brief Search for a Song to play.
 		/// @param searchQuery The Song to search for.
 		/// @return A vector of Song objects representing the search results.
-		Jsonifier::Vector<Song> searchForSong(const std::string& searchQuery);
+		jsonifier::vector<Song> searchForSong(jsonifier::string_view searchQuery);
 
 		/// @brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
 		/// @param songNew The song to play.

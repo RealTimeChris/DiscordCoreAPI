@@ -34,33 +34,33 @@
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 #include <fstream>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::CreateGuildEmojiData> {
+	template<> struct core<DiscordCoreAPI::CreateGuildEmojiData> {
 		using ValueType					 = DiscordCoreAPI::CreateGuildEmojiData;
-		static constexpr auto parseValue = object("roles", &ValueType::roles, "image", &ValueType::imageDataFinal, "reason", &ValueType::reason, "guildId", &ValueType::guildId,
-			"name", &ValueType::name, "type", &ValueType::type);
+		static constexpr auto parseValue = createObject("roles", &ValueType::roles, "image", &ValueType::imageDataFinal, "reason", &ValueType::reason, "guildId",
+			&ValueType::guildId, "name", &ValueType::name, "type", &ValueType::type);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyGuildEmojiData> {
+	template<> struct core<DiscordCoreAPI::ModifyGuildEmojiData> {
 		using ValueType = DiscordCoreAPI::ModifyGuildEmojiData;
 		static constexpr auto parseValue =
-			object("roles", &ValueType::roles, "reason", &ValueType::reason, "guildId", &ValueType::guildId, "emojiId", &ValueType::emojiId, "name", &ValueType::name);
+			createObject("roles", &ValueType::roles, "reason", &ValueType::reason, "guildId", &ValueType::guildId, "emojiId", &ValueType::emojiId, "name", &ValueType::name);
 	};
 
 }
 
 namespace DiscordCoreAPI {
 
-	template<> UnorderedMap<std::string, UnboundedMessageBlock<ReactionData>*> ObjectCollector<ReactionData>::objectsBuffersMap{};
+	template<> UnorderedMap<jsonifier::string, UnboundedMessageBlock<ReactionData>*> ObjectCollector<ReactionData>::objectsBuffersMap{};
 
 	template<> ObjectCollector<ReactionData>::ObjectCollector() {
-		collectorId										= std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+		collectorId										= jsonifier::toString(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 		ObjectCollector::objectsBuffersMap[collectorId] = &objectsBuffer;
 	};
 
 	template<> void ObjectCollector<ReactionData>::run(
-		std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::ReactionData>::ObjectCollectorReturnData>::promise_type>&
+		std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::ReactionData>::ObjectCollectorReturnData, false>::promise_type>&
 			coroHandle) {
 		int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 		int64_t elapsedTime{};
@@ -78,9 +78,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> CoRoutine<ObjectCollector<ReactionData>::ObjectCollectorReturnData> ObjectCollector<ReactionData>::collectObjects(int32_t quantityToCollect,
+	template<> CoRoutine<ObjectCollector<ReactionData>::ObjectCollectorReturnData, false> ObjectCollector<ReactionData>::collectObjects(int32_t quantityToCollect,
 		int32_t msToCollectForNew, ObjectFilter<ReactionData> filteringFunctionNew) {
-		auto coroHandle			   = co_await NewThreadAwaitable<ObjectCollectorReturnData>();
+		auto coroHandle			   = co_await NewThreadAwaitable<ObjectCollectorReturnData, false>();
 		quantityOfObjectsToCollect = quantityToCollect;
 		filteringFunction		   = filteringFunctionNew;
 		msToCollectFor			   = msToCollectForNew;
@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<ReactionData> Reactions::createReactionAsync(CreateReactionData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Reaction };
 		co_await NewThreadAwaitable<ReactionData>();
-		std::string emoji;
+		jsonifier::string emoji;
 		if (dataPackage.emojiId != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
 		} else {
@@ -119,7 +119,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Reactions::deleteOwnReactionAsync(DeleteOwnReactionData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Own_Reaction };
 		co_await NewThreadAwaitable<void>();
-		std::string emoji;
+		jsonifier::string emoji;
 		if (dataPackage.emojiId != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
 		} else {
@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Reactions::deleteUserReactionAsync(DeleteUserReactionData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_User_Reaction };
 		co_await NewThreadAwaitable<void>();
-		std::string emoji;
+		jsonifier::string emoji;
 		if (dataPackage.emojiId != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
 
@@ -149,21 +149,21 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<Jsonifier::Vector<UserData>> Reactions::getReactionsAsync(GetReactionsData dataPackage) {
+	CoRoutine<jsonifier::vector<UserData>> Reactions::getReactionsAsync(GetReactionsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Reactions };
-		co_await NewThreadAwaitable<Jsonifier::Vector<UserData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<UserData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + dataPackage.emoji;
 		if (dataPackage.afterId != 0) {
 			workload.relativePath += "?after=" + dataPackage.afterId;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 		} else if (dataPackage.limit != 0) {
-			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+			workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 		}
 		workload.callStack = "Reactions::getReactionsAsync()";
-		Jsonifier::Vector<UserData> returnData{};
+		jsonifier::vector<UserData> returnData{};
 		Reactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -182,7 +182,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Reactions::deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Reactions_By_Emoji };
 		co_await NewThreadAwaitable<void>();
-		std::string emoji;
+		jsonifier::string emoji;
 		if (dataPackage.emojiId != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
 		} else {
@@ -195,13 +195,13 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<Jsonifier::Vector<EmojiData>> Reactions::getEmojiListAsync(GetEmojiListData dataPackage) {
+	CoRoutine<jsonifier::vector<EmojiData>> Reactions::getEmojiListAsync(GetEmojiListData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Emoji_List };
-		co_await NewThreadAwaitable<Jsonifier::Vector<EmojiData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<EmojiData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/emojis";
 		workload.callStack	   = "Reactions::getEmojiListAsync()";
-		Jsonifier::Vector<EmojiData> returnData{};
+		jsonifier::vector<EmojiData> returnData{};
 		Reactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Emoji };
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		std::string newerFile  = base64Encode(loadFileContents(dataPackage.imageFilePath));
+		jsonifier::string newerFile  = base64Encode(loadFileContents(dataPackage.imageFilePath));
 		switch (dataPackage.type) {
 			case ImageType::Jpg: {
 				dataPackage.imageDataFinal = "data:image/jpeg;base64,";

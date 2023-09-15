@@ -33,16 +33,17 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::AddRecipientToGroupDMData> {
-		using ValueType					 = DiscordCoreAPI::AddRecipientToGroupDMData;
-		static constexpr auto parseValue = object("channel_id", &ValueType::channelId, "access_token", &ValueType::token, "nick", &ValueType::nick, "user_id", &ValueType::userId);
+	template<> struct core<DiscordCoreAPI::AddRecipientToGroupDMData> {
+		using ValueType = DiscordCoreAPI::AddRecipientToGroupDMData;
+		static constexpr auto parseValue =
+			createObject("channel_id", &ValueType::channelId, "access_token", &ValueType::token, "nick", &ValueType::nick, "user_id", &ValueType::userId);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyCurrentUserData> {
+	template<> struct core<DiscordCoreAPI::ModifyCurrentUserData> {
 		using ValueType					 = DiscordCoreAPI::ModifyCurrentUserData;
-		static constexpr auto parseValue = object("username", &ValueType::userName, "avatar", &ValueType::avatar);
+		static constexpr auto parseValue = createObject("username", &ValueType::userName, "avatar", &ValueType::avatar);
 	};
 }
 namespace DiscordCoreAPI {
@@ -65,11 +66,11 @@ namespace DiscordCoreAPI {
 			if (d.channelId == 0) {
 				data["d"]["channel_id"] = DiscordCoreInternal::JsonType::Null;
 			} else {
-				data["d"]["channel_id"] = d.channelId.operator std::string();
+				data["d"]["channel_id"] = d.channelId.operator jsonifier::string();
 			}
 			data["d"]["self_deaf"] = d.selfDeaf;
 			data["d"]["self_mute"] = d.selfMute;
-			data["d"]["guild_id"]  = d.guildId.operator std::string();
+			data["d"]["guild_id"]  = d.guildId.operator jsonifier::string();
 			return data;
 		}
 
@@ -89,7 +90,7 @@ namespace DiscordCoreAPI {
 			data["d"]["channel_id"] = DiscordCoreInternal::JsonType::Null;
 			data["d"]["self_deaf"]	= d.selfDeaf;
 			data["d"]["self_mute"]	= d.selfMute;
-			data["d"]["guild_id"]	= d.guildId.operator std::string();
+			data["d"]["guild_id"]	= d.guildId.operator jsonifier::string();
 			return data;
 		}
 	}
@@ -133,7 +134,7 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
-	UserCacheData& UserCacheData::operator=(UserData&& other) {
+	UserCacheData& UserCacheData::operator=(UserData&& other) noexcept {
 		premiumType = static_cast<PremiumType>(other.premiumType);
 		if (other.avatarDecoration != "") {
 			avatarDecoration = std::move(other.avatarDecoration);
@@ -172,10 +173,10 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI::UserData returnData{};
 		returnData.verified			= getFlagValue<UserFlags>(UserFlags::Verified);
 		returnData.system			= getFlagValue<UserFlags>(UserFlags::System);
-		returnData.discriminator	= discriminator.operator std::string();
-		returnData.globalName		= globalName.operator std::string();
 		returnData.bot				= getFlagValue<UserFlags>(UserFlags::Bot);
-		returnData.userName			= userName.operator std::string();
+		returnData.discriminator	= discriminator;
+		returnData.globalName		= globalName;
+		returnData.userName			= userName;
 		returnData.avatarDecoration = avatarDecoration;
 		returnData.accentColor		= accentColor;
 		returnData.avatar			= avatar;
@@ -185,7 +186,7 @@ namespace DiscordCoreAPI {
 		return returnData;
 	}
 
-	UserCacheData::UserCacheData(UserData&& other) {
+	UserCacheData::UserCacheData(UserData&& other) noexcept {
 		*this = std::move(other);
 	}
 
@@ -199,9 +200,9 @@ namespace DiscordCoreAPI {
 
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData& dataPackage) {
 		if (baseSocketAgent) {
-			std::string string{};
-			uint32_t shardId = (dataPackage.guildId.operator const uint64_t&() >> 22) % baseSocketAgent->discordCoreClient->configManager.getTotalShardCount();
-			uint32_t basesocketAgentIndex{ shardId % baseSocketAgent->discordCoreClient->configManager.getTotalShardCount() };
+			jsonifier::string_base<uint8_t> string{};
+			uint64_t shardId = (dataPackage.guildId.operator const uint64_t&() >> 22) % DiscordCoreClient::getInstance()->configManager.getTotalShardCount();
+			uint64_t basesocketAgentIndex{ shardId % DiscordCoreClient::getInstance()->configManager.getTotalShardCount() };
 			if (dataPackage.channelId == 0) {
 				DiscordCoreInternal::WebSocketMessageData<UpdateVoiceStateDataDC> data{};
 				UpdateVoiceStateDataDC dcData{};
@@ -210,11 +211,10 @@ namespace DiscordCoreAPI {
 				dcData.selfMute = dataPackage.selfMute;
 				data.d			= dcData;
 				data.op			= 4;
-				if (static_cast<DiscordCoreInternal::WebSocketOpCode>(
-						baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode) ==
+				if (static_cast<DiscordCoreInternal::WebSocketOpCode>(DiscordCoreClient::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode) ==
 					DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 					auto serializer = data.operator DiscordCoreInternal::EtfSerializer();
-					string			= serializer.operator std::string();
+					string			= serializer.operator jsonifier::string_base<uint8_t>();
 				} else {
 					parser.serializeJson(data, string);
 				}
@@ -222,26 +222,25 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::WebSocketMessageData<UpdateVoiceStateData> data{};
 				data.d	= dataPackage;
 				data.op = 4;
-				if (static_cast<DiscordCoreInternal::WebSocketOpCode>(
-						baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode) ==
+				if (static_cast<DiscordCoreInternal::WebSocketOpCode>(DiscordCoreClient::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode) ==
 					DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 					auto serializer = data.operator DiscordCoreInternal::EtfSerializer();
-					string			= serializer.operator std::string();
+					string			= serializer.operator jsonifier::string_base<uint8_t>();
 				} else {
 					parser.serializeJson(data, string);
 				}
 			}
-			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].createHeader(string,
-				baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode);
-			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].sendMessage(string, false);
+			DiscordCoreClient::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].createHeader(string,
+				DiscordCoreClient::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode);
+			DiscordCoreClient::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].sendMessage(string, false);
 		}
 	}
 
 	void BotUser::updatePresence(UpdatePresenceData& dataPackage) {
 		if (baseSocketAgent) {
-			std::string string{};
-			uint32_t shardId = 0;
-			uint32_t basesocketAgentIndex{};
+			jsonifier::string_base<uint8_t> string{};
+			uint64_t shardId = 0;
+			uint64_t basesocketAgentIndex{};
 			DiscordCoreInternal::WebSocketMessageData<UpdatePresenceData> data{};
 			data.d = dataPackage;
 			data.excludedKeys.emplace("s");
@@ -251,16 +250,16 @@ namespace DiscordCoreAPI {
 				}
 			}
 			data.op = 3;
-			if (static_cast<DiscordCoreInternal::WebSocketOpCode>(baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode) ==
+			if (static_cast<DiscordCoreInternal::WebSocketOpCode>(DiscordCoreClient::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode) ==
 				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 				auto serializer = data.operator DiscordCoreInternal::EtfSerializer();
-				string			= serializer.operator std::string();
+				string			= serializer.operator jsonifier::string_base<uint8_t>();
 			} else {
 				parser.serializeJson<true>(data, string);
 			}
-			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].createHeader(string,
-				baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode);
-			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].sendMessage(string, true);
+			DiscordCoreClient::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].createHeader(string,
+				DiscordCoreClient::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode);
+			DiscordCoreClient::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].sendMessage(string, true);
 		}
 	}
 
@@ -324,12 +323,10 @@ namespace DiscordCoreAPI {
 	}
 
 	UserCacheData Users::getCachedUser(GetUserData dataPackage) {
-		UserData data{};
-		data.id = dataPackage.userId;
-		if (!cache.contains(data.id)) {
-			return getUserAsync(dataPackage).get();
-		} else {
+		if (cache.contains(dataPackage.userId)) {
 			return cache[dataPackage.userId];
+		} else {
+			return getUserAsync({ .userId = dataPackage.userId }).get();
 		}
 	}
 
@@ -362,13 +359,13 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<Jsonifier::Vector<ConnectionData>> Users::getUserConnectionsAsync() {
+	CoRoutine<jsonifier::vector<ConnectionData>> Users::getUserConnectionsAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_User_Connections };
-		co_await NewThreadAwaitable<Jsonifier::Vector<ConnectionData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<ConnectionData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/users/@me/connections";
 		workload.callStack	   = "Users::getUserConnectionsAsync()";
-		Jsonifier::Vector<ConnectionData> returnData{};
+		jsonifier::vector<ConnectionData> returnData{};
 		Users::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

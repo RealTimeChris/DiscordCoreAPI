@@ -44,18 +44,21 @@ namespace DiscordCoreAPI {
 		  public:
 			friend class VoiceConnection;
 
-			UDPConnection() = default;
+			inline UDPConnection() {
+				resampleVector.resize(maxBufferSize);
+			}
 
 			inline UDPConnection& operator=(UDPConnection&& other) noexcept {
-				outputBuffer  = std::move(other.outputBuffer);
-				inputBuffer	  = std::move(other.inputBuffer);
-				address		  = std::move(other.address);
-				baseUrl		  = std::move(other.baseUrl);
-				socket		  = std::move(other.socket);
-				currentStatus = other.currentStatus;
-				streamType	  = other.streamType;
-				bytesRead	  = other.bytesRead;
-				port		  = other.port;
+				resampleVector = std::move(other.resampleVector);
+				outputBuffer   = std::move(other.outputBuffer);
+				inputBuffer	   = std::move(other.inputBuffer);
+				address		   = std::move(other.address);
+				baseUrl		   = std::move(other.baseUrl);
+				socket		   = std::move(other.socket);
+				currentStatus  = other.currentStatus;
+				streamType	   = other.streamType;
+				bytesRead	   = other.bytesRead;
+				port		   = other.port;
 				return *this;
 			};
 
@@ -63,8 +66,9 @@ namespace DiscordCoreAPI {
 				*this = std::move(other);
 			};
 
-			inline UDPConnection(const std::string& baseUrlNew, uint16_t portNew, StreamType streamTypeNew,
+			inline UDPConnection(jsonifier::string_view baseUrlNew, uint16_t portNew, StreamType streamTypeNew,
 				std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* token) {
+				resampleVector.resize(maxBufferSize);
 				streamType = streamTypeNew;
 				baseUrl	   = baseUrlNew;
 				port	   = portNew;
@@ -106,26 +110,27 @@ namespace DiscordCoreAPI {
 #endif
 
 				if (streamType == StreamType::None) {
-					if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, address)) {
+					if (getaddrinfo(baseUrlNew.data(), jsonifier::toString(portNew).data(), hints, address)) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::getaddrinfo(), to: " + baseUrlNew));
 						currentStatus = ConnectionStatus::CONNECTION_Error;
 						socket		  = INVALID_SOCKET;
 						return;
 					}
-					if (::connect(socket, address->ai_addr, static_cast<uint32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+					if (::connect(socket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::connect(), to: " + baseUrlNew));
 						currentStatus = ConnectionStatus::CONNECTION_Error;
 						socket		  = INVALID_SOCKET;
 						return;
 					}
 				} else if (streamType == StreamType::Client) {
-					if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, address)) {
+					if (getaddrinfo(baseUrlNew.data(), jsonifier::toString(portNew).data(), hints, address)) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::getaddrinfo(), to: " + baseUrlNew));
 						currentStatus = ConnectionStatus::CONNECTION_Error;
 						socket		  = INVALID_SOCKET;
 						return;
 					}
-					std::string connectionString{ "connecting" };
+					static constexpr jsonifier::string_view connectionString{ "connecting" };
+					jsonifier::string connectionStringNew{ "connecting" };
 					int32_t result{};
 					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().stopRequested()) {
 						result =
@@ -135,12 +140,12 @@ namespace DiscordCoreAPI {
 					socklen_t currentSize{ static_cast<socklen_t>(address->ai_addrlen) };
 					result = 0;
 					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().stopRequested()) {
-						result = recvfrom(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr, &currentSize);
+						result = recvfrom(socket, connectionStringNew.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr, &currentSize);
 						std::this_thread::sleep_for(1ns);
 					}
 				} else {
 					hints->ai_flags = AI_PASSIVE;
-					if (getaddrinfo(nullptr, std::to_string(portNew).c_str(), hints, address)) {
+					if (getaddrinfo(nullptr, jsonifier::toString(portNew).data(), hints, address)) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::getaddrinfo(), to: " + baseUrlNew));
 						currentStatus = ConnectionStatus::CONNECTION_Error;
 						socket		  = INVALID_SOCKET;
@@ -152,7 +157,7 @@ namespace DiscordCoreAPI {
 						socket		  = INVALID_SOCKET;
 						return;
 					}
-					std::string connectionString{};
+					jsonifier::string connectionString{};
 					int32_t result{};
 					socklen_t currentSize{ static_cast<socklen_t>(address->ai_addrlen) };
 					connectionString.resize(10);
@@ -223,7 +228,7 @@ namespace DiscordCoreAPI {
 				return currentStatus;
 			}
 
-			inline void writeData(std::basic_string_view<uint8_t> dataToWrite) {
+			inline void writeData(jsonifier::string_view_base<uint8_t> dataToWrite) {
 				if (areWeStillConnected()) {
 					uint64_t remainingBytes{ dataToWrite.size() };
 					while (remainingBytes > 0) {
@@ -234,13 +239,13 @@ namespace DiscordCoreAPI {
 							amountToCollect = dataToWrite.size();
 						}
 						outputBuffer.writeData(dataToWrite.data(), amountToCollect);
-						dataToWrite	   = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
+						dataToWrite	   = jsonifier::string_view_base{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
 						remainingBytes = dataToWrite.size();
 					}
 				}
 			}
 
-			inline std::basic_string_view<uint8_t> getInputBuffer() {
+			inline jsonifier::string_view_base<uint8_t> getInputBuffer() {
 				return inputBuffer.readData();
 			}
 
@@ -263,8 +268,9 @@ namespace DiscordCoreAPI {
 			inline bool processWriteData() {
 				if (outputBuffer.getUsedSpace() > 0) {
 					auto bytesToWrite{ outputBuffer.getCurrentTail()->getUsedSpace() };
-					auto writtenBytes{ sendto(socket, outputBuffer.readData().data(), static_cast<int32_t>(bytesToWrite), 0, address->ai_addr,
-						static_cast<int32_t>(address->ai_addrlen)) };
+					auto newData = outputBuffer.readData();
+					std::memcpy(resampleVector.data(), newData.data(), newData.size());
+					auto writtenBytes{ sendto(socket, resampleVector.data(), static_cast<int32_t>(bytesToWrite), 0, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) };
 					if (writtenBytes <= 0 && errno != EWOULDBLOCK && errno != EINPROGRESS) {
 						return false;
 					} else if (writtenBytes > 0) {
@@ -284,7 +290,7 @@ namespace DiscordCoreAPI {
 						if (readBytes <= 0 && errno != EWOULDBLOCK && errno != EINPROGRESS) {
 							return false;
 						} else if (readBytes > 0) {
-							inputBuffer.writeData(resampleVector.data(), readBytes);
+							inputBuffer.writeData(resampleVector.data(), static_cast<uint64_t>(readBytes));
 							bytesRead += readBytes;
 							handleAudioBuffer();
 						}
@@ -293,28 +299,28 @@ namespace DiscordCoreAPI {
 				return true;
 			}
 
-			inline virtual void handleAudioBuffer() = 0;
+			virtual inline void handleAudioBuffer() = 0;
 
-			inline virtual void disconnect() {
+			virtual inline void disconnect() {
 				socket = INVALID_SOCKET;
 				outputBuffer.clear();
 				inputBuffer.clear();
 			}
 
-			inline ~UDPConnection() {
+			virtual inline ~UDPConnection() {
 				disconnect();
 			}
 
 		  protected:
-			const uint64_t maxBufferSize{ (1024 * 16) };
-			std::array<char, 16384> resampleVector{};
+			static constexpr uint64_t maxBufferSize{ (1024 * 16) };
+			RingBuffer<uint8_t, 16> outputBuffer{};
 			RingBuffer<uint8_t, 16> inputBuffer{};
-			RingBuffer<char, 16> outputBuffer{};
+			std::vector<char> resampleVector{};
 			ConnectionStatus currentStatus{};
+			jsonifier::string baseUrl{};
 			addrinfoWrapper address{};
 			StreamType streamType{};
 			SOCKETWrapper socket{};
-			std::string baseUrl{};
 			int64_t bytesRead{};
 			uint16_t port{};
 		};

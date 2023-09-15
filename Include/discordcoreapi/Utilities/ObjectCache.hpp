@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 		/// @brief Move assignment operator for the ObjectCache class.
 		/// @param other Another ObjectCache instance to be moved.
 		/// @return Reference to the current ObjectCache instance.
-		inline ObjectCache& operator=(ObjectCache&& other) {
+		inline ObjectCache& operator=(ObjectCache&& other) noexcept {
 			if (this != &other) {
 				std::unique_lock lock01{ other.cacheMutex };
 				std::unique_lock lock02{ cacheMutex };
@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Move constructor for the ObjectCache class.
 		/// @param other Another ObjectCache instance to be moved.
-		inline ObjectCache(ObjectCache&& other) {
+		inline ObjectCache(ObjectCache&& other) noexcept {
 			*this = std::move(other);
 		}
 
@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
 		/// @return An iterator pointing to the newly added object in the cache.
 		template<typename mapped_type_new> inline auto emplace(mapped_type_new&& object) {
 			std::unique_lock lock(cacheMutex);
-			return cacheMap.emplace(makeUnique<mapped_type_new>(std::forward<mapped_type_new>(object)));
+			return cacheMap.emplace(makeUnique<std::remove_cvref_t<mapped_type_new>>(std::forward<mapped_type_new>(object)));
 		}
 
 		/// @brief Access an object in the cache using a key.

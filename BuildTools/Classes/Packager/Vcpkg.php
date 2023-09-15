@@ -160,7 +160,8 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
 endif()
 
-vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/License.md")';
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/License.md")
+';
 
         $versionFileContent = '{
   "name": "discordcoreapi",
@@ -168,7 +169,7 @@ vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/License.md")';
   "description": "A Discord bot library written in C++ using custom asynchronous coroutines.",
   "homepage": "https://discordcoreapi.com",
   "license": "MIT",
-  "supports": "(windows & x64 & !xbox) | (linux & x64)",
+  "supports": "(windows & x64 & !xbox) | (linux & x64) | (osx & x64)",
   "dependencies": [
     "jsonifier",
     "libsodium",

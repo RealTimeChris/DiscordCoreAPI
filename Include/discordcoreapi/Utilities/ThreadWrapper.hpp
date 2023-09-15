@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 		class ThreadWrapper {
 		  public:
 			/// @brief Default constructor.
-			inline ThreadWrapper() noexcept = default;
+			inline ThreadWrapper() = default;
 
 			/// @brief Move assignment operator.
 			/// @param other The other ThreadWrapper to copy from.
@@ -92,6 +92,9 @@ namespace DiscordCoreAPI {
 			inline ThreadWrapper(ThreadWrapper&& other) noexcept {
 				*this = std::move(other);
 			}
+
+			inline ThreadWrapper& operator=(const ThreadWrapper& other) = delete;
+			inline ThreadWrapper(const ThreadWrapper& other)			= delete;
 
 			/// @brief Constructor that takes a callable object.
 			/// @tparam Function The type of the callable object.
@@ -118,7 +121,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Get the hardware concurrency available.
 			/// @return The number of available hardware threads.
-			static inline uint64_t hardware_concurrency() {
+			inline static uint64_t hardware_concurrency() {
 				return std::thread::hardware_concurrency();
 			}
 
