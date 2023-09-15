@@ -40,8 +40,19 @@ namespace DiscordCoreAPI {
 		* \addtogroup discord_core_internal
 		* @{
 		*/
+		template<typename ReturnType> inline ReturnType ntohsNew(ReturnType value) {
+			return static_cast<ReturnType>(((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8));
+		}
 
-#if defined T_AVX || T_AVX2 || T_AVX512
+		template<typename ReturnType> inline ReturnType ntohlNew(ReturnType value) {
+			return static_cast<ReturnType>(((value & 0x000000FF) << 24) | ((value & 0x0000FF00) << 8) | ((value & 0x00FF0000) >> 8) | ((value & 0xFF000000) >> 24));
+		}
+
+		template<typename ReturnType> inline ReturnType ntohllNew(ReturnType value) {
+			return static_cast<ReturnType>(((value & 0x00000000000000FFULL) << 56) | ((value & 0x000000000000FF00ULL) << 40) | ((value & 0x0000000000FF0000ULL) << 24) |
+				((value & 0x00000000FF000000ULL) << 8) | ((value & 0x000000FF00000000ULL) >> 8) | ((value & 0x0000FF0000000000ULL) >> 24) |
+				((value & 0x00FF000000000000ULL) >> 40) | ((value & 0xFF00000000000000ULL) >> 56));
+		}
 
 		/// @brief Reverses the byte order of a value if needed, based on the endianness.
 		/// @tparam ReturnType The type of the value to reverse.
@@ -49,16 +60,15 @@ namespace DiscordCoreAPI {
 		/// @return The reversed value.
 		template<typename ReturnType> inline ReturnType reverseByteOrder(ReturnType net) {
 			if constexpr (std::endian::native == std::endian::little) {
-				// Reverse byte order using SIMD intrinsics
 				switch (sizeof(ReturnType)) {
 					case 2: {
-						return _mm_extract_epi16(_mm_shuffle_epi8(_mm_insert_epi16(__m128i{}, net, 0), _mm_insert_epi16(__m128i{}, 0x01, 0)), 0);
+						return ntohsNew(net);
 					}
 					case 4: {
-						return _mm_extract_epi32(_mm_shuffle_epi8(_mm_insert_epi32(__m128i{}, net, 0), _mm_insert_epi32(__m128i{}, 0x10203, 0)), 0);
+						return ntohlNew(net);
 					}
 					case 8: {
-						return _mm_extract_epi64(_mm_shuffle_epi8(_mm_insert_epi64(__m128i{}, net, 0), _mm_insert_epi64(__m128i{}, 0x102030405060708, 0)), 0);
+						return ntohllNew(net);
 					}
 					default: {
 						return net;
@@ -68,43 +78,18 @@ namespace DiscordCoreAPI {
 				return net;
 			}
 		}
-
-// If not using SSE/AVX intrinsics, use standard functions for reversing byte order
-#else
-		template<typename ReturnType> inline ReturnType reverseByteOrder(ReturnType net) {
-			if constexpr (std::endian::native == std::endian::little) {
-				// Reverse byte order using standard network to host conversion functions
-				switch (sizeof(ReturnType)) {
-					case 2: {
-						return static_cast<ReturnType>(ntohs(static_cast<uint16_t>(net)));
-					}
-					case 4: {
-						return static_cast<ReturnType>(ntohl(static_cast<uint32_t>(net)));
-					}
-					case 8: {
-						return static_cast<ReturnType>(ntohll(static_cast<uint64_t>(net)));
-					}
-					default: {
-						return net;
-					}
-				}
-			} else {
-				return net;
-			}
-		}
-#endif
 
 		/// @brief Stores the bits of a number into a character array.
 		/// @tparam ReturnType The type of the number.
 		/// @param to The character array to store the bits.
 		/// @param num The number whose bits are to be stored.
-		template<typename ReturnType> inline void storeBits(char* to, ReturnType num) {
+		template<typename ReturnType, typename ValueType> inline void storeBits(ValueType* to, ReturnType num) {
 			const uint8_t byteSize{ 8 };
 			num = reverseByteOrder(num);
 
 			// Store the bits of the number in the character array
 			for (uint64_t x = 0; x < sizeof(ReturnType); ++x) {
-				to[x] = static_cast<uint8_t>(num >> (byteSize * x));
+				to[x] = static_cast<ValueType>(num >> (byteSize * x));
 			}
 		}
 
@@ -116,7 +101,7 @@ namespace DiscordCoreAPI {
 			inline explicit EtfParseError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 		};
 
-		enum class EtfType : uint8_t {
+		enum class EtfType : int8_t {
 			New_Float_Ext	  = 70,
 			Small_Integer_Ext = 97,
 			Integer_Ext		  = 98,
@@ -140,7 +125,7 @@ namespace DiscordCoreAPI {
 			/// @brief Parse ETF data to JSON format.
 			/// @param dataToParse The ETF data to be parsed.
 			/// @return The JSON representation of the parsed data.
-			inline std::string_view parseEtfToJson(std::string_view dataToParse) {
+			inline std::basic_string_view<uint8_t> parseEtfToJson(std::basic_string_view<uint8_t> dataToParse) {
 				dataBuffer = dataToParse.data();
 				dataSize   = dataToParse.size();
 				finalString.clear();
@@ -150,12 +135,12 @@ namespace DiscordCoreAPI {
 					throw EtfParseError{ "EtfParser::parseEtfToJson() Error: Incorrect format version specified." };
 				}
 				singleValueETFToJson();
-				return std::string_view{ finalString.data(), currentSize };
+				return { finalString.data(), currentSize };
 			}
 
 		  protected:
-			Jsonifier::String finalString{};///< The final JSON string.
-			const char* dataBuffer{};///< Pointer to ETF data buffer.
+			jsonifier::string_base<uint8_t> finalString{};///< The final JSON string.
+			const uint8_t* dataBuffer{};///< Pointer to ETF data buffer.
 			uint64_t currentSize{};///< Current size of the JSON string.
 			uint64_t dataSize{};///< Size of the ETF data.
 			uint64_t offSet{};///< Current offset in the ETF data.
@@ -198,53 +183,48 @@ namespace DiscordCoreAPI {
 				if (finalString.size() < currentSize + length) {
 					finalString.resize((finalString.size() + length) * 2);
 				}
-				const char* stringNew = dataBuffer + offSet;
+				const uint8_t* stringNew = dataBuffer + offSet;
 				offSet += length;
 				if (length >= 3 && length <= 5) {
-					if (length == 3 && strncmp(stringNew, "nil", 3) == 0) {
+					if (length == 3 && stringNew[0] == 'n' && stringNew[1] == 'i' && stringNew[2] == 'l') {
 						writeCharacters("null", 4);
 						return;
-					} else if (length == 4 && strncmp(stringNew, "null", 4) == 0) {
+					} else if (length == 4 && stringNew[0] == 'n' && stringNew[1] == 'u' && stringNew[2] == 'l' && stringNew[3] == 'l') {
 						writeCharacters("null", 4);
 						return;
-					} else if (length == 4 && strncmp(stringNew, "true", 4) == 0) {
+					} else if (length == 4 && stringNew[0] == 't' && stringNew[1] == 'r' && stringNew[2] == 'u' && stringNew[3] == 'e') {
 						writeCharacters("true", 4);
 						return;
-					} else if (length == 5 && strncmp(stringNew, "false", 5) == 0) {
+					} else if (length == 5 && stringNew[0] == 'f' && stringNew[1] == 'a' && stringNew[2] == 'l' && stringNew[3] == 's' && stringNew[4] == 'e') {
 						writeCharacters("false", 5);
 						return;
 					}
 				}
-				writeCharacter('"');
+				writeCharacter<'"'>();
 				for (uint64_t x = 0; x < length; ++x) {
-					bool doWeBreak{};
 					switch (stringNew[x]) {
 						case '\\': {
 							switch (stringNew[++x]) {
 								case '\"':
-									writeCharacter('\\');
-									writeCharacter('\\');
-									writeCharacter('\"');
+									writeCharacter<'\"'>();
 									break;
 								case '\\':
-									break;
-								case '/':
-									writeCharacter('/');
+									writeCharacter<'\\'>();
 									break;
 								case 'b':
-									writeCharacter('\b');
+									writeCharacter<'\b'>();
 									break;
 								case 'f':
-									writeCharacter('\f');
+									writeCharacter<'\f'>();
 									break;
 								case 'n':
-									writeCharacter('\n');
+									writeCharacter<'\n'>();
 									break;
 								case 'r':
-									writeCharacter('\r');
+									writeCharacter<'\r'>();
 									break;
 								case 't':
-									writeCharacter('\t');
+									writeCharacter<'\t'>();
 									break;
 								default: {
 									writeCharacter(stringNew[x]);
@@ -254,8 +234,8 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						case '"': {
-							writeCharacter('\\');
-							writeCharacter('\"');
+							writeCharacter<'\\'>();
+							writeCharacter<'\"'>();
 							break;
 						}
 						default: {
@@ -263,11 +243,8 @@ namespace DiscordCoreAPI {
 							break;
 						}
 					}
-					if (doWeBreak) {
-						break;
-					}
 				}
-				writeCharacter('"');
+				writeCharacter<'"'>();
 			}
 
 			/// @brief Write a character to the final JSON string.
@@ -277,6 +254,15 @@ namespace DiscordCoreAPI {
 					finalString.resize((finalString.size() + 1) * 2);
 				}
 				finalString[currentSize++] = value;
+			}
+
+			/// @brief Write a character to the final JSON string.
+			/// @tparam value The character to write.
+			template<const char charToWrite> inline void writeCharacter() {
+				if (finalString.size() < currentSize + 1) {
+					finalString.resize((finalString.size() + 1) * 2);
+				}
+				finalString[currentSize++] = charToWrite;
 			}
 
 			/// @brief Parse a single ETF value and convert to JSON.
@@ -328,18 +314,18 @@ namespace DiscordCoreAPI {
 			/// @brief Parse ETF data representing a list and convert to JSON array.
 			inline void parseListExt() {
 				uint32_t length = readBitsFromBuffer<uint32_t>();
-				writeCharacter('[');
+				writeCharacter<'['>();
 				if (static_cast<uint64_t>(offSet) + length > dataSize) {
 					throw EtfParseError{ "ErlPacker::parseListExt() Error: Read past end of buffer." };
 				}
 				for (uint16_t x = 0; x < length; ++x) {
 					singleValueETFToJson();
 					if (x < length - 1) {
-						writeCharacter(',');
+						writeCharacter<','>();
 					}
 				}
 				readBitsFromBuffer<uint8_t>();
-				writeCharacter(']');
+				writeCharacter<']'>();
 			}
 
 			/// @brief Parse ETF data representing a small integer and convert to JSON number.
@@ -356,7 +342,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Parse ETF data representing a string and convert to JSON string.
 			inline void parseStringExt() {
-				writeCharacter('"');
+				writeCharacter<'"'>();
 				uint16_t length = readBitsFromBuffer<uint16_t>();
 				if (static_cast<uint64_t>(offSet) + length > dataSize) {
 					throw EtfParseError{ "ErlPacker::parseStringExt() Error: Read past end of buffer." };
@@ -364,7 +350,7 @@ namespace DiscordCoreAPI {
 				for (uint16_t x = 0; x < length; ++x) {
 					parseSmallIntegerExt();
 				}
-				writeCharacter('"');
+				writeCharacter<'"'>();
 			}
 
 			/// @brief Parse ETF data representing a new float and convert to JSON number.
@@ -378,7 +364,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Parse ETF data representing a small big integer and convert to JSON number.
 			inline void parseSmallBigExt() {
-				writeCharacter('"');
+				writeCharacter<'"'>();
 				auto digits	 = readBitsFromBuffer<uint8_t>();
 				uint8_t sign = readBitsFromBuffer<uint8_t>();
 
@@ -398,11 +384,11 @@ namespace DiscordCoreAPI {
 				if (sign == 0) {
 					auto string = std::to_string(value);
 					writeCharacters(string.data(), string.size());
-					writeCharacter('"');
+					writeCharacter<'"'>();
 				} else {
 					auto string = std::to_string(-(static_cast<int64_t>(value)));
 					writeCharacters(string.data(), string.size());
-					writeCharacter('"');
+					writeCharacter<'"'>();
 				}
 			}
 
@@ -429,16 +415,16 @@ namespace DiscordCoreAPI {
 			/// @brief Parse ETF data representing a map and convert to JSON object.
 			inline void parseMapExt() {
 				uint32_t length = readBitsFromBuffer<uint32_t>();
-				writeCharacter('{');
+				writeCharacter<'{'>();
 				for (uint32_t x = 0; x < length; ++x) {
 					singleValueETFToJson();
-					writeCharacter(':');
+					writeCharacter<':'>();
 					singleValueETFToJson();
 					if (x < length - 1) {
-						writeCharacter(',');
+						writeCharacter<','>();
 					}
 				}
-				writeCharacter('}');
+				writeCharacter<'}'>();
 			}
 		};
 
@@ -471,7 +457,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Concept for string types excluding EtfSerializer.
 		template<typename ValueType>
-		concept StringT = std::same_as<std::decay_t<ValueType>, std::string> || std::same_as<std::decay_t<ValueType>, std::string_view> ||
+		concept string_t = std::same_as<std::decay_t<ValueType>, std::string> || std::same_as<std::decay_t<ValueType>, std::string_view> ||
 			std::convertible_to<ValueType, std::string> && !std::same_as<std::decay_t<ValueType>, char> && !EtfSerializerT<ValueType>;
 
 		/// @brief Concept for types that have emplace_back method.
@@ -515,12 +501,11 @@ namespace DiscordCoreAPI {
 			typename ValueType::key_type;
 		} && HasRange<ValueType> && !EtfSerializerT<ValueType>;
 
-
 		class EtfSerializer {
 		  public:
-			template<typename ValueType> using allocator = JsonifierInternal::AllocWrapper<ValueType>;
+			template<typename ValueType> using allocator = jsonifier_internal::alloc_wrapper<ValueType>;
 			using object_type							 = UnorderedMap<std::string, EtfSerializer>;
-			using array_type							 = Jsonifier::Vector<EtfSerializer>;
+			using array_type							 = jsonifier::vector<EtfSerializer>;
 			using string_type							 = std::string;
 			using float_type							 = double;
 			using uint_type								 = uint64_t;
@@ -530,35 +515,44 @@ namespace DiscordCoreAPI {
 			inline EtfSerializer() = default;
 
 			inline EtfSerializer& operator=(EtfSerializer&& data) noexcept {
-				std::swap(stringReal, data.stringReal);
-				std::swap(type, data.type);
+				destroyImpl();
+				stringReal = std::move(data.stringReal);
+				type	   = data.type;
+				data.type  = JsonType::Null;
 				switch (type) {
 					case JsonType::Object: {
-						std::swap(objectValue, data.objectValue);
+						objectValue		 = data.objectValue;
+						data.objectValue = nullptr;
 						break;
 					}
 					case JsonType::Array: {
-						std::swap(arrayValue, data.arrayValue);
+						arrayValue		= data.arrayValue;
+						data.arrayValue = nullptr;
 						break;
 					}
 					case JsonType::String: {
-						std::swap(stringValue, data.stringValue);
+						stringValue		 = data.stringValue;
+						data.stringValue = nullptr;
 						break;
 					}
 					case JsonType::Float: {
-						std::swap(floatValue, data.floatValue);
+						floatValue		= data.floatValue;
+						data.floatValue = nullptr;
 						break;
 					}
 					case JsonType::Int: {
-						std::swap(intValue, data.intValue);
+						intValue	  = data.intValue;
+						data.intValue = nullptr;
 						break;
 					}
 					case JsonType::Uint: {
-						std::swap(uintValue, data.uintValue);
+						uintValue	   = data.uintValue;
+						data.uintValue = nullptr;
 						break;
 					}
 					case JsonType::Bool: {
-						std::swap(boolValue, data.boolValue);
+						boolValue	   = data.boolValue;
+						data.boolValue = nullptr;
 						break;
 					}
 					case JsonType::Null: {
@@ -573,6 +567,7 @@ namespace DiscordCoreAPI {
 			}
 
 			inline EtfSerializer& operator=(const EtfSerializer& data) {
+				destroyImpl();
 				switch (data.type) {
 					case JsonType::Object: {
 						setValue<JsonType::Object>(data.getObject());
@@ -632,12 +627,12 @@ namespace DiscordCoreAPI {
 				*this = std::forward<ValueType>(data);
 			}
 
-			template<StringT ValueType> inline EtfSerializer& operator=(ValueType&& data) {
+			template<string_t ValueType> inline EtfSerializer& operator=(ValueType&& data) {
 				setValue<JsonType::String>(std::forward<ValueType>(data));
 				return *this;
 			}
 
-			template<StringT ValueType> inline EtfSerializer(ValueType&& data) {
+			template<string_t ValueType> inline EtfSerializer(ValueType&& data) {
 				*this = std::forward<ValueType>(data);
 			}
 
@@ -690,15 +685,57 @@ namespace DiscordCoreAPI {
 				*this = std::forward<ValueType>(data);
 			}
 
-			inline JsonType getType() {
+			inline EtfSerializer& operator=(JsonType data) {
+				switch (data) {
+					case JsonType::Object: {
+						setValue<JsonType::Object>();
+						break;
+					}
+					case JsonType::Array: {
+						setValue<JsonType::Array>();
+						break;
+					}
+					case JsonType::String: {
+						setValue<JsonType::String>();
+						break;
+					}
+					case JsonType::Float: {
+						setValue<JsonType::Float>();
+						break;
+					}
+					case JsonType::Uint: {
+						setValue<JsonType::Uint>();
+						break;
+					}
+					case JsonType::Int: {
+						setValue<JsonType::Int>();
+						break;
+					}
+					case JsonType::Bool: {
+						setValue<JsonType::Bool>();
+						break;
+					}
+					case JsonType::Null: {
+						setValue<JsonType::Null>();
+						break;
+					}
+				}
+				return *this;
+			}
+
+			inline EtfSerializer(JsonType data) {
+				*this = data;
+			}
+
+			inline JsonType getType() const {
 				return type;
 			}
 
-			inline operator std::string() {
+			inline operator std::basic_string<uint8_t>() {
 				stringReal.clear();
 				appendVersion();
 				serializeJsonToEtfString(*this);
-				return std::move(stringReal);
+				return stringReal;
 			}
 
 			inline EtfSerializer& operator[](const typename object_type::key_type& key) {
@@ -738,13 +775,25 @@ namespace DiscordCoreAPI {
 				throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
 			}
 
-			template<typename EtfSerialzerType> inline void emplaceBack(EtfSerialzerType&& other) {
+			inline void emplaceBack(EtfSerializer&& other) {
 				if (type == JsonType::Null) {
 					setValue<JsonType::Array>();
 				}
 
 				if (type == JsonType::Array) {
-					getArray().emplace_back(std::forward<EtfSerialzerType>(other));
+					getArray().emplace_back(std::move(other));
+					return;
+				}
+				throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
+			}
+
+			inline void emplaceBack(const EtfSerializer& other) {
+				if (type == JsonType::Null) {
+					setValue<JsonType::Array>();
+				}
+
+				if (type == JsonType::Array) {
+					getArray().emplace_back(other);
 					return;
 				}
 				throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
@@ -756,43 +805,43 @@ namespace DiscordCoreAPI {
 				}
 				switch (type) {
 					case JsonType::Object: {
-						if (getObject() != getObject()) {
+						if (!compareValues<JsonType::Object>(lhs)) {
 							return false;
 						}
 						break;
 					}
 					case JsonType::Array: {
-						if (getArray() != getArray()) {
+						if (!compareValues<JsonType::Array>(lhs)) {
 							return false;
 						}
 						break;
 					}
 					case JsonType::String: {
-						if (getString() != getString()) {
+						if (!compareValues<JsonType::String>(lhs)) {
 							return false;
 						}
 						break;
 					}
 					case JsonType::Float: {
-						if (getFloat() != getFloat()) {
+						if (!compareValues<JsonType::Float>(lhs)) {
 							return false;
 						}
 						break;
 					}
 					case JsonType::Uint: {
-						if (getUint() != getUint()) {
+						if (!compareValues<JsonType::Uint>(lhs)) {
 							return false;
 						}
 						break;
 					}
 					case JsonType::Int: {
-						if (getInt() != getInt()) {
+						if (!compareValues<JsonType::Int>(lhs)) {
 							return false;
 						}
 						break;
 					}
 					case JsonType::Bool: {
-						if (getBool() != getBool()) {
+						if (!compareValues<JsonType::Bool>(lhs)) {
 							return false;
 						}
 						break;
@@ -805,30 +854,51 @@ namespace DiscordCoreAPI {
 			}
 
 			inline object_type& getObject() const {
+				if (this->type != JsonType::Object) {
+					throw EtfSerializeError{ "Sorry, but this value's type is not object!" };
+				}
 				return *objectValue;
 			}
 
 			inline array_type& getArray() const {
+				if (this->type != JsonType::Array) {
+					throw EtfSerializeError{ "Sorry, but this value's type is not array!" };
+				}
 				return *arrayValue;
 			}
 
 			inline string_type& getString() const {
+				if (this->type != JsonType::String) {
+					throw EtfSerializeError{ "Sorry, but this value's type is not string!" };
+				}
 				return *stringValue;
 			}
 
 			inline float_type& getFloat() const {
+				if (this->type != JsonType::Float) {
+					throw EtfSerializeError{ "Sorry, but this value's type is not float!" };
+				}
 				return *floatValue;
 			}
 
 			inline uint_type& getUint() const {
+				if (this->type != JsonType::Uint) {
+					throw EtfSerializeError{ "Sorry, but this value's type is not uint!" };
+				}
 				return *uintValue;
 			}
 
 			inline int_type& getInt() const {
+				if (this->type != JsonType::Int) {
+					throw EtfSerializeError{ "Sorry, but this value's type is not int!" };
+				}
 				return *intValue;
 			}
 
 			inline bool_type& getBool() const {
+				if (this->type != JsonType::Bool) {
+					throw EtfSerializeError{ "Sorry, but this value's type is not bool!" };
+				}
 				return *boolValue;
 			}
 
@@ -837,11 +907,11 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
+			std::basic_string<uint8_t> stringReal{};
 			JsonType type{ JsonType::Null };
-			std::string stringReal{};
 			union {
 				UnorderedMap<std::string, EtfSerializer>* objectValue;
-				Jsonifier::Vector<EtfSerializer>* arrayValue;
+				jsonifier::vector<EtfSerializer>* arrayValue;
 				std::string* stringValue;
 				double* floatValue;
 				uint64_t* uintValue;
@@ -930,45 +1000,44 @@ namespace DiscordCoreAPI {
 				appendNil();
 			}
 
-			inline void writeString(const char* data, uint64_t length) {
-				stringReal.append(data, length);
-			}
-
-			inline void writeCharacter(const char charValue) {
-				stringReal.push_back(charValue);
+			template<typename ValueType> inline void writeString(const ValueType* data, uint64_t length) {
+				auto oldSize = stringReal.size();
+				stringReal.resize(oldSize + length);
+				std::memcpy(stringReal.data() + oldSize, data, length);
 			}
 
 			inline void appendBinaryExt(const std::string& bytes, uint32_t sizeNew) {
-				char newBuffer[5]{ static_cast<int8_t>(EtfType::Binary_Ext) };
+				uint8_t newBuffer[5]{ static_cast<uint8_t>(EtfType::Binary_Ext) };
 				storeBits(newBuffer + 1, sizeNew);
 				writeString(newBuffer, std::size(newBuffer));
 				writeString(bytes.data(), bytes.size());
 			}
 
-			inline void appendNewFloatExt(const double FloatValue) {
-				char newBuffer[9]{ static_cast<uint8_t>(EtfType::New_Float_Ext) };
-				const void* punner{ &FloatValue };
-				storeBits(newBuffer + 1, *static_cast<const uint64_t*>(punner));
+			inline void appendNewFloatExt(const double newFloat) {
+				uint8_t newBuffer[9]{ static_cast<uint8_t>(EtfType::New_Float_Ext) };
+				uint64_t newValue{};
+				std::memcpy(&newValue, &newFloat, sizeof(newFloat));
+				storeBits(newBuffer + 1, newValue);
 				writeString(newBuffer, std::size(newBuffer));
 			}
 
 			inline void appendListHeader(const uint32_t sizeNew) {
-				char newBuffer[5]{ static_cast<uint8_t>(EtfType::List_Ext) };
+				uint8_t newBuffer[5]{ static_cast<uint8_t>(EtfType::List_Ext) };
 				storeBits(newBuffer + 1, sizeNew);
 				writeString(newBuffer, std::size(newBuffer));
 			}
 
 			inline void appendMapHeader(const uint32_t sizeNew) {
-				char newBuffer[5]{ static_cast<uint8_t>(EtfType::Map_Ext) };
+				uint8_t newBuffer[5]{ static_cast<uint8_t>(EtfType::Map_Ext) };
 				storeBits(newBuffer + 1, sizeNew);
 				writeString(newBuffer, std::size(newBuffer));
 			}
 
 			inline void appendUint64(uint64_t valueNew) {
-				char newBuffer[11]{ static_cast<int8_t>(EtfType::Small_Big_Ext) };
-				char encodedBytes{};
+				uint8_t newBuffer[11]{ static_cast<uint8_t>(EtfType::Small_Big_Ext) };
+				uint8_t encodedBytes{};
 				while (valueNew > 0) {
-					newBuffer[3 + encodedBytes] = valueNew & 0xFF;
+					newBuffer[3 + encodedBytes] = static_cast<uint8_t>(valueNew & 0xFF);
 					valueNew >>= 8;
 					++encodedBytes;
 				}
@@ -978,8 +1047,8 @@ namespace DiscordCoreAPI {
 			}
 
 			inline void appendInt64(int64_t valueNew) {
-				char newBuffer[11]{ static_cast<int8_t>(EtfType::Small_Big_Ext) };
-				char encodedBytes{};
+				uint8_t newBuffer[11]{ static_cast<uint8_t>(EtfType::Small_Big_Ext) };
+				uint8_t encodedBytes{};
 				while (valueNew > 0) {
 					newBuffer[3 + encodedBytes] = valueNew & 0xFF;
 					valueNew >>= 8;
@@ -995,49 +1064,50 @@ namespace DiscordCoreAPI {
 			}
 
 			inline void appendUint32(const uint32_t valueNew) {
-				char newBuffer[5]{ static_cast<uint8_t>(EtfType::Integer_Ext) };
+				uint8_t newBuffer[5]{ static_cast<uint8_t>(EtfType::Integer_Ext) };
 				storeBits(newBuffer + 1, valueNew);
 				writeString(newBuffer, std::size(newBuffer));
 			}
 
 			inline void appendInt32(const int32_t valueNew) {
-				char newBuffer[5]{ static_cast<uint8_t>(EtfType::Integer_Ext) };
+				uint8_t newBuffer[5]{ static_cast<uint8_t>(EtfType::Integer_Ext) };
 				storeBits(newBuffer + 1, valueNew);
 				writeString(newBuffer, std::size(newBuffer));
 			}
 
 			inline void appendUint8(const uint8_t valueNew) {
-				char newBuffer[2]{ static_cast<uint8_t>(EtfType::Small_Integer_Ext), static_cast<char>(valueNew) };
+				uint8_t newBuffer[2]{ static_cast<uint8_t>(EtfType::Small_Integer_Ext), static_cast<uint8_t>(valueNew) };
 				writeString(newBuffer, std::size(newBuffer));
 			}
 
 			inline void appendInt8(const int8_t valueNew) {
-				char newBuffer[2]{ static_cast<uint8_t>(EtfType::Small_Integer_Ext), static_cast<char>(valueNew) };
+				uint8_t newBuffer[2]{ static_cast<uint8_t>(EtfType::Small_Integer_Ext), static_cast<uint8_t>(valueNew) };
 				writeString(newBuffer, std::size(newBuffer));
 			}
 
 			inline void appendBool(bool data) {
 				if (data) {
-					char newBuffer[6]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(4), 't', 'r', 'u', 'e' };
+					uint8_t newBuffer[6]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(4), 't', 'r', 'u', 'e' };
 					writeString(newBuffer, std::size(newBuffer));
 
 				} else {
-					char newBuffer[7]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(5), 'f', 'a', 'l', 's', 'e' };
+					uint8_t newBuffer[7]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(5), 'f', 'a', 'l', 's', 'e' };
 					writeString(newBuffer, std::size(newBuffer));
 				}
 			}
 
 			inline void appendVersion() {
-				char newBuffer[1]{ static_cast<int8_t>(formatVersion) };
+				uint8_t newBuffer[1]{ static_cast<uint8_t>(formatVersion) };
 				writeString(newBuffer, std::size(newBuffer));
 			}
 
 			inline void appendNilExt() {
-				writeCharacter(static_cast<uint8_t>(EtfType::Nil_Ext));
+				uint8_t newBuffer[1]{ static_cast<uint8_t>(EtfType::Nil_Ext) };
+				writeString(newBuffer, std::size(newBuffer));
 			}
 
 			inline void appendNil() {
-				char newBuffer[5]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(3), 'n', 'i', 'l' };
+				uint8_t newBuffer[5]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(3), 'n', 'i', 'l' };
 				writeString(newBuffer, std::size(newBuffer));
 			}
 
@@ -1114,6 +1184,26 @@ namespace DiscordCoreAPI {
 				}
 			}
 
+			template<JsonType typeNew> inline bool compareValues(const EtfSerializer& other) const {
+				if constexpr (typeNew == JsonType::Object) {
+					return *objectValue == *other.objectValue;
+				} else if constexpr (typeNew == JsonType::Array) {
+					return *arrayValue == *other.arrayValue;
+				} else if constexpr (typeNew == JsonType::String) {
+					return *stringValue == *other.stringValue;
+				} else if constexpr (typeNew == JsonType::Float) {
+					return *floatValue == *other.floatValue;
+				} else if constexpr (typeNew == JsonType::Uint) {
+					return *uintValue == *other.uintValue;
+				} else if constexpr (typeNew == JsonType::Int) {
+					return *intValue == *other.intValue;
+				} else if constexpr (typeNew == JsonType::Bool) {
+					return *boolValue == *other.boolValue;
+				} else {
+					return true;
+				}
+			}
+
 			inline void destroyImpl() {
 				switch (type) {
 					case JsonType::Object: {
@@ -1142,6 +1232,9 @@ namespace DiscordCoreAPI {
 					}
 					case JsonType::Bool: {
 						destroy<JsonType::Bool>();
+						break;
+					}
+					case JsonType::Null: {
 						break;
 					}
 					default: {

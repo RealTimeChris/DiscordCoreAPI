@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 	/// @brief Specialization of UniquePtr for arrays.
 	/// @tparam ValueType The type of the managed object.
 	/// @tparam Deleter The type of the deleter used to destroy the object.
-	template<typename ValueType, typename Deleter> class UniquePtr<ValueType[], Deleter> {
+	template<typename ValueType, typename Deleter> class UniquePtr<ValueType[], Deleter> : public Deleter {
 	  public:
 		using element_type = std::remove_extent_t<ValueType>;
 		using pointer	   = element_type*;
@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 		/// @param other The other UniquePtr to move from.
 		/// @return UniquePtr The new managed object inside a UniquePtr.
 		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew[]>>
-		inline UniquePtr& operator=(UniquePtr<ValueTypeNew[], OtherDeleter>&& other) {
+		inline UniquePtr& operator=(UniquePtr<ValueTypeNew[], OtherDeleter>&& other) noexcept {
 			if (this != static_cast<void*>(&other)) {
 				reset(nullptr);
 				try {
@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 		/// @brief Move constructor for related arrays.
 		/// @param other The other UniquePtr to move from.
 		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew[]>>
-		inline UniquePtr(UniquePtr<ValueTypeNew[], OtherDeleter>&& other) {
+		inline UniquePtr(UniquePtr<ValueTypeNew[], OtherDeleter>&& other) noexcept {
 			*this = std::move(other);
 		}
 
@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
 		/// @param other The other UniquePtr to move from.
 		/// @return UniquePtr The new managed object inside a UniquePtr.
 		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew[]>>
-		inline UniquePtr& operator=(std::unique_ptr<ValueTypeNew[], OtherDeleter>&& other) {
+		inline UniquePtr& operator=(std::unique_ptr<ValueTypeNew[], OtherDeleter>&& other) noexcept {
 			reset(nullptr);
 			try {
 				commit(other.release());
@@ -258,7 +258,7 @@ namespace DiscordCoreAPI {
 		/// @brief Move constructor for std::unique_ptr arrays.
 		/// @param other The other UniquePtr to move from.
 		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew[]>>
-		inline UniquePtr(std::unique_ptr<ValueTypeNew[], OtherDeleter>&& other) {
+		inline UniquePtr(std::unique_ptr<ValueTypeNew[], OtherDeleter>&& other) noexcept {
 			*this = std::move(other);
 		}
 

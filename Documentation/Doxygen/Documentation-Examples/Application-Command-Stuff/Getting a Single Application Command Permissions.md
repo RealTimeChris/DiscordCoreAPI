@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 
 			GetGuildApplicationCommandPermissionsData dataPackage02;
 			dataPackage02.guildId = args.eventData.getGuildId();
-			dataPackage02.applicationId = args.discordCoreClient->getBotUser().id;
+			dataPackage02.applicationId = DiscordCoreClient::getInstance()->getBotUser().id;
 
 			auto returnValue = ApplicationCommands::getApplicationCommandPermissionsAsync(dataPackage02).get();
 

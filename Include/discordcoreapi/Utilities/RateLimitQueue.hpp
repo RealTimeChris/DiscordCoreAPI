@@ -40,6 +40,7 @@ namespace DiscordCoreAPI {
 	namespace DiscordCoreInternal {
 
 		struct RateLimitData {
+			friend class HttpsConnectionStackHolder;
 			friend class HttpsConnectionManager;
 			friend class RateLimitStackHolder;
 			friend class HttpsRnRBuilder;
@@ -52,9 +53,9 @@ namespace DiscordCoreAPI {
 			std::unique_lock<std::mutex> lock{ accessMutex, std::defer_lock };
 			std::atomic<Milliseconds> sampledTimeInMs{ Milliseconds{} };
 			std::atomic<Seconds> sRemain{ Seconds{} };
+			std::atomic_int64_t getsRemaining{ 1 };
 			std::atomic_bool areWeASpecialBucket{};
 			std::atomic_bool didWeHitRateLimit{};
-			std::atomic_int64_t getsRemaining{ 1 };
 			std::atomic_bool haveWeGoneYet{};
 			std::atomic_bool doWeWait{};
 			std::mutex accessMutex{};
@@ -78,24 +79,13 @@ namespace DiscordCoreAPI {
 
 			inline RateLimitData* getEndpointAccess(HttpsWorkloadType workloadType) {
 				if (rateLimits[buckets[workloadType]]->getsRemaining.load(std::memory_order_acquire) <= 0) {
-					while (HRClock::now().time_since_epoch() - rateLimits[buckets[workloadType]]->sampledTimeInMs.load(std::memory_order_acquire) <=
-						std::chrono::duration_cast<Milliseconds>(rateLimits[buckets[workloadType]]->sRemain.load(std::memory_order_acquire))) {
-						std::this_thread::sleep_for(1ms);
-					}
-				}
-				while (!rateLimits[buckets[workloadType]]->lock.try_lock()) {
-					std::this_thread::sleep_for(1ms);
 				}
 				return rateLimits[buckets[workloadType]].get();
 			}
 
-			inline void relaseEndpointAccess(HttpsWorkloadType workloadType) {
-				rateLimits[buckets[workloadType]]->lock.unlock();
-			}
-
 		  protected:
-			UnorderedMap<HttpsWorkloadType, std::string> buckets{};
 			UnorderedMap<std::string, UniquePtr<RateLimitData>> rateLimits{};
+			UnorderedMap<HttpsWorkloadType, std::string> buckets{};
 		};
 
 	}// namespace DiscordCoreInternal

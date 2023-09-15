@@ -32,18 +32,18 @@
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::CreateStageInstanceData> {
+	template<> struct core<DiscordCoreAPI::CreateStageInstanceData> {
 		using ValueType = DiscordCoreAPI::CreateStageInstanceData;
 		static constexpr auto parseValue =
-			object("privacyLevel", &ValueType::privacyLevel, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "topic", &ValueType::topic);
+			createObject("privacyLevel", &ValueType::privacyLevel, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "topic", &ValueType::topic);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyStageInstanceData> {
+	template<> struct core<DiscordCoreAPI::ModifyStageInstanceData> {
 		using ValueType = DiscordCoreAPI::ModifyStageInstanceData;
 		static constexpr auto parseValue =
-			object("privacyLevel", &ValueType::privacyLevel, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "topic", &ValueType::topic);
+			createObject("privacyLevel", &ValueType::privacyLevel, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "topic", &ValueType::topic);
 	};
 
 }

@@ -22,9 +22,6 @@
 # May 13, 2021
 # https://discordcoreapi.com
 
-include("CollectVersion")
-collect_version()
-
 include("GenerateProductVersion")
 generate_product_version(
 	PRODUCT_INFO
@@ -32,8 +29,9 @@ generate_product_version(
 	FILE_DESCRIPTION "${DESCRIPTION}"
 	ORIGINAL_FILENAME "discordcoreapi.dll"
 	COMPANY_NAME "RealTimeChris Inc."
-	"${VERSION_MAJOR}"
-	"${VERSION_MINOR}"
+	VERSION_MAJOR "${VERSION_MAJOR}"
+	VERSION_MINOR "${VERSION_MINOR}"
+	VERSION_PATCH "${VERSION_PATCH}"
 )
 
 set(CMAKE_CXX_STANDARD 20)
@@ -42,10 +40,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (NOT DEFINED BUILD_SHARED_LIBS)
 	set(BUILD_SHARED_LIBS TRUE)
-endif()
-
-if(NOT DEFINED AVX_TYPE)
-	include("${CMAKE_CURRENT_SOURCE_DIR}/../CMake/DetectArchitecture.cmake")
 endif()
 
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/Utilities/*.hpp")
@@ -115,7 +109,7 @@ target_link_libraries(
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:DiscordCoreAPI_EXPORTS_NOPE>"
-	"${AVX_TYPE}"
+	"CPU_INSTRUCTIONS=${CPU_INSTRUCTIONS}"
 )
 
 include(ProcessorCount)

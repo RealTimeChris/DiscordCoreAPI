@@ -110,10 +110,10 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Guild Emoji.
 	struct CreateGuildEmojiData {
-		template<typename ValueType> friend struct Jsonifier::Core;
+		template<typename ValueType> friend struct jsonifier::core;
 		friend class Reactions;
 
-		Jsonifier::Vector<Snowflake> roles{};///< Roles that can use this Emoji.
+		jsonifier::vector<Snowflake> roles{};///< Roles that can use this Emoji.
 		std::string imageFilePath{};///< The image responseData.
 		std::string reason{};///< Reason for creating the new Emoji.
 		Snowflake guildId{};///< The Guild within which to create the Emoji.
@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying a Guild Emoji.
 	struct ModifyGuildEmojiData {
-		Jsonifier::Vector<Snowflake> roles{};///< Roles that can use this Emoji.
+		jsonifier::vector<Snowflake> roles{};///< Roles that can use this Emoji.
 		std::string reason{};///< Reason for modifying the Emoji.
 		Snowflake guildId{};///< The Guild within which to modify the Emoji.
 		Snowflake emojiId{};///< The id of the Emoji to modify.
@@ -168,8 +168,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Get a list of users that reacted with this emoji. Returns an array of user objects on success.
 		/// @param dataPackage A GetReactionsData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<UserData>.
-		static CoRoutine<Jsonifier::Vector<UserData>> getReactionsAsync(GetReactionsData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<UserData>.
+		static CoRoutine<jsonifier::vector<UserData>> getReactionsAsync(GetReactionsData dataPackage);
 
 		/// @brief Deletes all of the Reactions from a given MessageData.
 		/// @param dataPackage A DeleteAllReactionsData structure.
@@ -183,8 +183,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects a list of Guild Emoji from a chosen Guild.
 		/// @param dataPackage A GetEmojiListData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<EmojiData>.
-		static CoRoutine<Jsonifier::Vector<EmojiData>> getEmojiListAsync(GetEmojiListData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<EmojiData>.
+		static CoRoutine<jsonifier::vector<EmojiData>> getEmojiListAsync(GetEmojiListData dataPackage);
 
 		/// @brief Collects a single Guild Emoji from a chosen Guild.
 		/// @param dataPackage A GetGuildEmojiData structure.

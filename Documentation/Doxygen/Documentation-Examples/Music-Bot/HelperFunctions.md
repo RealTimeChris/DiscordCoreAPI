@@ -108,7 +108,7 @@ Helper Functions {#HelperFunctions}
 		}
 
 		bool areWeACommander =
-			checkForBotCommanderStatus(guildMember, DiscordUser(args.discordCoreClient->getBotUser().userName, args.discordCoreClient->getBotUser().id));
+			checkForBotCommanderStatus(guildMember, DiscordUser(DiscordCoreClient::getInstance()->getBotUser().userName, DiscordCoreClient::getInstance()->getBotUser().id));
 
 		if (areWeACommander) {
 			return true;

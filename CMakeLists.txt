@@ -21,10 +21,9 @@
 # CMakeLists.txt - The CMake script for building this library.
 # May 13, 2021
 # https://discordcoreapi.com
-set(VCPKG_ROOT_DIR "C:/Vcpkg")
 set(Opus_DIR "C:/Vcpkg/installed/x64-windows/share/opus") # Set this one to the folder location of the file "OpusConfig.cmake".
 set(unofficial-sodium_DIR "C:/Vcpkg/installed/x64-windows/share/unofficial-sodium") # Set this one to the folder location of the file "unofficial-sodiumConfig.cmake".
-set(Jsonifier_DIR "C:/vcpkg2/installed/x64-windows/share/jsonifier/") # Set this one to the folder location of the file "JsonifierConfig.cmake".
+set(Jsonifier_DIR "C:/vcpkg2/Users/Chris/source/repos/Jsonifier/Install/Windows-Release/share/jsonifier") # Set this one to the folder location of the file "JsonifierConfig.cmake".
 set(OPENSSL_ROOT_DIR "C:/Vcpkg/installed/x64-windows/") # Set this one to the folder location of the include folder and library folders of OpenSSL.
 
 if (EXISTS "${VCPKG_ROOT_DIR}")
@@ -41,11 +40,21 @@ elseif(APPLE)
 endif()
 if (NOT "$ENV{VCPKG_INSTALLATION_ROOT}" STREQUAL "")
 	set(VCPKG_INSTALLATION_ROOT_NEW "$ENV{VCPKG_INSTALLATION_ROOT}")
-	set(OPENSSL_ROOT_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/")
-	set(OpenSSL_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/openssl")
-	set(Jsonifier_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/jsonifier")
-	set(Opus_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/opus")
-	set(unofficial-sodium_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/unofficial-sodium")
+	if (NOT EXISTS "${OPENSSL_ROOT_DIR}")
+		set(OPENSSL_ROOT_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/")
+	endif()
+	if (NOT EXISTS "${OpenSSL_DIR}")
+		set(OpenSSL_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/openssl")
+	endif()
+	if (NOT EXISTS "${Jsonifier_DIR}")
+		set(Jsonifier_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/jsonifier")
+	endif()
+	if (NOT EXISTS "${Opus_DIR}")
+		set(Opus_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/opus")
+	endif()
+	if (NOT EXISTS "${unofficial_sodium_DIR}" STREQUAL "")
+		set(unofficial_sodium_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/unofficial-sodium")
+	endif()
 	include("${VCPKG_INSTALLATION_ROOT_NEW}/scripts/buildsystems/vcpkg.cmake")
 	set(OS_NAME "${CMAKE_SYSTEM_NAME}")
 	string(TOLOWER "${OS_NAME}" OS_NAME)
@@ -55,9 +64,13 @@ else()
 	set(VCPKG_INSTALLATION_ROOT_NEW "${VCPKG_ROOT_DIR}")
 endif()
 
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/CMake;")
+
+include("CollectVersion")
+collect_version("discordcoreapi")
+
 set(PROJECT_NAME "DiscordCoreAPI")
 set(LIB_NAME "${PROJECT_NAME}")
-set(PRODUCT_VERSION "${VERSION}")
 set(DESCRIPTION "A Discord bot library, written in C++, using custom asynchronous coroutines.")
 
 project(
@@ -67,7 +80,6 @@ project(
 	HOMEPAGE_URL "https://discordcoreapi.com"
 	DESCRIPTION "${DESCRIPTION}"
 )
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/CMake;")
 set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}")
 
 add_subdirectory(Library)

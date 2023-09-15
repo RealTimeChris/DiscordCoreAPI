@@ -80,11 +80,11 @@ namespace DiscordCoreAPI {
 			/// @return A basic_string_view containing the decoded audio samples.
 			/// @throws DCAException if decoding fails.
 			inline std::basic_string_view<opus_int16> decodeData(std::basic_string_view<uint8_t> dataToDecode) {
-				const int64_t sampleCount = opus_decode(ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
+				const int32_t sampleCount = opus_decode(ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
 
 				// Check for successful decoding
 				if (sampleCount > 0) {
-					return std::basic_string_view<opus_int16>{ data.data(), static_cast<uint64_t>(sampleCount * 2ull) };
+					return std::basic_string_view<opus_int16>{ data.data(), static_cast<uint64_t>(sampleCount) * 2ull };
 				} else {
 					throw DCAException{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) } };
 				}
@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UniquePtr<OpusDecoder, OpusDecoderDeleter> ptr{};///< Unique pointer to OpusDecoder instance.
-			Jsonifier::Vector<opus_int16> data{};///< Buffer for decoded audio samples.
+			jsonifier::vector<opus_int16> data{};///< Buffer for decoded audio samples.
 		};
 
 		/**@}*/

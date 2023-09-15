@@ -32,12 +32,12 @@ namespace DiscordCoreAPI {
 
 				while (1) {
 					RespondToInputEventData responseData{ newEvent01 };
-					Jsonifier::Vector<Jsonifier::Vector<SelectOptionData>> selectOptions;
+					jsonifier::vector<jsonifier::vector<SelectOptionData>> selectOptions;
 					int32_t counter{};
 					int32_t currentHelpPage{};
-					for (auto& [key, value]: newArgs.discordCoreClient->getCommandController().getFunctions()) {
+					for (auto& [key, value]: DiscordCoreClient::getInstance()->getCommandController().getFunctions()) {
 						if (counter % 24 == 0) {
-							selectOptions.emplace_back(Jsonifier::Vector<SelectOptionData>());
+							selectOptions.emplace_back(jsonifier::vector<SelectOptionData>());
 							currentHelpPage += 1;
 						}
 						std::string newString;
@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 					newData.description = "Go back to the previous menu.";
 					newData.value = "go back";
 					newData.emoji.name = "❌";
-					Jsonifier::Vector<Jsonifier::Vector<SelectOptionData>> selectOptionsNew;
+					jsonifier::vector<jsonifier::vector<SelectOptionData>> selectOptionsNew;
 					for (auto& value: selectOptions) {
 						value.emplace_back(newData);
 						selectOptionsNew.emplace_back(value);
@@ -82,20 +82,20 @@ namespace DiscordCoreAPI {
 					msgEmbed.setColor("FeFeFe");
 					msgEmbed.setTimeStamp(getTimeAndDate());
 					msgEmbed.setDescription(messageNew);
-					msgEmbed.setTitle("__**" + static_cast<std::string>(newArgs.discordCoreClient->getBotUser().userName) + " Help: Front Page**__");
+					msgEmbed.setTitle("__**" + static_cast<std::string>(DiscordCoreClient::getInstance()->getBotUser().userName) + " Help: Front Page**__");
 
-					std::string msgString = "------\nHello! How are you doing today?! I'm " + static_cast<std::string>(newArgs.discordCoreClient->getBotUser().userName) +
+					std::string msgString = "------\nHello! How are you doing today?! I'm " + static_cast<std::string>(DiscordCoreClient::getInstance()->getBotUser().userName) +
 						" and I'm here to help you out!\n" +
 						"Please, select one of my commands from the drop-down menu below, to gain more information about them! (Or select 'Go Back' to go back "
 						"to the previous menu)\n------";
 					InputEventData newEvent{};
-					Jsonifier::Vector<std::string> numberEmojiNames{
+					jsonifier::vector<std::string> numberEmojiNames{
 						"✅",
 						"🍬",
 						"🅱",
 						"❌",
 					};
-					Jsonifier::Vector<std::string> numberEmojiId;
+					jsonifier::vector<std::string> numberEmojiId;
 
 					responseData.addMessageEmbed(msgEmbed);
 					for (int32_t x = 0; x < selectOptionsNew.size(); x += 1) {
@@ -115,14 +115,14 @@ namespace DiscordCoreAPI {
 					UniquePtr<ButtonCollector> button{ makeUnique<ButtonCollector>(newEvent01) };
 					auto buttonData = button->collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					int32_t counter03{};
-					Jsonifier::Vector<RespondToInputEventData> editInteractionResponseData00;
+					jsonifier::vector<RespondToInputEventData> editInteractionResponseData00;
 					for (auto& value: selectOptionsNew) {
 						EmbedData msgEmbed00;
 						msgEmbed00.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 						msgEmbed00.setColor("FeFeFe");
 						msgEmbed00.setTimeStamp(getTimeAndDate());
 						msgEmbed00.setDescription(msgString);
-						msgEmbed00.setTitle("__**" + static_cast<std::string>(newArgs.discordCoreClient->getBotUser().userName) + " Help: Page " + std::to_string(counter03 + 1) +
+						msgEmbed00.setTitle("__**" + static_cast<std::string>(DiscordCoreClient::getInstance()->getBotUser().userName) + " Help: Page " + std::to_string(counter03 + 1) +
 							" of " + std::to_string(selectOptions.size()) + "**__");
 						RespondToInputEventData responseData03(*buttonData.at(0).interactionData);
 						responseData03.setResponseType(InputEventResponseType::Edit_Interaction_Response);
@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 							msgEmbed00.setColor("FeFeFe");
 							msgEmbed00.setTimeStamp(getTimeAndDate());
 							msgEmbed00.setDescription(messageNew);
-							msgEmbed00.setTitle("__**" + static_cast<std::string>(newArgs.discordCoreClient->getBotUser().userName) + " Help: Page " +
+							msgEmbed00.setTitle("__**" + static_cast<std::string>(DiscordCoreClient::getInstance()->getBotUser().userName) + " Help: Page " +
 								std::to_string(counter03 + 1) + " of " + std::to_string(selectOptions.size()) + "**__");
 							RespondToInputEventData responseData03(*buttonData.at(0).interactionData);
 							responseData03.setResponseType(InputEventResponseType::Edit_Interaction_Response);
@@ -160,10 +160,10 @@ namespace DiscordCoreAPI {
 					UniquePtr<SelectMenuCollector> selectMenu{ makeUnique<SelectMenuCollector>(newEvent01) };
 					auto selectMenuReturnData = selectMenu->collectSelectMenuData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					EmbedData newEmbed{};
-					for (auto& [key, value]: newArgs.discordCoreClient->getCommandController().getFunctions()) {
+					for (auto& [key, value]: DiscordCoreClient::getInstance()->getCommandController().getFunctions()) {
 						for (auto& valueNew: key) {
 							if (valueNew == selectMenuReturnData.at(0).values.at(0)) {
-								newEmbed = newArgs.discordCoreClient->getCommandController().getFunctions().at(key)->helpEmbed;
+								newEmbed = DiscordCoreClient::getInstance()->getCommandController().getFunctions().at(key)->helpEmbed;
 							}
 						}
 					}

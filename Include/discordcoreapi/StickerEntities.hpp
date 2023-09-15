@@ -96,12 +96,12 @@ namespace DiscordCoreAPI {
 
 		/// @brief Gets a list of nitro-available StickerData packs
 		/// @return A CoRoutine containing a StickerPackData
-		static CoRoutine<Jsonifier::Vector<StickerPackData>> getNitroStickerPacksAsync();
+		static CoRoutine<jsonifier::vector<StickerPackData>> getNitroStickerPacksAsync();
 
 		/// @brief Gets a list of Stickers from a Guild.
 		/// @param dataPackage A GetGuildStickersData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<StickerData>.
-		static CoRoutine<Jsonifier::Vector<StickerData>> getGuildStickersAsync(GetGuildStickersData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<StickerData>.
+		static CoRoutine<jsonifier::vector<StickerData>> getGuildStickersAsync(GetGuildStickersData dataPackage);
 
 		/// @brief Creates a new StickerData within a chosen Guild.
 		/// @param dataPackage A CreateGuildStickerData structure.

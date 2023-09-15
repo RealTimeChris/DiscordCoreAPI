@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 			using size_type	 = uint64_t;
 
 			/// @brief Constructor. Initializes the buffer size.
-			inline RingBufferInterface() {
+			RingBufferInterface() {
 				arrayValue.resize(Size);
 			}
 
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 			/// @brief Modify the read or write position of the buffer.
 			/// @param type The access type (Read or Write).
 			/// @param size The size by which to modify the position.
-			inline void modifyReadOrWritePosition(RingBufferAccessType type, size_type size) {
+			void modifyReadOrWritePosition(RingBufferAccessType type, size_type size) {
 				if (type == RingBufferAccessType::Read) {
 					tail += size;
 				} else {
@@ -80,42 +80,42 @@ namespace DiscordCoreAPI {
 
 			/// @brief Get the used space in the buffer.
 			/// @return The used space in the buffer.
-			inline size_type getUsedSpace() {
+			size_type getUsedSpace() {
 				return head - tail;
 			}
 
 			/// @brief Get a pointer to the current tail position.
 			/// @return A pointer to the current tail position.
-			inline pointer getCurrentTail() {
+			pointer getCurrentTail() {
 				return arrayValue.data() + (tail % Size);
 			}
 
 			/// @brief Get a pointer to the current head position.
 			/// @return A pointer to the current head position.
-			inline pointer getCurrentHead() {
+			pointer getCurrentHead() {
 				return arrayValue.data() + (head % Size);
 			}
 
 			/// @brief Check if the buffer is empty.
 			/// @return True if the buffer is empty, otherwise false.
-			inline bool isItEmpty() {
+			bool isItEmpty() {
 				return tail == head;
 			}
 
 			/// @brief Check if the buffer is full.
 			/// @return True if the buffer is full, otherwise false.
-			inline bool isItFull() {
+			bool isItFull() {
 				return getUsedSpace() == Size;
 			}
 
 			/// @brief Clear the buffer by resetting positions.
-			inline void clear() {
+			void clear() {
 				tail = 0;
 				head = 0;
 			}
 
 		  protected:
-			Jsonifier::Vector<std::decay_t<value_type>> arrayValue{};///< The underlying data array.
+			jsonifier::vector<std::decay_t<value_type>> arrayValue{};///< The underlying data array.
 			size_type tail{};///< The tail position in the buffer.
 			size_type head{};///< The head position in the buffer.
 		};
@@ -132,13 +132,13 @@ namespace DiscordCoreAPI {
 			using size_type		= uint64_t;
 
 			/// @brief Default constructor. Initializes the buffer size.
-			inline RingBuffer() : base_type{} {};
+			RingBuffer() : base_type{} {};
 
 			/// @brief Write data into the buffer.
 			/// @tparam ValueTypeNew The type of data to be written.
 			/// @param data Pointer to the data.
 			/// @param size Size of the data.
-			template<typename ValueTypeNew> inline void writeData(ValueTypeNew* data, size_type size) {
+			template<typename ValueTypeNew> void writeData(ValueTypeNew* data, size_type size) {
 				if (base_type::isItFull() || base_type::getCurrentHead()->getUsedSpace() + size >= 16384) {
 					base_type::getCurrentTail()->clear();
 					base_type::modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Read data from the buffer.
 			/// @return A string view containing the read data.
-			inline std::basic_string_view<std::decay_t<value_type>> readData() {
+			std::basic_string_view<std::decay_t<value_type>> readData() {
 				std::basic_string_view<std::decay_t<value_type>> returnData{};
 				if (base_type::getCurrentTail()->getUsedSpace() > 0) {
 					returnData = std::basic_string_view<std::decay_t<value_type>>{ base_type::getCurrentTail()->getCurrentTail(), base_type::getCurrentTail()->getUsedSpace() };

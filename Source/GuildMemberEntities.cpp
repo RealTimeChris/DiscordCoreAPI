@@ -33,23 +33,23 @@
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::AddGuildMemberData> {
+	template<> struct core<DiscordCoreAPI::AddGuildMemberData> {
 		using ValueType					 = DiscordCoreAPI::AddGuildMemberData;
-		static constexpr auto parseValue = object("roles", &ValueType::roles, "access_token", &ValueType::accessToken, "guild_id", &ValueType::guildId, "user_id",
+		static constexpr auto parseValue = createObject("roles", &ValueType::roles, "access_token", &ValueType::accessToken, "guild_id", &ValueType::guildId, "user_id",
 			&ValueType::userId, "nick", &ValueType::nick, "mute", &ValueType::mute, "deaf", &ValueType::deaf);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyCurrentGuildMemberData> {
+	template<> struct core<DiscordCoreAPI::ModifyCurrentGuildMemberData> {
 		using ValueType					 = DiscordCoreAPI::ModifyCurrentGuildMemberData;
-		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "nick", &ValueType::nick, "reason", &ValueType::reason);
+		static constexpr auto parseValue = createObject("guild_id", &ValueType::guildId, "nick", &ValueType::nick, "reason", &ValueType::reason);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyGuildMemberData> {
+	template<> struct core<DiscordCoreAPI::ModifyGuildMemberData> {
 		using ValueType = DiscordCoreAPI::ModifyGuildMemberData;
 		static constexpr auto parseValue =
-			object("channel_id", &ValueType::currentChannelId, "deaf", &ValueType::deaf, "guild_id", &ValueType::guildId, "mute", &ValueType::mute, "nick", &ValueType::nick,
+			createObject("channel_id", &ValueType::currentChannelId, "deaf", &ValueType::deaf, "guild_id", &ValueType::guildId, "mute", &ValueType::mute, "nick", &ValueType::nick,
 				"roles", &ValueType::roleIds, "user_id", &ValueType::guildMemberId, "voice_channel_id", &ValueType::newVoiceChannelId, "reason", &ValueType::reason);
 	};
 }
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	GuildMemberCacheData& GuildMemberCacheData::operator=(GuildMemberData&& other) {
+	GuildMemberCacheData& GuildMemberCacheData::operator=(GuildMemberData&& other) noexcept {
 		setFlagValue(GuildMemberFlags::Pending, other.pending);
 		setFlagValue(GuildMemberFlags::Deaf, other.deaf);
 		setFlagValue(GuildMemberFlags::Mute, other.mute);
@@ -138,12 +138,13 @@ namespace DiscordCoreAPI {
 		return returnData;
 	}
 
-	GuildMemberCacheData::GuildMemberCacheData(GuildMemberData&& other) {
+	GuildMemberCacheData::GuildMemberCacheData(GuildMemberData&& other) noexcept {
 		*this = std::move(other);
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
 		GuildMembers::doWeCacheGuildMembersBool = configManagerNew->doWeCacheGuildMembers();
+		GuildMembers::doWeCacheVoiceStatesBool	= configManagerNew->doWeCacheVoiceStates();
 		GuildMembers::httpsClient				= client;
 	}
 
@@ -175,13 +176,13 @@ namespace DiscordCoreAPI {
 		if (cache.contains(key)) {
 			return cache[key];
 		} else {
+			return {};
 		}
-		return GuildMembers::getGuildMemberAsync(dataPackage).get();
 	}
 
-	CoRoutine<Jsonifier::Vector<GuildMemberData>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
+	CoRoutine<jsonifier::vector<GuildMemberData>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Members };
-		co_await NewThreadAwaitable<Jsonifier::Vector<GuildMemberData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<GuildMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members";
 		if (dataPackage.after != 0) {
@@ -193,14 +194,14 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::listGuildMembersAsync()";
-		Jsonifier::Vector<GuildMemberData> returnData{};
+		jsonifier::vector<GuildMemberData> returnData{};
 		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<Jsonifier::Vector<GuildMemberData>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
+	CoRoutine<jsonifier::vector<GuildMemberData>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Search_Guild_Members };
-		co_await NewThreadAwaitable<Jsonifier::Vector<GuildMemberData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<GuildMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members/search";
 		if (dataPackage.query != "") {
@@ -212,7 +213,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::searchGuildMembersAsync()";
-		Jsonifier::Vector<GuildMemberData> returnData{};
+		jsonifier::vector<GuildMemberData> returnData{};
 		GuildMembers::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -356,8 +357,13 @@ namespace DiscordCoreAPI {
 		return GuildMembers::doWeCacheGuildMembersBool;
 	}
 
+	bool GuildMembers::doWeCacheVoiceStates() {
+		return GuildMembers::doWeCacheVoiceStatesBool;
+	}
+
 	ObjectCache<VoiceStateDataLight> GuildMembers::vsCache{};
 	ObjectCache<GuildMemberCacheData> GuildMembers::cache{};
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{};
 	bool GuildMembers::doWeCacheGuildMembersBool{};
+	bool GuildMembers::doWeCacheVoiceStatesBool{};
 };

@@ -52,6 +52,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(DiscordCoreAPI)
 
+FetchContent_Declare(
+    Jsonifier
+    GIT_REPOSITORY https://github.com/RealTimeChris/Jsonifier
+    GIT_TAG "${BRANCH}"
+)
+FetchContent_MakeAvailable(Jsonifier)
+
 add_executable(
     "${PROJECT_NAME}"
     "main.cpp" "./Commands/BotInfo.hpp"
@@ -68,6 +75,7 @@ target_link_libraries(
 	"$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++abi>"
     "$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++>"
     DiscordCoreAPI::DiscordCoreAPI
+	Jsonifier::Jsonifier
 )
 
 if (WIN32)

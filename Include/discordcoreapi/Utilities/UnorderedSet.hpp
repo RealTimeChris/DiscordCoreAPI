@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 	concept SetContainerIteratorT = std::is_same_v<typename UnorderedSet<ValueType>::iterator, std::decay_t<SetIterator>>;
 
 	template<typename ValueType>
-	class UnorderedSet : protected HashPolicy<UnorderedSet<ValueType>>, protected JsonifierInternal::AllocWrapper<ValueType>, protected ObjectCompare, protected KeyAccessor {
+	class UnorderedSet : protected HashPolicy<UnorderedSet<ValueType>>, protected jsonifier_internal::alloc_wrapper<ValueType>, protected ObjectCompare, protected KeyAccessor {
 	  public:
 		using mapped_type	  = ValueType;
 		using key_type		  = mapped_type;
@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 		using key_hasher	  = hash_policy;
 		using iterator		  = HashIterator<UnorderedSet<mapped_type>>;
 		using const_iterator  = HashIterator<const UnorderedSet<mapped_type>>;
-		using allocator		  = JsonifierInternal::AllocWrapper<value_type>;
+		using allocator		  = jsonifier_internal::alloc_wrapper<value_type>;
 
 		friend hash_policy;
 		friend iterator;
@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 
 		inline const_iterator begin() const {
 			for (size_type x{ 0 }; x < capacityVal; ++x) {
-				if (sentinelVector[x] > 0) {
+				if (sentinelVector.at(x) > 0) {
 					return { this, x };
 				}
 			}
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 
 		inline iterator begin() {
 			for (size_type x{ 0 }; x < capacityVal; ++x) {
-				if (sentinelVector[x] > 0) {
+				if (sentinelVector.at(x) > 0) {
 					return { this, x };
 				}
 			}
@@ -265,9 +265,9 @@ namespace DiscordCoreAPI {
 
 		inline void clear() {
 			for (size_type x = 0; x < sentinelVector.size(); ++x) {
-				if (sentinelVector[x] > 0) {
+				if (sentinelVector.at(x) > 0) {
 					getAlloc().destroy(data + x);
-					sentinelVector[x] = 0;
+					sentinelVector.at(x) = 0;
 				}
 			}
 			sizeVal = 0;
@@ -278,7 +278,7 @@ namespace DiscordCoreAPI {
 		};
 
 	  protected:
-		Jsonifier::Vector<int8_t> sentinelVector{};
+		jsonifier::vector<int8_t> sentinelVector{};
 		int8_t maxLookAheadDistance{ minLookups };
 		size_type capacityVal{};
 		size_type sizeVal{};
@@ -321,7 +321,7 @@ namespace DiscordCoreAPI {
 		inline void resize(size_type capacityNew) {
 			auto newSize = getHashPolicy().nextPowerOfTwo(capacityNew);
 			if (newSize > capacityVal) {
-				Jsonifier::Vector<int8_t> oldSentinelVector = std::move(sentinelVector);
+				jsonifier::vector<int8_t> oldSentinelVector = std::move(sentinelVector);
 				auto oldMaxLookAheadDistance				= maxLookAheadDistance;
 				auto oldCapacity							= capacityVal;
 				auto oldSize								= sizeVal;
@@ -333,7 +333,7 @@ namespace DiscordCoreAPI {
 				sentinelVector[newSize + maxLookAheadDistance] = -1;
 				capacityVal									   = newSize;
 				for (size_type x = 0, y = 0; y < oldSize; ++x) {
-					if (oldSentinelVector[x] > 0) {
+					if (oldSentinelVector.at(x) > 0) {
 						++y;
 						emplaceInternal(std::move(oldPtr[x]));
 					}
@@ -346,8 +346,8 @@ namespace DiscordCoreAPI {
 
 		inline void reset() {
 			if (data && sizeVal > 0) {
-				for (size_t x = 0; x < sentinelVector.size(); ++x) {
-					if (sentinelVector[x] > 0) {
+				for (uint64_t x = 0; x < sentinelVector.size(); ++x) {
+					if (sentinelVector.at(x) > 0) {
 						getAlloc().destroy(data + x);
 					}
 				}

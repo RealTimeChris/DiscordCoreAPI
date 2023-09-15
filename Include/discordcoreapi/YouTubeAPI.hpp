@@ -43,13 +43,17 @@ namespace DiscordCoreAPI {
 			YouTubeRequestBuilder(ConfigManager* configManagerNew);
 
 		  protected:
-			std::string baseUrl{ "https://www.youtube.com" };
+			inline static constexpr std::string_view baseUrl{ "https://www.youtube.com" };
 
 			Song constructDownloadInfo(const Song& songNew, uint64_t currentRecursionDepth);
 
-			Jsonifier::Vector<Song> collectSearchResults(const std::string& string);
+			jsonifier::vector<Song> collectSearchResults(const std::string& string);
 
 			virtual Song collectFinalSong(const Song& songNew);
+
+			Song collectSingleResult(const std::string& string);
+
+			virtual ~YouTubeRequestBuilder() noexcept = default;
 		};
 
 		class DiscordCoreAPI_Dll YouTubeAPI : public YouTubeRequestBuilder {
@@ -59,11 +63,13 @@ namespace DiscordCoreAPI {
 			CoRoutine<void, false> downloadAndStreamAudio(const Song songNew, NewThreadAwaiter<void, false> threadHandle = NewThreadAwaiter<void, false>{},
 				uint64_t currentReconnectTries = 0);
 
-			void weFailedToDownloadOrDecode(const Song& songNew, NewThreadAwaiter<void, false> threadHandle, uint64_t currentRetries);
+			jsonifier::vector<Song> searchForSong(const std::string& searchQuery);
+
+			void weFailedToDownloadOrDecode(const Song& songNew);
 
 			Song collectFinalSong(const Song& songNew) override;
 
-			Jsonifier::Vector<Song> searchForSong(const std::string& searchQuery);
+			Song collectSingleResult(const std::string& string);
 
 			bool areWeWorking();
 
@@ -73,14 +79,14 @@ namespace DiscordCoreAPI {
 		};
 
 		struct YouTubeRequestClient {
-			std::string clientVersion{ "17.10.35" };
-			std::string androidSdkVersion{ "31" };
-			std::string clientName{ "ANDROID" };
-			std::string platform{ "MOBILE" };
-			std::string osName{ "Android" };
-			std::string osVersion{ "12" };
-			std::string hl{ "en-GB" };
-			std::string gl{ "US" };
+			inline static constexpr std::string_view clientVersion{ "17.10.35" };
+			inline static constexpr std::string_view androidSdkVersion{ "31" };
+			inline static constexpr std::string_view clientName{ "ANDROID" };
+			inline static constexpr std::string_view platform{ "MOBILE" };
+			inline static constexpr std::string_view osName{ "Android" };
+			inline static constexpr std::string_view osVersion{ "12" };
+			inline static constexpr std::string_view hl{ "en-GB" };
+			inline static constexpr std::string_view gl{ "US" };
 		};
 
 		struct Request {
@@ -115,8 +121,8 @@ namespace DiscordCoreAPI {
 		};
 
 		struct StreamingData {
-			Jsonifier::Vector<Format> adaptiveFormats{};
-			Jsonifier::Vector<Format> formats{};
+			jsonifier::vector<Format> adaptiveFormats{};
+			jsonifier::vector<Format> formats{};
 		};
 
 		struct Data {
@@ -135,7 +141,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct ThumbNails {
-			Jsonifier::Vector<Thumbnail> thumbNails{};
+			jsonifier::vector<Thumbnail> thumbNails{};
 		};
 
 		struct AccessibilityData {
@@ -155,11 +161,11 @@ namespace DiscordCoreAPI {
 		};
 
 		struct Title {
-			Jsonifier::Vector<Text> runs{};
+			jsonifier::vector<Text> runs{};
 		};
 
 		struct SnippetText {
-			Jsonifier::Vector<Text> runs{};
+			jsonifier::vector<Text> runs{};
 		};
 
 		struct SnippetTextValue {
@@ -167,7 +173,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct VideoRenderer {
-			Jsonifier::Vector<SnippetTextValue> detailedMetadataSnippets{};
+			jsonifier::vector<SnippetTextValue> detailedMetadataSnippets{};
 			ThumbNails thumbnails{};
 			LengthText lengthText{};
 			std::string videoId{};
@@ -179,7 +185,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct ItemSectionRendererContents {
-			Jsonifier::Vector<DiscordCoreInternal::VideoRendererType> contents{};
+			jsonifier::vector<DiscordCoreInternal::VideoRendererType> contents{};
 		};
 
 		struct ItemSectionRenderer {
@@ -187,7 +193,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct SectionListRenderer {
-			Jsonifier::Vector<ItemSectionRenderer> contents{};
+			jsonifier::vector<ItemSectionRenderer> contents{};
 		};
 
 		struct PrimaryContents {
@@ -204,6 +210,68 @@ namespace DiscordCoreAPI {
 
 		struct YouTubeSearchResults {
 			Contents01 contents{};
+		};
+
+		struct ThumbnailElement {
+			std::string url;
+		};
+
+		struct Background {
+			jsonifier::vector<ThumbnailElement> thumbnails;
+		};
+
+		struct VideoOwnerRenderer {
+			Background thumbnail;
+		};
+
+		struct Owner {
+			VideoOwnerRenderer video_owner_renderer;
+		};
+
+		struct VideoSecondaryInfoRenderer {
+			Owner owner;
+		};
+
+		struct ResultsContent {
+			VideoSecondaryInfoRenderer video_secondary_info_renderer;
+		};
+
+		struct ResultsResults {
+			jsonifier::vector<ResultsContent> contents;
+		};
+
+		struct Results {
+			ResultsResults results;
+		};
+
+		struct TwoColumnWatchNextResults {
+			ResultsResults results;
+		};
+
+		struct Contents {
+			TwoColumnWatchNextResults two_column_watch_next_results;
+		};
+
+		struct PlayerOverlayAutoplayRenderer {
+			std::string video_id;
+			Background background;
+		};
+
+		struct PlayerOverlayRendererAutoplay {
+			PlayerOverlayAutoplayRenderer player_overlay_autoplay_renderer;
+		};
+
+		struct PlayerOverlayRenderer {
+			PlayerOverlayRendererAutoplay autoplay;
+		};
+
+		struct PlayerOverlays {
+			PlayerOverlayRenderer player_overlay_renderer;
+		};
+
+		struct Welcome {
+			Contents contents{};
+			PlayerOverlays player_overlays;
 		};
 	}
 }

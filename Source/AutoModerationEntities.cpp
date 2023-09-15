@@ -31,18 +31,18 @@
 #include <discordcoreapi/AutoModerationEntities.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::CreateAutoModerationRuleData> {
+	template<> struct core<DiscordCoreAPI::CreateAutoModerationRuleData> {
 		using ValueType					 = DiscordCoreAPI::CreateAutoModerationRuleData;
-		static constexpr auto parseValue = object("exemptChannels", &ValueType::exemptChannels, "exemptRoles", &ValueType::exemptRoles, "triggerMetadata",
+		static constexpr auto parseValue = createObject("exemptChannels", &ValueType::exemptChannels, "exemptRoles", &ValueType::exemptRoles, "triggerMetadata",
 			&ValueType::triggerMetadata, "actions", &ValueType::actions, "triggerType", &ValueType::triggerType, "eventType", &ValueType::eventType, "guildId", &ValueType::guildId,
 			"name", &ValueType::name, "enabled", &ValueType::enabled);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyAutoModerationRuleData> {
+	template<> struct core<DiscordCoreAPI::ModifyAutoModerationRuleData> {
 		using ValueType					 = DiscordCoreAPI::ModifyAutoModerationRuleData;
-		static constexpr auto parseValue = object("exemptChannels", &ValueType::exemptChannels, "exemptRoles", &ValueType::exemptRoles, "triggerMetadata",
+		static constexpr auto parseValue = createObject("exemptChannels", &ValueType::exemptChannels, "exemptRoles", &ValueType::exemptRoles, "triggerMetadata",
 			&ValueType::triggerMetadata, "actions", &ValueType::actions, "autoModerationRuleId", &ValueType::autoModerationRuleId, "eventType", &ValueType::eventType, "guildId",
 			&ValueType::guildId, "name", &ValueType::name, "enabled", &ValueType::enabled);
 	};
@@ -55,13 +55,13 @@ namespace DiscordCoreAPI {
 		AutoModerationRules::httpsClient = HttpsClientNew;
 	}
 
-	CoRoutine<Jsonifier::Vector<AutoModerationRuleData>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
+	CoRoutine<jsonifier::vector<AutoModerationRuleData>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules };
-		co_await NewThreadAwaitable<Jsonifier::Vector<AutoModerationRuleData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<AutoModerationRuleData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/auto-moderation/rules";
 		workload.callStack	   = "AutoModerationRules::listAutoModerationRulesForGuildAsync()";
-		Jsonifier::Vector<AutoModerationRuleData> returnVector{};
+		jsonifier::vector<AutoModerationRuleData> returnVector{};
 		AutoModerationRules::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnVector);
 		co_return std::move(returnVector);
 	}

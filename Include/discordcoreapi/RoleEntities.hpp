@@ -71,29 +71,29 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< Which Guild to make the RoleData in.
 		std::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		bool mentionable{};///< Is it mentionable by others in the Guild.
-		int32_t position{};///< The position amongst the other roles.
+		uint32_t position{};///< The position amongst the other roles.
 		std::string name{};///< The name of the RoleData.
 		bool hoist{};///< Is this RoleData hoisted above the rest of them?
 	};
 
 	/// @brief For updating the positions of the roles.
 	struct RolePositionData {
-		int32_t rolePosition{};///< The new RoleData position.
+		uint32_t rolePosition{};///< The new RoleData position.
 		Snowflake roleId{};///< The RoleData to update.
 	};
 
 	/// @brief For updating the RoleData positions.
 	struct ModifyGuildRolePositionsData {
-		template<typename ValueType> friend struct Jsonifier::Core;
+		template<typename ValueType> friend struct jsonifier::core;
 		friend class Roles;
 
-		int32_t newPosition{};///< The new position of the RoleData.
+		uint32_t newPosition{};///< The new position of the RoleData.
 		std::string reason{};///< Reason for modifying the RoleData positions.
 		Snowflake guildId{};///< The Guild within which to move the RoleData.
 		Snowflake roleId{};///< The id of the RoleData to move.
 
 	  protected:
-		Jsonifier::Vector<RolePositionData> rolePositions;
+		jsonifier::vector<RolePositionData> rolePositions;
 	};
 
 	/// @brief For updating a RoleData's options within a chosen Guild.
@@ -158,8 +158,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects the Roles that a Guild has.
 		/// @param dataPackage A GetGuildRolesData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<RoleData>.
-		static CoRoutine<Jsonifier::Vector<RoleData>> getGuildRolesAsync(GetGuildRolesData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<RoleData>.
+		static CoRoutine<jsonifier::vector<RoleData>> getGuildRolesAsync(GetGuildRolesData dataPackage);
 
 		/// @brief Creates a new RoleData within the given Guild.
 		/// @param dataPackage A CreateGuildRoleData structure.
@@ -168,8 +168,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Updates a RoleData's positions.
 		/// @param dataPackage A ModifyGuildRolePositionsData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<RoleData>.
-		static CoRoutine<Jsonifier::Vector<RoleData>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<RoleData>.
+		static CoRoutine<jsonifier::vector<RoleData>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
 		/// @brief Updates a given Role's properties.
 		/// @param dataPackage A ModifyGuildRoleData structure.
@@ -183,8 +183,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects the Roles that a GuildMember has.
 		/// @param dataPackage A GetGuildMemberRolesData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<RoleData>.
-		static CoRoutine<Jsonifier::Vector<RoleData>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<RoleData>.
+		static CoRoutine<jsonifier::vector<RoleData>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
 
 		/// @brief Collects a RoleData from the Discord servers.
 		/// @param dataPackage A GetRoleData structure.
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 		/// @return A CoRoutine containing a RoleData.
 		static RoleCacheData getCachedRole(GetRoleData dataPackage);
 
-		template<typename RoleType> static inline void insertRole(RoleType&& role) {
+		template<typename RoleType> inline static void insertRole(RoleType&& role) {
 			if (doWeCacheRolesBool) {
 				if (role.id == 0) {
 					throw DCAException{ "Sorry, but there was no id set for that role." };

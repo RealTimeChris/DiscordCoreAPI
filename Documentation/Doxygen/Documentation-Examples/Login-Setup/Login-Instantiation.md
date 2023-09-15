@@ -16,7 +16,7 @@ int main()
 {
 	DiscordCoreClientConfig clientConfig{};
 	clientConfig.botToken = "YOUR_BOT_TOKEN_HERE";
-	Jsonifier::Vector<ActivityData> activities{};
+	jsonifier::vector<ActivityData> activities{};
 	ActivityData activity{};
 	activity.name = "/help for my commands!";
 	activity.type = ActivityType::Game;

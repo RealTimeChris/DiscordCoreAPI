@@ -44,18 +44,19 @@ namespace DiscordCoreAPI {
 		  public:
 			friend class VoiceConnection;
 
-			UDPConnection() = default;
+			inline UDPConnection() {}
 
 			inline UDPConnection& operator=(UDPConnection&& other) noexcept {
-				outputBuffer  = std::move(other.outputBuffer);
-				inputBuffer	  = std::move(other.inputBuffer);
-				address		  = std::move(other.address);
-				baseUrl		  = std::move(other.baseUrl);
-				socket		  = std::move(other.socket);
-				currentStatus = other.currentStatus;
-				streamType	  = other.streamType;
-				bytesRead	  = other.bytesRead;
-				port		  = other.port;
+				resampleVector = std::move(other.resampleVector);
+				outputBuffer   = std::move(other.outputBuffer);
+				inputBuffer	   = std::move(other.inputBuffer);
+				address		   = std::move(other.address);
+				baseUrl		   = std::move(other.baseUrl);
+				socket		   = std::move(other.socket);
+				currentStatus  = other.currentStatus;
+				streamType	   = other.streamType;
+				bytesRead	   = other.bytesRead;
+				port		   = other.port;
 				return *this;
 			};
 
@@ -112,7 +113,7 @@ namespace DiscordCoreAPI {
 						socket		  = INVALID_SOCKET;
 						return;
 					}
-					if (::connect(socket, address->ai_addr, static_cast<uint32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+					if (::connect(socket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 						MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("connect::connect(), to: " + baseUrlNew));
 						currentStatus = ConnectionStatus::CONNECTION_Error;
 						socket		  = INVALID_SOCKET;
@@ -125,7 +126,8 @@ namespace DiscordCoreAPI {
 						socket		  = INVALID_SOCKET;
 						return;
 					}
-					std::string connectionString{ "connecting" };
+					static constexpr std::string_view connectionString{ "connecting" };
+					std::string connectionStringNew{ "connecting" };
 					int32_t result{};
 					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().stopRequested()) {
 						result =
@@ -135,7 +137,7 @@ namespace DiscordCoreAPI {
 					socklen_t currentSize{ static_cast<socklen_t>(address->ai_addrlen) };
 					result = 0;
 					while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token->promise().stopRequested()) {
-						result = recvfrom(socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr, &currentSize);
+						result = recvfrom(socket, connectionStringNew.data(), static_cast<int32_t>(connectionString.size()), 0, address->ai_addr, &currentSize);
 						std::this_thread::sleep_for(1ns);
 					}
 				} else {
@@ -263,8 +265,9 @@ namespace DiscordCoreAPI {
 			inline bool processWriteData() {
 				if (outputBuffer.getUsedSpace() > 0) {
 					auto bytesToWrite{ outputBuffer.getCurrentTail()->getUsedSpace() };
-					auto writtenBytes{ sendto(socket, outputBuffer.readData().data(), static_cast<int32_t>(bytesToWrite), 0, address->ai_addr,
-						static_cast<int32_t>(address->ai_addrlen)) };
+					auto newData = outputBuffer.readData();
+					std::memcpy(resampleVector.data(), newData.data(), newData.size());
+					auto writtenBytes{ sendto(socket, resampleVector.data(), static_cast<int32_t>(bytesToWrite), 0, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) };
 					if (writtenBytes <= 0 && errno != EWOULDBLOCK && errno != EINPROGRESS) {
 						return false;
 					} else if (writtenBytes > 0) {
@@ -284,7 +287,7 @@ namespace DiscordCoreAPI {
 						if (readBytes <= 0 && errno != EWOULDBLOCK && errno != EINPROGRESS) {
 							return false;
 						} else if (readBytes > 0) {
-							inputBuffer.writeData(resampleVector.data(), readBytes);
+							inputBuffer.writeData(resampleVector.data(), static_cast<uint64_t>(readBytes));
 							bytesRead += readBytes;
 							handleAudioBuffer();
 						}
@@ -301,15 +304,15 @@ namespace DiscordCoreAPI {
 				inputBuffer.clear();
 			}
 
-			inline ~UDPConnection() {
+			inline virtual ~UDPConnection() {
 				disconnect();
 			}
 
 		  protected:
-			const uint64_t maxBufferSize{ (1024 * 16) };
-			std::array<char, 16384> resampleVector{};
+			static constexpr uint64_t maxBufferSize{ (1024 * 16) };
+			std::array<char, maxBufferSize> resampleVector{};
+			RingBuffer<uint8_t, 16> outputBuffer{};
 			RingBuffer<uint8_t, 16> inputBuffer{};
-			RingBuffer<char, 16> outputBuffer{};
 			ConnectionStatus currentStatus{};
 			addrinfoWrapper address{};
 			StreamType streamType{};

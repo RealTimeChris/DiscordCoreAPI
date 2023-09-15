@@ -34,6 +34,7 @@
 #include <discordcoreapi/Utilities/AudioEncoder.hpp>
 #include <discordcoreapi/Utilities/AudioDecoder.hpp>
 #include <discordcoreapi/Utilities/RingBuffer.hpp>
+#include <discordcoreapi/Utilities/ISADetection.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/WebSocketClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
@@ -62,14 +63,14 @@ namespace DiscordCoreAPI {
 			Unknown_Encryption_Mode = 1 << 13///< We didn't recognize your encryption.
 		};
 
-		static inline UnorderedMap<int32_t, VoiceWebSocketCloseCode> mappingValues{ { 0, VoiceWebSocketCloseCode::Unset }, { 1000, VoiceWebSocketCloseCode::Normal_Close },
+		inline static UnorderedMap<int32_t, VoiceWebSocketCloseCode> mappingValues{ { 0, VoiceWebSocketCloseCode::Unset }, { 1000, VoiceWebSocketCloseCode::Normal_Close },
 			{ 4001, VoiceWebSocketCloseCode::Unknown_Opcode }, { 4002, VoiceWebSocketCloseCode::Failed_To_Decode }, { 4003, VoiceWebSocketCloseCode::Not_Authenticated },
 			{ 4004, VoiceWebSocketCloseCode::Authentication_Failed }, { 4005, VoiceWebSocketCloseCode::Already_Authenticated },
 			{ 4006, VoiceWebSocketCloseCode::Session_No_Longer_Valid }, { 4009, VoiceWebSocketCloseCode::Session_Timeout }, { 4011, VoiceWebSocketCloseCode::Server_Not_Found },
 			{ 4012, VoiceWebSocketCloseCode::Unknown_Protocol }, { 4014, VoiceWebSocketCloseCode::Disconnected }, { 4015, VoiceWebSocketCloseCode::Voice_Server_Crashed },
 			{ 4016, VoiceWebSocketCloseCode::Unknown_Encryption_Mode } };
 
-		static inline UnorderedMap<VoiceWebSocketCloseCode, std::string_view> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." },
+		inline static UnorderedMap<VoiceWebSocketCloseCode, std::string_view> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." },
 			{ VoiceWebSocketCloseCode::Normal_Close, "Normal close." }, { VoiceWebSocketCloseCode::Unknown_Opcode, "You sent an invalid opcode." },
 			{ VoiceWebSocketCloseCode::Failed_To_Decode, "You sent an invalid payload in your identifying to the Gateway." },
 			{ VoiceWebSocketCloseCode::Not_Authenticated, "You sent a payload before identifying with the Gateway." },
@@ -105,14 +106,14 @@ namespace DiscordCoreAPI {
 	};
 
 	struct VoiceSocketReadyData {
-		Jsonifier::Vector<std::string> modes{};
+		jsonifier::vector<std::string> modes{};
 		std::string ip{};
-		uint64_t port{};
+		uint16_t port{};
 		uint32_t ssrc{};
 	};
 
 	struct VoiceSessionDescriptionData {
-		Jsonifier::Vector<uint8_t> secretKey{};
+		jsonifier::vector<uint8_t> secretKey{};
 	};
 
 	struct SpeakingData {
@@ -163,8 +164,6 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::basic_string<uint8_t> data{};
 		std::basic_string<uint8_t> keys{};
-		uint8_t version{ 0x80 };
-		uint8_t flags{ 0x78 };
 		uint32_t timeStamp{};
 		uint16_t sequence{};
 		uint32_t ssrc{};
@@ -222,8 +221,8 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class VoiceConnection;
 
-		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionNew, std::basic_string<uint8_t>& encryptionKeyNew, StreamType streamType, const std::string& baseUrlNew,
-			const uint16_t portNew, Snowflake guildIdNew, std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* tokenNew);
+		VoiceConnectionBridge(std::basic_string<uint8_t>& encryptionKeyNew, StreamType streamType, const std::string& baseUrlNew, const uint16_t portNew, Snowflake guildIdNew,
+			std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* tokenNew);
 
 		inline void applyGainRamp(int64_t sampleCount);
 
@@ -240,10 +239,10 @@ namespace DiscordCoreAPI {
 		std::array<opus_int16, 23040> downSampledVector{};
 		std::basic_string<uint8_t> decryptedDataString{};
 		std::array<opus_int32, 23040> upSampledVector{};
+		DiscordCoreInternal::AudioMixer audioMixer{};
+		jsonifier::vector<uint8_t> resampleVector{};
 		std::basic_string<uint8_t> encryptionKey{};
 		MovingAverager voiceUserCountAverage{ 25 };
-		DiscordCoreClient* discordCoreClient{};
-		Jsonifier::Vector<uint8_t> resampleVector{};
 		Snowflake guildId{};
 		float currentGain{};
 		float increment{};
@@ -286,7 +285,7 @@ namespace DiscordCoreAPI {
 		/// @param discordCoreClientNew A pointer to the main isntance of DiscordCoreClient.
 		/// @param baseShardNew A pointer to the base shard that this voice connection belongs to.
 		/// @param doWeQuitNew A pointer to the global signalling boolean for exiting the application.
-		VoiceConnection(DiscordCoreClient* discordCoreClientNew, DiscordCoreInternal::WebSocketClient* baseShardNew, std::atomic_bool* doWeQuitNew);
+		VoiceConnection(DiscordCoreInternal::WebSocketClient* baseShardNew, std::atomic_bool* doWeQuitNew);
 
 		bool areWeConnected();
 
@@ -312,9 +311,9 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::OpusEncoderWrapper encoder{};
 		DiscordCoreInternal::WebSocketClient* baseShard{};
 		UniquePtr<VoiceConnectionBridge> streamSocket{};
+		DiscordCoreInternal::AudioMixer audioMixer{};
 		VoiceConnectInitData voiceConnectInitData{};
 		std::basic_string<uint8_t> encryptionKey{};
-		DiscordCoreClient* discordCoreClient{};
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
 		CoRoutine<void, false> taskThread{};
@@ -326,6 +325,7 @@ namespace DiscordCoreAPI {
 		std::atomic_bool* doWeQuit{};
 		std::atomic_bool doWeSkip{};
 		int64_t samplesPerPacket{};
+		Snowflake currentUserId{};
 		std::string externalIp{};
 		int64_t msPerPacket{};
 		std::string voiceIp{};
@@ -335,6 +335,8 @@ namespace DiscordCoreAPI {
 
 		void parseIncomingVoiceData(std::basic_string_view<uint8_t> rawDataBufferNew);
 
+		bool onMessageReceived(std::basic_string_view<uint8_t> data);
+
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 
 		void skipInternal(uint32_t currentRecursionDepth = 0);
@@ -342,8 +344,6 @@ namespace DiscordCoreAPI {
 		void checkForAndSendHeartBeat(const bool isImmedate);
 
 		void sendSpeakingMessage(const bool isSpeaking);
-
-		bool onMessageReceived(std::string_view data);
 
 		CoRoutine<void, false> runVoice();
 

@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects the UserData's Connections.
 		/// @returns A CoRoutine containing a vector<ConnectionData>.
-		static CoRoutine<Jsonifier::Vector<ConnectionData>> getUserConnectionsAsync();
+		static CoRoutine<jsonifier::vector<ConnectionData>> getUserConnectionsAsync();
 
 		/// @brief Collects the Application responseData associated with the current Bot.
 		/// @returns A CoRoutine containing an ApplicationData.
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 		/// @returns A CoRoutine containing an AuthorizationInfoData.
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
-		template<typename UserType> static inline void insertUser(UserType&& user) {
+		template<typename UserType> inline static void insertUser(UserType&& user) {
 			if (doWeCacheUsersBool) {
 				if (user.id == 0) {
 					throw DCAException{ "Sorry, but there was no id set for that user." };

@@ -15,7 +15,7 @@ void onBoot(DiscordCoreAPI::DiscordCoreClient* ) {
 
 int32_t main() {
 	std::string botToken = "";
-	Jsonifier::Vector<DiscordCoreAPI::RepeatedFunctionData> functionVector{};
+	jsonifier::vector<DiscordCoreAPI::RepeatedFunctionData> functionVector{};
 	functionVector.reserve(5);
 	DiscordCoreAPI::RepeatedFunctionData function01{};
 	function01.function = onBoot;
@@ -42,7 +42,7 @@ int32_t main() {
 	clientConfig.cacheOptions.cacheGuilds = true;
 	clientConfig.cacheOptions.cacheUsers = true;
 	clientConfig.cacheOptions.cacheRoles = true;
-	Jsonifier::Vector<DiscordCoreAPI::ActivityData> activities{};
+	jsonifier::vector<DiscordCoreAPI::ActivityData> activities{};
 	DiscordCoreAPI::ActivityData activity{};
 	activity.name = "/help for my commands!";
 	activity.type = DiscordCoreAPI::ActivityType::Game;
@@ -59,7 +59,7 @@ int32_t main() {
 	createBotInfoCommandData.defaultMemberPermissions = DiscordCoreAPI::Permission::Use_Application_Commands;
 	createBotInfoCommandData.description = "Displays info about the current bot.";
 	createBotInfoCommandData.name = "botinfo";
-	the->registerFunction(Jsonifier::Vector<std::string>{ "botinfo" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::BotInfo>(), createBotInfoCommandData);
+	the->registerFunction(jsonifier::vector<std::string>{ "botinfo" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::BotInfo>(), createBotInfoCommandData);
 	the->runBot();
 	return 0;
 };

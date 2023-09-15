@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 		/// @brief Move assignment operator for related arrays.
 		/// @param other The other CountedPtr to move from.
 		/// @return CountedPtr The new managed object inside a CountedPtr.
-		inline CountedPtr& operator=(CountedPtr&& other) {
+		inline CountedPtr& operator=(CountedPtr&& other) noexcept {
 			if (this != static_cast<void*>(&other)) {
 				reset();
 				try {
@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Move constructor for related arrays.
 		/// @param other The other CountedPtr to move from.
-		inline CountedPtr(CountedPtr&& other) {
+		inline CountedPtr(CountedPtr&& other) noexcept {
 			*this = std::move(other);
 		}
 
@@ -238,7 +238,7 @@ namespace DiscordCoreAPI {
 		/// @brief Move assignment operator for related arrays.
 		/// @param other The other CountedPtr to move from.
 		/// @return CountedPtr The new managed object inside a CountedPtr.
-		inline CountedPtr& operator=(CountedPtr&& other) {
+		inline CountedPtr& operator=(CountedPtr&& other) noexcept {
 			if (this != static_cast<void*>(&other)) {
 				reset();
 				try {
@@ -253,7 +253,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Move constructor for related arrays.
 		/// @param other The other CountedPtr to move from.
-		inline CountedPtr(CountedPtr&& other) {
+		inline CountedPtr(CountedPtr&& other) noexcept {
 			*this = std::move(other);
 		}
 

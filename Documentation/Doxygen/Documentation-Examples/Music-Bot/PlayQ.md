@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 				auto currentSong = SongAPI::getCurrentSong(guild.id);
 				Song currentNew = currentPlaylist.songQueue.at(trackNumber);
 				currentPlaylist.songQueue.erase(currentPlaylist.songQueue.begin() + trackNumber);
-				Jsonifier::Vector<Song> newVector{};
+				jsonifier::vector<Song> newVector{};
 				Playlist newPlaylist{};
 				newVector.emplace_back(currentNew);
 				newVector.emplace_back(currentSong);

@@ -38,24 +38,21 @@ namespace DiscordCoreAPI {
 	/// @tparam ValueType The type of object that will be sent over the message block.
 	template<CopyableOrMovable ValueType> class UnboundedMessageBlock {
 	  public:
+		using value_type = ValueType;
+
 		inline UnboundedMessageBlock(){};
 
-		inline UnboundedMessageBlock<std::decay_t<ValueType>>& operator=(UnboundedMessageBlock<std::decay_t<ValueType>>&& other) {
+		inline UnboundedMessageBlock<value_type>& operator=(UnboundedMessageBlock<value_type>&& other) noexcept {
 			if (this != &other) {
-				std::lock(accessMutex, other.accessMutex);
-				std::unique_lock lock{ accessMutex, std::adopt_lock };
-				std::unique_lock otherLock{ other.accessMutex, std::adopt_lock };
-				queue = std::move(other.queue);
+				std::swap(queue, other.queue);
 			}
 			return *this;
 		}
 
-		inline UnboundedMessageBlock<std::decay_t<ValueType>>& operator=(const UnboundedMessageBlock<std::decay_t<ValueType>>&) = delete;
-		inline UnboundedMessageBlock(const UnboundedMessageBlock&)																= delete;
+		inline UnboundedMessageBlock<value_type>& operator=(const UnboundedMessageBlock<value_type>&) = delete;
+		inline UnboundedMessageBlock(const UnboundedMessageBlock&)									  = delete;
 
-		inline ~UnboundedMessageBlock() = default;
-
-		template<typename ValueTypeNew> inline void send(ValueTypeNew&& object) {
+		template<CopyableOrMovable ValueTypeNew> inline void send(ValueTypeNew&& object) {
 			std::unique_lock lock{ accessMutex };
 			queue.emplace_back(std::forward<ValueTypeNew>(object));
 		}
@@ -65,7 +62,7 @@ namespace DiscordCoreAPI {
 			queue.clear();
 		}
 
-		inline bool tryReceive(ValueType& object) {
+		inline bool tryReceive(value_type& object) {
 			std::unique_lock lock{ accessMutex };
 			if (queue.size() > 0) {
 				object = std::move(queue.front());
@@ -81,17 +78,19 @@ namespace DiscordCoreAPI {
 			return queue.size();
 		}
 
+		inline ~UnboundedMessageBlock() = default;
+
 	  protected:
-		std::deque<std::decay_t<ValueType>> queue{};
+		std::deque<value_type> queue{};
 		std::mutex accessMutex{};
 	};
 
 	template<typename ValueType> inline bool waitForTimeToPass(UnboundedMessageBlock<std::decay_t<ValueType>>& outBuffer, ValueType& argOne, uint64_t timeInMsNew) {
 		StopWatch<Milliseconds> stopWatch{ Milliseconds{ timeInMsNew } };
-		stopWatch.resetTimer();
+		stopWatch.reset();
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(1ms);
-			if (stopWatch.hasTimePassed()) {
+			if (stopWatch.hasTimeElapsed()) {
 				return true;
 			}
 		};

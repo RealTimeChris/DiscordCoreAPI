@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 	/// @brief For executing a WebHook.
 	class DiscordCoreAPI_Dll ExecuteWebHookData {
 	  public:
-		template<typename ValueType> friend struct Jsonifier::Core;
+		template<typename ValueType> friend struct jsonifier::core;
 		friend class CreateEphemeralFollowUpMessageData;
 		friend class CreateFollowUpMessageData;
 		friend class EditFollowUpMessageData;
@@ -86,8 +86,8 @@ namespace DiscordCoreAPI {
 		/// @param type The type of select-menu that this is.
 		/// @param channelTypes Types of channels that can be accepted if this is of the type ChannelType.
 		/// @return RespondToInputEventData& A reference to this data structure.
-		ExecuteWebHookData& addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options, const std::string& placeholder,
-			int32_t maxValues, int32_t minValues, SelectMenuType type, Jsonifier::Vector<ChannelType> channelTypes = Jsonifier::Vector<ChannelType>{});
+		ExecuteWebHookData& addSelectMenu(bool disabled, const std::string& customIdNew, jsonifier::vector<SelectOptionData> options, const std::string& placeholder,
+			int32_t maxValues, int32_t minValues, SelectMenuType type, jsonifier::vector<ChannelType> channelTypes = jsonifier::vector<ChannelType>{});
 
 		/// @brief Adds a modal to the response MessageData.
 		/// @param topTitleNew A title for the modal.
@@ -135,11 +135,11 @@ namespace DiscordCoreAPI {
 		ExecuteWebHookData& setTTSStatus(bool enabledTTs);
 
 	  protected:
-		Jsonifier::Vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
-		Jsonifier::Vector<ActionRowData> components{};///< Array of message component the components to include with the message.
+		jsonifier::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
+		jsonifier::vector<ActionRowData> components{};///< Array of message component the components to include with the message.
 		AllowedMentionsData allowedMentions{};///< Allowed mention object.
-		Jsonifier::Vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
-		Jsonifier::Vector<File> files{};///< File contents the contents of the file being sent.
+		jsonifier::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
+		jsonifier::vector<File> files{};///< File contents the contents of the file being sent.
 		std::string webhookToken{};///< The WebHookData token you would like to execute.
 		std::string avatarUrl{};///< Override the default avatar of the webhook.
 		std::string userName{};///< Override the default username of the webhook.
@@ -147,14 +147,14 @@ namespace DiscordCoreAPI {
 		Snowflake webHookId{};///< The WebHookData you would like to execute.
 		std::string content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
 		std::string title{};///< Title for the modal.
-		int32_t flags{};///< Flags combined as a bitfield.
+		uint64_t flags{};///< Flags combined as a bitfield.
 		bool tts{};///< True if this is a TTS message.
 	};
 
 	/// @brief For editing a WebHook MessageData.
 	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
 	  public:
-		template<typename ValueType> friend struct Jsonifier::Core;
+		template<typename ValueType> friend struct jsonifier::core;
 		friend class EditInteractionResponseData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
@@ -254,13 +254,13 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects a list of WebHooks from a chosen ChannelData.
 		/// @param dataPackage A GetChannelWebHooksData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<WebHookData>.
-		static CoRoutine<Jsonifier::Vector<WebHookData>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<WebHookData>.
+		static CoRoutine<jsonifier::vector<WebHookData>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
 
 		/// @brief Collects a list of WebHooks from a chosen Guild.
 		/// @param dataPackage A GetGuildWebHooksData structure.
-		/// @return A CoRoutine containing a Jsonifier::Vector<WebHookData>.
-		static CoRoutine<Jsonifier::Vector<WebHookData>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
+		/// @return A CoRoutine containing a jsonifier::vector<WebHookData>.
+		static CoRoutine<jsonifier::vector<WebHookData>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
 
 		/// @brief Collects a single WebHookData.
 		/// @param dataPackage A GetWebHookData structure.

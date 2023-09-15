@@ -34,18 +34,18 @@
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 #include <fstream>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::CreateGuildEmojiData> {
+	template<> struct core<DiscordCoreAPI::CreateGuildEmojiData> {
 		using ValueType					 = DiscordCoreAPI::CreateGuildEmojiData;
-		static constexpr auto parseValue = object("roles", &ValueType::roles, "image", &ValueType::imageDataFinal, "reason", &ValueType::reason, "guildId", &ValueType::guildId,
-			"name", &ValueType::name, "type", &ValueType::type);
+		static constexpr auto parseValue = createObject("roles", &ValueType::roles, "image", &ValueType::imageDataFinal, "reason", &ValueType::reason, "guildId",
+			&ValueType::guildId, "name", &ValueType::name, "type", &ValueType::type);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyGuildEmojiData> {
+	template<> struct core<DiscordCoreAPI::ModifyGuildEmojiData> {
 		using ValueType = DiscordCoreAPI::ModifyGuildEmojiData;
 		static constexpr auto parseValue =
-			object("roles", &ValueType::roles, "reason", &ValueType::reason, "guildId", &ValueType::guildId, "emojiId", &ValueType::emojiId, "name", &ValueType::name);
+			createObject("roles", &ValueType::roles, "reason", &ValueType::reason, "guildId", &ValueType::guildId, "emojiId", &ValueType::emojiId, "name", &ValueType::name);
 	};
 
 }
@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> void ObjectCollector<ReactionData>::run(
-		std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::ReactionData>::ObjectCollectorReturnData>::promise_type>&
+		std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::ReactionData>::ObjectCollectorReturnData, false>::promise_type>&
 			coroHandle) {
 		int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 		int64_t elapsedTime{};
@@ -78,9 +78,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> CoRoutine<ObjectCollector<ReactionData>::ObjectCollectorReturnData> ObjectCollector<ReactionData>::collectObjects(int32_t quantityToCollect,
+	template<> CoRoutine<ObjectCollector<ReactionData>::ObjectCollectorReturnData, false> ObjectCollector<ReactionData>::collectObjects(int32_t quantityToCollect,
 		int32_t msToCollectForNew, ObjectFilter<ReactionData> filteringFunctionNew) {
-		auto coroHandle			   = co_await NewThreadAwaitable<ObjectCollectorReturnData>();
+		auto coroHandle			   = co_await NewThreadAwaitable<ObjectCollectorReturnData, false>();
 		quantityOfObjectsToCollect = quantityToCollect;
 		filteringFunction		   = filteringFunctionNew;
 		msToCollectFor			   = msToCollectForNew;
@@ -149,9 +149,9 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<Jsonifier::Vector<UserData>> Reactions::getReactionsAsync(GetReactionsData dataPackage) {
+	CoRoutine<jsonifier::vector<UserData>> Reactions::getReactionsAsync(GetReactionsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Reactions };
-		co_await NewThreadAwaitable<Jsonifier::Vector<UserData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<UserData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + dataPackage.emoji;
 		if (dataPackage.afterId != 0) {
@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Reactions::getReactionsAsync()";
-		Jsonifier::Vector<UserData> returnData{};
+		jsonifier::vector<UserData> returnData{};
 		Reactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -195,13 +195,13 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<Jsonifier::Vector<EmojiData>> Reactions::getEmojiListAsync(GetEmojiListData dataPackage) {
+	CoRoutine<jsonifier::vector<EmojiData>> Reactions::getEmojiListAsync(GetEmojiListData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Emoji_List };
-		co_await NewThreadAwaitable<Jsonifier::Vector<EmojiData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<EmojiData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/emojis";
 		workload.callStack	   = "Reactions::getEmojiListAsync()";
-		Jsonifier::Vector<EmojiData> returnData{};
+		jsonifier::vector<EmojiData> returnData{};
 		Reactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

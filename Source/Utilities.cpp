@@ -39,7 +39,7 @@
 #include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
-#include <discordcoreapi/Utilities/Utilities.hpp>
+#include <discordcoreapi/Utilities.hpp>
 #include <fstream>
 
 namespace DiscordCoreAPI {
@@ -115,6 +115,10 @@ namespace DiscordCoreAPI {
 		return config.cacheOptions.cacheUsers;
 	}
 
+	bool ConfigManager::doWeCacheVoiceStates() const {
+		return config.cacheOptions.cacheVoiceStates;
+	}
+
 	bool ConfigManager::doWeCacheGuilds() const {
 		return config.cacheOptions.cacheGuilds;
 	}
@@ -159,7 +163,7 @@ namespace DiscordCoreAPI {
 		config.connectionPort = connectionPortNew;
 	}
 
-	Jsonifier::Vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
+	jsonifier::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
 		return config.functionsToExecute;
 	}
 
@@ -201,7 +205,7 @@ namespace DiscordCoreAPI {
 		if (hexColorValue == "") {
 			hexColorValue = "fefefe";
 		}
-		color = stoull(hexColorValue, nullptr, 16);
+		color = static_cast<uint32_t>(stoi(hexColorValue, nullptr, 16));
 	}
 
 	RGBColorValue ColorValue::getRgbColorValue() {
@@ -279,13 +283,13 @@ namespace DiscordCoreAPI {
 
 		uint64_t permissions = stoull(basePermissions);
 		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
-				permissions &= ~channel.permissionOverwrites[x].deny;
-				permissions |= channel.permissionOverwrites[x].allow;
+			if (channel.permissionOverwrites.at(x).id == guildMember.guildId) {
+				permissions &= ~channel.permissionOverwrites.at(x).deny;
+				permissions |= channel.permissionOverwrites.at(x).allow;
 				break;
 			}
 		}
-		Jsonifier::Vector<RoleData> guildMemberRoles{};
+		jsonifier::vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
 		}
@@ -293,18 +297,18 @@ namespace DiscordCoreAPI {
 		uint64_t deny{};
 		for (auto& value: guildMemberRoles) {
 			for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-				if (value.id == channel.permissionOverwrites[x].id) {
-					allow |= channel.permissionOverwrites[x].allow;
-					deny |= channel.permissionOverwrites[x].deny;
+				if (value.id == channel.permissionOverwrites.at(x).id) {
+					allow |= channel.permissionOverwrites.at(x).allow;
+					deny |= channel.permissionOverwrites.at(x).deny;
 				}
 			}
 		}
 		permissions &= ~deny;
 		permissions |= allow;
 		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.user.id) {
-				permissions &= ~channel.permissionOverwrites[x].deny;
-				permissions |= channel.permissionOverwrites[x].allow;
+			if (channel.permissionOverwrites.at(x).id == guildMember.user.id) {
+				permissions &= ~channel.permissionOverwrites.at(x).deny;
+				permissions |= channel.permissionOverwrites.at(x).allow;
 				break;
 			}
 		}
@@ -316,7 +320,7 @@ namespace DiscordCoreAPI {
 		if (guild.ownerId == guildMember.user.id) {
 			return getAllPermissions();
 		}
-		Jsonifier::Vector<RoleData> guildRoles{};
+		jsonifier::vector<RoleData> guildRoles{};
 		for (auto& value: guild.roles) {
 			guildRoles.emplace_back(Roles::getCachedRole({ .guildId = guild.id, .roleId = value.id }));
 		}
@@ -333,13 +337,13 @@ namespace DiscordCoreAPI {
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId	 = guildMember.guildId;
-		Jsonifier::Vector<RoleData> guildMemberRoles{};
+		jsonifier::vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			auto valueNew = Roles::getCachedRole({ .guildId = guild.id, .roleId = value });
 			guildMemberRoles.emplace_back(valueNew);
 		}
 		for (auto& value: guildMemberRoles) {
-			permissions |= value.permissions.operator int64_t();
+			permissions |= value.permissions.operator uint64_t();
 		}
 
 		if (permissions & static_cast<uint64_t>(Permission::Administrator)) {
@@ -357,13 +361,13 @@ namespace DiscordCoreAPI {
 
 		uint64_t permissions = stoull(basePermissions);
 		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
-				permissions &= ~channel.permissionOverwrites[x].deny;
-				permissions |= channel.permissionOverwrites[x].allow;
+			if (channel.permissionOverwrites.at(x).id == guildMember.guildId) {
+				permissions &= ~channel.permissionOverwrites.at(x).deny;
+				permissions |= channel.permissionOverwrites.at(x).allow;
 				break;
 			}
 		}
-		Jsonifier::Vector<RoleData> guildMemberRoles{};
+		jsonifier::vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
 		}
@@ -371,18 +375,18 @@ namespace DiscordCoreAPI {
 		uint64_t deny{};
 		for (auto& value: guildMemberRoles) {
 			for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-				if (value.id == channel.permissionOverwrites[x].id) {
-					allow |= channel.permissionOverwrites[x].allow;
-					deny |= channel.permissionOverwrites[x].deny;
+				if (value.id == channel.permissionOverwrites.at(x).id) {
+					allow |= channel.permissionOverwrites.at(x).allow;
+					deny |= channel.permissionOverwrites.at(x).deny;
 				}
 			}
 		}
 		permissions &= ~deny;
 		permissions |= allow;
 		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.user.id) {
-				permissions &= ~channel.permissionOverwrites[x].deny;
-				permissions |= channel.permissionOverwrites[x].allow;
+			if (channel.permissionOverwrites.at(x).id == guildMember.user.id) {
+				permissions &= ~channel.permissionOverwrites.at(x).deny;
+				permissions |= channel.permissionOverwrites.at(x).allow;
 				break;
 			}
 		}
@@ -394,7 +398,7 @@ namespace DiscordCoreAPI {
 		if (guild.ownerId == guildMember.user.id) {
 			return getAllPermissions();
 		}
-		Jsonifier::Vector<RoleData> guildRoles{};
+		jsonifier::vector<RoleData> guildRoles{};
 		for (auto& value: guild.roles) {
 			guildRoles.emplace_back(Roles::getCachedRole({ .guildId = guild.id, .roleId = value.id }));
 		}
@@ -411,13 +415,13 @@ namespace DiscordCoreAPI {
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId	 = guildMember.guildId;
-		Jsonifier::Vector<RoleData> guildMemberRoles{};
+		jsonifier::vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			auto valueNew = Roles::getCachedRole({ .guildId = guild.id, .roleId = value });
 			guildMemberRoles.emplace_back(valueNew);
 		}
 		for (auto& value: guildMemberRoles) {
-			permissions |= value.permissions.operator int64_t();
+			permissions |= value.permissions.operator uint64_t();
 		}
 
 		if (permissions & static_cast<uint64_t>(Permission::Administrator)) {
@@ -427,7 +431,7 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	std::string constructMultiPartData(const std::string& data, const Jsonifier::Vector<File>& files) {
+	std::string constructMultiPartData(const std::string& data, const jsonifier::vector<File>& files) {
 		const std::string boundary("boundary25");
 		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
 
@@ -437,12 +441,12 @@ namespace DiscordCoreAPI {
 				   "name=\"payload_json\"\r\n\r\n";
 		content += data + "\r\n";
 		if (files.size() == 1) {
-			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
-			content += files[0].data;
+			content += partStart + "name=\"file\"; filename=\"" + files.at(0).fileName + "\"" + "\r\n\r\n";
+			content += files.at(0).data;
 		} else {
 			for (uint64_t x = 0; x < files.size(); ++x) {
-				content += partStart + "name=\"files[" + std::to_string(x) + "]\"; filename=\"" + files[x].fileName + "\"\r\n\r\n";
-				content += files[x].data;
+				content += partStart + "name=\"files[" + std::to_string(x) + "]\"; filename=\"" + files.at(x).fileName + "\"\r\n\r\n";
+				content += files.at(x).data;
 				content += "\r\n";
 			}
 		}
@@ -482,10 +486,10 @@ namespace DiscordCoreAPI {
 		std::string returnString{};
 		returnString.reserve(encodedLength);
 		StopWatch<Milliseconds> stopWatch{ 1500ms };
-		stopWatch.resetTimer();
+		stopWatch.reset();
 		uint64_t pos = 0;
 		while (pos < string.size()) {
-			if (stopWatch.hasTimePassed()) {
+			if (stopWatch.hasTimeElapsed()) {
 				break;
 			}
 			returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
@@ -527,7 +531,7 @@ namespace DiscordCoreAPI {
 				if (value + difference == '\0') {
 					continue;
 				} else {
-					returnString.push_back(value + difference);
+					returnString.push_back(value + static_cast<char>(difference));
 				}
 			} else {
 				returnString.push_back(value);
@@ -544,7 +548,7 @@ namespace DiscordCoreAPI {
 		for (std::string::const_iterator x = inputString.begin(), n = inputString.end(); x != n; ++x) {
 			std::string::value_type c = (*x);
 
-			if (isalnum(static_cast<unsigned char>(c)) || c == '-' || c == '_' || c == '.' || c == '~') {
+			if (isalnum(static_cast<uint8_t>(c)) || c == '-' || c == '_' || c == '.' || c == '~') {
 				escaped << c;
 				continue;
 			}
@@ -569,7 +573,7 @@ namespace DiscordCoreAPI {
 		returnString.resize(16);
 		std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
 		for (uint64_t x = 0; x < 16; ++x) {
-			returnString[x] = static_cast<uint8_t>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
+			returnString.at(x) = static_cast<uint8_t>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
 		}
 		returnString = base64Encode(returnString, false);
 		return returnString;

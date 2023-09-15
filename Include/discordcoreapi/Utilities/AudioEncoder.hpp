@@ -110,11 +110,11 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UniquePtr<OpusEncoder, OpusEncoderDeleter> ptr{};///< Unique pointer to OpusEncoder instance.
+			jsonifier::vector<opus_int16> resampleVector{};///< For properly copying the values without type-punning.
 			std::basic_string<uint8_t> encodedData{};///< Buffer for encoded audio data.
-			Jsonifier::Vector<opus_int16> resampleVector{};///< For properly copying the values without type-punning.
-			const int32_t maxBufferSize{ 1276 };///< Maximum size of the encoded data buffer.
-			const int32_t sampleRate{ 48000 };///< Sample rate of the audio data.
-			const int32_t nChannels{ 2 };///< Number of audio channels.
+			inline static constexpr uint64_t maxBufferSize{ 1276 };///< Maximum size of the encoded data buffer.
+			inline static constexpr int64_t sampleRate{ 48000 };///< Sample rate of the audio data.
+			inline static constexpr int64_t nChannels{ 2 };///< Number of audio channels.
 		};
 
 		/**@}*/

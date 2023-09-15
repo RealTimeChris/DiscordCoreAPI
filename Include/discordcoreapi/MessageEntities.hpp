@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 	  public:
 		/// @brief ObjectCollectorReturnData responseData.c
 		struct ObjectCollectorReturnData {
-			Jsonifier::Vector<ValueType> objects{};///< A vector of collected Objects.
+			jsonifier::vector<ValueType> objects{};///< A vector of collected Objects.
 		};
 
 		static UnorderedMap<std::string, UnboundedMessageBlock<ValueType>*> objectsBuffersMap;
@@ -61,10 +61,10 @@ namespace DiscordCoreAPI {
 		/// @param msToCollectForNew Maximum number of Milliseconds to wait for Objects before returning the results.
 		/// @param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
 		/// @returns A ObjectCollectorReturnData structure.
-		CoRoutine<ObjectCollectorReturnData> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<ValueType> filteringFunctionNew);
+		CoRoutine<ObjectCollectorReturnData, false> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<ValueType> filteringFunctionNew);
 
-		void run(
-			std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<typename DiscordCoreAPI::ObjectCollector<ValueType>::ObjectCollectorReturnData>::promise_type>& coroHandle);
+		void run(std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<typename DiscordCoreAPI::ObjectCollector<ValueType>::ObjectCollectorReturnData, false>::promise_type>&
+				coroHandle);
 
 		~ObjectCollector();
 
@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 	/// @brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
-		template<typename ValueType> friend struct Jsonifier::Core;
+		template<typename ValueType> friend struct jsonifier::core;
 		friend class InputEvents;
 		friend class Messages;
 
@@ -114,9 +114,9 @@ namespace DiscordCoreAPI {
 		CreateMessageData() = default;
 
 	  protected:
-		Jsonifier::Vector<AttachmentData> attachments{};
+		jsonifier::vector<AttachmentData> attachments{};
 		MessageReferenceData messageReference{};
-		Jsonifier::Vector<std::string> stickerIds{};
+		jsonifier::vector<std::string> stickerIds{};
 	};
 
 	/// @brief For sending a direct-message.
@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 	/// @brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
-		template<typename ValueType> friend struct Jsonifier::Core;
+		template<typename ValueType> friend struct jsonifier::core;
 		friend class InputEvents;
 		friend class Messages;
 
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 		EditMessageData(RespondToInputEventData dataPackage);
 
 	  protected:
-		Jsonifier::Vector<AttachmentData> attachments{};
+		jsonifier::vector<AttachmentData> attachments{};
 		Snowflake channelId{};
 		Snowflake messageId{};
 		int32_t flags{};
@@ -169,7 +169,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For deleting a bulk of Messages.
 	struct DeleteMessagesBulkData {
-		Jsonifier::Vector<Snowflake> messageIds{};///< Array of Message ids to delete.
+		jsonifier::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
 		Snowflake channelId{};///< ChannelData within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
 	};
@@ -206,8 +206,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects a collection of Message from the Discord servers
 		/// @param dataPackage A GetMessagesData structure.
-		/// @returns A CoRoutine containing a Jsonifier::Vector<MessageData>.
-		static CoRoutine<Jsonifier::Vector<MessageData>> getMessagesAsync(GetMessagesData dataPackage);
+		/// @returns A CoRoutine containing a jsonifier::vector<MessageData>.
+		static CoRoutine<jsonifier::vector<MessageData>> getMessagesAsync(GetMessagesData dataPackage);
 
 		/// @brief Collects a Message from the Discord servers.
 		/// @param dataPackage A GetMessageData structure.
@@ -241,8 +241,8 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects a collection of pinned Messages from the Discord servers.
 		/// @param dataPackage A GetPinnedMessagesData structure.
-		/// @returns A CoRoutine containing a Jsonifier::Vector<MessageData>.
-		static CoRoutine<Jsonifier::Vector<MessageData>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
+		/// @returns A CoRoutine containing a jsonifier::vector<MessageData>.
+		static CoRoutine<jsonifier::vector<MessageData>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
 
 		/// @brief Pins a Message to a given Channel.
 		/// @param dataPackage A PinMessageData structure.

@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 			uint64_t theShardId{ (guildId.operator const uint64_t&() >> 22) % getInstance()->configManager.getTotalShardCount() };
 			uint64_t baseSocketIndex{ theShardId % getInstance()->baseSocketAgentsMap.size() };
 			auto baseSocketAgent								   = getInstance()->baseSocketAgentsMap[baseSocketIndex].get();
-			voiceConnectionMap[guildId.operator const uint64_t&()] = makeUnique<VoiceConnection>(getInstance(), &baseSocketAgent->shardMap[theShardId], &doWeQuit);
+			voiceConnectionMap[guildId.operator const uint64_t&()] = makeUnique<VoiceConnection>(&baseSocketAgent->shardMap[theShardId], &doWeQuit);
 		}
 		return *voiceConnectionMap[guildId.operator const uint64_t&()].get();
 	}
@@ -78,11 +78,11 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	void atexitHandler() {
+	void atexitHandler() noexcept {
 		doWeQuit.store(true, std::memory_order_release);
 	}
 
-	void signalHandler(int32_t value) {
+	void signalHandler(int32_t value) noexcept {
 		try {
 			switch (value) {
 				case SIGTERM: {
@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommands::initialize(httpsClient.get());
 		AutoModerationRules::initialize(httpsClient.get());
 		Channels::initialize(httpsClient.get(), &configManager);
-		Guilds::initialize(httpsClient.get(), this, &configManager);
+		Guilds::initialize(httpsClient.get(), &configManager);
 		GuildMembers::initialize(httpsClient.get(), &configManager);
 		GuildScheduledEvents::initialize(httpsClient.get());
 		Interactions::initialize(httpsClient.get());
@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void DiscordCoreClient::registerFunction(const Jsonifier::Vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+	void DiscordCoreClient::registerFunction(const jsonifier::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
 		bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		commandController.registerFunction(functionNames, std::move(baseFunction));
@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 
 	void DiscordCoreClient::registerFunctionsInternal() {
 		if (getBotUser().id != 0) {
-			Jsonifier::Vector<ApplicationCommandData> theCommands{
+			jsonifier::vector<ApplicationCommandData> theCommands{
 				ApplicationCommands::getGlobalApplicationCommandsAsync({ .applicationId = getBotUser().id, .withLocalizations = false }).get()
 			};
 			while (commandsToRegister.size() > 0) {
@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
 					}
 				} else {
-					Jsonifier::Vector<ApplicationCommandData> guildCommands{};
+					jsonifier::vector<ApplicationCommandData> guildCommands{};
 					if (data.guildId != 0) {
 						guildCommands =
 							ApplicationCommands::getGuildApplicationCommandsAsync({ .applicationId = getBotUser().id, .withLocalizations = false, .guildId = data.guildId }).get();
@@ -268,9 +268,9 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		uint32_t workerCount = configManager.getTotalShardCount() <= DiscordCoreInternal::ThreadWrapper::hardware_concurrency()
+		uint32_t workerCount = configManager.getTotalShardCount() <= static_cast<uint32_t>(DiscordCoreInternal::ThreadWrapper::hardware_concurrency())
 			? configManager.getTotalShardCount()
-			: DiscordCoreInternal::ThreadWrapper::hardware_concurrency();
+			: static_cast<uint32_t>(DiscordCoreInternal::ThreadWrapper::hardware_concurrency());
 
 		if (configManager.getConnectionAddress() == "") {
 			configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string{ "wss://" }.size()));
@@ -282,10 +282,10 @@ namespace DiscordCoreAPI {
 		baseSocketAgentsMap.reserve(workerCount);
 		for (uint32_t x = 0; x < configManager.getTotalShardCount(); ++x) {
 			if (baseSocketAgentsMap.size() < workerCount) {
-				baseSocketAgentsMap[x] = makeUnique<DiscordCoreInternal::BaseSocketAgent>(this, &doWeQuit, x);
+				baseSocketAgentsMap[x] = makeUnique<DiscordCoreInternal::BaseSocketAgent>(&doWeQuit, x);
 				baseSocketAgentsMap[x]->shardMap.reserve(configManager.getTotalShardCount() / workerCount);
 			}
-			baseSocketAgentsMap[x % workerCount]->shardMap[x] = DiscordCoreInternal::WebSocketClient{ this, x, &doWeQuit };
+			baseSocketAgentsMap[x % workerCount]->shardMap[x] = DiscordCoreInternal::WebSocketClient{ x, &doWeQuit };
 		}
 		areWeReadyToConnect.store(true, std::memory_order_release);
 		while (!areWeFullyConnected()) {
@@ -316,7 +316,7 @@ namespace DiscordCoreAPI {
 				value.disconnect();
 			}
 		}
-		for (auto& [key, value]: NewThreadAwaiterBase::threadPool.workerThreads) {
+		for (auto& [key, value]: NewThreadAwaiterBase::threadPool) {
 			if (value->thread->joinable()) {
 				value->thread->requestStop();
 				value->thread->detach();

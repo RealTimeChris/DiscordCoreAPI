@@ -65,8 +65,8 @@ namespace DiscordCoreAPI {
 #else
 			serializer["properties"]["os"] = "Linux";
 #endif
-			serializer["shard"].emplaceBack(shard[0]);
-			serializer["shard"].emplaceBack(shard[1]);
+			serializer["shard"].emplaceBack(shard.at(0));
+			serializer["shard"].emplaceBack(shard.at(1));
 			serializer["token"] = botToken;
 			return serializer;
 		}
@@ -126,33 +126,33 @@ namespace DiscordCoreAPI {
 				newData["url"] = std::string_view{ value.url };
 			}
 			newData["name"] = std::string_view{ value.name };
-			newData["type"] = value.type;
+			newData["type"] = static_cast<uint32_t>(value.type);
 			data["activities"].emplaceBack(newData);
 		}
 		switch (status) {
 			case PresenceUpdateState::Online: {
-				data["status"] = "online";
+				data["status"] = statusReal;
 				break;
 			}
 			case PresenceUpdateState::Idle: {
-				data["status"] = "idle";
+				data["status"] = statusReal;
 				break;
 			}
 			case PresenceUpdateState::Invisible: {
-				data["status"] = "invisible";
+				data["status"] = statusReal;
 				break;
 			}
 			case PresenceUpdateState::Do_Not_Disturb: {
-				data["status"] = "dnd";
+				data["status"] = statusReal;
 				break;
 			}
 			case PresenceUpdateState::Offline: {
-				data["status"] = "offline";
+				data["status"] = statusReal;
 				break;
 			}
 		}
 		data["since"] = since;
-		data["afk"]	  = afk;
+		data["afk"]	  = false;
 		return data;
 	}
 
@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool GuildCacheData::areWeConnected() {
-		return discordCoreClient->getVoiceConnection(id).areWeConnected();
+		return getDiscordCoreClient()->getVoiceConnection(id).areWeConnected();
 	}
 
 	void GuildCacheData::disconnect() {
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool GuildData::areWeConnected() {
-		return discordCoreClient->getVoiceConnection(id).areWeConnected();
+		return getDiscordCoreClient()->getVoiceConnection(id).areWeConnected();
 	}
 
 	void GuildData::disconnect() {
@@ -272,7 +272,7 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		for (uint64_t x = 0; x < rhs.choices.size(); ++x) {
-			if (choices[x] != rhs.choices[x]) {
+			if (choices.at(x) != rhs.choices.at(x)) {
 				return false;
 			}
 		}
@@ -428,10 +428,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	EmojiData::EmojiData(Snowflake newId) {
-		id = newId;
-	}
-
 	void EmojiData::generateExcludedKeys() {
 		if (id == 0) {
 			excludedKeys.emplace("id");
@@ -468,7 +464,7 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		for (uint64_t x = 0; x < options.size(); ++x) {
-			if (options[x] != rhs.options[x]) {
+			if (options.at(x) != rhs.options.at(x)) {
 				return false;
 			}
 		}
@@ -490,8 +486,8 @@ namespace DiscordCoreAPI {
 
 	InputEventData& InputEventData::operator=(InputEventData&& other) noexcept {
 		if (this != &other) {
-			*interactionData = std::move(*other.interactionData);
-			responseType	 = other.responseType;
+			interactionData.swap(other.interactionData);
+			responseType = other.responseType;
 		}
 		return *this;
 	}
@@ -522,28 +518,20 @@ namespace DiscordCoreAPI {
 	}
 
 	UserData InputEventData::getUserData() const {
-		UserData returnData{};
 		if (interactionData->member.user.id != 0) {
-			returnData.id = interactionData->member.user.id;
+			return interactionData->member.user;
 		} else {
-			returnData.id = interactionData->user.id;
+			return interactionData->user;
 		}
-		returnData = Users::getCachedUser({ .userId = returnData.id });
-		return returnData;
 	}
 
 	ChannelData InputEventData::getChannelData() const {
-		if (interactionData->channelId != 0) {
-			return Channels::getCachedChannel({ interactionData->channelId });
-		} else {
-			return Channels::getCachedChannel({ interactionData->channel.id });
-		}
+		return interactionData->channel;
 	}
 
 	GuildMemberData InputEventData::getGuildMemberData() const {
-		GuildMemberData returnData{ interactionData->member };
-		returnData = GuildMembers::getCachedGuildMember({ .guildMemberId = returnData.user.id, .guildId = interactionData->guildId });
-		return returnData;
+		interactionData->member.guildId = interactionData->guildId;
+		return interactionData->member;
 	}
 
 	void InteractionCallbackData::generateExcludedKeys() {
@@ -682,11 +670,61 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	GuildData InputEventData::getGuildData() const {
-		GuildData returnData{};
-		returnData.id = interactionData->guildId;
-		returnData	  = Guilds::getCachedGuild({ .guildId = interactionData->guildId });
-		return returnData;
+	void ApplicationCommandOptionData::generateExcludedKeys() {
+		for (auto& value: options) {
+			value.generateExcludedKeys();
+		}
+		for (auto& value: choices) {
+			value.generateExcludedKeys();
+		}
+		if (nameLocalizations.size() == 0) {
+			excludedKeys.emplace("name_localizations");
+		}
+		if (choices.size() == 0) {
+			excludedKeys.emplace("choices");
+		}
+		if (options.size() == 0) {
+			excludedKeys.emplace("options");
+		}
+		if (!autocomplete) {
+			excludedKeys.emplace("autocomplete");
+		}
+		if (descriptionLocalizations.size() == 0) {
+			excludedKeys.emplace("description_localizations");
+		}
+		if (channelTypes.size() == 0) {
+			excludedKeys.emplace("channel_types");
+		}
+	}
+
+	void ApplicationCommandOptionChoiceData::generateExcludedKeys() {
+		if (nameLocalizations.size() == 0) {
+			excludedKeys.emplace("name_localizations");
+		}
+	}
+
+	void ApplicationCommandData::generateExcludedKeys() {
+		if (descriptionLocalizations.size() == 0) {
+			excludedKeys.emplace("description_localizations");
+		}
+		if (nameLocalizations.size() == 0) {
+			excludedKeys.emplace("name_localizations");
+		}
+		if (id == 0) {
+			excludedKeys.emplace("id");
+		}
+		if (version == "") {
+			excludedKeys.emplace("version");
+		}
+		if (guildId == 0) {
+			excludedKeys.emplace("guild_id");
+		}
+		for (auto& value: options) {
+			value.generateExcludedKeys();
+		}
+		if (options.size() == 0) {
+			excludedKeys.emplace("options");
+		}
 	}
 
 	InteractionData InputEventData::getInteractionData() const {
@@ -765,8 +803,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew, const Jsonifier::Vector<SelectOptionData>& options,
-		const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType typeNew, Jsonifier::Vector<ChannelType> channelTypes) {
+	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew, const jsonifier::vector<SelectOptionData>& options,
+		const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType typeNew, jsonifier::vector<ChannelType> channelTypes) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);
@@ -861,7 +899,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandOptionChoiceData choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name				 = theName;
-		choiceData.value			 = Jsonifier::String{ value.operator std::string() };
+		choiceData.value			 = jsonifier::string{ value.operator std::basic_string<uint8_t, std::char_traits<unsigned char>, std::allocator<unsigned char>>() };
 		choices.emplace_back(choiceData);
 		return *this;
 	}
@@ -897,8 +935,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options,
-		const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType type, Jsonifier::Vector<ChannelType> channelTypes) {
+	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, jsonifier::vector<SelectOptionData> options,
+		const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType type, jsonifier::vector<ChannelType> channelTypes) {
 		if (components.size() == 0) {
 			ActionRowData actionRowData;
 			components.emplace_back(actionRowData);
@@ -958,17 +996,17 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addAllowedMentions(AllowedMentionsData dataPackage) {
+	MessageResponseBase& MessageResponseBase::addAllowedMentions(const AllowedMentionsData& dataPackage) {
 		allowedMentions = dataPackage;
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addComponentRow(ActionRowData dataPackage) {
+	MessageResponseBase& MessageResponseBase::addComponentRow(const ActionRowData& dataPackage) {
 		components.emplace_back(dataPackage);
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addMessageEmbed(EmbedData dataPackage) {
+	MessageResponseBase& MessageResponseBase::addMessageEmbed(const EmbedData& dataPackage) {
 		embeds.emplace_back(dataPackage);
 		return *this;
 	}
@@ -1003,8 +1041,11 @@ namespace DiscordCoreAPI {
 
 	void parseCommandDataOption(UnorderedMap<std::string, JsonStringValue>& values, ApplicationCommandInteractionDataOption& data) {
 		JsonStringValue valueNew{};
-		if (data.value.operator std::string()[0] == '"') {
-			data.value = Jsonifier::String{ data.value.operator std::string().substr(1, data.value.operator std::string().size() - 2) };
+		auto stringSize{ data.value.operator jsonifier::string_view().size() };
+		if (stringSize > 1) {
+			if (data.value.operator jsonifier::string_view().at(0) == '"' && data.value.operator jsonifier::string_view().at(stringSize - 1) == '"') {
+				data.value = jsonifier::string{ data.value.operator std::string().substr(1, data.value.operator std::string().size() - 2) };
+			}
 		}
 		valueNew.value	  = data.value;
 		values[data.name] = valueNew;
@@ -1033,15 +1074,15 @@ namespace DiscordCoreAPI {
 		if (inputEventData.interactionData->data.targetId != 0) {
 			optionsArgs.values.emplace("target_id",
 				JsonStringValue{ .type = DiscordCoreInternal::JsonType::String,
-					.value			   = Jsonifier::String{ inputEventData.interactionData->data.targetId.operator std::string() } });
+					.value			   = jsonifier::string{ inputEventData.interactionData->data.targetId.operator std::string() } });
 		} else if (inputEventData.interactionData->data.targetId != 0) {
 			optionsArgs.values.emplace("target_id",
 				JsonStringValue{ .type = DiscordCoreInternal::JsonType::String,
-					.value			   = Jsonifier::String{ inputEventData.interactionData->data.targetId.operator std::string() } });
+					.value			   = jsonifier::string{ inputEventData.interactionData->data.targetId.operator std::string() } });
 		}
 		eventData = inputEventData;
 		for (auto& value: eventData.interactionData->data.options) {
-			JsonStringValue serializer{ .value = Jsonifier::String{ value.value.operator std::string() } };
+			JsonStringValue serializer{ .value = jsonifier::string{ value.value.operator std::string() } };
 			optionsArgs.values[value.name] = serializer;
 			parseCommandDataOption(optionsArgs.values, value);
 		}
@@ -1071,10 +1112,6 @@ namespace DiscordCoreAPI {
 		return eventData.getMessageData();
 	}
 
-	GuildData CommandData::getGuildData() {
-		return eventData.getGuildData();
-	}
-
 	UserData CommandData::getUserData() {
 		return eventData.getUserData();
 	}
@@ -1095,16 +1132,15 @@ namespace DiscordCoreAPI {
 		return eventData;
 	}
 
-	BaseFunctionArguments::BaseFunctionArguments(const CommandData& commanddataNew, DiscordCoreClient* discordCoreClientNew) : CommandData(commanddataNew) {
-		discordCoreClient = discordCoreClientNew;
+	BaseFunctionArguments::BaseFunctionArguments(const CommandData& commanddataNew) : CommandData(commanddataNew) {
 	}
 
 	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
-		const Jsonifier::Vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
+		const jsonifier::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		uint32_t newCurrentPageIndex = currentPageIndex;
 		StopWatch<Milliseconds> stopWatch{ Milliseconds{ waitForMaxMs } };
-		stopWatch.resetTimer();
+		stopWatch.reset();
 		auto createResponseData	 = makeUnique<CreateInteractionResponseData>(originalEvent);
 		auto interactionResponse = makeUnique<RespondToInputEventData>(originalEvent);
 		auto embedData			 = makeUnique<EmbedData>();
@@ -1125,10 +1161,10 @@ namespace DiscordCoreAPI {
 		interactionResponse->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
 		interactionResponse->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 		originalEvent = InputEvents::respondToInputEventAsync(*interactionResponse).get();
-		while (!stopWatch.hasTimePassed()) {
+		while (!stopWatch.hasTimeElapsed()) {
 			std::this_thread::sleep_for(1ms);
 			UniquePtr<ButtonCollector> button{ makeUnique<ButtonCollector>(originalEvent) };
-			Jsonifier::Vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, *createResponseData, Snowflake{ stoull(userID) }).get() };
+			jsonifier::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, *createResponseData, Snowflake{ stoull(userID) }).get() };
 			UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };
 			if (buttonIntData.size() == 0) {
 				UniquePtr<RespondToInputEventData> dataPackage02{ makeUnique<RespondToInputEventData>(originalEvent) };
@@ -1136,8 +1172,8 @@ namespace DiscordCoreAPI {
 				dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 				for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 					ActionRowData actionRow{};
-					for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-						ComponentData component = originalEvent.getMessageData().components[x].components[y];
+					for (uint64_t y = 0; y < originalEvent.getMessageData().components.at(x).components.size(); ++y) {
+						ComponentData component = originalEvent.getMessageData().components.at(x).components.at(y);
 						component.disabled		= true;
 						actionRow.components.emplace_back(component);
 					}
@@ -1155,20 +1191,20 @@ namespace DiscordCoreAPI {
 				dataPackage03.buttonId		 = "exit";
 				return dataPackage03;
 
-			} else if (buttonIntData[0].buttonId == "empty" || buttonIntData[0].buttonId == "exit") {
+			} else if (buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
 				UniquePtr<RespondToInputEventData> dataPackage02{ makeUnique<RespondToInputEventData>(originalEvent) };
-				if (buttonIntData[0].buttonId == "empty") {
+				if (buttonIntData.at(0).buttonId == "empty") {
 					*dataPackage02 = originalEvent;
 				} else {
-					interactionData = makeUnique<InteractionData>(buttonIntData[0]);
+					interactionData = makeUnique<InteractionData>(buttonIntData.at(0));
 					*dataPackage02	= RespondToInputEventData{ *interactionData };
 				}
 
 				dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 				for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 					ActionRowData actionRow{};
-					for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-						ComponentData component = originalEvent.getMessageData().components[x].components[y];
+					for (uint64_t y = 0; y < originalEvent.getMessageData().components.at(x).components.size(); ++y) {
+						ComponentData component = originalEvent.getMessageData().components.at(x).components.at(y);
 						component.disabled		= true;
 						actionRow.components.emplace_back(component);
 					}
@@ -1185,23 +1221,23 @@ namespace DiscordCoreAPI {
 				dataPackage03.inputEventData = originalEvent;
 				dataPackage03.buttonId		 = "exit";
 				return dataPackage03;
-			} else if (buttonIntData[0].buttonId == "forwards" || buttonIntData[0].buttonId == "backwards") {
-				if (buttonIntData[0].buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
+			} else if (buttonIntData.at(0).buttonId == "forwards" || buttonIntData.at(0).buttonId == "backwards") {
+				if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
 					newCurrentPageIndex = 0;
-				} else if (buttonIntData[0].buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
+				} else if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
 					++newCurrentPageIndex;
-				} else if (buttonIntData[0].buttonId == "backwards" && (newCurrentPageIndex > 0)) {
+				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
 					--newCurrentPageIndex;
-				} else if (buttonIntData[0].buttonId == "backwards" && (newCurrentPageIndex == 0)) {
+				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
 					newCurrentPageIndex = static_cast<uint32_t>(messageEmbeds.size()) - 1;
 				}
-				interactionData	 = makeUnique<InteractionData>(buttonIntData[0]);
+				interactionData	 = makeUnique<InteractionData>(buttonIntData.at(0));
 				auto dataPackage = RespondToInputEventData{ *interactionData };
 				dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 				for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 					ActionRowData actionRow{};
-					for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-						ComponentData component = originalEvent.getMessageData().components[x].components[y];
+					for (uint64_t y = 0; y < originalEvent.getMessageData().components.at(x).components.size(); ++y) {
+						ComponentData component = originalEvent.getMessageData().components.at(x).components.at(y);
 						component.disabled		= false;
 						actionRow.components.emplace_back(component);
 					}
@@ -1209,19 +1245,19 @@ namespace DiscordCoreAPI {
 				}
 				dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 				InputEvents::respondToInputEventAsync(dataPackage).get();
-			} else if (buttonIntData[0].buttonId == "select") {
+			} else if (buttonIntData.at(0).buttonId == "select") {
 				if (deleteAfter == true) {
 					InputEventData dataPackage03{ originalEvent };
 					InputEvents::deleteInputEventResponseAsync(dataPackage03);
 				} else {
-					UniquePtr<InteractionData> interactionDataNew = makeUnique<InteractionData>(buttonIntData[0]);
+					UniquePtr<InteractionData> interactionDataNew = makeUnique<InteractionData>(buttonIntData.at(0));
 					auto dataPackage							  = RespondToInputEventData{ *interactionDataNew };
 					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 					for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 						ActionRowData actionRow{};
-						for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-							ComponentData component = originalEvent.getMessageData().components[x].components[y];
+						for (uint64_t y = 0; y < originalEvent.getMessageData().components.at(x).components.size(); ++y) {
+							ComponentData component = originalEvent.getMessageData().components.at(x).components.at(y);
 							component.disabled		= true;
 							actionRow.components.emplace_back(component);
 						}
@@ -1231,7 +1267,7 @@ namespace DiscordCoreAPI {
 				}
 				returnData.currentPageIndex = newCurrentPageIndex;
 				returnData.inputEventData	= originalEvent;
-				returnData.buttonId			= buttonIntData[0].buttonId;
+				returnData.buttonId			= buttonIntData.at(0).buttonId;
 				return returnData;
 			}
 		};

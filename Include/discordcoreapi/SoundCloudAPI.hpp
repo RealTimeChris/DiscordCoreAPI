@@ -44,17 +44,21 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			static std::string clientId;
-			static inline std::string_view baseUrl02{ "https://api-v2.soundcloud.com" };
-			static inline std::string_view baseUrl{ "https://soundcloud.com" };
-			static inline std::string_view appVersion{ "1681464840" };
+			inline static constexpr std::string_view baseUrl02{ "https://api-v2.soundcloud.com" };
+			inline static constexpr std::string_view baseUrl{ "https://soundcloud.com" };
+			inline static constexpr std::string_view appVersion{ "1681464840" };
 
 			Song constructDownloadInfo(const Song& songNew);
 
-			Jsonifier::Vector<Song> collectSearchResults(const std::string& string);
+			jsonifier::vector<Song> collectSearchResults(const std::string& string);
 
 			virtual Song collectFinalSong(const Song& songNew);
 
+			Song collectSingleResult(const std::string& string);
+
 			std::string collectClientId();
+
+			virtual ~SoundCloudRequestBuilder() noexcept = default;
 		};
 
 		class DiscordCoreAPI_Dll SoundCloudAPI : public SoundCloudRequestBuilder {
@@ -64,11 +68,13 @@ namespace DiscordCoreAPI {
 			CoRoutine<void, false> downloadAndStreamAudio(const Song songNew, NewThreadAwaiter<void, false> threadHandle = NewThreadAwaiter<void, false>{},
 				uint64_t currentReconnectTries = 0);
 
-			void weFailedToDownloadOrDecode(const Song& songNew, NewThreadAwaiter<void, false> threadHandle, uint64_t currentRetries);
+			jsonifier::vector<Song> searchForSong(const std::string& searchQuery);
+
+			void weFailedToDownloadOrDecode(const Song& songNew);
 
 			Song collectFinalSong(const Song& songNew) override;
 
-			Jsonifier::Vector<Song> searchForSong(const std::string& searchQuery);
+			Song collectSingleResult(const std::string& string);
 
 			bool areWeWorking();
 
@@ -83,7 +89,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct Media {
-			Jsonifier::Vector<Transcoding> transcodings{};
+			jsonifier::vector<Transcoding> transcodings{};
 		};
 
 		struct SecondDownloadUrl {
@@ -101,8 +107,35 @@ namespace DiscordCoreAPI {
 		};
 
 		struct SoundCloudSearchResults {
-			Jsonifier::Vector<RawSoundCloudSong> collection{};
+			jsonifier::vector<RawSoundCloudSong> collection{};
 		};
 
+		struct Visual {
+			std::string visualUrl{};
+			int64_t entryTime{};
+			std::string urn{};
+		};
+
+		struct DataClass {
+			DiscordCoreAPI::DiscordCoreInternal::Media media{};
+			std::string trackAuthorization{};
+			std::string description{};
+			std::string artworkUrl{};
+			std::string avatarUrl{};
+			std::string viewUrl{};
+			std::string title{};
+			int64_t duration{};
+			std::string url{};
+			int64_t id{};
+		};
+
+		struct WelcomeElement {
+			std::string hydratable{};
+			DataClass data{};
+		};
+
+		struct FinalData {
+			jsonifier::vector<WelcomeElement> data{};
+		};
 	};
 }

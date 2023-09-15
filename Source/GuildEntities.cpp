@@ -37,19 +37,19 @@
 #include <discordcoreapi/RoleEntities.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::CreateGuildData> {
+	template<> struct core<DiscordCoreAPI::CreateGuildData> {
 		using ValueType					 = DiscordCoreAPI::CreateGuildData;
-		static constexpr auto parseValue = object("default_message_notifications", &ValueType::defaultMessageNotifications, "explicit_content_filter",
+		static constexpr auto parseValue = createObject("default_message_notifications", &ValueType::defaultMessageNotifications, "explicit_content_filter",
 			&ValueType::explicitContentFilter, "system_channel_flags", &ValueType::systemChannelFlags, "verification_level", &ValueType::verificationLevel, "afk_timeout",
 			&ValueType::afkTimeout, "region", &ValueType::region, "name", &ValueType::name, "icon", "channels", &ValueType::channels, "system_channel_id",
 			&ValueType::systemChannelId, "roles", &ValueType::roles, "afk_channel_id", &ValueType::afkChannelId);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyGuildData> {
+	template<> struct core<DiscordCoreAPI::ModifyGuildData> {
 		using ValueType					 = DiscordCoreAPI::ModifyGuildData;
-		static constexpr auto parseValue = object("default_message_notifications", &ValueType::defaultMessageNotifications, "explicit_content_filter",
+		static constexpr auto parseValue = createObject("default_message_notifications", &ValueType::defaultMessageNotifications, "explicit_content_filter",
 			&ValueType::explicitContentFilter, "system_channel_flags", &ValueType::systemChannelFlags, "verification_level", &ValueType::verificationLevel, "features",
 			&ValueType::features, "public_updates_channel_id", &ValueType::publicUpdatesChannelId, "afk_timeout", &ValueType::afkTimeout, "preferred_locale",
 			&ValueType::preferredLocale, "discovery_splash", &ValueType::discoverySplash, "system_channel_id", &ValueType::systemChannelId, "rules_channel_id",
@@ -57,48 +57,48 @@ namespace Jsonifier {
 			&ValueType::splash, "reason", &ValueType::reason, "owner_id", &ValueType::ownerId, "guild_id", &ValueType::guildId, "icon", &ValueType::icon, "name", &ValueType::name);
 	};
 
-	template<> struct Core<DiscordCoreAPI::CreateGuildBanData> {
+	template<> struct core<DiscordCoreAPI::CreateGuildBanData> {
 		using ValueType = DiscordCoreAPI::CreateGuildBanData;
 		static constexpr auto parseValue =
-			object("delete_message_days", &ValueType::deleteMessageDays, "member", &ValueType::guildMemberId, "reason", &ValueType::reason, "guild_id", &ValueType::guildId);
+			createObject("delete_message_days", &ValueType::deleteMessageDays, "member", &ValueType::guildMemberId, "reason", &ValueType::reason, "guild_id", &ValueType::guildId);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyGuildWelcomeScreenData> {
+	template<> struct core<DiscordCoreAPI::ModifyGuildWelcomeScreenData> {
 		using ValueType					 = DiscordCoreAPI::ModifyGuildWelcomeScreenData;
-		static constexpr auto parseValue = object("welcome_channels", &ValueType::welcomeChannels, "description", &ValueType::description, "guild_id", &ValueType::guildId,
+		static constexpr auto parseValue = createObject("welcome_channels", &ValueType::welcomeChannels, "description", &ValueType::description, "guild_id", &ValueType::guildId,
 			"enabled", &ValueType::enabled, "reason", &ValueType::reason);
 	};
 
-	template<> struct Core<DiscordCoreAPI::GetGuildPruneCountData> {
+	template<> struct core<DiscordCoreAPI::GetGuildPruneCountData> {
 		using ValueType					 = DiscordCoreAPI::GetGuildPruneCountData;
-		static constexpr auto parseValue = object("include_roles", &ValueType::includeRoles, "guild_id", &ValueType::guildId, "days", &ValueType::days);
+		static constexpr auto parseValue = createObject("include_roles", &ValueType::includeRoles, "guild_id", &ValueType::guildId, "days", &ValueType::days);
 	};
 
-	template<> struct Core<DiscordCoreAPI::BeginGuildPruneData> {
+	template<> struct core<DiscordCoreAPI::BeginGuildPruneData> {
 		using ValueType					 = DiscordCoreAPI::BeginGuildPruneData;
-		static constexpr auto parseValue = object("include_roles", &ValueType::includeRoles, "compute_prune_count", &ValueType::computePruneCount, "reason", &ValueType::reason,
-			"guild_id", &ValueType::guildId, "days", &ValueType::days);
+		static constexpr auto parseValue = createObject("include_roles", &ValueType::includeRoles, "compute_prune_count", &ValueType::computePruneCount, "reason",
+			&ValueType::reason, "guild_id", &ValueType::guildId, "days", &ValueType::days);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyGuildTemplateData> {
+	template<> struct core<DiscordCoreAPI::ModifyGuildTemplateData> {
 		using ValueType = DiscordCoreAPI::ModifyGuildTemplateData;
 		static constexpr auto parseValue =
-			object("template_code", &ValueType::templateCode, "description", &ValueType::description, "guild_id", &ValueType::guildId, "name", &ValueType::name);
+			createObject("template_code", &ValueType::templateCode, "description", &ValueType::description, "guild_id", &ValueType::guildId, "name", &ValueType::name);
 	};
 
-	template<> struct Core<DiscordCoreAPI::CreateGuildTemplateData> {
+	template<> struct core<DiscordCoreAPI::CreateGuildTemplateData> {
 		using ValueType					 = DiscordCoreAPI::CreateGuildTemplateData;
-		static constexpr auto parseValue = object("description", &ValueType::description, "guild_id", &ValueType::guildId, "name", &ValueType::name);
+		static constexpr auto parseValue = createObject("description", &ValueType::description, "guild_id", &ValueType::guildId, "name", &ValueType::name);
 	};
 
-	template<> struct Core<DiscordCoreAPI::CreateGuildFromGuildTemplateData> {
+	template<> struct core<DiscordCoreAPI::CreateGuildFromGuildTemplateData> {
 		using ValueType					 = DiscordCoreAPI::CreateGuildFromGuildTemplateData;
-		static constexpr auto parseValue = object("template_code", &ValueType::templateCode, "image_data", &ValueType::imageData, "name", &ValueType::name);
+		static constexpr auto parseValue = createObject("template_code", &ValueType::templateCode, "image_data", &ValueType::imageData, "name", &ValueType::name);
 	};
 
-	template<> struct Core<DiscordCoreAPI::ModifyGuildWidgetData> {
+	template<> struct core<DiscordCoreAPI::ModifyGuildWidgetData> {
 		using ValueType					 = DiscordCoreAPI::ModifyGuildWidgetData;
-		static constexpr auto parseValue = object("widget_data", &ValueType::widgetData, "reason", &ValueType::reason, "guild_id", &ValueType::guildId);
+		static constexpr auto parseValue = createObject("widget_data", &ValueType::widgetData, "reason", &ValueType::reason, "guild_id", &ValueType::guildId);
 	};
 
 
@@ -110,14 +110,25 @@ namespace DiscordCoreAPI {
 		id = newId;
 	}
 
+	GuildCacheData::GuildCacheData(Snowflake newId) {
+		id = newId;
+	}
+
+	DiscordCoreClient* GuildCacheData::getDiscordCoreClient() {
+		return DiscordCoreClient::getInstance();
+	}
+
+	DiscordCoreClient* GuildData::getDiscordCoreClient() {
+		return DiscordCoreClient::getInstance();
+	}
+
 	GuildCacheData& GuildCacheData::operator=(const GuildData& other) {
 		setFlagValue(GuildFlags::Premium_Progress_Bar_Enabled, other.premiumProgressBarEnabled);
 		setFlagValue(GuildFlags::WidgetEnabled, other.widgetEnabled);
 		setFlagValue(GuildFlags::Unavailable, other.unavailable);
 		setFlagValue(GuildFlags::Large, other.large);
 		setFlagValue(GuildFlags::Owner, other.owner);
-		if (other.discordCoreClient) {
-			discordCoreClient = other.discordCoreClient;
+		if (DiscordCoreClient::getInstance()) {
 		}
 		if (other.voiceConnection) {
 			voiceConnection = other.voiceConnection;
@@ -171,7 +182,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	GuildCacheData& GuildCacheData::operator=(GuildData&& other) {
+	GuildCacheData& GuildCacheData::operator=(GuildData&& other) noexcept {
 		setFlagValue(GuildFlags::Premium_Progress_Bar_Enabled, other.premiumProgressBarEnabled);
 		setFlagValue(GuildFlags::WidgetEnabled, other.widgetEnabled);
 		setFlagValue(GuildFlags::Unavailable, other.unavailable);
@@ -179,9 +190,6 @@ namespace DiscordCoreAPI {
 		setFlagValue(GuildFlags::Owner, other.owner);
 		if (other.discoverySplash != "") {
 			discoverySplash = std::move(other.discoverySplash);
-		}
-		if (other.discordCoreClient) {
-			discordCoreClient = other.discordCoreClient;
 		}
 		if (other.voiceConnection) {
 			voiceConnection = other.voiceConnection;
@@ -230,8 +238,7 @@ namespace DiscordCoreAPI {
 
 	GuildCacheData::operator GuildData() {
 		GuildData returnData{};
-		returnData.discordCoreClient = discordCoreClient;
-		returnData.voiceConnection	 = voiceConnection;
+		returnData.voiceConnection = voiceConnection;
 		for (auto& value: channels) {
 			returnData.channels.emplace_back(Channels::getCachedChannel({ .channelId = value }));
 		}
@@ -242,27 +249,29 @@ namespace DiscordCoreAPI {
 			returnData.roles.emplace_back(Roles::getCachedRole({ .guildId = id, .roleId = value }));
 		}
 		for (auto& value: emoji) {
-			returnData.emoji.emplace_back(std::move(value));
+			EmojiData newValue{};
+			newValue.id = value;
+			returnData.emoji.emplace_back(std::move(newValue));
 		}
 		returnData.premiumProgressBarEnabled = getFlagValue(GuildFlags::Premium_Progress_Bar_Enabled);
 		returnData.widgetEnabled			 = getFlagValue(GuildFlags::WidgetEnabled);
 		returnData.unavailable				 = getFlagValue(GuildFlags::Unavailable);
-		returnData.name						 = std::move(name.operator std::string());
 		returnData.large					 = getFlagValue(GuildFlags::Large);
 		returnData.owner					 = getFlagValue(GuildFlags::Owner);
+		returnData.name						 = name.operator std::string();
 		returnData.discoverySplash			 = discoverySplash;
-		returnData.discovery				 = std::move(discovery);
-		returnData.ownerId					 = std::move(ownerId);
-		returnData.banner					 = std::move(banner);
-		returnData.splash					 = std::move(splash);
 		returnData.memberCount				 = memberCount;
-		returnData.icon						 = std::move(icon);
+		returnData.discovery				 = discovery;
+		returnData.ownerId					 = ownerId;
+		returnData.banner					 = banner;
+		returnData.splash					 = splash;
 		returnData.flags					 = flags;
+		returnData.icon						 = icon;
 		returnData.id						 = id;
 		return returnData;
 	}
 
-	GuildCacheData::GuildCacheData(GuildData&& other) {
+	GuildCacheData::GuildCacheData(GuildData&& other) noexcept {
 		*this = std::move(other);
 	}
 
@@ -286,11 +295,10 @@ namespace DiscordCoreAPI {
 		name	= dataPackage.name;
 	}
 
-	void Guilds::initialize(DiscordCoreInternal::HttpsClient* client, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
+	void Guilds::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
 		Guilds::doWeCacheGuildsBool = configManagerNew->doWeCacheGuilds();
-		Guilds::discordCoreClient	= discordCoreClientNew;
 		Guilds::httpsClient			= client;
-		stopWatchNew.resetTimer();
+		stopWatchNew.reset();
 	}
 
 	CoRoutine<AuditLogData> Guilds::getGuildAuditLogsAsync(GetGuildAuditLogsData dataPackage) {
@@ -340,14 +348,12 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Guilds::createGuildAsync()";
 		GuildData returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
-		returnData.discordCoreClient = Guilds::discordCoreClient;
 		co_return returnData;
 	}
 
-	Jsonifier::Vector<GuildData> Guilds::getAllGuildsAsync() {
-		Jsonifier::Vector<GuildData> returnData{};
+	jsonifier::vector<GuildData> Guilds::getAllGuildsAsync() {
+		jsonifier::vector<GuildData> returnData{};
 		for (auto& value: Guilds::cache) {
-			value->discordCoreClient = Guilds::discordCoreClient;
 			returnData.emplace_back(*value);
 		}
 		return returnData;
@@ -360,7 +366,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "?with_counts=true";
 		workload.callStack	   = "Guilds::getGuildAsync()";
 		GuildData data{ dataPackage.guildId };
-		data.discordCoreClient = Guilds::discordCoreClient;
+		;
 		if (cache.contains(data.id)) {
 			data = cache[data.id];
 		}
@@ -372,14 +378,12 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildCacheData Guilds::getCachedGuild(GetGuildData dataPackage) {
-		GuildCacheData data{};
-		data.id = dataPackage.guildId;
-		if (!Guilds::cache.contains(data.id)) {
-			auto guild				= Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
-			guild.discordCoreClient = Guilds::discordCoreClient;
-			return guild;
-		} else {
+		if (Guilds::cache.contains(dataPackage.guildId)) {
 			return cache[dataPackage.guildId];
+		} else {
+			GuildCacheData newData{};
+			newData.id = dataPackage.guildId;
+			return newData;
 		}
 	}
 
@@ -405,7 +409,6 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		GuildData data{ dataPackage.guildId };
-		data.discordCoreClient = Guilds::discordCoreClient;
 		if (cache.contains(data.id)) {
 			data = cache[data.id];
 		}
@@ -426,9 +429,9 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<Jsonifier::Vector<BanData>> Guilds::getGuildBansAsync(GetGuildBansData dataPackage) {
+	CoRoutine<jsonifier::vector<BanData>> Guilds::getGuildBansAsync(GetGuildBansData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Bans };
-		co_await NewThreadAwaitable<Jsonifier::Vector<BanData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<BanData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/bans";
 		if (dataPackage.after != 0) {
@@ -448,7 +451,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Guilds::getGuildBansAsync()";
-		Jsonifier::Vector<BanData> returnData{};
+		jsonifier::vector<BanData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -502,7 +505,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.includeRoles.size() > 0) {
 				workload.relativePath += "&include_roles=";
 				for (uint64_t x = 0; x < dataPackage.includeRoles.size(); ++x) {
-					workload.relativePath += dataPackage.includeRoles[x];
+					workload.relativePath += dataPackage.includeRoles.at(x);
 					if (x < dataPackage.includeRoles.size() - 1) {
 						workload.relativePath += ",";
 					}
@@ -511,7 +514,7 @@ namespace DiscordCoreAPI {
 		} else if (dataPackage.includeRoles.size() > 0) {
 			workload.relativePath += "?include_roles=";
 			for (uint64_t x = 0; x < dataPackage.includeRoles.size(); ++x) {
-				workload.relativePath += dataPackage.includeRoles[x];
+				workload.relativePath += dataPackage.includeRoles.at(x);
 				if (x < dataPackage.includeRoles.size() - 1) {
 					workload.relativePath += ",";
 				}
@@ -537,35 +540,35 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<Jsonifier::Vector<VoiceRegionData>> Guilds::getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage) {
+	CoRoutine<jsonifier::vector<VoiceRegionData>> Guilds::getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Voice_Regions };
-		co_await NewThreadAwaitable<Jsonifier::Vector<VoiceRegionData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<VoiceRegionData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/regions";
 		workload.callStack	   = "Guilds::getGuildVoiceRegionsAsync()";
-		Jsonifier::Vector<VoiceRegionData> returnData{};
+		jsonifier::vector<VoiceRegionData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<Jsonifier::Vector<InviteData>> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
+	CoRoutine<jsonifier::vector<InviteData>> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Invites };
-		co_await NewThreadAwaitable<Jsonifier::Vector<InviteData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<InviteData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/invites";
 		workload.callStack	   = "Guilds::getGuildInvitesAsync()";
-		Jsonifier::Vector<InviteData> returnData{};
+		jsonifier::vector<InviteData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<Jsonifier::Vector<IntegrationData>> Guilds::getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage) {
+	CoRoutine<jsonifier::vector<IntegrationData>> Guilds::getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Integrations };
-		co_await NewThreadAwaitable<Jsonifier::Vector<IntegrationData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<IntegrationData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/integrations";
 		workload.callStack	   = "Guilds::getGuildIntegrationsAsync()";
-		Jsonifier::Vector<IntegrationData> returnData{};
+		jsonifier::vector<IntegrationData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -710,17 +713,16 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Guilds::createGuildFromGuildTemplateAsync()";
 		GuildData returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
-		returnData.discordCoreClient = Guilds::discordCoreClient;
 		co_return returnData;
 	}
 
-	CoRoutine<Jsonifier::Vector<GuildTemplateData>> Guilds::getGuildTemplatesAsync(GetGuildTemplatesData dataPackage) {
+	CoRoutine<jsonifier::vector<GuildTemplateData>> Guilds::getGuildTemplatesAsync(GetGuildTemplatesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Templates };
-		co_await NewThreadAwaitable<Jsonifier::Vector<GuildTemplateData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<GuildTemplateData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/templates";
 		workload.callStack	   = "Guilds::getGuildTemplatesAsync()";
-		Jsonifier::Vector<GuildTemplateData> returnData{};
+		jsonifier::vector<GuildTemplateData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -811,9 +813,9 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<Jsonifier::Vector<GuildData>> Guilds::getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage) {
+	CoRoutine<jsonifier::vector<GuildData>> Guilds::getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Current_User_Guilds };
-		co_await NewThreadAwaitable<Jsonifier::Vector<GuildData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<GuildData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/users/@me/guilds";
 		if (dataPackage.after != 0) {
@@ -833,11 +835,8 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Users::getCurrentUserGuildsAsync()";
-		Jsonifier::Vector<GuildData> returnData{};
+		jsonifier::vector<GuildData> returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
-		for (auto& value: returnData) {
-			value.discordCoreClient = Guilds::discordCoreClient;
-		}
 		co_return returnData;
 	}
 
@@ -865,7 +864,6 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{};
 	ObjectCache<GuildCacheData> Guilds::cache{};
-	DiscordCoreClient* Guilds::discordCoreClient{};
 	bool Guilds::doWeCacheGuildsBool{};
 
 }

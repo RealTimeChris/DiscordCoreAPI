@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	template<JsonifierInternal::StringT ValueType> struct KeyHasher<ValueType> {
+	template<jsonifier_internal::string_t ValueType> struct KeyHasher<ValueType> {
 		inline uint64_t operator()(const ValueType& other) const {
 			return internalHashFunction(other.data(), other.size());
 		}
@@ -151,8 +151,8 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	template<> struct KeyHasher<Jsonifier::Vector<std::string>> {
-		inline uint64_t operator()(const Jsonifier::Vector<std::string>& data) const {
+	template<> struct KeyHasher<jsonifier::vector<std::string>> {
+		inline uint64_t operator()(const jsonifier::vector<std::string>& data) const {
 			std::string newString{};
 			for (auto& value: data) {
 				newString.append(value);
@@ -167,7 +167,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	template<JsonifierInternal::UniquePtrT ValueType> struct KeyHasher<ValueType> {
+	template<jsonifier_internal::unique_ptr_t ValueType> struct KeyHasher<ValueType> {
 		inline uint64_t operator()(const ValueType& other) const {
 			return KeyHasher<typename ValueType::element_type>{}.operator()(*other);
 		}
@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 			return KeyHasher<char[size]>{}.operator()(other);
 		}
 
-		template<JsonifierInternal::StringT ValueType> uint64_t operator()(const ValueType& other) const {
+		template<jsonifier_internal::string_t ValueType> uint64_t operator()(const ValueType& other) const {
 			return KeyHasher<ValueType>{}.operator()(other);
 		}
 
@@ -202,12 +202,12 @@ namespace DiscordCoreAPI {
 			return KeyHasher<ValueType>{}.operator()(other);
 		}
 
-		template<JsonifierInternal::UniquePtrT ValueType> uint64_t operator()(const ValueType& other) const {
+		template<jsonifier_internal::unique_ptr_t ValueType> uint64_t operator()(const ValueType& other) const {
 			return KeyHasher<ValueType>{}.operator()(other);
 		}
 
-		uint64_t operator()(const Jsonifier::Vector<std::string>& other) const {
-			return KeyHasher<Jsonifier::Vector<std::string>>{}.operator()(other);
+		uint64_t operator()(const jsonifier::vector<std::string>& other) const {
+			return KeyHasher<jsonifier::vector<std::string>>{}.operator()(other);
 		}
 	};
 
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 			return KeyHasher<std::remove_cvref_t<KeyType>>{}.operator()(key) & (static_cast<const ValueType*>(this)->capacityVal - 1);
 		}
 
-		static inline int8_t log2(size_t value) {
+		inline static int8_t log2(uint64_t value) {
 			static constexpr int8_t table[64] = { 63, 0, 58, 1, 59, 47, 53, 2, 60, 39, 48, 27, 54, 33, 42, 3, 61, 51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4, 62, 57,
 				46, 52, 38, 26, 32, 41, 50, 36, 17, 19, 29, 10, 13, 21, 56, 45, 25, 31, 35, 16, 9, 12, 44, 24, 15, 8, 23, 7, 6, 5 };
 			value |= value >> 1;
@@ -230,7 +230,7 @@ namespace DiscordCoreAPI {
 			return table[((value - (value >> 1)) * 0x07EDD5E59A4E28C2) >> 58];
 		}
 
-		static inline size_t nextPowerOfTwo(size_t size) {
+		inline static uint64_t nextPowerOfTwo(uint64_t size) {
 			--size;
 			size |= size >> 1;
 			size |= size >> 2;
@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
 			return size;
 		}
 
-		static int8_t computeMaxLookAheadDistance(size_t num_buckets) {
+		static int8_t computeMaxLookAheadDistance(uint64_t num_buckets) {
 			int8_t desired = log2(num_buckets);
 			return std::max(minLookups, desired);
 		}
@@ -290,6 +290,25 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		inline HashIterator& operator--() {
+			skipEmptySlotsRev();
+			return *this;
+		}
+
+		inline HashIterator& operator-(size_type amountToReverse) {
+			for (size_type x = 0; x < amountToReverse; ++x) {
+				skipEmptySlotsRev();
+			}
+			return *this;
+		}
+
+		inline HashIterator& operator+(size_type amountToAdd) {
+			for (size_type x = 0; x < amountToAdd; ++x) {
+				skipEmptySlots();
+			}
+			return *this;
+		}
+
 		inline pointer getRawPtr() {
 			return &value->data[currentIndex];
 		}
@@ -306,17 +325,26 @@ namespace DiscordCoreAPI {
 			return value->data[currentIndex];
 		}
 
-		inline ~HashIterator(){};
-
 	  protected:
 		pointer_internal value{};
 		size_type currentIndex{};
 
 		void skipEmptySlots() {
-			++currentIndex;
-			while (value && value->sentinelVector[currentIndex] == 0) {
+			if (currentIndex < value->sentinelVector.size()) {
 				++currentIndex;
-			};
+				while (value && value->sentinelVector[currentIndex] == 0 && currentIndex < value->sentinelVector.size()) {
+					++currentIndex;
+				};
+			}
+		}
+
+		void skipEmptySlotsRev() {
+			if (static_cast<int64_t>(currentIndex) > 0) {
+				--currentIndex;
+				while (value && value->sentinelVector[currentIndex] == 0 && static_cast<int64_t>(currentIndex) > 0) {
+					--currentIndex;
+				};
+			}
 		}
 	};
 }

@@ -34,21 +34,21 @@ namespace DiscordCoreAPI {
 				}
 				EmbedData messageEmbed;
 				messageEmbed.setAuthor(argsNew.getUserData().userName, argsNew.getUserData().getUserImageUrl(UserImageTypes::Avatar));
-				messageEmbed.setImage(argsNew.discordCoreClient->getBotUser().getUserImageUrl(UserImageTypes::Avatar));
+				messageEmbed.setImage(DiscordCoreClient::getInstance()->getBotUser().getUserImageUrl(UserImageTypes::Avatar));
 				messageEmbed.setColor("FEFEFE");
 				messageEmbed.setTitle("__**Bot Info:**__");
 				messageEmbed.setTimeStamp(getTimeAndDate());
 				messageEmbed.addField("__Bot Name:__",
-					std::string{ argsNew.discordCoreClient->getBotUser().userName } + "#" +
-						std::string{ argsNew.discordCoreClient->getBotUser().discriminator },
+					std::string{ DiscordCoreClient::getInstance()->getBotUser().userName } + "#" +
+						std::string{ DiscordCoreClient::getInstance()->getBotUser().discriminator },
 					true);
-				messageEmbed.addField("__Bot ID:__", std::to_string(argsNew.discordCoreClient->getBotUser().id.operator const uint64_t&()), true);
+				messageEmbed.addField("__Bot ID:__", std::to_string(DiscordCoreClient::getInstance()->getBotUser().id.operator const uint64_t&()), true);
 				messageEmbed.addField("__Guild Count:__", std::to_string(guilds.size()), true);
-				messageEmbed.addField("__Created At:__", argsNew.discordCoreClient->getBotUser().getCreatedAtTimeStamp(), true);
+				messageEmbed.addField("__Created At:__", DiscordCoreClient::getInstance()->getBotUser().getCreatedAtTimeStamp(), true);
 				messageEmbed.addField("__Serving Users:__", std::to_string(userCount), true);
 				messageEmbed.addField("__Running On:__", "[DiscordCoreAPI Bot Library](https://discordcoreapi.com)", true);
 				messageEmbed.addField("__Created By:__", "<@931311002702737418>", true);
-				auto timePassed = argsNew.discordCoreClient->getTotalUpTime().count() > 0 ? argsNew.discordCoreClient->getTotalUpTime().count() : 0;
+				auto timePassed = DiscordCoreClient::getInstance()->getTotalUpTime().count() > 0 ? DiscordCoreClient::getInstance()->getTotalUpTime().count() : 0;
 				int64_t millisecondsPerSecond{ 1000 };
 				int64_t millisecondsPerMinute{ millisecondsPerSecond * 60 };
 				int64_t millisecondsPerHour{ millisecondsPerMinute * 60 };

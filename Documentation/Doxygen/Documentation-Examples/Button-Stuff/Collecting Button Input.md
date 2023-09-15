@@ -6,7 +6,7 @@ Collecting Button Input {#collectingbuttoninput}
 `maxWaitTimeInMsNew` = The maximum number of milliseconds that the collector will wait for button presses.   
 `maxNumberOfPressesNew` = The maximum number of button presses that the collector will collect.   
 `targetUser` = The target user, if `getButtonDataForAllNew` is disabled.
-- Collect a result of type `Jsonifier::Vector<ButtonResponseData>` and deal with the button responses as you see fit! Keep in mind that you could set up a voting message by using `getButtonDataForAllNew` and having multiple presses allowed.
+- Collect a result of type `jsonifier::vector<ButtonResponseData>` and deal with the button responses as you see fit! Keep in mind that you could set up a voting message by using `getButtonDataForAllNew` and having multiple presses allowed.
 ```cpp
 /// Test.hpp-Header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

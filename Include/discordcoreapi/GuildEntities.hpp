@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::Shortest };///< Afk timeout in seconds.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		Jsonifier::Vector<ChannelData> channels{};///< Array of partial ChannelData objects.
+		jsonifier::vector<ChannelData> channels{};///< Array of partial ChannelData objects.
 		int32_t systemChannelFlags{};///< System ChannelData flags.
 		Snowflake systemChannelId{};///< The id of the ChannelData where Guild notices such as welcome messages and boost events are posted.
 		int32_t verificationLevel{};///< Verification level.
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 		std::string region{};///< The region that the servers are in.
 		std::string icon{};///< base64 128x128 image for the Guild icon.
 		std::string name{};///< The name of the new Guild.
-		Jsonifier::Vector<RoleData> roles{};///< Array of RoleData objects.
+		jsonifier::vector<RoleData> roles{};///< Array of RoleData objects.
 	};
 
 	/// @brief For getting a Guild from the library's cache or a Discord server.
@@ -116,14 +116,14 @@ namespace DiscordCoreAPI {
 
 	/// @brief For collecting the Guild prune count.
 	struct GetGuildPruneCountData {
-		Jsonifier::Vector<Snowflake> includeRoles{};///< Roles to be included in the prune.
+		jsonifier::vector<Snowflake> includeRoles{};///< Roles to be included in the prune.
 		Snowflake guildId{};///< The Guild to be pruned.
 		int32_t days{};///< The number of days beyond which to prune the user's for inactivity.
 	};
 
 	/// @brief For pruning a number of GuildMembers from the Guild.
 	struct BeginGuildPruneData {
-		Jsonifier::Vector<Snowflake> includeRoles{};/// Roles to be included in the prune.
+		jsonifier::vector<Snowflake> includeRoles{};/// Roles to be included in the prune.
 		bool computePruneCount{};/// Whether 'pruned' is returned, discouraged for large guilds.
 		std::string reason{};///< Reason for pruning the GuildMembers.
 		Snowflake guildId{};///< Guild within which to perform the prune.
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For modifying a Guild's welcome screen.
 	struct ModifyGuildWelcomeScreenData {
-		Jsonifier::Vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
+		jsonifier::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
 		std::string description{};///< The description of the welcome screen.
 		std::string reason{};///< The reason for modifying the welcome screen.
 		Snowflake guildId{};///< The Guild for which to modify the welcome screen of.
@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		SystemChannelFlags systemChannelFlags{};///< System ChannelData flags.
 		VerificationLevel verificationLevel{};///< Verification level.
-		Jsonifier::Vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
+		jsonifier::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
 		Snowflake publicUpdatesChannelId{};///< The id of the ChannelData where admins and moderators of Community guilds receive notices from Discord.
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
 		bool premiumProgressBarEnabled{};///< Whether or not the progress bar is enabled.
@@ -303,7 +303,7 @@ namespace DiscordCoreAPI {
 	/// @brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient* client, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManager);
+		static void initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManager);
 
 		/// @brief Gets an audit log from the Discord servers.
 		/// @param dataPackage A GetGuildAuditLogsData structure.
@@ -316,8 +316,8 @@ namespace DiscordCoreAPI {
 		static CoRoutine<GuildData> createGuildAsync(CreateGuildData dataPackage);
 
 		/// @brief Returns all of the Guilds that the current bot is in.
-		/// @returns A CoRoutine containing a Jsonifier::Vector<GuildData>.
-		static Jsonifier::Vector<GuildData> getAllGuildsAsync();
+		/// @returns A CoRoutine containing a jsonifier::vector<GuildData>.
+		static jsonifier::vector<GuildData> getAllGuildsAsync();
 
 		/// @brief Collects a Guild from the Discord servers.
 		/// @param dataPackage A GetGuildData structure.
@@ -347,7 +347,7 @@ namespace DiscordCoreAPI {
 		/// @brief Collects a list of Bans from a chosen Guild.
 		/// @param dataPackage A GetGuildBansData structure.
 		/// @returns A CoRoutine containing a BanDataVector.
-		static CoRoutine<Jsonifier::Vector<BanData>> getGuildBansAsync(GetGuildBansData dataPackage);
+		static CoRoutine<jsonifier::vector<BanData>> getGuildBansAsync(GetGuildBansData dataPackage);
 
 		/// @brief Collects a single Ban from a chosen Guild.
 		/// @param dataPackage A GetGuildBanData structure.
@@ -377,17 +377,17 @@ namespace DiscordCoreAPI {
 		/// @brief Gets the list of voice regions for a particular server.
 		/// @param dataPackage A GetGuildVoiceRegionsData structure.
 		/// @returns A CoRoutine containing a VoiceRegionDataVector.
-		static CoRoutine<Jsonifier::Vector<VoiceRegionData>> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);
+		static CoRoutine<jsonifier::vector<VoiceRegionData>> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);
 
 		/// @brief Gets multiple invites from the Discord servers.
 		/// @param dataPackage A GetGuildInvitesData structure.
-		/// @returns A CoRoutine containing a Jsonifier::Vector<InviteData>.
-		static CoRoutine<Jsonifier::Vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
+		/// @returns A CoRoutine containing a jsonifier::vector<InviteData>.
+		static CoRoutine<jsonifier::vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
 
 		/// @brief Gets the list of Guild integrations for a particular server.
 		/// @param dataPackage A GetGuildIntegrationsData structure.
-		/// @returns A CoRoutine containing a Jsonifier::Vector<IntegrationData>.
-		static CoRoutine<Jsonifier::Vector<IntegrationData>> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
+		/// @returns A CoRoutine containing a jsonifier::vector<IntegrationData>.
+		static CoRoutine<jsonifier::vector<IntegrationData>> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
 
 		/// @brief Deletes an integration from a Guild.
 		/// @param dataPackage A DeleteGuildIntegrationData structure.
@@ -442,7 +442,7 @@ namespace DiscordCoreAPI {
 		/// @brief Collects a list of Guild Templates from a chosen Guild.
 		/// @param dataPackage A GetGuildTemplatesData structure.
 		/// @returns A CoRoutine containing a GuiildTemplateDataVector.
-		static CoRoutine<Jsonifier::Vector<GuildTemplateData>> getGuildTemplatesAsync(GetGuildTemplatesData dataPackage);
+		static CoRoutine<jsonifier::vector<GuildTemplateData>> getGuildTemplatesAsync(GetGuildTemplatesData dataPackage);
 
 		/// @brief Creates a Guild Template.
 		/// @param dataPackage A CreateGuildTemplateData structure.
@@ -477,21 +477,21 @@ namespace DiscordCoreAPI {
 		/// @brief Collects a list of Guilds that the Bot is in.
 		/// @param dataPackage A GetCurrentUserGuildsData structure.
 		/// @returns A CoRoutine containing a GuildVector.
-		static CoRoutine<Jsonifier::Vector<GuildData>> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
+		static CoRoutine<jsonifier::vector<GuildData>> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
 
 		/// @brief Removes the bot from a chosen Guild.
 		/// @param dataPackage A LeaveGuildData structure.
 		/// @returns A CoRoutine containing void.
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
-		template<typename GuildType> static inline void insertGuild(GuildType&& guild) {
+		template<typename GuildType> inline static void insertGuild(GuildType&& guild) {
 			if (doWeCacheGuildsBool) {
 				if (guild.id == 0) {
 					throw DCAException{ "Sorry, but there was no id set for that guild." };
 				}
 				cache.emplace(std::forward<GuildType>(guild));
 				if (cache.count() % 1000 == 0) {
-					std::cout << "GUILD COUNT: " << cache.count() << ", AFTER: " << stopWatchNew.totalTimePassed().count() << std::endl;
+					std::cout << "GUILD COUNT: " << cache.count() << ", AFTER: " << stopWatchNew.totalTimeElapsed().count() << std::endl;
 				}
 			}
 		}
@@ -505,7 +505,6 @@ namespace DiscordCoreAPI {
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<GuildCacheData> cache;
-		static DiscordCoreClient* discordCoreClient;
 		static bool doWeCacheGuildsBool;
 	};
 	/**@}*/

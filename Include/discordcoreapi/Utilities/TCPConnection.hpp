@@ -44,8 +44,8 @@
 	#define connect(x, y, z) WSAConnect(x, y, z, nullptr, nullptr, nullptr, nullptr)
 	#ifdef errno
 		#undef errno
-		#define errno WSAGetLastError()
 	#endif
+	#define errno WSAGetLastError()
 	#ifdef EWOULDBLOCK
 		#undef EWOULDBLOCK
 		#define EWOULDBLOCK WSAEWOULDBLOCK
@@ -84,6 +84,7 @@ using SOCKET = int32_t;
 #ifndef INVALID_SOCKET
 	#define INVALID_SOCKET SOCKET(~0)
 #endif
+
 namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
@@ -99,29 +100,33 @@ namespace DiscordCoreAPI {
 			SOCKET_Error	 = 7
 		};
 
-		inline std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) {
+		inline jsonifier::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) {
 			std::stringstream stream{};
 			stream << errorPosition << " Error: ";
 			if (ssl) {
-				stream << ERR_error_string(SSL_get_error(ssl, errorValue), nullptr) << ", " << ERR_error_string(ERR_get_error(), nullptr);
+				stream << ERR_error_string(static_cast<unsigned long>(SSL_get_error(ssl, errorValue)), nullptr) << ", " << ERR_error_string(ERR_get_error(), nullptr);
 			} else {
 				stream << ERR_error_string(ERR_get_error(), nullptr);
 			}
-			return stream.str();
+			return jsonifier::string{ stream.str() };
 		}
 
-		inline std::string reportError(const std::string& errorPosition) {
+		inline jsonifier::string reportError(const std::string& errorPosition) {
 			std::stringstream stream{};
 			stream << errorPosition << " Error: ";
 #ifdef _WIN32
-			char string[1024]{};
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string,
-				static_cast<DWORD>(std::size(string)), nullptr);
+		#ifdef UNICODE
+			UniquePtr<wchar_t[]> string{ makeUnique<wchar_t[]>(1024) };
+		#else
+			UniquePtr<char[]> string{ makeUnique<char[]>(1024) };
+		#endif
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+				static_cast<LPTSTR>(string.get()), 1024, nullptr);
 			stream << WSAGetLastError() << ", " << string;
 #else
 			stream << strerror(errno);
 #endif
-			return stream.str();
+			return jsonifier::string{ stream.str() };
 		}
 
 #ifdef _WIN32
@@ -136,7 +141,7 @@ namespace DiscordCoreAPI {
 			inline WSADataWrapper() {
 				auto returnData = WSAStartup(MAKEWORD(2, 2), ptr.get());
 				if (returnData) {
-					MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("WSADataWrapper::WSADataWrapper()"));
+					MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("WSADataWrapper::WSADataWrapper()").data());
 				}
 			}
 
@@ -146,8 +151,8 @@ namespace DiscordCoreAPI {
 #endif
 
 		struct PollFDWrapper {
-			Jsonifier::Vector<uint64_t> indices{};
-			Jsonifier::Vector<pollfd> polls{};
+			jsonifier::vector<uint64_t> indices{};
+			jsonifier::vector<pollfd> polls{};
 		};
 
 		struct SSL_CTXWrapper {
@@ -189,13 +194,6 @@ namespace DiscordCoreAPI {
 
 			inline SSLWrapper& operator=(SSLWrapper&&) = default;
 			inline SSLWrapper(SSLWrapper&&)			   = default;
-
-			inline SSLWrapper& operator=(std::nullptr_t other) {
-				if (ptr.operator bool()) {
-					ptr.reset(other);
-				}
-				return *this;
-			}
 
 			inline SSLWrapper& operator=(SSL* other) {
 				ptr.reset(other);
@@ -278,10 +276,10 @@ namespace DiscordCoreAPI {
 
 		class SSLContextHolder {
 		  public:
-			static inline SSL_CTXWrapper context{};
-			static inline std::mutex accessMutex{};
+			inline static SSL_CTXWrapper context{};
+			inline static std::mutex accessMutex{};
 
-			static inline bool initialize() {
+			inline static bool initialize() {
 				if (SSLContextHolder::context = SSL_CTX_new(TLS_client_method()); !SSLContextHolder::context) {
 					return false;
 				}
@@ -316,7 +314,7 @@ namespace DiscordCoreAPI {
 				*this = std::move(other);
 			}
 
-			inline void writeData(std::string_view dataToWrite, bool priority) {
+			template<typename ValueTypeNew> inline void writeData(std::basic_string_view<ValueTypeNew> dataToWrite, bool priority) {
 				if (static_cast<ValueType*>(this)->areWeStillConnected()) {
 					if (dataToWrite.size() > 0 && static_cast<ValueType*>(this)->ssl) {
 						if (priority && dataToWrite.size() < maxBufferSize) {
@@ -355,8 +353,8 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			const uint64_t maxBufferSize{ (1024 * 16) };
+			RingBuffer<uint8_t, 16> outputBuffer{};
 			RingBuffer<uint8_t, 64> inputBuffer{};
-			RingBuffer<char, 16> outputBuffer{};
 			int64_t bytesRead{};
 
 			inline SSLDataInterface() = default;
@@ -436,7 +434,7 @@ namespace DiscordCoreAPI {
 				}
 				lock.unlock();
 
-				if (auto result{ SSL_set_fd(ssl, socket) }; result != 1) {
+				if (auto result{ SSL_set_fd(ssl, static_cast<int32_t>(socket)) }; result != 1) {
 					MessagePrinter::printError<PrintMessageType::WebSocket>(
 						reportSSLError("TCPConnection::connect::SSL_set_fd(), to: " + baseUrlNew) + "\n" + reportError("TCPConnection::connect::SSL_set_fd(), to: " + baseUrlNew));
 					currentStatus = ConnectionStatus::CONNECTION_Error;
@@ -491,9 +489,13 @@ namespace DiscordCoreAPI {
 				};
 				pollfd readWriteSet{};
 				readWriteSet.fd = static_cast<SOCKET>(socket);
-				if ((static_cast<ValueType*>(this)->outputBuffer.getUsedSpace() > 0 || writeWantWrite || readWantWrite) && !readWantRead && !writeWantRead) {
+				if (writeWantRead || readWantRead) {
+					readWriteSet.events = POLLIN;
+				} else if (writeWantWrite || readWantWrite) {
+					readWriteSet.events = POLLOUT;
+				} else if (static_cast<ValueType*>(this)->outputBuffer.getUsedSpace() > 0) {
 					readWriteSet.events = POLLIN | POLLOUT;
-				} else if (!writeWantWrite && !readWantWrite) {
+				} else {
 					readWriteSet.events = POLLIN;
 				}
 				if (auto returnValue = poll(&readWriteSet, 1, waitTimeInMs); returnValue == SOCKET_ERROR) {
@@ -640,16 +642,20 @@ namespace DiscordCoreAPI {
 				return true;
 			}
 
-			template<typename ValueType2> static inline UnorderedMap<uint64_t, ValueType2*> processIO(UnorderedMap<uint64_t, ValueType2*>& shardMap) {
+			template<typename ValueType2> inline static UnorderedMap<uint64_t, ValueType2*> processIO(UnorderedMap<uint64_t, ValueType2*>& shardMap) {
 				UnorderedMap<uint64_t, ValueType2*> returnData{};
 				PollFDWrapper readWriteSet{};
 				for (auto& [key, value]: shardMap) {
 					if (value->areWeStillConnected()) {
 						pollfd fdSet{};
 						fdSet.fd = static_cast<SOCKET>(value->socket);
-						if ((value->outputBuffer.getUsedSpace() > 0 || value->writeWantWrite || value->readWantWrite) && !value->readWantRead && !value->writeWantRead) {
+						if (value->writeWantRead || value->readWantRead) {
+							fdSet.events = POLLIN;
+						} else if (value->writeWantWrite || value->readWantWrite) {
+							fdSet.events = POLLOUT;
+						} else if ((value->outputBuffer.getUsedSpace() > 0)) {
 							fdSet.events = POLLIN | POLLOUT;
-						} else if (!value->writeWantWrite && !value->readWantWrite) {
+						} else {
 							fdSet.events = POLLIN;
 						}
 						readWriteSet.indices.emplace_back(key);

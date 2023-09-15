@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For adding a new GuildMemberData to a chosen Guild.
 	struct AddGuildMemberData {
-		Jsonifier::Vector<Snowflake> roles{};///< Array of RoleData ids the member is assigned.
+		jsonifier::vector<Snowflake> roles{};///< Array of RoleData ids the member is assigned.
 		std::string accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
 		Snowflake guildId{};///< The Guild to add the new GuildMemberData to.
 		Snowflake userId{};///< The UserData id of the user you wish to add.
@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 	/// @brief For modifying a GuildMember's values.
 	struct ModifyGuildMemberData {
 		std::string communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		Jsonifier::Vector<Snowflake> roleIds{};///< A collection of RoleData id's to be applied to them.
+		jsonifier::vector<Snowflake> roleIds{};///< A collection of RoleData id's to be applied to them.
 		Snowflake newVoiceChannelId{};///< The new voice ChannelData to move them into.
 		Snowflake currentChannelId{};///< The current voice ChannelData, if applicaple.
 		Snowflake guildMemberId{};///< The user id of the desired Guild memeber.
@@ -140,12 +140,12 @@ namespace DiscordCoreAPI {
 		/// @brief Lists all of the GuildMembers of a chosen Guild.
 		/// @param dataPackage A ListGuildMembersData structure.
 		/// @return A CoRoutine containing a vector<GuildMembers>.
-		static CoRoutine<Jsonifier::Vector<GuildMemberData>> listGuildMembersAsync(ListGuildMembersData dataPackage);
+		static CoRoutine<jsonifier::vector<GuildMemberData>> listGuildMembersAsync(ListGuildMembersData dataPackage);
 
 		/// @brief Searches for a list of GuildMembers of a chosen Guild.
 		/// @param dataPackage A SearchGuildMembersData structure.
 		/// @return A CoRoutine containing a vector<GuildMembers>.
-		static CoRoutine<Jsonifier::Vector<GuildMemberData>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
+		static CoRoutine<jsonifier::vector<GuildMemberData>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
 
 		/// @brief Adds a GuildMember to a chosen Guild.
 		/// @param dataPackage An AddGuildMemberData structure.
@@ -172,14 +172,16 @@ namespace DiscordCoreAPI {
 		/// @return A CoRoutine containing GuildMemberData.
 		static CoRoutine<GuildMemberData> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
-		template<typename VoiceStateType> static inline VoiceStateDataLight& insertVoiceState(VoiceStateType&& voiceState) {
-			if (voiceState.userId == 0) {
-				throw DCAException{ "Sorry, but there was no id set for that voice state." };
+		template<typename VoiceStateType> inline static void insertVoiceState(VoiceStateType&& voiceState) {
+			if (doWeCacheVoiceStatesBool) {
+				if (voiceState.userId == 0) {
+					throw DCAException{ "Sorry, but there was no id set for that voice state." };
+				}
+				vsCache.emplace(std::forward<VoiceStateType>(voiceState));
 			}
-			return **vsCache.emplace(std::forward<VoiceStateType>(voiceState));
 		}
 
-		template<typename GuildMemberType> static inline void insertGuildMember(GuildMemberType&& guildMember) {
+		template<typename GuildMemberType> inline static void insertGuildMember(GuildMemberType&& guildMember) {
 			if (doWeCacheGuildMembersBool) {
 				if (guildMember.guildId == 0 || guildMember.user.id == 0) {
 					throw DCAException{ "Sorry, but there was no id set for that guildmember." };
@@ -196,11 +198,14 @@ namespace DiscordCoreAPI {
 
 		static bool doWeCacheGuildMembers();
 
+		static bool doWeCacheVoiceStates();
+
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<VoiceStateDataLight> vsCache;
 		static ObjectCache<GuildMemberCacheData> cache;
 		static bool doWeCacheGuildMembersBool;
+		static bool doWeCacheVoiceStatesBool;
 	};
 	/**@}*/
 };

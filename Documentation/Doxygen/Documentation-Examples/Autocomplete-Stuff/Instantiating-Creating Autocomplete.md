@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 				
 				CreateGlobalApplicationCommandData createTestData;
 				createTestData.dmPermission = true;
-				createTestData.applicationId = newArgs.discordCoreClient->getBotUser().id;
+				createTestData.applicationId = DiscordCoreClient::getInstance()->getBotUser().id;
 				createTestData.type = ApplicationCommandType::Chat_Input;
 				createTestData.name = "test";
 				createTestData.description = "Test command.";

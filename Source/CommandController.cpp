@@ -33,23 +33,19 @@
 
 namespace DiscordCoreAPI {
 
-	UnorderedMap<Jsonifier::Vector<std::string>, UniquePtr<BaseFunction>> functions{};
+	UnorderedMap<jsonifier::vector<std::string>, UniquePtr<BaseFunction>> functions{};
 
-	CommandController::CommandController(DiscordCoreClient* discordCoreClientNew) {
-		discordCoreClient = discordCoreClientNew;
-	}
-
-	void CommandController::registerFunction(const Jsonifier::Vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction) {
+	void CommandController::registerFunction(const jsonifier::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction) {
 		functions[functionNames] = std::move(baseFunction);
 	}
 
-	UnorderedMap<Jsonifier::Vector<std::string>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
+	UnorderedMap<jsonifier::vector<std::string>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
 		return functions;
 	};
 
 	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
 		co_await NewThreadAwaitable<void>();
-		BaseFunctionArguments theArgsNew{ commandData, discordCoreClient };
+		BaseFunctionArguments theArgsNew{ commandData };
 		UniquePtr<BaseFunction> functionPointer{ getCommand(convertToLowerCase(commandData.getCommandName())) };
 		if (!functionPointer.get()) {
 			co_return;

@@ -32,30 +32,31 @@
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::ForumThreadMessageData> {
-		using ValueType					 = DiscordCoreAPI::ForumThreadMessageData;
-		static constexpr auto parseValue = object("attachments", &ValueType::attachments, "components", &ValueType::components, "allowedMentions", &ValueType::allowedMentions,
-			"stickerIds", &ValueType::stickerIds, "embeds", &ValueType::embeds, "files", &ValueType::files, "content", &ValueType::content, "flags", &ValueType::flags);
+	template<> struct core<DiscordCoreAPI::ForumThreadMessageData> {
+		using ValueType = DiscordCoreAPI::ForumThreadMessageData;
+		static constexpr auto parseValue =
+			createObject("attachments", &ValueType::attachments, "components", &ValueType::components, "allowedMentions", &ValueType::allowedMentions, "stickerIds",
+				&ValueType::stickerIds, "embeds", &ValueType::embeds, "files", &ValueType::files, "content", &ValueType::content, "flags", &ValueType::flags);
 	};
 
-	template<> struct Core<DiscordCoreAPI::StartThreadWithMessageData> {
+	template<> struct core<DiscordCoreAPI::StartThreadWithMessageData> {
 		using ValueType					 = DiscordCoreAPI::StartThreadWithMessageData;
-		static constexpr auto parseValue = object("autoArchiveDuration", &ValueType::autoArchiveDuration, "rateLimitPerUser", &ValueType::rateLimitPerUser, "threadName",
+		static constexpr auto parseValue = createObject("autoArchiveDuration", &ValueType::autoArchiveDuration, "rateLimitPerUser", &ValueType::rateLimitPerUser, "threadName",
 			&ValueType::threadName, "messageId", &ValueType::messageId, "channelId", &ValueType::channelId, "reason", &ValueType::reason);
 	};
 
-	template<> struct Core<DiscordCoreAPI::StartThreadWithoutMessageData> {
+	template<> struct core<DiscordCoreAPI::StartThreadWithoutMessageData> {
 		using ValueType = DiscordCoreAPI::StartThreadWithoutMessageData;
 		static constexpr auto parseValue =
-			object("autoArchiveDuration", &ValueType::autoArchiveDuration, "type", &ValueType::type, "rateLimitPerUser", &ValueType::rateLimitPerUser, "threadName",
+			createObject("autoArchiveDuration", &ValueType::autoArchiveDuration, "type", &ValueType::type, "rateLimitPerUser", &ValueType::rateLimitPerUser, "threadName",
 				&ValueType::threadName, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "invitable", &ValueType::invitable);
 	};
 
-	template<> struct Core<DiscordCoreAPI::StartThreadInForumChannelData> {
+	template<> struct core<DiscordCoreAPI::StartThreadInForumChannelData> {
 		using ValueType					 = DiscordCoreAPI::StartThreadInForumChannelData;
-		static constexpr auto parseValue = object("autoArchiveDuration", &ValueType::autoArchiveDuration, "message", &ValueType::message, "rateLimitPerUser",
+		static constexpr auto parseValue = createObject("autoArchiveDuration", &ValueType::autoArchiveDuration, "message", &ValueType::message, "rateLimitPerUser",
 			&ValueType::rateLimitPerUser, "channelId", &ValueType::channelId, "reason", &ValueType::reason, "name", &ValueType::name);
 	};
 
@@ -163,13 +164,13 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<Jsonifier::Vector<ThreadMemberData>> Threads::getThreadMembersAsync(GetThreadMembersData dataPackage) {
+	CoRoutine<jsonifier::vector<ThreadMemberData>> Threads::getThreadMembersAsync(GetThreadMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Thread_Members };
-		co_await NewThreadAwaitable<Jsonifier::Vector<ThreadMemberData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<ThreadMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/thread-members";
 		workload.callStack	   = "Threads::getThreadMembersAsync()";
-		Jsonifier::Vector<ThreadMemberData> returnData{};
+		jsonifier::vector<ThreadMemberData> returnData{};
 		Threads::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
