@@ -1,6 +1,6 @@
 Listing Guild Members {#listingguildmembers}
 ============
-- Execute the, `GuildMembers::listGuildMembersAsync()` function, while passing in a value of type `ListGuildMembersData`, with a return value of type `auto` or `Jsonifier::Vector<GuildMember>`.
+- Execute the, `GuildMembers::listGuildMembersAsync()` function, while passing in a value of type `ListGuildMembersData`, with a return value of type `auto` or `jsonifier::vector<GuildMember>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp

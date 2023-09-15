@@ -33,43 +33,46 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Utilities/EventEntities.hpp>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::MessageResponseBase> {
-		using ValueType					 = DiscordCoreAPI::MessageResponseBase;
-		static constexpr auto parseValue = object("components", &ValueType::components, "allowed_mentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files",
-			&ValueType::files, "custom_id", &ValueType::customId, "content", &ValueType::content, "title", &ValueType::title, "flags", &ValueType::flags, "tts", &ValueType::tts);
+	template<> struct core<DiscordCoreAPI::MessageResponseBase> {
+		using ValueType = DiscordCoreAPI::MessageResponseBase;
+		static constexpr auto parseValue =
+			createObject("components", &ValueType::components, "allowed_mentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files", &ValueType::files,
+				"custom_id", &ValueType::customId, "content", &ValueType::content, "title", &ValueType::title, "flags", &ValueType::flags, "tts", &ValueType::tts);
 	};
 
-	template<> struct Core<DiscordCoreAPI::CreateMessageData> {
-		using ValueType					 = DiscordCoreAPI::CreateMessageData;
-		static constexpr auto parseValue = object("components", &ValueType::components, "allowed_mentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files",
-			&ValueType::files, "custom_id", &ValueType::customId, "content", &ValueType::content, "title", &ValueType::title, "flags", &ValueType::flags, "tts", &ValueType::tts);
+	template<> struct core<DiscordCoreAPI::CreateMessageData> {
+		using ValueType = DiscordCoreAPI::CreateMessageData;
+		static constexpr auto parseValue =
+			createObject("components", &ValueType::components, "allowed_mentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files", &ValueType::files,
+				"custom_id", &ValueType::customId, "content", &ValueType::content, "title", &ValueType::title, "flags", &ValueType::flags, "tts", &ValueType::tts);
 	};
 
-	template<> struct Core<DiscordCoreAPI::EditMessageData> {
-		using ValueType					 = DiscordCoreAPI::EditMessageData;
-		static constexpr auto parseValue = object("components", &ValueType::components, "allowed_mentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files",
-			&ValueType::files, "custom_id", &ValueType::customId, "content", &ValueType::content, "title", &ValueType::title, "flags", &ValueType::flags, "tts", &ValueType::tts);
+	template<> struct core<DiscordCoreAPI::EditMessageData> {
+		using ValueType = DiscordCoreAPI::EditMessageData;
+		static constexpr auto parseValue =
+			createObject("components", &ValueType::components, "allowed_mentions", &ValueType::allowedMentions, "embeds", &ValueType::embeds, "files", &ValueType::files,
+				"custom_id", &ValueType::customId, "content", &ValueType::content, "title", &ValueType::title, "flags", &ValueType::flags, "tts", &ValueType::tts);
 	};
 
-	template<> struct Core<DiscordCoreAPI::DeleteMessagesBulkData> {
+	template<> struct core<DiscordCoreAPI::DeleteMessagesBulkData> {
 		using ValueType					 = DiscordCoreAPI::DeleteMessagesBulkData;
-		static constexpr auto parseValue = object("messages", &ValueType::messageIds);
+		static constexpr auto parseValue = createObject("messages", &ValueType::messageIds);
 	};
 }
 
 namespace DiscordCoreAPI {
 
-	template<> UnorderedMap<std::string, UnboundedMessageBlock<MessageData>*> ObjectCollector<MessageData>::objectsBuffersMap{};
+	template<> UnorderedMap<jsonifier::string, UnboundedMessageBlock<MessageData>*> ObjectCollector<MessageData>::objectsBuffersMap{};
 
 	template<> ObjectCollector<MessageData>::ObjectCollector() {
-		collectorId										= std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+		collectorId										= jsonifier::toString(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 		ObjectCollector::objectsBuffersMap[collectorId] = &objectsBuffer;
 	};
 
 	template<> void ObjectCollector<MessageData>::run(
-		std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::MessageData>::ObjectCollectorReturnData>::promise_type>&
+		std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::MessageData>::ObjectCollectorReturnData, false>::promise_type>&
 			coroHandle) {
 		int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 		int64_t elapsedTime{};
@@ -87,15 +90,15 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> CoRoutine<ObjectCollector<MessageData>::ObjectCollectorReturnData> ObjectCollector<MessageData>::collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew,
-		ObjectFilter<MessageData> filteringFunctionNew) {
-		auto coroHandle			   = co_await NewThreadAwaitable<ObjectCollectorReturnData>();
+	template<> CoRoutine<ObjectCollector<MessageData>::ObjectCollectorReturnData, false> ObjectCollector<MessageData>::collectObjects(int32_t quantityToCollect,
+		int32_t msToCollectForNew, ObjectFilter<MessageData> filteringFunctionNew) {
+		auto coroHandle			   = co_await NewThreadAwaitable<ObjectCollectorReturnData, false>();
 		quantityOfObjectsToCollect = quantityToCollect;
 		filteringFunction		   = filteringFunctionNew;
 		msToCollectFor			   = msToCollectForNew;
 
 		run(coroHandle);
-		co_return std::move(objectReturnData);
+		co_return objectReturnData;
 	}
 
 	template<> ObjectCollector<MessageData>::~ObjectCollector() {
@@ -175,41 +178,41 @@ namespace DiscordCoreAPI {
 		Messages::httpsClient = client;
 	}
 
-	CoRoutine<Jsonifier::Vector<MessageData>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
+	CoRoutine<jsonifier::vector<MessageData>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Messages };
-		co_await NewThreadAwaitable<Jsonifier::Vector<MessageData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<MessageData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/messages";
 		if (dataPackage.aroundThisId != 0) {
-			workload.relativePath += "?around=" + std::to_string(dataPackage.aroundThisId);
+			workload.relativePath += "?around=" + jsonifier::toString(dataPackage.aroundThisId);
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
 		} else if (dataPackage.beforeThisId != 0) {
 			workload.relativePath += "?before=" + dataPackage.beforeThisId;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
 		} else if (dataPackage.afterThisId != 0) {
 			workload.relativePath += "?after=" + dataPackage.afterThisId;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
 		} else {
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
 		}
 		workload.callStack = "Messages::getMessagesAsync()";
-		Jsonifier::Vector<MessageData> returnData{};
+		jsonifier::vector<MessageData> returnData{};
 		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
@@ -305,13 +308,13 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	CoRoutine<Jsonifier::Vector<MessageData>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
+	CoRoutine<jsonifier::vector<MessageData>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Pinned_Messages };
-		co_await NewThreadAwaitable<Jsonifier::Vector<MessageData>>();
+		co_await NewThreadAwaitable<jsonifier::vector<MessageData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/pins";
 		workload.callStack	   = "Messages::getPinnedMessagesAsync()";
-		Jsonifier::Vector<MessageData> returnData{};
+		jsonifier::vector<MessageData> returnData{};
 		Messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}

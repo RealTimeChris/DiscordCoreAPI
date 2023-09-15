@@ -44,10 +44,10 @@ namespace DiscordCoreAPI {
 	/// @tparam Deleter The type of the deleter used to destroy the managed object (optional).
 	template<typename ValueType, typename Deleter = std::default_delete<ValueType>> class CountedPtr : protected Deleter {
 	  public:
-		using value_type   = ValueType;
-		using pointer	   = value_type*;
+		using element_type = ValueType;
+		using pointer	   = element_type*;
 		using deleter_type = Deleter;
-		using reference	   = value_type&;
+		using reference	   = element_type&;
 
 		/// @brief Default constructor.
 		inline CountedPtr() : refCount(new std::atomic_uint32_t{}) {
@@ -56,13 +56,13 @@ namespace DiscordCoreAPI {
 		/// @brief Move assignment operator for related arrays.
 		/// @param other The other CountedPtr to move from.
 		/// @return CountedPtr The new managed object inside a CountedPtr.
-		inline CountedPtr& operator=(CountedPtr&& other) {
+		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr& operator=(ValueTypeNew&& other) {
 			if (this != static_cast<void*>(&other)) {
-				reset();
+				reset(nullptr);
 				try {
 					commit(other.release());
 				} catch (...) {
-					reset();
+					reset(nullptr);
 					throw;
 				}
 			}
@@ -71,24 +71,24 @@ namespace DiscordCoreAPI {
 
 		/// @brief Move constructor for related arrays.
 		/// @param other The other CountedPtr to move from.
-		inline CountedPtr(CountedPtr&& other) {
+		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr(ValueTypeNew&& other) : Deleter{} {
 			*this = std::move(other);
 		}
 
 		/// @brief Copy assignment operator.
 		/// @param other The other CountedPtr to copy from.
 		/// @return Reference to this CountedPtr after assignment.
-		inline CountedPtr& operator=(const CountedPtr& other) {
-			if (this != &other) {
-				reset();
+		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr& operator=(const ValueTypeNew& other) {
+			if (this != static_cast<void*>(&other)) {
+				reset(nullptr);
 				try {
-					commit(other.ptr);
+					commit(other.get());
 					refCount = other.refCount;
 					if (ptr) {
 						increment();
 					}
 				} catch (...) {
-					reset();
+					reset(nullptr);
 					throw;
 				}
 			}
@@ -97,19 +97,19 @@ namespace DiscordCoreAPI {
 
 		/// @brief Copy constructor.
 		/// @param other The other CountedPtr to copy from.
-		inline CountedPtr(const CountedPtr& other) : CountedPtr() {
+		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr(const ValueTypeNew& other) : Deleter{} {
 			*this = other;
 		}
 
 		/// @brief Move assignment operator for raw pointer.
 		/// @param newPtr The pointer to be managed.
 		/// @return CountedPtr The new managed object inside a CountedPtr.
-		inline CountedPtr& operator=(pointer newPtr) {
-			reset();
+		template<pointer_t value_type> inline CountedPtr& operator=(value_type newPtr) {
+			reset(nullptr);
 			try {
 				commit(newPtr);
 			} catch (...) {
-				reset();
+				reset(nullptr);
 				throw;
 			}
 			return *this;
@@ -117,13 +117,13 @@ namespace DiscordCoreAPI {
 
 		/// @brief Move construction operator for raw pointer.
 		/// @param newPtr The pointer to be managed.
-		inline CountedPtr(pointer newPtr) {
-			*this = std::move(newPtr);
+		template<pointer_t value_type> inline CountedPtr(value_type newPtr) : Deleter{} {
+			*this = newPtr;
 		}
 
 		/// @brief Swap the contents of this CountedPtr with another.
 		/// @param other The other CountedPtr to swap with.
-		inline void swap(CountedPtr& other) noexcept {
+		inline void swap(CountedPtr& other) {
 			std::swap(refCount, other.refCount);
 			std::swap(ptr, other.ptr);
 		}
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 		inline pointer release() {
 			pointer releasedPtr = ptr;
 			ptr					= nullptr;
-			reset();
+			reset(nullptr);
 			return releasedPtr;
 		}
 
@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Destructor.
 		inline ~CountedPtr() {
-			reset();
+			reset(nullptr);
 		}
 
 	  protected:
@@ -238,13 +238,13 @@ namespace DiscordCoreAPI {
 		/// @brief Move assignment operator for related arrays.
 		/// @param other The other CountedPtr to move from.
 		/// @return CountedPtr The new managed object inside a CountedPtr.
-		inline CountedPtr& operator=(CountedPtr&& other) {
+		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr& operator=(ValueTypeNew&& other) {
 			if (this != static_cast<void*>(&other)) {
-				reset();
+				reset(nullptr);
 				try {
 					commit(other.release());
 				} catch (...) {
-					reset();
+					reset(nullptr);
 					throw;
 				}
 			}
@@ -253,24 +253,24 @@ namespace DiscordCoreAPI {
 
 		/// @brief Move constructor for related arrays.
 		/// @param other The other CountedPtr to move from.
-		inline CountedPtr(CountedPtr&& other) {
+		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr(ValueTypeNew&& other) : Deleter{} {
 			*this = std::move(other);
 		}
 
 		/// @brief Copy assignment operator.
 		/// @param other The other CountedPtr to copy from.
 		/// @return Reference to this CountedPtr after assignment.
-		inline CountedPtr& operator=(const CountedPtr& other) {
-			if (this != &other) {
-				reset();
+		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr& operator=(const ValueTypeNew& other) {
+			if (this != static_cast<void*>(&other)) {
+				reset(nullptr);
 				try {
-					commit(other.ptr);
+					commit(other.get());
 					refCount = other.refCount;
 					if (ptr) {
 						increment();
 					}
 				} catch (...) {
-					reset();
+					reset(nullptr);
 					throw;
 				}
 			}
@@ -279,19 +279,19 @@ namespace DiscordCoreAPI {
 
 		/// @brief Copy constructor.
 		/// @param other The other CountedPtr to copy from.
-		inline CountedPtr(const CountedPtr& other) : CountedPtr() {
+		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr(const ValueTypeNew& other) : Deleter{} {
 			*this = other;
 		}
 
 		/// @brief Move assignment operator for raw pointer.
 		/// @param newPtr The pointer to be managed.
 		/// @return CountedPtr The new managed object inside a CountedPtr.
-		inline CountedPtr& operator=(pointer newPtr) {
-			reset();
+		template<pointer_t value_type> inline CountedPtr& operator=(value_type newPtr) {
+			reset(nullptr);
 			try {
 				commit(newPtr);
 			} catch (...) {
-				reset();
+				reset(nullptr);
 				throw;
 			}
 			return *this;
@@ -299,13 +299,13 @@ namespace DiscordCoreAPI {
 
 		/// @brief Move construction operator for raw pointer.
 		/// @param newPtr The pointer to be managed.
-		inline CountedPtr(pointer newPtr) {
+		template<pointer_t value_type> inline CountedPtr(value_type newPtr) : Deleter{} {
 			*this = newPtr;
 		}
 
 		/// @brief Swap the contents of this CountedPtr with another.
 		/// @param other The other CountedPtr to swap with.
-		inline void swap(CountedPtr& other) noexcept {
+		inline void swap(CountedPtr& other) {
 			std::swap(refCount, other.refCount);
 			std::swap(ptr, other.ptr);
 		}
@@ -346,13 +346,13 @@ namespace DiscordCoreAPI {
 		inline pointer release() {
 			pointer releasedPtr = ptr;
 			ptr					= nullptr;
-			reset();
+			reset(nullptr);
 			return releasedPtr;
 		}
 
 		/// @brief Reset the managed object and decrement the reference count.
 		/// @param newPtr The new raw pointer to manage (optional).
-		inline void reset(pointer newPtr = nullptr) {
+		inline void reset(pointer newPtr) {
 			if (decrement() <= 0) {
 				if (refCount) {
 					delete refCount;
@@ -372,7 +372,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Destructor.
 		inline ~CountedPtr() {
-			reset();
+			reset(nullptr);
 		}
 
 	  protected:

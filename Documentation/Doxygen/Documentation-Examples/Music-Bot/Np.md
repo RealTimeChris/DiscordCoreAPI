@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 				newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 				newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewUrl + ")" +
 					"\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " + SongAPI::getCurrentSong(guild.id).duration +
-					"\n__**Added By:**__ <@!" + std::to_string(SongAPI::getCurrentSong(guild.id).addedByUserId) + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
+					"\n__**Added By:**__ <@!" + jsonifier::toString(SongAPI::getCurrentSong(guild.id).addedByUserId) + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
 				newEmbed.setImage(SongAPI::getCurrentSong(guild.id).thumbnailUrl);
 				newEmbed.setTimeStamp(getTimeAndDate());
 				newEmbed.setTitle("__**Now Playing:**__");

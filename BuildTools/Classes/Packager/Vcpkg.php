@@ -160,7 +160,8 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
 endif()
 
-vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/License.md")';
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/License.md")
+';
 
         $versionFileContent = '{
   "name": "discordcoreapi",
@@ -168,7 +169,7 @@ vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/License.md")';
   "description": "A Discord bot library written in C++ using custom asynchronous coroutines.",
   "homepage": "https://discordcoreapi.com",
   "license": "MIT",
-  "supports": "(windows & x64 & !xbox) | (linux & x64)",
+  "supports": "(windows & x64 & !xbox) | (linux & x64) | (osx & x64)",
   "dependencies": [
     "jsonifier",
     "libsodium",
@@ -256,7 +257,6 @@ vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/License.md")';
         echo GREEN . "Copy back port files from /usr/local/share...\n" . WHITE;
         chdir(getenv('HOME') . '/discordcoreapi');
         system('cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json');
-        system('cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./Vcpkg/versions/baseline.json');
         system('cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json');
 
         echo GREEN . "Commit and push changes to main branch\n" . WHITE;

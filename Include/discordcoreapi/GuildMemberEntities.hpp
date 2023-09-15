@@ -58,38 +58,38 @@ namespace DiscordCoreAPI {
 	/// @brief For searching for one or more GuildMembers within a chosen Guild.
 	struct SearchGuildMembersData {
 		Snowflake guildId{};///< Guild within which to search for the GuildMembers.
-		std::string query{};///< Query std::string to match username(s) and nickname(s) against.
+		jsonifier::string query{};///< Query jsonifier::string to match username(s) and nickname(s) against.
 		int32_t limit{};///< Max number of members to return (1 - 1000).
 	};
 
 	/// @brief For adding a new GuildMemberData to a chosen Guild.
 	struct AddGuildMemberData {
-		Jsonifier::Vector<Snowflake> roles{};///< Array of RoleData ids the member is assigned.
-		std::string accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
+		jsonifier::vector<Snowflake> roles{};///< Array of RoleData ids the member is assigned.
+		jsonifier::string accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
 		Snowflake guildId{};///< The Guild to add the new GuildMemberData to.
 		Snowflake userId{};///< The UserData id of the user you wish to add.
-		std::string nick{};///< Value to set users nickname to.
+		jsonifier::string nick{};///< Value to set users nickname to.
 		bool mute{};///< Whether the user is muted in voice channels.
 		bool deaf{};///< Whether the user is deafened in voice channels.
 	};
 
 	/// @brief For modifying the current GuildMemberData's values.
 	struct ModifyCurrentGuildMemberData {
-		std::string reason{};///< A reason for modifying the current user's values.
+		jsonifier::string reason{};///< A reason for modifying the current user's values.
 		Snowflake guildId{};///< The Guild within which to modify the current user's values.
-		std::string nick{};///< A new nickname for the current user.
+		jsonifier::string nick{};///< A new nickname for the current user.
 	};
 
 	/// @brief For modifying a GuildMember's values.
 	struct ModifyGuildMemberData {
-		std::string communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		Jsonifier::Vector<Snowflake> roleIds{};///< A collection of RoleData id's to be applied to them.
+		jsonifier::string communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
+		jsonifier::vector<Snowflake> roleIds{};///< A collection of RoleData id's to be applied to them.
 		Snowflake newVoiceChannelId{};///< The new voice ChannelData to move them into.
 		Snowflake currentChannelId{};///< The current voice ChannelData, if applicaple.
 		Snowflake guildMemberId{};///< The user id of the desired Guild memeber.
 		Snowflake guildId{};///< The id of the Guild for which you would like to modify a member.
-		std::string reason{};///< Reason for modifying this GuildMemberData.
-		std::string nick{};///< Their new display/nick name.
+		jsonifier::string reason{};///< Reason for modifying this GuildMemberData.
+		jsonifier::string nick{};///< Their new display/nick name.
 		bool mute{};///< Whether or not to mute them in voice.
 		bool deaf{};///< Whether or not to deafen them, in voice.
 	};
@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 	/// @brief For removing a GuildMember from a chosen Guild.
 	struct RemoveGuildMemberData {
 		Snowflake guildMemberId{};///< Snowflake of the chosen GuildMemberData to kick.
-		std::string reason{};///< Reason for kicking the GuildMemberData.
+		jsonifier::string reason{};///< Reason for kicking the GuildMemberData.
 		Snowflake guildId{};///< Guild from which to kick the chosen GuildMemberData.
 	};
 
@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 	struct TimeoutGuildMemberData {
 		TimeoutDurations numOfMinutesToTimeoutFor{};///< The number of minutes to time-out the GuildMemberData for.
 		Snowflake guildMemberId{};///< The id of the GuildMemberData to be timed-out.
-		std::string reason{};///< Reason for timing them out.
+		jsonifier::string reason{};///< Reason for timing them out.
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire a member.
 	};
 
@@ -140,12 +140,12 @@ namespace DiscordCoreAPI {
 		/// @brief Lists all of the GuildMembers of a chosen Guild.
 		/// @param dataPackage A ListGuildMembersData structure.
 		/// @return A CoRoutine containing a vector<GuildMembers>.
-		static CoRoutine<Jsonifier::Vector<GuildMemberData>> listGuildMembersAsync(ListGuildMembersData dataPackage);
+		static CoRoutine<jsonifier::vector<GuildMemberData>> listGuildMembersAsync(ListGuildMembersData dataPackage);
 
 		/// @brief Searches for a list of GuildMembers of a chosen Guild.
 		/// @param dataPackage A SearchGuildMembersData structure.
 		/// @return A CoRoutine containing a vector<GuildMembers>.
-		static CoRoutine<Jsonifier::Vector<GuildMemberData>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
+		static CoRoutine<jsonifier::vector<GuildMemberData>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
 
 		/// @brief Adds a GuildMember to a chosen Guild.
 		/// @param dataPackage An AddGuildMemberData structure.
@@ -172,14 +172,16 @@ namespace DiscordCoreAPI {
 		/// @return A CoRoutine containing GuildMemberData.
 		static CoRoutine<GuildMemberData> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
-		template<typename VoiceStateType> static inline VoiceStateDataLight& insertVoiceState(VoiceStateType&& voiceState) {
-			if (voiceState.userId == 0) {
-				throw DCAException{ "Sorry, but there was no id set for that voice state." };
+		template<typename VoiceStateType> inline static void insertVoiceState(VoiceStateType&& voiceState) {
+			if (doWeCacheVoiceStatesBool) {
+				if (voiceState.userId == 0) {
+					throw DCAException{ "Sorry, but there was no id set for that voice state." };
+				}
+				vsCache.emplace(std::forward<VoiceStateType>(voiceState));
 			}
-			return **vsCache.emplace(std::forward<VoiceStateType>(voiceState));
 		}
 
-		template<typename GuildMemberType> static inline void insertGuildMember(GuildMemberType&& guildMember) {
+		template<typename GuildMemberType> inline static void insertGuildMember(GuildMemberType&& guildMember) {
 			if (doWeCacheGuildMembersBool) {
 				if (guildMember.guildId == 0 || guildMember.user.id == 0) {
 					throw DCAException{ "Sorry, but there was no id set for that guildmember." };
@@ -196,11 +198,14 @@ namespace DiscordCoreAPI {
 
 		static bool doWeCacheGuildMembers();
 
+		static bool doWeCacheVoiceStates();
+
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<VoiceStateDataLight> vsCache;
 		static ObjectCache<GuildMemberCacheData> cache;
 		static bool doWeCacheGuildMembersBool;
+		static bool doWeCacheVoiceStatesBool;
 	};
 	/**@}*/
 };

@@ -1,6 +1,6 @@
 Getting Channel Invites {#gettingchannelinvites}
 ============
-- Execute the `Channels::getChannelInvitesAsync()` function, while passing in a data structure of type `GetChannelInvitesData`, with a return value of `auto` or `Jsonifier::Vector<InviteData>`.
+- Execute the `Channels::getChannelInvitesAsync()` function, while passing in a data structure of type `GetChannelInvitesData`, with a return value of `auto` or `jsonifier::vector<InviteData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp

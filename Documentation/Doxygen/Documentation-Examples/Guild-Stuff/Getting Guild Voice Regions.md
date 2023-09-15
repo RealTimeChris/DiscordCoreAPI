@@ -1,6 +1,6 @@
 Getting Guild Voice Regions {#gettingguildvoiceregions}
 ============
-- Execute the, `Guilds::getGuildVoiceRegionsAsync()` function, while passing in a value of type `GetGuildVoiceRegionsData`, with a return value of type `auto` or `Jsonifier::Vector<VoiceRegionData>`.
+- Execute the, `Guilds::getGuildVoiceRegionsAsync()` function, while passing in a value of type `GetGuildVoiceRegionsData`, with a return value of type `auto` or `jsonifier::vector<VoiceRegionData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp

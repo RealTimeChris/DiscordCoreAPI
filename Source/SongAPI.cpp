@@ -54,12 +54,20 @@ namespace DiscordCoreAPI {
 		return returnValue;
 	}
 
-	Jsonifier::Vector<Song> SongAPI::searchForSong(const std::string& searchQuery) {
+	jsonifier::vector<Song> SongAPI::searchForSong(jsonifier::string_view searchQuery, int32_t limit) {
 		std::unique_lock lock{ accessMutex };
-		auto vector01		 = DiscordCoreClient::getSoundCloudAPI(guildId).searchForSong(searchQuery);
-		auto vector02		 = DiscordCoreClient::getYouTubeAPI(guildId).searchForSong(searchQuery);
+		jsonifier::vector<Song> vector01{};
+		jsonifier::vector<Song> vector02{};
+		if (searchQuery.find("soundcloud") == jsonifier::string::npos && searchQuery.find("youtube") == jsonifier::string::npos) {
+			vector01 = DiscordCoreClient::getSoundCloudAPI(guildId).searchForSong(searchQuery, limit);
+			vector02 = DiscordCoreClient::getYouTubeAPI(guildId).searchForSong(searchQuery, limit);
+		} else if (searchQuery.find("youtube") != jsonifier::string::npos) {
+			vector02 = DiscordCoreClient::getYouTubeAPI(guildId).searchForSong(searchQuery, limit);
+		} else if (searchQuery.find("soundcloud") != jsonifier::string::npos) {
+			vector01 = DiscordCoreClient::getSoundCloudAPI(guildId).searchForSong(searchQuery, limit);
+		}
 		uint64_t totalLength = vector01.size() + vector02.size();
-		Jsonifier::Vector<Song> newVector{};
+		jsonifier::vector<Song> newVector{};
 		uint64_t vector01Used{};
 		uint64_t vector02Used{};
 		for (uint64_t x = 0; x < totalLength; ++x) {
@@ -113,14 +121,14 @@ namespace DiscordCoreAPI {
 
 	void SongAPI::disconnect() {
 		if (taskThread.getStatus() == CoRoutineStatus::Running) {
-			taskThread.cancel();
+			taskThread.cancelAndWait();
 		}
 		onSongCompletionEvent.erase(eventToken);
 		audioDataBuffer.clearContents();
 		StopWatch<Milliseconds> stopWatch{ 10000ms };
-		stopWatch.resetTimer();
+		stopWatch.reset();
 		while (DiscordCoreClient::getSoundCloudAPI(guildId).areWeWorking() || DiscordCoreClient::getYouTubeAPI(guildId).areWeWorking()) {
-			if (stopWatch.hasTimePassed()) {
+			if (stopWatch.hasTimeElapsed()) {
 				break;
 			}
 			std::this_thread::sleep_for(1ms);

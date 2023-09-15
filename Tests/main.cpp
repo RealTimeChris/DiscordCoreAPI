@@ -5,61 +5,65 @@
 
 #include "Commands/BotInfo.hpp"
 
-namespace DiscordCoreAPI {
-	extern std::atomic_bool doWeQuit;
+void onBoot00(DiscordCoreAPI::DiscordCoreClient* args) {
+	auto botUser = args->getBotUser();
+	//DiscordCoreAPI::managerAgent.initialize(botUser.id);
+	//DiscordCoreAPI::DiscordUser theUser{ DiscordCoreAPI::managerAgent, { botUser.userName }, botUser.id };
+	//theUser.writeDataToDB(DiscordCoreAPI::managerAgent);
 }
 
-void onBoot(DiscordCoreAPI::DiscordCoreClient* ) {
-	DiscordCoreAPI::doWeQuit.store(true, std::memory_order_release);
+DiscordCoreAPI::CoRoutine<void> onGuildCreation(DiscordCoreAPI::OnGuildCreationData dataPackage) {
+	co_await DiscordCoreAPI::NewThreadAwaitable<void>();
+	//DiscordCoreAPI::DiscordGuild discordGuild{ DiscordCoreAPI::managerAgent, dataPackage.value };
+	//discordGuild.getDataFromDB(DiscordCoreAPI::managerAgent);
+	//discordGuild.writeDataToDB(DiscordCoreAPI::managerAgent);
+	co_return;
 }
 
 int32_t main() {
-	std::string botToken = "";
-	Jsonifier::Vector<DiscordCoreAPI::RepeatedFunctionData> functionVector{};
+	jsonifier::string botToken = "";
+	jsonifier::vector<DiscordCoreAPI::RepeatedFunctionData> functionVector{};
 	functionVector.reserve(5);
 	DiscordCoreAPI::RepeatedFunctionData function01{};
-	function01.function = onBoot;
-	function01.repeated = false;
-	function01.intervalInMs = 1500;
+	function01.function		= onBoot00;
+	function01.intervalInMs = 2500;
+	function01.repeated		= false;
 	functionVector.emplace_back(function01);
 	DiscordCoreAPI::ShardingOptions shardOptions{};
 	shardOptions.numberOfShardsForThisProcess = 1;
-	shardOptions.startingShard = 0;
-	shardOptions.totalNumberOfShards = 1;
+	shardOptions.totalNumberOfShards		  = 1;
+	shardOptions.startingShard				  = 0;
 	DiscordCoreAPI::LoggingOptions logOptions{};
-	logOptions.logGeneralErrorMessages = true;
-	logOptions.logHttpsErrorMessages = true;
-	logOptions.logWebSocketErrorMessages = true;
-	logOptions.logHttpsSuccessMessages = true;
-	logOptions.logGeneralSuccessMessages = true;
-	logOptions.logWebSocketSuccessMessages = true;
+	logOptions.logHttpsSuccessMessages	   = true;
+	logOptions.logWebSocketErrorMessages   = true;
+	logOptions.logGeneralErrorMessages	   = true;
+	logOptions.logHttpsErrorMessages	   = true;
+	logOptions.logWebSocketSuccessMessages = false;
+	logOptions.logGeneralSuccessMessages   = true;
 	DiscordCoreAPI::DiscordCoreClientConfig clientConfig{};
-	//clientConfig.connectionAddress = "127.0.0.1";
-	clientConfig.botToken = botToken;
-	clientConfig.logOptions = logOptions;
-	clientConfig.shardOptions = shardOptions;
-	clientConfig.cacheOptions.cacheChannels = true;
-	clientConfig.cacheOptions.cacheGuilds = true;
-	clientConfig.cacheOptions.cacheUsers = true;
-	clientConfig.cacheOptions.cacheRoles = true;
-	Jsonifier::Vector<DiscordCoreAPI::ActivityData> activities{};
+	clientConfig.logOptions						= logOptions;
+	clientConfig.botToken						= botToken;
+	clientConfig.shardOptions					= shardOptions;
+	clientConfig.cacheOptions.cacheGuildMembers = false;
+	clientConfig.cacheOptions.cacheChannels		= true;
+	clientConfig.cacheOptions.cacheGuilds		= true;
+	clientConfig.cacheOptions.cacheUsers		= false;
+	clientConfig.cacheOptions.cacheRoles		= false;
+	clientConfig.functionsToExecute				= functionVector;
+	jsonifier::vector<DiscordCoreAPI::ActivityData> activities{};
 	DiscordCoreAPI::ActivityData activity{};
-	activity.name = "/help for my commands!";
-	activity.type = DiscordCoreAPI::ActivityType::Game;
+	activity.name  = "/help for my commands!";
+	activity.type  = DiscordCoreAPI::ActivityType::Custom;
 	activities.emplace_back(activity);
 	clientConfig.presenceData.activities = activities;
-	clientConfig.presenceData.afk = false;
-	clientConfig.presenceData.status = DiscordCoreAPI::PresenceUpdateState::Online;
-	clientConfig.textFormat = DiscordCoreAPI::TextFormat::Etf;
-	clientConfig.presenceData.since = 0;
-	auto the = makeUnique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
-	DiscordCoreAPI::CreateGlobalApplicationCommandData createBotInfoCommandData{};
-	createBotInfoCommandData.dmPermission = true;
-	createBotInfoCommandData.type = DiscordCoreAPI::ApplicationCommandType::Chat_Input;
-	createBotInfoCommandData.defaultMemberPermissions = DiscordCoreAPI::Permission::Use_Application_Commands;
-	createBotInfoCommandData.description = "Displays info about the current bot.";
-	createBotInfoCommandData.name = "botinfo";
-	the->registerFunction(Jsonifier::Vector<std::string>{ "botinfo" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::BotInfo>(), createBotInfoCommandData);
-	the->runBot();
+	auto result							 = clientConfig.presenceData.operator DiscordCoreAPI::DiscordCoreInternal::EtfSerializer();
+	clientConfig.presenceData.afk		 = false;
+	clientConfig.textFormat				 = DiscordCoreAPI::TextFormat::Etf;
+	clientConfig.presenceData.since		 = 0;
+	clientConfig.presenceData.status	 = DiscordCoreAPI::PresenceUpdateState::Online;
+	auto thePtr							 = DiscordCoreAPI::makeUnique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
+	thePtr->getEventManager().onGuildCreationEvent.add(onGuildCreation);
+	thePtr->registerFunction(jsonifier::vector<jsonifier::string>{ "botinfo" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::BotInfo>(), {});
+	thePtr->runBot();
 	return 0;
 };

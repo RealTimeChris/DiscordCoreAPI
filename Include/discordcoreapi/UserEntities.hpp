@@ -44,8 +44,8 @@ namespace DiscordCoreAPI {
 	/// @brief For adding a user to a group DM.
 	struct AddRecipientToGroupDMData {
 		Snowflake channelId{};///< The ChannelData Snowflake of the DM.
-		std::string token{};///< The user's access token.
-		std::string nick{};///< The user's nickname.
+		jsonifier::string token{};///< The user's access token.
+		jsonifier::string nick{};///< The user's nickname.
 		Snowflake userId{};///< The user's Snowflake.
 	};
 
@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For updating the bot's current voice state.
 	struct ModifyCurrentUserVoiceStateData {
-		std::string requestToSpeakTimestamp{};///< ISO8601 timeStamp.
+		jsonifier::string requestToSpeakTimestamp{};///< ISO8601 timeStamp.
 		Snowflake channelId{};///< The id of the ChannelData the user is currently in.
 		Snowflake guildId{};///< The Guild within which to update the bot's voice state.
 		bool suppress{};///< Toggles the user's suppress state.
@@ -78,8 +78,8 @@ namespace DiscordCoreAPI {
 
 	/// @brief For modifying the Bot's UserData responseData.
 	struct ModifyCurrentUserData {
-		std::string userName{};///< UserData's username, if changed may cause the user's discriminator to be randomized.
-		std::string avatar{};///< If passed, modifies the user's avatar.
+		jsonifier::string userName{};///< UserData's username, if changed may cause the user's discriminator to be randomized.
+		jsonifier::string avatar{};///< If passed, modifies the user's avatar.
 	};
 
 	/**@}*/
@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Collects the UserData's Connections.
 		/// @returns A CoRoutine containing a vector<ConnectionData>.
-		static CoRoutine<Jsonifier::Vector<ConnectionData>> getUserConnectionsAsync();
+		static CoRoutine<jsonifier::vector<ConnectionData>> getUserConnectionsAsync();
 
 		/// @brief Collects the Application responseData associated with the current Bot.
 		/// @returns A CoRoutine containing an ApplicationData.
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 		/// @returns A CoRoutine containing an AuthorizationInfoData.
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
-		template<typename UserType> static inline void insertUser(UserType&& user) {
+		template<typename UserType> inline static void insertUser(UserType&& user) {
 			if (doWeCacheUsersBool) {
 				if (user.id == 0) {
 					throw DCAException{ "Sorry, but there was no id set for that user." };

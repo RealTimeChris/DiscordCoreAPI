@@ -34,51 +34,51 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 
-namespace Jsonifier {
+namespace jsonifier {
 
-	template<> struct Core<DiscordCoreAPI::InteractionCallbackData> {
+	template<> struct core<DiscordCoreAPI::InteractionCallbackData> {
 		using ValueType					 = DiscordCoreAPI::InteractionCallbackData;
-		static constexpr auto parseValue = object("attachments", &ValueType::attachments, "choices", &ValueType::choices, "components", &ValueType::components, "content",
+		static constexpr auto parseValue = createObject("attachments", &ValueType::attachments, "choices", &ValueType::choices, "components", &ValueType::components, "content",
 			&ValueType::content, "custom_id", &ValueType::customId, "embeds", &ValueType::embeds, "files", &ValueType::files, "flags", &ValueType::flags, "tts", &ValueType::tts,
 			"allowed_mentions", &ValueType::allowedMentions, "title", &ValueType::title);
 	};
 
-	template<> struct Core<DiscordCoreAPI::InteractionResponseBase> {
+	template<> struct core<DiscordCoreAPI::InteractionResponseBase> {
 		using ValueType					 = DiscordCoreAPI::InteractionResponseBase;
-		static constexpr auto parseValue = object("type", &ValueType::type, "data", &ValueType::data);
+		static constexpr auto parseValue = createObject("type", &ValueType::type, "data", &ValueType::data);
 	};
 
-	template<> struct Core<DiscordCoreAPI::CreateInteractionResponseData> {
+	template<> struct core<DiscordCoreAPI::CreateInteractionResponseData> {
 		using ValueType					 = DiscordCoreAPI::CreateInteractionResponseData;
-		static constexpr auto parseValue = object("type", &ValueType::type, "data", &ValueType::data);
+		static constexpr auto parseValue = createObject("type", &ValueType::type, "data", &ValueType::data);
 	};
 
-	template<> struct Core<DiscordCoreAPI::EditInteractionResponseData> {
+	template<> struct core<DiscordCoreAPI::EditInteractionResponseData> {
 		using ValueType					 = DiscordCoreAPI::EditInteractionResponseData;
-		static constexpr auto parseValue = object("content", &ValueType::content, "embeds", &ValueType::embeds, "allowed_mentions", &ValueType::allowedMentions, "components",
+		static constexpr auto parseValue = createObject("content", &ValueType::content, "embeds", &ValueType::embeds, "allowed_mentions", &ValueType::allowedMentions, "components",
 			&ValueType::components, "files", &ValueType::files, "attachments", &ValueType::attachments);
 	};
 
-	template<> struct Core<DiscordCoreAPI::CreateFollowUpMessageData> {
+	template<> struct core<DiscordCoreAPI::CreateFollowUpMessageData> {
 		using ValueType					 = DiscordCoreAPI::CreateFollowUpMessageData;
-		static constexpr auto parseValue = object("content", &ValueType::content, "username", &ValueType::userName, "avatar_url", &ValueType::avatarUrl, "tts", &ValueType::tts,
-			"embeds", &ValueType::embeds, "allowed_mentions", &ValueType::allowedMentions, "components", &ValueType::components, "files", &ValueType::files, "attachments",
-			&ValueType::attachments, "flags", &ValueType::flags);
+		static constexpr auto parseValue = createObject("content", &ValueType::content, "username", &ValueType::userName, "avatar_url", &ValueType::avatarUrl, "tts",
+			&ValueType::tts, "embeds", &ValueType::embeds, "allowed_mentions", &ValueType::allowedMentions, "components", &ValueType::components, "files", &ValueType::files,
+			"attachments", &ValueType::attachments, "flags", &ValueType::flags);
 	};
 
-	template<> struct Core<DiscordCoreAPI::EditFollowUpMessageData> {
+	template<> struct core<DiscordCoreAPI::EditFollowUpMessageData> {
 		using ValueType					 = DiscordCoreAPI::EditFollowUpMessageData;
-		static constexpr auto parseValue = object("content", &ValueType::content, "username", &ValueType::userName, "avatar_url", &ValueType::avatarUrl, "tts", &ValueType::tts,
-			"embeds", &ValueType::embeds, "allowed_mentions", &ValueType::allowedMentions, "components", &ValueType::components, "files", &ValueType::files, "attachments",
-			&ValueType::attachments, "flags", &ValueType::flags);
+		static constexpr auto parseValue = createObject("content", &ValueType::content, "username", &ValueType::userName, "avatar_url", &ValueType::avatarUrl, "tts",
+			&ValueType::tts, "embeds", &ValueType::embeds, "allowed_mentions", &ValueType::allowedMentions, "components", &ValueType::components, "files", &ValueType::files,
+			"attachments", &ValueType::attachments, "flags", &ValueType::flags);
 	};
 
 }
 
 namespace DiscordCoreAPI {
 
-	InteractionResponseBase& InteractionResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	InteractionResponseBase& InteractionResponseBase::addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, ButtonStyle buttonStyle,
+		jsonifier::string_view emojiName, Snowflake emojiId, jsonifier::string_view url) {
 		if (data.components.size() == 0) {
 			ActionRowData actionRowData;
 			data.components.emplace_back(actionRowData);
@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 				component.type		 = ComponentType::Button;
 				component.emoji.name = emojiName;
 				component.label		 = buttonLabel;
-				component.style		 = static_cast<int32_t>(buttonStyle);
+				component.style		 = static_cast<uint64_t>(buttonStyle);
 				component.customId	 = customIdNew;
 				component.disabled	 = disabled;
 				component.emoji.id	 = emojiId;
@@ -103,8 +103,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, Jsonifier::Vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType typeNew, Jsonifier::Vector<ChannelType> channelTypes) {
+	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<SelectOptionData> options,
+		jsonifier::string_view placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType typeNew, jsonifier::vector<ChannelType> channelTypes) {
 		if (data.components.size() == 0) {
 			ActionRowData actionRowData;
 			data.components.emplace_back(actionRowData);
@@ -129,8 +129,9 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+	InteractionResponseBase& InteractionResponseBase::addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
+		jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, TextInputStyle inputStyle, jsonifier::string_view label,
+		jsonifier::string_view placeholder) {
 		data.title	  = topTitleNew;
 		data.customId = topCustomIdNew;
 		if (data.components.size() == 0) {
@@ -142,7 +143,7 @@ namespace DiscordCoreAPI {
 				ComponentData component{};
 				component.type		  = ComponentType::Text_Input;
 				component.customId	  = customIdNew;
-				component.style		  = static_cast<int32_t>(inputStyle);
+				component.style		  = static_cast<uint64_t>(inputStyle);
 				component.title		  = titleNew;
 				component.maxLength	  = maxLength;
 				component.minLength	  = minLength;
@@ -225,7 +226,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addContent(const std::string& dataPackage) {
+	InteractionResponseBase& InteractionResponseBase::addContent(jsonifier::string_view dataPackage) {
 		data.content = dataPackage;
 		return *this;
 	}
@@ -235,7 +236,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::setFlags(int64_t flagsNew) {
+	InteractionResponseBase& InteractionResponseBase::setFlags(uint64_t flagsNew) {
 		data.flags = flagsNew;
 		return *this;
 	}
@@ -473,6 +474,17 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	MessageData Interactions::getInteractionResponse(GetInteractionResponseData dataPackage) {
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Interaction_Response };
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
+		workload.relativePath  = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
+		workload.callStack	   = "Interactions::getInteractionResponseAsync()";
+		MessageData returnData{};
+		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		return returnData;
+	}
+
+
 	CoRoutine<MessageData> Interactions::getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Interaction_Response };
 		co_await NewThreadAwaitable<MessageData>();
@@ -589,7 +601,7 @@ namespace DiscordCoreAPI {
 		dataPackage01.applicationId	   = dataPackage.interactionPackage.applicationId;
 		dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
 		if (dataPackage.type != InteractionCallbackType::Application_Command_Autocomplete_Result) {
-			return Interactions::getInteractionResponseAsync(dataPackage01).get();
+			return Interactions::getInteractionResponse(dataPackage01);
 		} else {
 			return {};
 		}
@@ -647,15 +659,15 @@ namespace DiscordCoreAPI {
 	}
 
 	SelectMenuCollector::SelectMenuCollector(InputEventData& dataPackage) {
-		channelId		 = dataPackage.getChannelData().id;
+		channelId		 = dataPackage.getInteractionData().channelId;
 		messageId		 = dataPackage.getMessageData().id;
 		*interactionData = dataPackage.getInteractionData();
-		buffersMapKey	 = channelId + messageId;
+		buffersMapKey	 = channelId.operator jsonifier::string() + messageId.operator jsonifier::string();
 	}
 
-	CoRoutine<Jsonifier::Vector<SelectMenuResponseData>, false> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-		int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
-		co_await NewThreadAwaitable<Jsonifier::Vector<SelectMenuResponseData>, false>();
+	CoRoutine<jsonifier::vector<SelectMenuResponseData>, false> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, uint32_t maxWaitTimeInMsNew,
+		uint32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
+		co_await NewThreadAwaitable<jsonifier::vector<SelectMenuResponseData>, false>();
 		SelectMenuCollector::selectMenuInteractionBuffersMap[buffersMapKey] = &selectMenuIncomingInteractionBuffer;
 		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
 			getSelectMenuDataForAll = true;
@@ -687,8 +699,8 @@ namespace DiscordCoreAPI {
 
 	void SelectMenuCollector::run() {
 		StopWatch<Milliseconds> stopWatch{ Milliseconds{ maxTimeInMs } };
-		stopWatch.resetTimer();
-		while (!doWeQuit && !stopWatch.hasTimePassed()) {
+		stopWatch.reset();
+		while (!doWeQuit && !stopWatch.hasTimeElapsed()) {
 			if (!getSelectMenuDataForAll) {
 				auto selectMenuInteractionData = makeUnique<InteractionData>();
 				if (waitForTimeToPass(selectMenuIncomingInteractionBuffer, *selectMenuInteractionData.get(), maxTimeInMs)) {
@@ -699,7 +711,7 @@ namespace DiscordCoreAPI {
 					response->messageId		   = messageId;
 					response->userId		   = selectMenuInteractionData->user.id;
 					*response->interactionData = *interactionData;
-					response->values		   = Jsonifier::Vector<std::string>{ "empty" };
+					response->values		   = jsonifier::vector<jsonifier::string>{ "empty" };
 					responseVector.emplace_back(*response);
 					break;
 				}
@@ -723,7 +735,7 @@ namespace DiscordCoreAPI {
 					*response->interactionData = *selectMenuInteractionData;
 					responseVector.emplace_back(*response);
 					++currentCollectedSelectMenuCount;
-					stopWatch.resetTimer();
+					stopWatch.reset();
 					if (maxCollectedSelectMenuCount > 1 && currentCollectedSelectMenuCount < maxCollectedSelectMenuCount - 1) {
 						auto createResponseData	 = makeUnique<CreateInteractionResponseData>(*selectMenuInteractionData);
 						createResponseData->type = InteractionCallbackType::Deferred_Update_Message;
@@ -746,7 +758,7 @@ namespace DiscordCoreAPI {
 					response->messageId		   = messageId;
 					response->userId		   = selectMenuInteractionData->user.id;
 					*response->interactionData = *interactionData;
-					response->values		   = Jsonifier::Vector<std::string>{ "empty" };
+					response->values		   = jsonifier::vector<jsonifier::string>{ "empty" };
 					responseVector.emplace_back(*response);
 					break;
 				}
@@ -761,7 +773,7 @@ namespace DiscordCoreAPI {
 				response->values		   = interactionData->data.values;
 				responseVector.emplace_back(*response);
 				++currentCollectedSelectMenuCount;
-				stopWatch.resetTimer();
+				stopWatch.reset();
 				if (maxCollectedSelectMenuCount > 1 && currentCollectedSelectMenuCount < maxCollectedSelectMenuCount - 1) {
 					auto createResponseData	 = makeUnique<CreateInteractionResponseData>(*selectMenuInteractionData);
 					createResponseData->type = InteractionCallbackType::Deferred_Update_Message;
@@ -780,16 +792,16 @@ namespace DiscordCoreAPI {
 	}
 
 	ButtonCollector::ButtonCollector(InputEventData& dataPackage) {
-		channelId													= dataPackage.getChannelData().id;
+		channelId													= dataPackage.getInteractionData().channelId;
 		messageId													= dataPackage.getMessageData().id;
 		*interactionData											= dataPackage.getInteractionData();
-		buffersMapKey												= channelId + messageId;
+		buffersMapKey												= channelId.operator jsonifier::string() + messageId.operator jsonifier::string();
 		ButtonCollector::buttonInteractionBuffersMap[buffersMapKey] = &buttonIncomingInteractionBuffer;
 	}
 
-	CoRoutine<Jsonifier::Vector<ButtonResponseData>, false> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
-		int32_t maxNumberOfPressesNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
-		co_await NewThreadAwaitable<Jsonifier::Vector<ButtonResponseData>, false>();
+	CoRoutine<jsonifier::vector<ButtonResponseData>, false> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, uint32_t maxWaitTimeInMsNew,
+		uint32_t maxNumberOfPressesNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
+		co_await NewThreadAwaitable<jsonifier::vector<ButtonResponseData>, false>();
 		if (targetUser == 0 && !getButtonDataForAllNew) {
 			throw DCAException{ "ButtonCollector::collectButtonData(), You've failed to "
 								"properly set the collectButtonData() parameters!" };
@@ -818,8 +830,8 @@ namespace DiscordCoreAPI {
 
 	void ButtonCollector::run() {
 		StopWatch<Milliseconds> stopWatch{ Milliseconds{ maxTimeInMs } };
-		stopWatch.resetTimer();
-		while (!doWeQuit && !stopWatch.hasTimePassed()) {
+		stopWatch.reset();
+		while (!doWeQuit && !stopWatch.hasTimeElapsed()) {
 			if (!getButtonDataForAll) {
 				auto buttonInteractionData = makeUnique<InteractionData>();
 				if (waitForTimeToPass(buttonIncomingInteractionBuffer, *buttonInteractionData.get(), maxTimeInMs)) {
@@ -852,7 +864,7 @@ namespace DiscordCoreAPI {
 					*response->interactionData = *buttonInteractionData;
 					responseVector.emplace_back(*response);
 					++currentCollectedButtonCount;
-					stopWatch.resetTimer();
+					stopWatch.reset();
 					if (maxCollectedButtonCount > 1 && currentCollectedButtonCount < maxCollectedButtonCount) {
 						auto createResponseData	 = makeUnique<CreateInteractionResponseData>(*buttonInteractionData);
 						createResponseData->type = InteractionCallbackType::Deferred_Update_Message;
@@ -888,7 +900,7 @@ namespace DiscordCoreAPI {
 				*response->interactionData = *buttonInteractionData;
 				responseVector.emplace_back(*response);
 				++currentCollectedButtonCount;
-				stopWatch.resetTimer();
+				stopWatch.reset();
 				if (maxCollectedButtonCount > 1 && currentCollectedButtonCount < maxCollectedButtonCount) {
 					auto createResponseData	 = makeUnique<CreateInteractionResponseData>(*buttonInteractionData);
 					createResponseData->type = InteractionCallbackType::Deferred_Update_Message;
@@ -907,11 +919,11 @@ namespace DiscordCoreAPI {
 	}
 
 	ModalCollector::ModalCollector(InputEventData& dataPackage) {
-		channelId											  = dataPackage.getChannelData().id;
+		channelId											  = dataPackage.getInteractionData().channelId;
 		ModalCollector::modalInteractionBuffersMap[channelId] = &modalIncomingInteractionBuffer;
 	}
 
-	CoRoutine<ModalResponseData, false> ModalCollector::collectModalData(int32_t maxWaitTimeInMsNew) {
+	CoRoutine<ModalResponseData, false> ModalCollector::collectModalData(uint32_t maxWaitTimeInMsNew) {
 		co_await NewThreadAwaitable<ModalResponseData, false>();
 		maxTimeInMs = maxWaitTimeInMsNew;
 		run();
@@ -931,8 +943,8 @@ namespace DiscordCoreAPI {
 
 	void ModalCollector::run() {
 		StopWatch<Milliseconds> stopWatch{ Milliseconds{ maxTimeInMs } };
-		stopWatch.resetTimer();
-		while (!doWeQuit && !stopWatch.hasTimePassed()) {
+		stopWatch.reset();
+		while (!doWeQuit && !stopWatch.hasTimeElapsed()) {
 			auto buttonInteractionData = makeUnique<InteractionData>();
 			if (waitForTimeToPass(modalIncomingInteractionBuffer, *buttonInteractionData.get(), maxTimeInMs)) {
 				*responseData.interactionData = *buttonInteractionData;
@@ -956,9 +968,9 @@ namespace DiscordCoreAPI {
 		ModalCollector::modalInteractionBuffersMap.erase(channelId);
 	}
 
-	UnorderedMap<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBuffersMap{};
-	UnorderedMap<std::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBuffersMap{};
-	UnorderedMap<std::string, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBuffersMap{};
+	UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBuffersMap{};
+	UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBuffersMap{};
+	UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBuffersMap{};
 	DiscordCoreInternal::TriggerEvent<void, InteractionData> SelectMenuCollector::selectMenuInteractionEventsMap{};
 	DiscordCoreInternal::TriggerEvent<void, InteractionData> ButtonCollector::buttonInteractionEventsMap{};
 	DiscordCoreInternal::TriggerEvent<void, InteractionData> ModalCollector::modalInteractionEventsMap{};

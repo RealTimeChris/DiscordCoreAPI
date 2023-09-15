@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 				EmbedData msgEmbed;
 				msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 				msgEmbed.setColor(discordGuild.data.borderColor);
-				msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + std::to_string(SongAPI::getPlaylist(guild.id).songQueue.size()) + "\n------");
+				msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + jsonifier::toString(SongAPI::getPlaylist(guild.id).songQueue.size()) + "\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Paused Playback:**__");
 				RespondToInputEventData dataPackage(newArgs.eventData);

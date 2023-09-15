@@ -65,32 +65,32 @@ namespace DiscordCoreAPI {
 
 	class SIGTERMError : public DCAException {
 	  public:
-		inline SIGTERMError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGTERMError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGSEGVError : public DCAException {
 	  public:
-		inline SIGSEGVError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGSEGVError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGINTError : public DCAException {
 	  public:
-		inline SIGINTError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGINTError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGILLError : public DCAException {
 	  public:
-		inline SIGILLError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGILLError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGABRTError : public DCAException {
 	  public:
-		inline SIGABRTError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGABRTError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGFPEError : public DCAException {
 	  public:
-		inline SIGFPEError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGFPEError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	using SoundCloudAPIMap = UnorderedMap<uint64_t, UniquePtr<DiscordCoreInternal::SoundCloudAPI>>;
@@ -104,16 +104,16 @@ namespace DiscordCoreAPI {
 	template<typename... ArgTypes> using TimeElapsedHandler = std::function<void(ArgTypes...)>;
 
 	template<typename... ArgTypes>
-	static inline CoRoutine<void, false> threadFunction(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, bool repeated, int64_t timeInterval, ArgTypes... args) {
+	inline static CoRoutine<void, false> threadFunction(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, bool repeated, int64_t timeInterval, ArgTypes... args) {
 		auto threadHandle = co_await NewThreadAwaitable<void, false>();
 		StopWatch<Milliseconds> stopWatch{ Milliseconds{ timeInterval } };
-		stopWatch.resetTimer();
+		stopWatch.reset();
 		do {
 			std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * 10.0f / 100.0f)) });
-			while (!stopWatch.hasTimePassed() && !threadHandle.promise().stopRequested()) {
+			while (!stopWatch.hasTimeElapsed() && !threadHandle.promise().stopRequested()) {
 				std::this_thread::sleep_for(1ms);
 			}
-			stopWatch.resetTimer();
+			stopWatch.reset();
 			if (threadHandle.promise().stopRequested()) {
 				co_return;
 			}
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 		co_return;
 	};
 
-	template<typename... ArgTypes> static inline void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeDelay, bool repeated,
+	template<typename... ArgTypes> inline static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeDelay, bool repeated,
 		bool blockForCompletion, ArgTypes... args) {
 		auto newThread = threadFunction<ArgTypes...>(timeElapsedHandler, repeated, timeDelay, args...);
 		if (blockForCompletion) {
@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 		/// @param commandData A CreateApplicationCommandData structure describing the current function.
 		/// @param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of
 		/// registered commands.
-		void registerFunction(const Jsonifier::Vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+		void registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
 			bool alwaysRegister = false);
 
 		/// @brief For collecting a reference to the CommandController.
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient();
 
 	  protected:
-		static inline UniquePtr<DiscordCoreClient> instancePtr{};
+		inline static UniquePtr<DiscordCoreClient> instancePtr{};
 		static BotUser currentUser;
 
 		DiscordCoreClient& operator=(DiscordCoreClient&&) = delete;
@@ -212,15 +212,15 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient(const DiscordCoreClient&)			   = delete;
 
 		UnorderedMap<uint64_t, UniquePtr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
-		StopWatch<Milliseconds> connectionStopWatch01{ 5000ms };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
 		UniquePtr<DiscordCoreInternal::HttpsClient> httpsClient{};
+		StopWatch<Milliseconds> connectionStopWatch01{ 5000ms };
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
-		std::atomic_int32_t currentlyConnectingShard{};
+		std::atomic_uint64_t currentlyConnectingShard{};
 		std::atomic_bool areWeReadyToConnect{ false };
-		CommandController commandController{ this };
+		CommandController commandController{};
 		Milliseconds startupTimeSinceEpoch{};
 		ConfigManager configManager{};
 		EventManager eventManager{};///< An event-manager, for hooking into Discord-API-Events sent over the Websockets.

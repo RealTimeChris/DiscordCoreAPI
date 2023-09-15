@@ -42,6 +42,13 @@ namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
 
+		inline constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
+		inline constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126u };
+		inline constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127u };
+		inline constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
+		inline constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125u };
+		inline constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
+
 		enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
 		/// @brief Websocket close codes.
@@ -71,17 +78,17 @@ namespace DiscordCoreAPI {
 				We_Do_Not_Reconnect = Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
 			};
 
-			static inline UnorderedMap<int32_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close },
+			inline static UnorderedMap<int32_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close },
 				{ 4000, WebSocketCloseCode::Unknown_Error }, { 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error },
 				{ 4003, WebSocketCloseCode::Not_Authenticated }, { 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated },
 				{ 4007, WebSocketCloseCode::Invalid_Seq }, { 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
 				{ 4010, WebSocketCloseCode::Invalid_Shard }, { 4011, WebSocketCloseCode::Sharding_Required }, { 4012, WebSocketCloseCode::Invalid_API_Version },
 				{ 4013, WebSocketCloseCode::Invalid_Intent }, { 4014, WebSocketCloseCode::Disallowed_Intent } };
 
-			static inline UnorderedMap<WebSocketCloseCode, Jsonifier::StringView> outputErrorValues{ {
-																										 WebSocketCloseCode::Unknown_Error,
-																										 "We're not sure what went wrong.",
-																									 },
+			inline static UnorderedMap<WebSocketCloseCode, jsonifier::string_view> outputErrorValues{ {
+																										  WebSocketCloseCode::Unknown_Error,
+																										  "We're not sure what went wrong.",
+																									  },
 				{ WebSocketCloseCode::Unknown_Opcode, "You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!" },
 				{ WebSocketCloseCode::Decode_Error, "You sent an invalid payload to Discord. Don't do that!" },
 				{ WebSocketCloseCode::Not_Authenticated, "You sent us a payload prior to identifying." },
@@ -109,7 +116,7 @@ namespace DiscordCoreAPI {
 				*this = valueNew;
 			};
 
-			inline operator Jsonifier::StringView() {
+			inline operator jsonifier::string_view() {
 				return WebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(value)]];
 			}
 
@@ -120,12 +127,12 @@ namespace DiscordCoreAPI {
 
 		class DiscordCoreAPI_Dll EventConverter {
 		  public:
-			EventConverter(std::string eventNew);
+			EventConverter(jsonifier::string eventNew);
 
 			operator uint64_t();
 
 		  protected:
-			std::string eventValue{};
+			jsonifier::string eventValue{};
 		};
 
 		/// @brief For the opcodes that could be sent/received via Discord's websockets.
@@ -154,9 +161,9 @@ namespace DiscordCoreAPI {
 			inline WebSocketTCPConnection& operator=(WebSocketTCPConnection&& other) = default;
 			inline WebSocketTCPConnection(WebSocketTCPConnection&& other)			 = default;
 
-			WebSocketTCPConnection(const std::string& baseUrlNew, uint16_t portNew, WebSocketCore* ptrNew);
+			WebSocketTCPConnection(jsonifier::string_view baseUrlNew, uint16_t portNew, WebSocketCore* ptrNew);
 
-			void handleBuffer();
+			void handleBuffer() override;
 
 		  protected:
 			WebSocketCore* ptr{};
@@ -173,18 +180,42 @@ namespace DiscordCoreAPI {
 
 			inline WebSocketCore() = default;
 
-			WebSocketCore& operator=(WebSocketCore&&) noexcept;
-			WebSocketCore(WebSocketCore&&) noexcept;
+			WebSocketCore& operator=(WebSocketCore&& data) noexcept;
+			WebSocketCore(WebSocketCore&& data) noexcept;
 
 			WebSocketCore(ConfigManager* configManagerNew, WebSocketType typeOfWebSocketNew);
 
-			bool connect(const std::string& baseUrlNew, const std::string& relativePath, const uint16_t portNew);
+			template<typename ValueType> void createHeader(jsonifier::string_base<ValueType>& outBuffer, WebSocketOpCode opCode) {
+				int64_t originalSize{ static_cast<int64_t>(outBuffer.size()) };
+				outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(opCode) | webSocketMaskBit);
 
-			void createHeader(std::string& outBuffer, WebSocketOpCode opCode);
+				int64_t indexCount{};
+				if (originalSize <= webSocketMaxPayloadLengthSmall) {
+					outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(originalSize));
+					indexCount = 0;
+				} else if (originalSize <= webSocketMaxPayloadLengthLarge) {
+					outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(webSocketPayloadLengthMagicLarge));
+					indexCount = 2;
+				} else {
+					outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(webSocketPayloadLengthMagicHuge));
+					indexCount = 8;
+				}
+				for (int64_t x = indexCount - 1; x >= 0; x--) {
+					outBuffer.insert(outBuffer.begin() + 1 + indexCount - x, static_cast<uint8_t>(originalSize >> (x * 8)));
+				}
 
-			virtual bool onMessageReceived(std::string_view message) = 0;
+				outBuffer.at(1) |= webSocketMaskBit;
+				outBuffer.insert(outBuffer.begin() + 2 + indexCount, 0);
+				outBuffer.insert(outBuffer.begin() + 3 + indexCount, 0);
+				outBuffer.insert(outBuffer.begin() + 4 + indexCount, 0);
+				outBuffer.insert(outBuffer.begin() + 5 + indexCount, 0);
+			}
 
-			bool sendMessage(std::string& dataToSend, bool priority);
+			bool connect(jsonifier::string_view baseUrlNew, jsonifier::string_view relativePath, const uint16_t portNew);
+
+			virtual bool onMessageReceived(jsonifier::string_view_base<uint8_t> message) = 0;
+
+			bool sendMessage(jsonifier::string_base<uint8_t>& dataToSend, bool priority);
 
 			bool checkForAndSendHeartBeat(bool = false);
 
@@ -202,14 +233,14 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			StopWatch<Milliseconds> heartBeatStopWatch{ 20000ms };
+			jsonifier::string_base<uint8_t> currentMessage{};
 			std::atomic<WebSocketState> currentState{};
 			bool haveWeReceivedHeartbeatAck{ true };
 			std::atomic_bool areWeCollectingData{};
 			WebSocketTCPConnection tcpConnection{};
-			Jsonifier::String currentMessage{};
 			uint32_t maxReconnectTries{ 10 };
 			uint32_t currentReconnectTries{};
-			std::array<uint32_t, 2> shard{};
+			std::array<uint64_t, 2> shard{};
 			ConfigManager* configManager{};
 			uint32_t lastNumberReceived{};
 			WebSocketOpCode dataOpCode{};
@@ -237,27 +268,26 @@ namespace DiscordCoreAPI {
 			inline WebSocketClient& operator=(WebSocketClient&&) = default;
 			inline WebSocketClient(WebSocketClient&&)			 = default;
 
-			WebSocketClient(DiscordCoreClient* client, uint32_t currentShardNew, std::atomic_bool* doWeQuitNew);
+			WebSocketClient(uint64_t currentShardNew, std::atomic_bool* doWeQuitNew);
 
 			void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect);
 
-			bool onMessageReceived(std::string_view message);
+			bool onMessageReceived(jsonifier::string_view_base<uint8_t> message) override;
 
 			void disconnect();
 
-			void onClosed();
+			void onClosed() override;
 
 			virtual ~WebSocketClient();
 
 		  protected:
 			UnorderedMap<uint64_t, UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 			VoiceConnectionData voiceConnectionData{};
-			DiscordCoreClient* discordCoreClient{};
+			jsonifier::string resumeUrl{};
+			jsonifier::string sessionId{};
 			std::atomic_bool* doWeQuit{};
 			bool serverUpdateCollected{};
 			bool stateUpdateCollected{};
-			std::string resumeUrl{};
-			std::string sessionId{};
 			Snowflake userId{};
 		};
 
@@ -266,7 +296,7 @@ namespace DiscordCoreAPI {
 			friend class DiscordCoreAPI::DiscordCoreClient;
 			friend class DiscordCoreAPI::BotUser;
 
-			BaseSocketAgent(DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, uint64_t currentBaseSocket);
+			BaseSocketAgent(std::atomic_bool* doWeQuitNew);
 
 			void connect(WebSocketClient& value);
 
@@ -275,8 +305,6 @@ namespace DiscordCoreAPI {
 		  protected:
 			UnorderedMap<uint64_t, WebSocketClient> shardMap{};
 			std::deque<ConnectionPackage> connections{};
-			DiscordCoreClient* discordCoreClient{};
-			uint64_t currentBaseSocketAgent{};
 			std::atomic_bool* doWeQuit{};
 			ThreadWrapper taskThread{};
 

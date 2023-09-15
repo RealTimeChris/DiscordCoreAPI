@@ -54,27 +54,27 @@ namespace DiscordCoreAPI {
 
 	/// @brief For creating an auto-moderation-rule.
 	struct CreateAutoModerationRuleData {
-		Jsonifier::Vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
-		Jsonifier::Vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		jsonifier::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		jsonifier::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		TriggerMetaData triggerMetadata{};///< The trigger metadata.
-		Jsonifier::Vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
+		jsonifier::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
 		TriggerType triggerType{};///< The trigger type.
 		EventType eventType{};///< The event type.
 		Snowflake guildId{};///< The Guild within which to create the AutoModerationRuleData.
-		std::string name{};///< The rule name.
+		jsonifier::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
 	};
 
 	/// @brief For modifying an auto-moderation-rule.
 	struct ModifyAutoModerationRuleData {
-		Jsonifier::Vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
-		Jsonifier::Vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		jsonifier::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		jsonifier::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		TriggerMetaData triggerMetadata{};///< The trigger metadata.
-		Jsonifier::Vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
+		jsonifier::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to modify.
 		EventType eventType{};///< The event type.
 		Snowflake guildId{};///< The AutoModerationRuleData within which to modify the auto-moderation-rule.
-		std::string name{};///< The rule name.
+		jsonifier::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
 	};
 
@@ -82,9 +82,9 @@ namespace DiscordCoreAPI {
 	struct AutoModerationActionExecutionEventData {
 		Snowflake alertSystemMessageId{};///< The id of any system auto moderation messages posted as a result of this action.
 		TriggerType ruleTriggerType{};///< The trigger type of rule which was triggered.
-		std::string matchedKeyword{};///< The word or phrase configured in the rule that triggered the rule
-		std::string matchedContent{};///< The substring in content that triggered the rule.
-		std::string content{};///< The user generated text content.
+		jsonifier::string matchedKeyword{};///< The word or phrase configured in the rule that triggered the rule
+		jsonifier::string matchedContent{};///< The substring in content that triggered the rule.
+		jsonifier::string content{};///< The user generated text content.
 		Snowflake channelId{};///< The id of the channel in which user content was posted.
 		Snowflake messageId{};///< The id of any user message which content belongs to.
 		ActionData action{};///< The action which was executed.
@@ -93,8 +93,6 @@ namespace DiscordCoreAPI {
 		Snowflake userId{};///< The id of the user which generated the content which triggered the rule.
 
 		AutoModerationActionExecutionEventData() = default;
-
-		virtual ~AutoModerationActionExecutionEventData() = default;
 	};
 
 	/// @brief For deleting an auto-moderation-rule.
@@ -117,7 +115,7 @@ namespace DiscordCoreAPI {
 		/// @brief Get all of the Guild's Auto-Moderation-Rules.
 		/// @param dataPackage The moderation rule data to get.
 		/// @return A CoRoutine containing a vector<AutoModerationRuleData>.
-		CoRoutine<Jsonifier::Vector<AutoModerationRuleData>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
+		CoRoutine<jsonifier::vector<AutoModerationRuleData>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
 		/// @brief Get a particular Auto-Moderation-Rule
 		/// @param dataPackage The moderation rule data to get.
