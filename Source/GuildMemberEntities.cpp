@@ -57,13 +57,13 @@ namespace jsonifier {
 namespace DiscordCoreAPI {
 
 	GuildMemberCacheData& GuildMemberCacheData::operator=(const GuildMemberData& other) {
-		setFlagValue(GuildMemberFlags::Pending, other.pending);
-		setFlagValue(GuildMemberFlags::Deaf, other.deaf);
-		setFlagValue(GuildMemberFlags::Mute, other.mute);
 		if (static_cast<int64_t>(other.flags) != 0) {
 			flags = other.flags;
 		}
-		if (other.permissions != "") {
+		setFlagValue(GuildMemberFlags::Pending, other.pending);
+		setFlagValue(GuildMemberFlags::Deaf, other.deaf);
+		setFlagValue(GuildMemberFlags::Mute, other.mute);
+		if (other.permissions.operator std::string_view() != "") {
 			permissions = other.permissions;
 		}
 		if (other.joinedAt != "") {
@@ -92,13 +92,13 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildMemberCacheData& GuildMemberCacheData::operator=(GuildMemberData&& other) noexcept {
-		setFlagValue(GuildMemberFlags::Pending, other.pending);
-		setFlagValue(GuildMemberFlags::Deaf, other.deaf);
-		setFlagValue(GuildMemberFlags::Mute, other.mute);
 		if (static_cast<int64_t>(other.flags) != 0) {
 			flags = other.flags;
 		}
-		if (other.permissions != "") {
+		setFlagValue(GuildMemberFlags::Pending, other.pending);
+		setFlagValue(GuildMemberFlags::Deaf, other.deaf);
+		setFlagValue(GuildMemberFlags::Mute, other.mute);
+		if (other.permissions.operator std::string_view() != "") {
 			permissions = std::move(other.permissions);
 		}
 		if (other.joinedAt != "") {
@@ -125,16 +125,16 @@ namespace DiscordCoreAPI {
 	GuildMemberCacheData::operator GuildMemberData() {
 		GuildMemberData returnData{};
 		returnData.pending	   = getFlagValue(GuildMemberFlags::Pending);
-		returnData.permissions = permissions.operator std::string();
+		returnData.permissions = permissions.operator jsonifier::string();
 		returnData.deaf		   = getFlagValue(GuildMemberFlags::Deaf);
 		returnData.mute		   = getFlagValue(GuildMemberFlags::Mute);
-		returnData.joinedAt	   = joinedAt.operator std::string();
-		returnData.nick		   = nick.operator std::string();
+		returnData.joinedAt	   = joinedAt.operator jsonifier::string();
 		returnData.guildId	   = guildId;
 		returnData.user.id	   = user.id;
 		returnData.avatar	   = avatar;
 		returnData.roles	   = roles;
 		returnData.flags	   = flags;
+		returnData.nick		   = nick;
 		return returnData;
 	}
 
@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 		if (cache.contains(key)) {
 			return cache[key];
 		} else {
-			return {};
+			return getGuildMemberAsync({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId }).get();
 		}
 	}
 
@@ -188,10 +188,10 @@ namespace DiscordCoreAPI {
 		if (dataPackage.after != 0) {
 			workload.relativePath += "?after=" + dataPackage.after;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 		} else if (dataPackage.limit != 0) {
-			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+			workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::listGuildMembersAsync()";
 		jsonifier::vector<GuildMemberData> returnData{};
@@ -207,10 +207,10 @@ namespace DiscordCoreAPI {
 		if (dataPackage.query != "") {
 			workload.relativePath += "?query=" + dataPackage.query;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 		} else if (dataPackage.limit != 0) {
-			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+			workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::searchGuildMembersAsync()";
 		jsonifier::vector<GuildMemberData> returnData{};

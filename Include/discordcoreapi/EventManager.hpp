@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 	struct InviteDeletionData {
 		Snowflake channelId{};///< The id of the Channel for which the Invite existed.
 		Snowflake guildId{};///< The id of the Guild for which the Invite existed.
-		std::string code{};///< The code of the Invite.
+		jsonifier::string code{};///< The code of the Invite.
 	};
 
 	struct MessageDeletionData {
@@ -162,303 +162,303 @@ namespace DiscordCoreAPI {
 
 	/// @brief Data that is received as part of an InputEvent creation event.
 	struct DiscordCoreAPI_Dll OnInputEventCreationData : public EventData<InputEventData> {
-		OnInputEventCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnInputEventCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an ApplicationCommandPermissions update event.
 	struct DiscordCoreAPI_Dll OnApplicationCommandPermissionsUpdateData : public EventData<GuildApplicationCommandPermissionsData> {
-		OnApplicationCommandPermissionsUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnApplicationCommandPermissionsUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an AutoModerationRuleData creation event.
 	struct DiscordCoreAPI_Dll OnAutoModerationRuleCreationData : public EventData<AutoModerationRuleData> {
-		OnAutoModerationRuleCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnAutoModerationRuleCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an AutoModerationRuleData update event.
 	struct DiscordCoreAPI_Dll OnAutoModerationRuleUpdateData : public EventData<AutoModerationRuleData> {
-		OnAutoModerationRuleUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnAutoModerationRuleUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an AutoModerationRuleData delete event.
 	struct DiscordCoreAPI_Dll OnAutoModerationRuleDeletionData : public EventData<AutoModerationRuleData> {
-		OnAutoModerationRuleDeletionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnAutoModerationRuleDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an AutoModerationAction execution event.
 	struct DiscordCoreAPI_Dll OnAutoModerationActionExecutionData : public EventData<AutoModerationActionExecutionEventData> {
-		OnAutoModerationActionExecutionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnAutoModerationActionExecutionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Channel creation event.
 	struct DiscordCoreAPI_Dll OnChannelCreationData : public EventData<ChannelData> {
-		OnChannelCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnChannelCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Channel update event.
 	struct DiscordCoreAPI_Dll OnChannelUpdateData : public UpdatedEventData<ChannelData, ChannelData> {
-		OnChannelUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnChannelUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Channel deletion event.
 	struct DiscordCoreAPI_Dll OnChannelDeletionData : public EventData<ChannelData> {
-		OnChannelDeletionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnChannelDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Channel pins update event.
 	struct DiscordCoreAPI_Dll OnChannelPinsUpdateData : public EventData<ChannelPinsUpdateEventData> {
-		OnChannelPinsUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnChannelPinsUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a ThreadData creation event.
 	struct DiscordCoreAPI_Dll OnThreadCreationData : public EventData<ThreadData> {
-		OnThreadCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnThreadCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a ThreadData update event.
 	struct DiscordCoreAPI_Dll OnThreadUpdateData : public EventData<ThreadData> {
-		OnThreadUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnThreadUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a ThreadData deletion event.
 	struct DiscordCoreAPI_Dll OnThreadDeletionData : public EventData<ThreadData> {
-		OnThreadDeletionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnThreadDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a ThreadData list sync event.
 	struct DiscordCoreAPI_Dll OnThreadListSyncData : public EventData<ThreadListSyncData> {
-		OnThreadListSyncData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnThreadListSyncData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a ThreadData member update event.
 	struct DiscordCoreAPI_Dll OnThreadMemberUpdateData : public EventData<ThreadMemberData> {
-		OnThreadMemberUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnThreadMemberUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a ThreadData members update event.
 	struct DiscordCoreAPI_Dll OnThreadMembersUpdateData : public EventData<ThreadMembersUpdateData> {
-		OnThreadMembersUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnThreadMembersUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Guild creation event.
 	struct DiscordCoreAPI_Dll OnGuildCreationData : public EventData<GuildData> {
-		OnGuildCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Guild update event.
 	struct DiscordCoreAPI_Dll OnGuildUpdateData : public UpdatedEventData<GuildData, GuildData> {
-		OnGuildUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Guild deletion event.
 	struct DiscordCoreAPI_Dll OnGuildDeletionData : public EventData<GuildData> {
-		OnGuildDeletionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanAddData : public EventData<GuildBanAddData> {
-		OnGuildBanAddData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildBanAddData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanRemoveData : public EventData<GuildBanRemoveData> {
-		OnGuildBanRemoveData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildBanRemoveData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Guild emojis update event.
 	struct DiscordCoreAPI_Dll OnGuildEmojisUpdateData : public EventData<GuildEmojisUpdateEventData> {
-		OnGuildEmojisUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildEmojisUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Guild sticker update event.
 	struct DiscordCoreAPI_Dll OnGuildStickersUpdateData : public EventData<GuildStickersUpdateEventData> {
-		OnGuildStickersUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildStickersUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Guild Integration update event.
 	struct DiscordCoreAPI_Dll OnGuildIntegrationsUpdateData : public EventData<Snowflake> {
-		OnGuildIntegrationsUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildIntegrationsUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a GuildMember add event.
 	struct DiscordCoreAPI_Dll OnGuildMemberAddData : public EventData<GuildMemberData> {
-		OnGuildMemberAddData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildMemberAddData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a GuildMember update event.
 	struct DiscordCoreAPI_Dll OnGuildMemberUpdateData : public UpdatedEventData<GuildMemberData, GuildMemberData> {
-		OnGuildMemberUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildMemberUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a GuildMember remove event.
 	struct DiscordCoreAPI_Dll OnGuildMemberRemoveData : public EventData<GuildMemberRemoveData> {
-		OnGuildMemberRemoveData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildMemberRemoveData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a GuildMembers chunk event.
 	struct DiscordCoreAPI_Dll OnGuildMembersChunkData : public EventData<GuildMembersChunkEventData> {
-		OnGuildMembersChunkData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildMembersChunkData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a RoleData creation event.
 	struct DiscordCoreAPI_Dll OnRoleCreationData : public EventData<RoleCreationData> {
-		OnRoleCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnRoleCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a RoleData update event.
 	struct DiscordCoreAPI_Dll OnRoleUpdateData : public UpdatedEventData<RoleUpdateData, RoleData> {
-		OnRoleUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnRoleUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a RoleData deletion event.
 	struct DiscordCoreAPI_Dll OnRoleDeletionData : public EventData<RoleDeletionData> {
-		OnRoleDeletionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnRoleDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a GuildScheduledEventData creation event.
 	struct DiscordCoreAPI_Dll OnGuildScheduledEventCreationData : public EventData<GuildScheduledEventData> {
-		OnGuildScheduledEventCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildScheduledEventCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a GuildScheduledEventData update event.
 	struct DiscordCoreAPI_Dll OnGuildScheduledEventUpdateData : public EventData<GuildScheduledEventData> {
-		OnGuildScheduledEventUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildScheduledEventUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a GuildScheduledEventData delete event.
 	struct DiscordCoreAPI_Dll OnGuildScheduledEventDeletionData : public EventData<GuildScheduledEventData> {
-		OnGuildScheduledEventDeletionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildScheduledEventDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a GuildScheduledEventData User add event.
 	struct DiscordCoreAPI_Dll OnGuildScheduledEventUserAddData : public EventData<GuildScheduledEventUserAddData> {
-		OnGuildScheduledEventUserAddData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildScheduledEventUserAddData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a GuildScheduledEventData User remove event.
 	struct DiscordCoreAPI_Dll OnGuildScheduledEventUserRemoveData : public EventData<GuildScheduledEventUserRemoveData> {
-		OnGuildScheduledEventUserRemoveData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnGuildScheduledEventUserRemoveData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an Integration creation event.
 	struct DiscordCoreAPI_Dll OnIntegrationCreationData : public EventData<IntegrationCreationData> {
-		OnIntegrationCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnIntegrationCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an Integration update event.
 	struct DiscordCoreAPI_Dll OnIntegrationUpdateData : public EventData<IntegrationUpdateData> {
-		OnIntegrationUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnIntegrationUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an Integration deletion event.
 	struct DiscordCoreAPI_Dll OnIntegrationDeletionData : public EventData<IntegrationDeletionData> {
-		OnIntegrationDeletionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnIntegrationDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an Invite creation event.
 	struct DiscordCoreAPI_Dll OnInviteCreationData : public EventData<InviteData> {
-		OnInviteCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnInviteCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an Invite deletion event.
 	struct DiscordCoreAPI_Dll OnInviteDeletionData : public EventData<InviteDeletionData> {
-		OnInviteDeletionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnInviteDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of an Interaction creation event.
 	struct DiscordCoreAPI_Dll OnInteractionCreationData : public EventData<InteractionData> {
-		OnInteractionCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnInteractionCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Message creation event.
 	struct DiscordCoreAPI_Dll OnMessageCreationData : public EventData<MessageData> {
-		OnMessageCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnMessageCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Message update event.
 	struct DiscordCoreAPI_Dll OnMessageUpdateData : public EventData<MessageData> {
-		OnMessageUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnMessageUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Message deletion event.
 	struct DiscordCoreAPI_Dll OnMessageDeletionData : public EventData<MessageDeletionData> {
-		OnMessageDeletionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnMessageDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Message delete bulk event.
 	struct DiscordCoreAPI_Dll OnMessageDeleteBulkData : public EventData<MessageDeletionBulkData> {
-		OnMessageDeleteBulkData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnMessageDeleteBulkData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Reaction add event.
 	struct DiscordCoreAPI_Dll OnReactionAddData : public EventData<ReactionData> {
-		OnReactionAddData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnReactionAddData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Reaction remove event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveData : public EventData<ReactionRemoveData> {
 		ReactionRemoveData reactionRemoveData{};///< The ReactionRemoveData.
-		OnReactionRemoveData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnReactionRemoveData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Reaction remove all event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveAllData : public EventData<ReactionRemoveAllData> {
-		OnReactionRemoveAllData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnReactionRemoveAllData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a Reaction remove emoji event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveEmojiData : public EventData<ReactionRemoveEmojiData> {
-		OnReactionRemoveEmojiData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnReactionRemoveEmojiData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a presence update event.
 	struct DiscordCoreAPI_Dll OnPresenceUpdateData : public EventData<PresenceUpdateData> {
-		OnPresenceUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnPresenceUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a StageInstanceData creation event.
 	struct DiscordCoreAPI_Dll OnStageInstanceCreationData : public EventData<StageInstanceData> {
-		OnStageInstanceCreationData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnStageInstanceCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a StageInstanceData update event.
 	struct DiscordCoreAPI_Dll OnStageInstanceUpdateData : public EventData<StageInstanceData> {
-		OnStageInstanceUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnStageInstanceUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a StageInstanceData deletion event.
 	struct DiscordCoreAPI_Dll OnStageInstanceDeletionData : public EventData<StageInstanceData> {
-		OnStageInstanceDeletionData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnStageInstanceDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a typing start event.
 	struct DiscordCoreAPI_Dll OnTypingStartData : public EventData<TypingStartData> {
-		OnTypingStartData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnTypingStartData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a User update event.
 	struct DiscordCoreAPI_Dll OnUserUpdateData : public UpdatedEventData<UserData, UserData> {
-		OnUserUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnUserUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received as part of a voice state update event.
 	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData : public EventData<VoiceStateData> {
-		OnVoiceStateUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse, DiscordCoreInternal::WebSocketClient* sslShard);
+		OnVoiceStateUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse, DiscordCoreInternal::WebSocketClient* sslShard);
 	};
 
 	/// @brief Data that is received as part of a voice server update event.
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData : public EventData<VoiceServerUpdateData> {
-		OnVoiceServerUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse, DiscordCoreInternal::WebSocketClient* sslShard);
+		OnVoiceServerUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse, DiscordCoreInternal::WebSocketClient* sslShard);
 	};
 
 	/// @brief Data that is received as part of a WebHook update event.
 	struct DiscordCoreAPI_Dll OnWebhookUpdateData : public EventData<WebHookUpdateData> {
-		OnWebhookUpdateData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnWebhookUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Data that is received upon the bot receiving an autocomplete entry.
 	struct DiscordCoreAPI_Dll OnAutoCompleteEntryData : public EventData<InputEventData> {
-		OnAutoCompleteEntryData(jsonifier::jsonifier_core& parserNew, std::basic_string_view<uint8_t> dataToParse);
+		OnAutoCompleteEntryData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse);
 	};
 
 	/// @brief Class for handling the assignment of event-handling functions.int32_t

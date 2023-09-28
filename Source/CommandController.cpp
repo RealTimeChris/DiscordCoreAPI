@@ -33,20 +33,20 @@
 
 namespace DiscordCoreAPI {
 
-	UnorderedMap<jsonifier::vector<std::string>, UniquePtr<BaseFunction>> functions{};
+	UnorderedMap<jsonifier::vector<jsonifier::string>, UniquePtr<BaseFunction>> functions{};
 
-	void CommandController::registerFunction(const jsonifier::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction) {
+	void CommandController::registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, UniquePtr<BaseFunction> baseFunction) {
 		functions[functionNames] = std::move(baseFunction);
 	}
 
-	UnorderedMap<jsonifier::vector<std::string>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
+	UnorderedMap<jsonifier::vector<jsonifier::string>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
 		return functions;
 	};
 
-	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
-		co_await NewThreadAwaitable<void>();
+	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData&& commandData) {
 		BaseFunctionArguments theArgsNew{ commandData };
-		UniquePtr<BaseFunction> functionPointer{ getCommand(convertToLowerCase(commandData.getCommandName())) };
+		co_await NewThreadAwaitable<void>();
+		UniquePtr<BaseFunction> functionPointer{ getCommand(theArgsNew.getCommandName()) };
 		if (!functionPointer.get()) {
 			co_return;
 		}
@@ -55,15 +55,15 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	UniquePtr<BaseFunction> CommandController::getCommand(const std::string& commandName) {
-		std::string functionName{};
+	UniquePtr<BaseFunction> CommandController::getCommand(jsonifier::string_view commandName) {
+		jsonifier::string functionName{};
 		bool isItFound{};
 		if (commandName.size() > 0) {
 			for (auto const& [keyFirst, value]: functions) {
 				for (auto& key: keyFirst) {
-					if (key.find(convertToLowerCase(commandName)) != std::string::npos) {
+					if (key.find(convertToLowerCase(commandName)) != jsonifier::string::npos) {
 						isItFound	 = true;
-						functionName = convertToLowerCase(commandName.substr(0, key.length()));
+						functionName = convertToLowerCase(commandName.substr(0, key.size()));
 						break;
 					}
 				}
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 		return nullptr;
 	}
 
-	UniquePtr<BaseFunction> CommandController::createFunction(const std::string& functionName) {
+	UniquePtr<BaseFunction> CommandController::createFunction(jsonifier::string_view functionName) {
 		for (auto& [key01, value01]: functions) {
 			for (auto& value02: key01) {
 				if (functionName == value02) {

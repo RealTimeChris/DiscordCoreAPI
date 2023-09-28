@@ -47,8 +47,6 @@ namespace DiscordCoreAPI {
 			friend class RateLimitQueue;
 			friend class HttpsClient;
 
-			inline RateLimitData() noexcept = default;
-
 		  protected:
 			std::unique_lock<std::mutex> lock{ accessMutex, std::defer_lock };
 			std::atomic<Milliseconds> sampledTimeInMs{ Milliseconds{} };
@@ -58,19 +56,19 @@ namespace DiscordCoreAPI {
 			std::atomic_bool didWeHitRateLimit{};
 			std::atomic_bool haveWeGoneYet{};
 			std::atomic_bool doWeWait{};
+			jsonifier::string bucket{};
 			std::mutex accessMutex{};
-			std::string bucket{};
 		};
 
 		class RateLimitQueue {
 		  public:
 			friend class HttpsClient;
 
-			inline RateLimitQueue() noexcept = default;
+			inline RateLimitQueue() = default;
 
 			inline void initialize() {
 				for (int64_t enumOne = static_cast<int64_t>(HttpsWorkloadType::Unset); enumOne != static_cast<int64_t>(HttpsWorkloadType::LAST); enumOne++) {
-					auto tempBucket = std::to_string(std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count());
+					auto tempBucket = jsonifier::toString(std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count());
 					buckets.emplace(static_cast<HttpsWorkloadType>(enumOne), tempBucket);
 					rateLimits.emplace(tempBucket, makeUnique<RateLimitData>());
 					std::this_thread::sleep_for(1ms);
@@ -84,8 +82,8 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			UnorderedMap<std::string, UniquePtr<RateLimitData>> rateLimits{};
-			UnorderedMap<HttpsWorkloadType, std::string> buckets{};
+			UnorderedMap<jsonifier::string, UniquePtr<RateLimitData>> rateLimits{};
+			UnorderedMap<HttpsWorkloadType, jsonifier::string> buckets{};
 		};
 
 	}// namespace DiscordCoreInternal

@@ -77,8 +77,8 @@ namespace jsonifier {
 
 namespace DiscordCoreAPI {
 
-	InteractionResponseBase& InteractionResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	InteractionResponseBase& InteractionResponseBase::addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, ButtonStyle buttonStyle,
+		jsonifier::string_view emojiName, Snowflake emojiId, jsonifier::string_view url) {
 		if (data.components.size() == 0) {
 			ActionRowData actionRowData;
 			data.components.emplace_back(actionRowData);
@@ -103,8 +103,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, jsonifier::vector<SelectOptionData> options,
-		const std::string& placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType typeNew, jsonifier::vector<ChannelType> channelTypes) {
+	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<SelectOptionData> options,
+		jsonifier::string_view placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType typeNew, jsonifier::vector<ChannelType> channelTypes) {
 		if (data.components.size() == 0) {
 			ActionRowData actionRowData;
 			data.components.emplace_back(actionRowData);
@@ -129,9 +129,9 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, uint64_t minLength, uint64_t maxLength, TextInputStyle inputStyle, const std::string& label,
-		const std::string& placeholder) {
+	InteractionResponseBase& InteractionResponseBase::addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
+		jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, TextInputStyle inputStyle, jsonifier::string_view label,
+		jsonifier::string_view placeholder) {
 		data.title	  = topTitleNew;
 		data.customId = topCustomIdNew;
 		if (data.components.size() == 0) {
@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addContent(const std::string& dataPackage) {
+	InteractionResponseBase& InteractionResponseBase::addContent(jsonifier::string_view dataPackage) {
 		data.content = dataPackage;
 		return *this;
 	}
@@ -662,7 +662,7 @@ namespace DiscordCoreAPI {
 		channelId		 = dataPackage.getInteractionData().channelId;
 		messageId		 = dataPackage.getMessageData().id;
 		*interactionData = dataPackage.getInteractionData();
-		buffersMapKey	 = channelId + messageId;
+		buffersMapKey	 = channelId.operator jsonifier::string() + messageId.operator jsonifier::string();
 	}
 
 	CoRoutine<jsonifier::vector<SelectMenuResponseData>, false> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, uint32_t maxWaitTimeInMsNew,
@@ -711,7 +711,7 @@ namespace DiscordCoreAPI {
 					response->messageId		   = messageId;
 					response->userId		   = selectMenuInteractionData->user.id;
 					*response->interactionData = *interactionData;
-					response->values		   = jsonifier::vector<std::string>{ "empty" };
+					response->values		   = jsonifier::vector<jsonifier::string>{ "empty" };
 					responseVector.emplace_back(*response);
 					break;
 				}
@@ -758,7 +758,7 @@ namespace DiscordCoreAPI {
 					response->messageId		   = messageId;
 					response->userId		   = selectMenuInteractionData->user.id;
 					*response->interactionData = *interactionData;
-					response->values		   = jsonifier::vector<std::string>{ "empty" };
+					response->values		   = jsonifier::vector<jsonifier::string>{ "empty" };
 					responseVector.emplace_back(*response);
 					break;
 				}
@@ -795,7 +795,7 @@ namespace DiscordCoreAPI {
 		channelId													= dataPackage.getInteractionData().channelId;
 		messageId													= dataPackage.getMessageData().id;
 		*interactionData											= dataPackage.getInteractionData();
-		buffersMapKey												= channelId + messageId;
+		buffersMapKey												= channelId.operator jsonifier::string() + messageId.operator jsonifier::string();
 		ButtonCollector::buttonInteractionBuffersMap[buffersMapKey] = &buttonIncomingInteractionBuffer;
 	}
 
@@ -968,9 +968,9 @@ namespace DiscordCoreAPI {
 		ModalCollector::modalInteractionBuffersMap.erase(channelId);
 	}
 
-	UnorderedMap<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBuffersMap{};
-	UnorderedMap<std::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBuffersMap{};
-	UnorderedMap<std::string, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBuffersMap{};
+	UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBuffersMap{};
+	UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBuffersMap{};
+	UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBuffersMap{};
 	DiscordCoreInternal::TriggerEvent<void, InteractionData> SelectMenuCollector::selectMenuInteractionEventsMap{};
 	DiscordCoreInternal::TriggerEvent<void, InteractionData> ButtonCollector::buttonInteractionEventsMap{};
 	DiscordCoreInternal::TriggerEvent<void, InteractionData> ModalCollector::modalInteractionEventsMap{};

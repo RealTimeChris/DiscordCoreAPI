@@ -44,14 +44,14 @@ namespace DiscordCoreAPI {
 	/// @brief For addin a RoleData to a GuildMember.
 	struct AddGuildMemberRoleData {
 		Snowflake guildId{};///< The id of the Guild within which to assign the RoleData.
-		std::string reason{};///< Reason for adding the GuildMemberData's RoleData.
+		jsonifier::string reason{};///< Reason for adding the GuildMemberData's RoleData.
 		Snowflake userId{};///< The id of the UserData to whom to assign the RoleData.
 		Snowflake roleId{};///< The id of the RoleData to be assigned.
 	};
 
 	/// @brief For removing a RoleData from a GuildMember.
 	struct RemoveGuildMemberRoleData {
-		std::string reason{};///< Reason for removing the GuildMemberData's RoleData.
+		jsonifier::string reason{};///< Reason for removing the GuildMemberData's RoleData.
 		Snowflake guildId{};///< The id of the Guild within which to remove the RoleData.
 		Snowflake userId{};///< The id of the UserData from whom to remove the RoleData.
 		Snowflake roleId{};///< The id of the RoleData to be removed.
@@ -65,14 +65,14 @@ namespace DiscordCoreAPI {
 	/// @brief For creating a new RoleData within a chosen Guild.
 	struct CreateGuildRoleData {
 		PermissionsParse permissions{};///< The base permissions to give the RoleData.
-		std::string hexColorValue{};///< Hex color-value between 0 and ffffff.
-		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
-		std::string reason{};///< Reason for creating the RoleData.
+		jsonifier::string hexColorValue{};///< Hex color-value between 0 and ffffff.
+		jsonifier::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
+		jsonifier::string reason{};///< Reason for creating the RoleData.
 		Snowflake guildId{};///< Which Guild to make the RoleData in.
-		std::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		jsonifier::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		bool mentionable{};///< Is it mentionable by others in the Guild.
 		uint32_t position{};///< The position amongst the other roles.
-		std::string name{};///< The name of the RoleData.
+		jsonifier::string name{};///< The name of the RoleData.
 		bool hoist{};///< Is this RoleData hoisted above the rest of them?
 	};
 
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 		friend class Roles;
 
 		uint32_t newPosition{};///< The new position of the RoleData.
-		std::string reason{};///< Reason for modifying the RoleData positions.
+		jsonifier::string reason{};///< Reason for modifying the RoleData positions.
 		Snowflake guildId{};///< The Guild within which to move the RoleData.
 		Snowflake roleId{};///< The id of the RoleData to move.
 
@@ -99,20 +99,20 @@ namespace DiscordCoreAPI {
 	/// @brief For updating a RoleData's options within a chosen Guild.
 	struct ModifyGuildRoleData {
 		PermissionsParse permissions{ "0" };///< Base Guild permissions for the RoleData.
-		std::string hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
-		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
-		std::string reason{};///<< Reason for modifying the RoleData.
+		jsonifier::string hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
+		jsonifier::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
+		jsonifier::string reason{};///<< Reason for modifying the RoleData.
 		Snowflake guildId{};///< The id of the Guild within which to update the RoleData.
-		std::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		jsonifier::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		bool mentionable{};///< Is it mentionable?
 		Snowflake roleId{};///< The id of the RoleData to update.
-		std::string name{};///< What the name of the RoleData is going to be.
+		jsonifier::string name{};///< What the name of the RoleData is going to be.
 		bool hoist{};///< Is this RoleData hoisted above the others?
 	};
 
 	/// @brief For removing a RoleData from a chosen Guild.
 	struct RemoveGuildRoleData {
-		std::string reason{};///< Reason for removing this RoleData.
+		jsonifier::string reason{};///< Reason for removing this RoleData.
 		Snowflake guildId{};///< The id of the Guild from which to remove the RoleData.
 		Snowflake roleId{};///< The id of the RoleData to remove.
 	};

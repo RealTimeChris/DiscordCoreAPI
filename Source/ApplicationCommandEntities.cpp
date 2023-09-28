@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<ApplicationCommandData>();
 		jsonifier::vector<ApplicationCommandData> appCommands = getGlobalApplicationCommandsAsync({ .applicationId = dataPackage.applicationId }).get();
 		bool isItFound{};
-		std::string appCommandId{};
+		Snowflake appCommandId{};
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
 				appCommandId = value.id;
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 			co_return ApplicationCommandData();
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/commands/" + appCommandId;
+		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/commands/" + appCommandId.operator jsonifier::string();
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "ApplicationCommands::editGlobalApplicationCommandAsync()";
 		ApplicationCommandData returnData{};
@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Global_Application_Command };
 		co_await NewThreadAwaitable<void>();
 		jsonifier::vector<ApplicationCommandData> appCommands = getGlobalApplicationCommandsAsync({ .applicationId = dataPackage.applicationId }).get();
-		std::string commandId{};
+		Snowflake commandId{};
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/commands/" + commandId;
+		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/commands/" + commandId.operator jsonifier::string();
 		workload.callStack	   = "ApplicationCommands::deleteGlobalApplicationCommandAsync()";
 		ApplicationCommands::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
@@ -222,7 +222,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Application_Command };
 		co_await NewThreadAwaitable<ApplicationCommandData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + std::to_string(dataPackage.commandId);
+		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + jsonifier::toString(dataPackage.commandId);
 		workload.callStack	   = "ApplicationCommands::getGuildApplicationCommandAsync()";
 		ApplicationCommandData returnData{};
 		ApplicationCommands::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<ApplicationCommandData>();
 		jsonifier::vector<ApplicationCommandData> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
 		bool isItFound										  = false;
-		std::string appCommandId;
+		Snowflake appCommandId{};
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
 				appCommandId = value.id;
@@ -257,7 +257,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Application_Command };
 		co_await NewThreadAwaitable<void>();
 		jsonifier::vector<ApplicationCommandData> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
-		std::string commandId;
+		Snowflake commandId;
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
@@ -303,7 +303,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Application_Command_Permissions };
 		co_await NewThreadAwaitable<GuildApplicationCommandPermissionsData>();
 		jsonifier::vector<ApplicationCommandData> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
-		std::string commandId;
+		Snowflake commandId;
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.commandName) {
@@ -326,7 +326,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Application_Command_Permissions };
 		co_await NewThreadAwaitable<GuildApplicationCommandPermissionsData>();
 		jsonifier::vector<ApplicationCommandData> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
-		std::string commandId;
+		Snowflake commandId;
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.commandName) {

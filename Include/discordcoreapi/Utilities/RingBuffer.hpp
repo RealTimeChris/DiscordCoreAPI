@@ -151,10 +151,11 @@ namespace DiscordCoreAPI {
 
 			/// @brief Read data from the buffer.
 			/// @return A string view containing the read data.
-			std::basic_string_view<std::decay_t<value_type>> readData() {
-				std::basic_string_view<std::decay_t<value_type>> returnData{};
+			jsonifier::string_view_base<std::decay_t<value_type>> readData() {
+				jsonifier::string_view_base<std::decay_t<value_type>> returnData{};
 				if (base_type::getCurrentTail()->getUsedSpace() > 0) {
-					returnData = std::basic_string_view<std::decay_t<value_type>>{ base_type::getCurrentTail()->getCurrentTail(), base_type::getCurrentTail()->getUsedSpace() };
+					returnData =
+						jsonifier::string_view_base<std::decay_t<value_type>>{ base_type::getCurrentTail()->getCurrentTail(), base_type::getCurrentTail()->getUsedSpace() };
 					base_type::getCurrentTail()->clear();
 					base_type::modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 				}

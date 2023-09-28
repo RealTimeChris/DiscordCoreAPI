@@ -22,7 +22,7 @@
 # May 13, 2021
 # https://discordcoreapi.com
 
-include("GenerateProductVersion")
+include(GenerateProductVersion)
 generate_product_version(
 	PRODUCT_INFO
 	NAME "${LIB_NAME}"
@@ -34,8 +34,6 @@ generate_product_version(
 	VERSION_PATCH "${VERSION_PATCH}"
 )
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (NOT DEFINED BUILD_SHARED_LIBS)
@@ -53,13 +51,17 @@ if (WIN32)
 	endif()
 elseif (APPLE)
 	if (BUILD_SHARED_LIBS)
-		add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
+		add_library("${LIB_NAME}" SHARED "${SOURCES}")
 	else()
-		add_library("${LIB_NAME}" STATIC "${SOURCES}" "${PRODUCT_INFO}")
+		add_library("${LIB_NAME}" STATIC "${SOURCES}")
 	endif()
 	find_package(Threads REQUIRED)
 elseif (UNIX)
-	add_library("${LIB_NAME}" STATIC "${SOURCES}")
+	if (BUILD_SHARED_LIBS)
+		add_library("${LIB_NAME}" SHARED "${SOURCES}")
+	else()
+		add_library("${LIB_NAME}" STATIC "${SOURCES}")
+	endif()
 	find_package(Threads REQUIRED)
 endif()
 
@@ -70,7 +72,7 @@ set_target_properties(
 	OUTPUT_NAME "discordcoreapi"
 )
 
-if("${DEV}")
+if(DEV)
 	include(FetchContent)
 	FetchContent_Declare(
 	   Jsonifier
@@ -86,12 +88,17 @@ find_package(OpenSSL REQUIRED)
 find_package(Opus CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)
 
+if(NOT DEFINED JSONIFIER_CPU_INSTRUCTIONS)
+	include("DCADetectArchitecture")
+endif()
+
+set(JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS}" CACHE INTERNAL "For the CPU architecture selection.")
+set(AVX_FLAG "${AVX_FLAG}" CACHE INTERNAL "For the CPU flag selection.")
+
 target_include_directories(
 	"${LIB_NAME}" PUBLIC
 	"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Include>"
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
-	"$<$<TARGET_EXISTS:c++abi>:-Wl,-rpath,/usr/local/opt/llvm/lib/c++>"
-	"$<$<TARGET_EXISTS:c++>:-L/usr/local/opt/llvm/lib/c++>"
 )
 
 target_link_libraries(
@@ -102,14 +109,13 @@ target_link_libraries(
 	"$<$<TARGET_EXISTS:OpenSSL::Crypto>:OpenSSL::Crypto>"
 	"$<$<TARGET_EXISTS:OpenSSL::SSL>:OpenSSL::SSL>"
 	"$<$<TARGET_EXISTS:Opus::opus>:Opus::opus>"
-	"$<$<TARGET_EXISTS:c++abi>:c++abi>"
-	"$<$<TARGET_EXISTS:c++>:c++>"
 )
 
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:DiscordCoreAPI_EXPORTS_NOPE>"
-	"CPU_INSTRUCTIONS=${CPU_INSTRUCTIONS}"
+	"JSONIFIER_CPU_INSTRUCTIONS=${JSONIFIER_CPU_INSTRUCTIONS}"
+	"JSONIFIER_CPU_INSTRUCTIONS=${JSONIFIER_CPU_INSTRUCTIONS}"
 )
 
 include(ProcessorCount)
@@ -120,16 +126,16 @@ target_compile_options(
 	"${LIB_NAME}" PUBLIC
 	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:/fsanitize=address>>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/MP${THREAD_COUNT}>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-fcoroutines>"
+	"$<$<CXX_COMPILER_ID:GNU>:-fcoroutines>"
 	"$<$<CXX_COMPILER_ID:CLANG>:-Wextra>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
 	"$<$<CXX_COMPILER_ID:CLANG>:-Wall>"
 	"$<$<CXX_COMPILER_ID:GNU>:-Wextra>"
-	"$<$<CXX_COMPILER_ID:GNU>:-Wall>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/Wall>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
+	"$<$<CXX_COMPILER_ID:GNU>:-Wall>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
-	"$<$<CXX_COMPILER_ID:GNU>:-fcoroutines>"
-	"$<$<CXX_COMPILER_ID:CLANG>:-fcoroutines>"
 	"${AVX_FLAG}"
 )
 

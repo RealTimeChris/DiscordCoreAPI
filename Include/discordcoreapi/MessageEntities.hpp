@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 			jsonifier::vector<ValueType> objects{};///< A vector of collected Objects.
 		};
 
-		static UnorderedMap<std::string, UnboundedMessageBlock<ValueType>*> objectsBuffersMap;
+		static UnorderedMap<jsonifier::string, UnboundedMessageBlock<ValueType>*> objectsBuffersMap;
 
 		ObjectCollector();
 
@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		ObjectCollectorReturnData objectReturnData{};
 		ObjectFilter<ValueType> filteringFunction{};
 		int32_t quantityOfObjectsToCollect{};
-		std::string collectorId{};
+		jsonifier::string collectorId{};
 		int32_t msToCollectFor{};
 	};
 
@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		jsonifier::vector<AttachmentData> attachments{};
 		MessageReferenceData messageReference{};
-		jsonifier::vector<std::string> stickerIds{};
+		jsonifier::vector<jsonifier::string> stickerIds{};
 	};
 
 	/// @brief For sending a direct-message.
@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 		TimeStampParse timeStamp{};///< The created-at timeStamp of the original message.
 		Snowflake channelId{};///< The channel Snowflake of the Message to delete.
 		Snowflake messageId{};///< The message Snowflake of the Message to delete.
-		std::string reason{};///< The reason for deleting the MessageData.
+		jsonifier::string reason{};///< The reason for deleting the MessageData.
 		int32_t timeDelay{};///< Number of Milliseconds to wait before deleting the MessageData.
 	};
 
@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 	struct DeleteMessagesBulkData {
 		jsonifier::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
 		Snowflake channelId{};///< ChannelData within which to delete the Messages.
-		std::string reason{};///< The reason for deleting the Messages.
+		jsonifier::string reason{};///< The reason for deleting the Messages.
 	};
 
 	/// @brief For getting a collection of pinned Messages.
@@ -183,14 +183,14 @@ namespace DiscordCoreAPI {
 	struct PinMessageData {
 		Snowflake channelId{};///< The ChannelData within which to pin the MessageData.
 		Snowflake messageId{};///< The Message which you would like to pin.
-		std::string reason{};///< Reason for pinning this MessageData.
+		jsonifier::string reason{};///< Reason for pinning this MessageData.
 	};
 
 	/// @brief For unpinning a single MessageData.
 	struct UnpinMessageData {
 		Snowflake channelId{};///< The ChannelData within which to unpin the MessageData.
 		Snowflake messageId{};///< The Message which you would like to unpin.
-		std::string reason{};///< Reason for pinning this MessageData.
+		jsonifier::string reason{};///< Reason for pinning this MessageData.
 	};
 
 	/**@}*/

@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 	template<typename KeyType, typename ValueType> class UnorderedMap;
 
 	template<typename MapIterator, typename KeyType, typename ValueType>
-	concept MapContainerIteratorT = std::is_same_v<typename UnorderedMap<KeyType, ValueType>::iterator, std::decay_t<MapIterator>>;
+	concept MapContainerIteratorT = std::same_as<typename UnorderedMap<KeyType, ValueType>::iterator, std::decay_t<MapIterator>>;
 
 	template<typename KeyType, typename ValueType>
 	class UnorderedMap : protected HashPolicy<UnorderedMap<KeyType, ValueType>>, protected jsonifier_internal::alloc_wrapper<Pair<KeyType, ValueType>>, protected ObjectCompare {
@@ -239,7 +239,7 @@ namespace DiscordCoreAPI {
 			resize(sizeNew);
 		}
 
-		inline void swap(UnorderedMap& other) noexcept {
+		inline void swap(UnorderedMap& other) {
 			std::swap(maxLookAheadDistance, other.maxLookAheadDistance);
 			std::swap(sentinelVector, other.sentinelVector);
 			std::swap(capacityVal, other.capacityVal);

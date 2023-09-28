@@ -43,22 +43,22 @@ namespace DiscordCoreAPI {
 			SoundCloudRequestBuilder(ConfigManager* configManagerNew);
 
 		  protected:
-			static std::string clientId;
-			inline static constexpr std::string_view baseUrl02{ "https://api-v2.soundcloud.com" };
-			inline static constexpr std::string_view baseUrl{ "https://soundcloud.com" };
-			inline static constexpr std::string_view appVersion{ "1681464840" };
+			static jsonifier::string clientId;
+			inline static constexpr jsonifier::string_view baseUrl02{ "https://api-v2.soundcloud.com" };
+			inline static constexpr jsonifier::string_view baseUrl{ "https://soundcloud.com" };
+			inline static constexpr jsonifier::string_view appVersion{ "1681464840" };
 
 			Song constructDownloadInfo(const Song& songNew);
 
-			jsonifier::vector<Song> collectSearchResults(const std::string& string);
+			jsonifier::vector<Song> collectSearchResults(jsonifier::string_view string, int32_t limit = 20);
 
 			virtual Song collectFinalSong(const Song& songNew);
 
-			Song collectSingleResult(const std::string& string);
+			Song collectSingleResult(jsonifier::string_view string);
 
-			std::string collectClientId();
+			jsonifier::string collectClientId();
 
-			virtual ~SoundCloudRequestBuilder() noexcept = default;
+			virtual ~SoundCloudRequestBuilder() = default;
 		};
 
 		class DiscordCoreAPI_Dll SoundCloudAPI : public SoundCloudRequestBuilder {
@@ -67,14 +67,14 @@ namespace DiscordCoreAPI {
 
 			CoRoutine<void, false> downloadAndStreamAudio(const Song songNew, NewThreadAwaiter<void, false> threadHandle = NewThreadAwaiter<void, false>{},
 				uint64_t currentReconnectTries = 0);
-
-			jsonifier::vector<Song> searchForSong(const std::string& searchQuery);
+						
+			jsonifier::vector<Song> searchForSong(jsonifier::string_view searchQuery, int32_t limit);
 
 			void weFailedToDownloadOrDecode(const Song& songNew);
 
 			Song collectFinalSong(const Song& songNew) override;
 
-			Song collectSingleResult(const std::string& string);
+			Song collectSingleResult(jsonifier::string_view string);
 
 			bool areWeWorking();
 
@@ -84,8 +84,8 @@ namespace DiscordCoreAPI {
 		};
 
 		struct Transcoding {
-			std::string preset{};
-			std::string url{};
+			jsonifier::string preset{};
+			jsonifier::string url{};
 		};
 
 		struct Media {
@@ -93,15 +93,15 @@ namespace DiscordCoreAPI {
 		};
 
 		struct SecondDownloadUrl {
-			std::string url{};
+			jsonifier::string url{};
 		};
 
 		struct RawSoundCloudSong {
-			std::string trackAuthorization{};
-			std::string description{};
-			std::string artworkUrl{};
-			std::string viewUrl{};
-			std::string title{};
+			jsonifier::string trackAuthorization{};
+			jsonifier::string description{};
+			jsonifier::string artworkUrl{};
+			jsonifier::string viewUrl{};
+			jsonifier::string title{};
 			uint64_t duration{};
 			Media media{};
 		};
@@ -111,26 +111,26 @@ namespace DiscordCoreAPI {
 		};
 
 		struct Visual {
-			std::string visualUrl{};
+			jsonifier::string visualUrl{};
 			int64_t entryTime{};
-			std::string urn{};
+			jsonifier::string urn{};
 		};
 
 		struct DataClass {
 			DiscordCoreAPI::DiscordCoreInternal::Media media{};
-			std::string trackAuthorization{};
-			std::string description{};
-			std::string artworkUrl{};
-			std::string avatarUrl{};
-			std::string viewUrl{};
-			std::string title{};
+			jsonifier::string trackAuthorization{};
+			jsonifier::string description{};
+			jsonifier::string artworkUrl{};
+			jsonifier::string avatarUrl{};
+			jsonifier::string viewUrl{};
+			jsonifier::string title{};
 			int64_t duration{};
-			std::string url{};
+			jsonifier::string url{};
 			int64_t id{};
 		};
 
 		struct WelcomeElement {
-			std::string hydratable{};
+			jsonifier::string hydratable{};
 			DataClass data{};
 		};
 

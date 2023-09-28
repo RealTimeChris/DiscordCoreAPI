@@ -37,24 +37,24 @@ namespace DiscordCoreAPI {
 	template<typename ValueType> class UnorderedSet;
 
 	template<typename SetIterator, typename ValueType>
-	concept SetContainerIteratorT = std::is_same_v<typename UnorderedSet<ValueType>::iterator, std::decay_t<SetIterator>>;
+	concept SetContainerIteratorT = std::same_as<typename UnorderedSet<ValueType>::iterator, std::decay_t<SetIterator>>;
 
 	template<typename ValueType>
-	class UnorderedSet : protected HashPolicy<UnorderedSet<ValueType>>, protected jsonifier_internal::alloc_wrapper<ValueType>, protected ObjectCompare, protected KeyAccessor {
+	class UnorderedSet : protected HashPolicy<UnorderedSet<ValueType>>, protected jsonifier_internal::alloc_wrapper<ValueType>, protected ObjectCompare {
 	  public:
-		using mapped_type	  = ValueType;
-		using key_type		  = mapped_type;
-		using reference		  = mapped_type&;
-		using value_type	  = mapped_type;
-		using const_reference = const mapped_type&;
-		using size_type		  = uint64_t;
-		using object_compare  = ObjectCompare;
-		using key_accessor	  = KeyAccessor;
-		using hash_policy	  = HashPolicy<UnorderedSet<mapped_type>>;
-		using key_hasher	  = hash_policy;
-		using iterator		  = HashIterator<UnorderedSet<mapped_type>>;
-		using const_iterator  = HashIterator<const UnorderedSet<mapped_type>>;
-		using allocator		  = jsonifier_internal::alloc_wrapper<value_type>;
+		template<typename value_type_new> using key_accessor = KeyAccessor<value_type_new>;
+		using mapped_type									 = ValueType;
+		using key_type										 = mapped_type;
+		using reference										 = mapped_type&;
+		using value_type									 = mapped_type;
+		using const_reference								 = const mapped_type&;
+		using size_type										 = uint64_t;
+		using object_compare								 = ObjectCompare;
+		using hash_policy									 = HashPolicy<UnorderedSet<mapped_type>>;
+		using key_hasher									 = hash_policy;
+		using iterator										 = HashIterator<UnorderedSet<mapped_type>>;
+		using const_iterator								 = HashIterator<const UnorderedSet<mapped_type>>;
+		using allocator										 = jsonifier_internal::alloc_wrapper<value_type>;
 
 		friend hash_policy;
 		friend iterator;
@@ -103,9 +103,9 @@ namespace DiscordCoreAPI {
 
 		template<typename key_type_new> inline const_iterator find(key_type_new&& key) const {
 			if (sizeVal > 0) {
-				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
+				auto currentIndex = getKey(key) & (capacityVal - 1);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
-					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(key))) {
+					if (sentinelVector[currentIndex] > 0 && object_compare()(getKey(data[currentIndex]), getKey(key))) {
 						return { this, currentIndex };
 					}
 				}
@@ -115,9 +115,9 @@ namespace DiscordCoreAPI {
 
 		template<typename key_type_new> inline iterator find(key_type_new&& key) {
 			if (sizeVal > 0) {
-				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
+				auto currentIndex = getKey(key) & (capacityVal - 1);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
-					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(key))) {
+					if (sentinelVector[currentIndex] > 0 && object_compare()(getKey(data[currentIndex]), getKey(key))) {
 						return { this, currentIndex };
 					}
 				}
@@ -159,9 +159,9 @@ namespace DiscordCoreAPI {
 
 		template<typename key_type_new> inline bool contains(key_type_new&& key) const {
 			if (sizeVal > 0) {
-				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
+				auto currentIndex = getKey(key) & (capacityVal - 1);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
-					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor().operator()(data[currentIndex]), getKeyAccessor().operator()(key))) {
+					if (sentinelVector[currentIndex] > 0 && object_compare()(getKey(data[currentIndex]), getKey(key))) {
 						return true;
 					}
 				}
@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 			if (sizeVal > 0) {
 				auto currentIndex = static_cast<size_type>(iter.getRawPtr() - data);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
-					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(iter.operator*()))) {
+					if (sentinelVector[currentIndex] > 0 && object_compare()(getKey(data[currentIndex]), getKey(iter.operator*()))) {
 						sentinelVector[currentIndex] = 0;
 						sizeVal--;
 						return { this, ++currentIndex };
@@ -185,9 +185,9 @@ namespace DiscordCoreAPI {
 
 		template<typename key_type_new> inline iterator erase(key_type_new&& key) {
 			if (sizeVal > 0) {
-				auto currentIndex = getKeyAccessor()(key) & (capacityVal - 1);
+				auto currentIndex = getKey(key) & (capacityVal - 1);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
-					if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(key))) {
+					if (sentinelVector[currentIndex] > 0 && object_compare()(getKey(data[currentIndex]), getKey(key))) {
 						sentinelVector[currentIndex] = 0;
 						sizeVal--;
 						return { this, ++currentIndex };
@@ -239,7 +239,7 @@ namespace DiscordCoreAPI {
 			resize(sizeNew);
 		}
 
-		inline void swap(UnorderedSet& other) noexcept {
+		inline void swap(UnorderedSet& other) {
 			std::swap(maxLookAheadDistance, other.maxLookAheadDistance);
 			std::swap(sentinelVector, other.sentinelVector);
 			std::swap(capacityVal, other.capacityVal);
@@ -288,14 +288,14 @@ namespace DiscordCoreAPI {
 			if (full() || capacityVal == 0) {
 				resize(capacityVal + 1);
 			}
-			auto currentIndex = getKeyAccessor()(value) & (capacityVal - 1);
+			auto currentIndex = getKey(value) & (capacityVal - 1);
 			for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 				if (sentinelVector[currentIndex] == 0) {
 					new (std::addressof(data[currentIndex])) value_type{ std::forward<mapped_type_new>(value) };
 					sentinelVector[currentIndex] = 1;
 					sizeVal++;
 					return { this, currentIndex };
-				} else if (sentinelVector[currentIndex] > 0 && object_compare()(getKeyAccessor()(data[currentIndex]), getKeyAccessor()(value))) {
+				} else if (sentinelVector[currentIndex] > 0 && object_compare()(getKey(data[currentIndex]), getKey(value))) {
 					if constexpr (!std::is_void_v<mapped_type_new>) {
 						data[currentIndex] = std::forward<mapped_type_new>(value);
 					}
@@ -314,8 +314,8 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline const key_accessor& getKeyAccessor() const {
-			return *this;
+		template<typename value_type_newer> inline uint64_t getKey(value_type_newer&& keyValue) const {
+			return key_accessor<std::remove_cvref_t<value_type_newer>>::getHashKey(std::forward<value_type_newer>(keyValue));
 		}
 
 		inline void resize(size_type capacityNew) {

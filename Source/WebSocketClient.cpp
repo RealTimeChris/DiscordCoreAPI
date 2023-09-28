@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
 
-		EventConverter::EventConverter(std::string newEvent) {
+		EventConverter::EventConverter(jsonifier::string newEvent) {
 			eventValue = newEvent;
 			for (uint64_t x = 0; x < eventValue.size(); ++x) {
 				if (eventValue.at(x) == '\0') {
@@ -206,17 +206,17 @@ namespace DiscordCoreAPI {
 			*this = std::move(other);
 		}
 
-		bool WebSocketCore::connect(const std::string& baseUrlNew, const std::string& relativePath, const uint16_t portNew) {
+		bool WebSocketCore::connect(jsonifier::string_view baseUrlNew, jsonifier::string_view relativePath, const uint16_t portNew) {
 			tcpConnection = WebSocketTCPConnection{ baseUrlNew, portNew, this };
 			if (tcpConnection.currentStatus != ConnectionStatus::NO_Error) {
 				std::this_thread::sleep_for(1s);
 				return false;
 			}
 			currentState.store(WebSocketState::Upgrading, std::memory_order_release);
-			std::string sendString{ "GET " + relativePath + " HTTP/1.1\r\nHost: " + baseUrlNew +
+			jsonifier::string sendString{ "GET " + relativePath + " HTTP/1.1\r\nHost: " + baseUrlNew +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: " + "Upgrade\r\nSec-WebSocket-Key: " + generateBase64EncodedKey() +
 				"\r\nSec-WebSocket-Version: 13\r\n\r\n" };
-			tcpConnection.writeData(static_cast<std::string_view>(sendString), true);
+			tcpConnection.writeData(static_cast<jsonifier::string_view>(sendString), true);
 
 			if (tcpConnection.currentStatus != ConnectionStatus::NO_Error) {
 				std::this_thread::sleep_for(1s);
@@ -225,21 +225,20 @@ namespace DiscordCoreAPI {
 			return true;
 		}
 
-		WebSocketTCPConnection::WebSocketTCPConnection(const std::string& baseUrlNew, uint16_t portNew, WebSocketCore* ptrNew) : TCPConnection{ baseUrlNew, portNew } {
+		WebSocketTCPConnection::WebSocketTCPConnection(jsonifier::string_view baseUrlNew, uint16_t portNew, WebSocketCore* ptrNew) : TCPConnection{ baseUrlNew, portNew } {
 			ptr = ptrNew;
 		}
 
-		bool WebSocketCore::sendMessage(std::basic_string<uint8_t>& dataToSend, bool priority) {
+		bool WebSocketCore::sendMessage(jsonifier::string_base<uint8_t>& dataToSend, bool priority) {
 			if (dataToSend.size() == 0) {
 				return false;
 			}
-			std::string webSocketTitle{ wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket" };
+			jsonifier::string webSocketTitle{ wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket" };
 			MessagePrinter::printSuccess<PrintMessageType::WebSocket>(
-				jsonifier::string{ "Sending " + webSocketTitle + " [" + std::to_string(shard.at(0)) + "," + std::to_string(shard.at(1)) + "]" + std::string{ "'s Message: " } });
-			std::cout << static_cast<std::basic_string<uint8_t>>(dataToSend.data()).data();
+				jsonifier::string{ "Sending " + webSocketTitle + " [" + jsonifier::toString(shard.at(0)) + "," + jsonifier::toString(shard.at(1)) + "]" + jsonifier::string{ "'s Message: " } });
 			std::unique_lock lock{ accessMutex };
 			if (areWeConnected()) {
-				tcpConnection.writeData(static_cast<std::basic_string_view<uint8_t>>(dataToSend), priority);
+				tcpConnection.writeData(static_cast<jsonifier::string_view_base<uint8_t>>(dataToSend), priority);
 				if (tcpConnection.currentStatus != ConnectionStatus::NO_Error) {
 					onClosed();
 					return false;
@@ -250,8 +249,11 @@ namespace DiscordCoreAPI {
 
 		void WebSocketCore::parseConnectionHeaders() {
 			if (areWeConnected() && currentState.load(std::memory_order_acquire) == WebSocketState::Upgrading) {
-				auto theFindValue = currentMessage.operator std::string().find("\r\n\r\n");
-				if (theFindValue != std::string::npos) {
+				jsonifier::string_base<uint8_t> newString{};
+				newString.resize(4);
+				std::memcpy(newString.data(), "\r\n\r\n", 4);
+				auto theFindValue = currentMessage.find(newString);
+				if (theFindValue != jsonifier::string::npos) {
 					currentMessage.clear();
 					currentState.store(WebSocketState::Collecting_Hello, std::memory_order_release);
 					return;
@@ -262,12 +264,12 @@ namespace DiscordCoreAPI {
 		bool WebSocketCore::checkForAndSendHeartBeat(bool isImmediate) {
 			if ((currentState.load(std::memory_order_acquire) == WebSocketState::Authenticated && heartBeatStopWatch.hasTimeElapsed() && haveWeReceivedHeartbeatAck) ||
 				isImmediate) {
-				std::basic_string<uint8_t> string{};
+				jsonifier::string_base<uint8_t> string{};
 				if (dataOpCode == WebSocketOpCode::Op_Binary) {
 					EtfSerializer data{};
 					data["d"]  = lastNumberReceived;
 					data["op"] = 1;
-					string	   = data.operator std::basic_string<uint8_t>();
+					string	   = data.operator jsonifier::string_base<uint8_t>();
 				} else {
 					WebSocketMessageData<uint64_t> message{};
 					message.d  = lastNumberReceived;
@@ -344,17 +346,17 @@ namespace DiscordCoreAPI {
 						uint16_t closeValue = currentMessage.at(2) & 0xff;
 						closeValue <<= 8;
 						closeValue |= currentMessage.at(3) & 0xff;
-						std::string closeString{};
+						jsonifier::string closeString{};
 						if (wsType == WebSocketType::Voice) {
 							VoiceWebSocketClose voiceClose{ closeValue };
-							closeString = static_cast<std::string>(voiceClose.operator std::string_view());
+							closeString = static_cast<jsonifier::string>(voiceClose.operator jsonifier::string_view());
 						} else {
 							WebSocketClose wsClose{ closeValue };
-							closeString = static_cast<std::string>(wsClose.operator std::string_view());
+							closeString = static_cast<jsonifier::string>(wsClose.operator jsonifier::string_view());
 						}
-						std::string webSocketTitle = wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
-						MessagePrinter::printError<PrintMessageType::WebSocket>(jsonifier::string{ webSocketTitle + " [" + std::to_string(shard.at(0)) + "," +
-							std::to_string(shard.at(1)) + "]" + " Closed; Code: " + std::to_string(closeValue) + ", " + closeString });
+						jsonifier::string webSocketTitle = wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
+						MessagePrinter::printError<PrintMessageType::WebSocket>(jsonifier::string{ webSocketTitle + " [" + jsonifier::toString(shard.at(0)) + "," +
+							jsonifier::toString(shard.at(1)) + "]" + " Closed; Code: " + jsonifier::toString(closeValue) + ", " + closeString });
 						return false;
 					} break;
 
@@ -390,7 +392,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		WebSocketClient::WebSocketClient(uint32_t currentShardNew, std::atomic_bool* doWeQuitNew)
+		WebSocketClient::WebSocketClient(uint64_t currentShardNew, std::atomic_bool* doWeQuitNew)
 			: WebSocketCore(&DiscordCoreClient::getInstance()->configManager, WebSocketType::Normal) {
 			configManager = &DiscordCoreClient::getInstance()->configManager;
 			shard.at(0)	  = currentShardNew;
@@ -427,10 +429,10 @@ namespace DiscordCoreAPI {
 			data02.d.selfDeaf  = doWeCollect.selfDeaf;
 			data02.d.selfMute  = doWeCollect.selfMute;
 			data02.op		   = 4;
-			std::basic_string<uint8_t> string{};
+			jsonifier::string_base<uint8_t> string{};
 			auto serializer = data01.operator EtfSerializer();
 			if (dataOpCode == WebSocketOpCode::Op_Binary) {
-				string = serializer.operator std::basic_string<uint8_t>();
+				string = serializer.operator jsonifier::string_base<uint8_t>();
 			} else {
 				parser.serializeJson<true>(data01, string);
 			}
@@ -443,7 +445,7 @@ namespace DiscordCoreAPI {
 			}
 			serializer = data02.operator EtfSerializer();
 			if (dataOpCode == WebSocketOpCode::Op_Binary) {
-				string = serializer.operator std::basic_string<uint8_t>();
+				string = serializer.operator jsonifier::string_base<uint8_t>();
 			} else {
 				parser.serializeJson<true>(data02, string);
 			}
@@ -454,7 +456,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		bool WebSocketClient::onMessageReceived(std::basic_string_view<uint8_t> dataNew) {
+		bool WebSocketClient::onMessageReceived(jsonifier::string_view_base<uint8_t> dataNew) {
 			try {
 				if (areWeConnected() && currentMessage.size() > 0 && dataNew.size() > 0) {
 					WebSocketMessage message{};
@@ -475,8 +477,8 @@ namespace DiscordCoreAPI {
 					if (message.s != 0) {
 						lastNumberReceived = static_cast<uint32_t>(message.s);
 					}
-					MessagePrinter::printSuccess<PrintMessageType::WebSocket>(jsonifier::string{ "Message received from WebSocket [" + std::to_string(shard.at(0)) + "," +
-						std::to_string(shard.at(1)) + std::string("]: ") + jsonifier::string{ dataNew } });
+					MessagePrinter::printSuccess<PrintMessageType::WebSocket>(jsonifier::string{ "Message received from WebSocket [" + jsonifier::toString(shard.at(0)) + "," +
+						jsonifier::toString(shard.at(1)) + jsonifier::string("]: ") + jsonifier::string{ dataNew } });
 					switch (static_cast<WebSocketOpCodes>(message.op)) {
 						case WebSocketOpCodes::Dispatch: {
 							if (message.t != "") {
@@ -490,8 +492,8 @@ namespace DiscordCoreAPI {
 										parser.parseJson<true, true, true>(data, dataNew);
 
 										sessionId = data.d.sessionId;
-										if (data.d.resumeGatewayUrl.find("wss://") != std::string::npos) {
-											resumeUrl = data.d.resumeGatewayUrl.substr(data.d.resumeGatewayUrl.find("wss://") + std::string{ "wss://" }.size());
+										if (data.d.resumeGatewayUrl.find("wss://") != jsonifier::string::npos) {
+											resumeUrl = data.d.resumeGatewayUrl.substr(data.d.resumeGatewayUrl.find("wss://") + jsonifier::string{ "wss://" }.size());
 										}
 										DiscordCoreClient::getInstance()->currentUser = BotUser{ data.d.user,
 											DiscordCoreClient::getInstance()
@@ -926,7 +928,7 @@ namespace DiscordCoreAPI {
 						}
 						case WebSocketOpCodes::Reconnect: {
 							MessagePrinter::printError<PrintMessageType::WebSocket>(
-								jsonifier::string{ "Shard [" + std::to_string(shard.at(0)) + "," + std::to_string(shard.at(1)) + "]" + " Reconnecting (Type 7)!" });
+								jsonifier::string{ "Shard [" + jsonifier::toString(shard.at(0)) + "," + jsonifier::toString(shard.at(1)) + "]" + " Reconnecting (Type 7)!" });
 							areWeResuming = true;
 							tcpConnection.disconnect();
 							return true;
@@ -935,7 +937,7 @@ namespace DiscordCoreAPI {
 							WebSocketMessageData<bool> data{};
 							parser.parseJson<true, true>(data, dataNew);
 							MessagePrinter::printError<PrintMessageType::WebSocket>(
-								jsonifier::string{ "Shard [" + std::to_string(shard.at(0)) + "," + std::to_string(shard.at(1)) + "]" + " Reconnecting (Type 9)!" });
+								jsonifier::string{ "Shard [" + jsonifier::toString(shard.at(0)) + "," + jsonifier::toString(shard.at(1)) + "]" + " Reconnecting (Type 9)!" });
 							std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
 							uint64_t numOfMsToWait =
 								static_cast<uint64_t>(1000.0f + ((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * static_cast<double>(4000.0f)));
@@ -965,10 +967,10 @@ namespace DiscordCoreAPI {
 								dataNewer.d.lastNumberReceived = lastNumberReceived;
 								dataNewer.d.sessionId		   = sessionId;
 								dataNewer.op				   = 6;
-								std::basic_string<uint8_t> string{};
+								jsonifier::string_base<uint8_t> string{};
 								if (dataOpCode == WebSocketOpCode::Op_Binary) {
 									auto serializer = dataNewer.operator EtfSerializer();
-									string			= serializer.operator std::basic_string<uint8_t>();
+									string			= serializer.operator jsonifier::string_base<uint8_t>();
 								} else {
 									parser.serializeJson(dataNewer, string);
 								}
@@ -990,10 +992,10 @@ namespace DiscordCoreAPI {
 									}
 								}
 								dataNewer.op = 2;
-								std::basic_string<uint8_t> string{};
+								jsonifier::string_base<uint8_t> string{};
 								if (dataOpCode == WebSocketOpCode::Op_Binary) {
 									auto serializer = dataNewer.operator EtfSerializer();
-									string			= serializer.operator std::basic_string<uint8_t>();
+									string			= serializer.operator jsonifier::string_base<uint8_t>();
 								} else {
 									parser.serializeJson<true>(dataNewer, string);
 								}
@@ -1024,9 +1026,9 @@ namespace DiscordCoreAPI {
 
 		void WebSocketCore::disconnect() {
 			if (areWeConnected()) {
-				std::string dataNew{ "\x03\xE8" };
+				jsonifier::string dataNew{ "\x03\xE8" };
 				createHeader(dataNew, WebSocketOpCode::Op_Close);
-				tcpConnection.writeData(static_cast<std::string_view>(dataNew), true);
+				tcpConnection.writeData(static_cast<jsonifier::string_view>(dataNew), true);
 				tcpConnection.disconnect();
 				currentState.store(WebSocketState::Disconnected, std::memory_order_release);
 				areWeHeartBeating = false;
@@ -1051,8 +1053,7 @@ namespace DiscordCoreAPI {
 			disconnect();
 		}
 
-		BaseSocketAgent::BaseSocketAgent(std::atomic_bool* doWeQuitNew, uint64_t currentBaseSocketAgentNew) {
-			currentBaseSocketAgent = currentBaseSocketAgentNew;
+		BaseSocketAgent::BaseSocketAgent(std::atomic_bool* doWeQuitNew) {
 			doWeQuit			   = doWeQuitNew;
 			taskThread			   = ThreadWrapper([this](StopToken token) {
 				run(token);
@@ -1060,12 +1061,12 @@ namespace DiscordCoreAPI {
 		}
 
 		void BaseSocketAgent::connect(WebSocketClient& value) {
-			std::string connectionUrl{ value.areWeResuming ? value.resumeUrl : DiscordCoreClient::getInstance()->configManager.getConnectionAddress() };
-			MessagePrinter::printSuccess<PrintMessageType::General>(jsonifier::string{ "Connecting Shard " + std::to_string(value.shard.at(0) + 1) + " of " +
-				std::to_string(DiscordCoreClient::getInstance()->configManager.getShardCountForThisProcess()) + std::string{ " Shards for this process. (" } +
-				std::to_string(value.shard.at(0) + 1) + " of " + std::to_string(DiscordCoreClient::getInstance()->configManager.getTotalShardCount()) +
-				std::string{ " Shards total across all processes)" } });
-			std::string relativePath{ "/?v=10&encoding=" + std::string{ DiscordCoreClient::getInstance()->configManager.getTextFormat() == TextFormat::Etf ? "etf" : "json" } };
+			jsonifier::string connectionUrl{ value.areWeResuming ? value.resumeUrl : DiscordCoreClient::getInstance()->configManager.getConnectionAddress() };
+			MessagePrinter::printSuccess<PrintMessageType::General>(jsonifier::string{ "Connecting Shard " + jsonifier::toString(value.shard.at(0) + 1) + " of " +
+				jsonifier::toString(DiscordCoreClient::getInstance()->configManager.getShardCountForThisProcess()) + jsonifier::string{ " Shards for this process. (" } +
+				jsonifier::toString(value.shard.at(0) + 1) + " of " + jsonifier::toString(DiscordCoreClient::getInstance()->configManager.getTotalShardCount()) +
+				jsonifier::string{ " Shards total across all processes)" } });
+			jsonifier::string relativePath{ "/?v=10&encoding=" + jsonifier::string{ DiscordCoreClient::getInstance()->configManager.getTextFormat() == TextFormat::Etf ? "etf" : "json" } };
 
 			value = WebSocketClient{ value.shard.at(0), doWeQuit };
 			value.connect(connectionUrl, relativePath, DiscordCoreClient::getInstance()->configManager.getConnectionPort());
@@ -1116,8 +1117,8 @@ namespace DiscordCoreAPI {
 							}
 							areWeConnected = true;
 						} else {
-							MessagePrinter::printError<PrintMessageType::WebSocket>(jsonifier::string{ "Connection lost for WebSocket [" + std::to_string(value.shard.at(0)) + "," +
-								std::to_string(DiscordCoreClient::getInstance()->configManager.getTotalShardCount()) + "]... reconnecting." });
+							MessagePrinter::printError<PrintMessageType::WebSocket>(jsonifier::string{ "Connection lost for WebSocket [" + jsonifier::toString(value.shard.at(0)) + "," +
+								jsonifier::toString(DiscordCoreClient::getInstance()->configManager.getTotalShardCount()) + "]... reconnecting." });
 							std::this_thread::sleep_for(1s);
 							if (DiscordCoreClient::getInstance()->connectionStopWatch01.hasTimeElapsed()) {
 								connect(value);

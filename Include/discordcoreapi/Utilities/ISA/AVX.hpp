@@ -27,11 +27,12 @@
 /// Nov 8, 2021
 /// https://discordcoreapi.com
 /// \file AVX.hpp
-
 #pragma once
 
-#include <immintrin.h>
-#include <numeric>
+#if JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX) && !JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX2) && !JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX512)
+
+	#include <immintrin.h>
+	#include <numeric>
 
 namespace DiscordCoreAPI {
 
@@ -64,7 +65,7 @@ namespace DiscordCoreAPI {
 			// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. This version uses AVX instructions.
 			// @param upSampledVector Pointer to the array of int32_t values.
 			// @param decodedData Pointer to the array of int16_t values.
-			inline void combineSamples(const int16_t* decodedData,int32_t* upSampledVector) {
+			inline void combineSamples(const int16_t* decodedData, int32_t* upSampledVector) {
 				storeValues(_mm_add_ps(gatherValues(upSampledVector), gatherValues(decodedData)), upSampledVector);
 			}
 
@@ -96,3 +97,5 @@ namespace DiscordCoreAPI {
 
 	}
 }
+
+#endif

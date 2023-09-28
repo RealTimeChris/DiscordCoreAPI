@@ -39,9 +39,13 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	template<typename value_type>
+	concept pointer_t = std::is_pointer_v<value_type> || std::is_null_pointer_v<value_type>;
+
 	/// @brief Concept to check if two types of pointers are related.
 	template<typename ValueType01, typename ValueTypeNew>
-	concept IsRelatedPtr = std::derived_from<ValueType01, ValueTypeNew> || std::is_base_of_v<ValueType01, ValueTypeNew> || std::same_as<ValueType01, ValueTypeNew>;
+	concept IsRelatedPtr =
+		( std::derived_from<ValueType01, ValueTypeNew> || std::is_base_of_v<ValueType01, ValueTypeNew> || std::same_as<ValueType01, ValueTypeNew> )&&std::is_pointer_v<ValueType01>;
 
 	/// @brief A smart pointer class that provides unique ownership semantics.
 	/// @tparam ValueType The type of the managed object.
@@ -53,17 +57,16 @@ namespace DiscordCoreAPI {
 		using deleter_type = Deleter;
 		using reference	   = element_type&;
 
-		/// @brief Default constructor.
-		inline UniquePtr() : ptr{ nullptr } {};
-
 		inline UniquePtr& operator=(const UniquePtr&) = delete;
 		inline UniquePtr(const UniquePtr&)			  = delete;
+
+		/// @brief Default constructor.
+		inline UniquePtr() : ptr{ nullptr } {};
 
 		/// @brief Move assignment operator for related pointers.
 		/// @param other The other UniquePtr to move from.
 		/// @return UniquePtr The new managed object inside a UniquePtr.
-		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew>>
-		inline UniquePtr& operator=(UniquePtr<ValueTypeNew, OtherDeleter>&& other) {
+		template<jsonifier_internal::unique_ptr_t ValueTypeNew> inline UniquePtr& operator=(ValueTypeNew&& other) {
 			if (this != static_cast<void*>(&other)) {
 				reset(nullptr);
 				try {
@@ -78,37 +81,14 @@ namespace DiscordCoreAPI {
 
 		/// @brief Move constructor for related pointers.
 		/// @param other The other UniquePtr to move from.
-		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew>>
-		inline UniquePtr(UniquePtr<ValueTypeNew, OtherDeleter>&& other) {
-			*this = std::move(other);
-		}
-
-		/// @brief Move assignment operator for std::unique_ptr.
-		/// @param other The std::unique_ptr to move from.
-		/// @return UniquePtr The new managed object inside a UniquePtr.
-		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew>>
-		inline UniquePtr& operator=(std::unique_ptr<ValueTypeNew, OtherDeleter>&& other) {
-			reset(nullptr);
-			try {
-				commit(other.release());
-			} catch (...) {
-				reset(nullptr);
-				throw;
-			}
-			return *this;
-		}
-
-		/// @brief Move constructor for std::unique_ptr.
-		/// @param other The std::unique_ptr to move from.
-		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew>>
-		inline UniquePtr(std::unique_ptr<ValueTypeNew, OtherDeleter>&& other) {
+		template<jsonifier_internal::unique_ptr_t ValueTypeNew> inline UniquePtr(ValueTypeNew&& other) {
 			*this = std::move(other);
 		}
 
 		/// @brief Move assignment operator for raw pointer.
 		/// @param newPtr The new ptr to manage.
 		/// @return UniquePtr The new managed object inside a UniquePtr.
-		inline UniquePtr& operator=(pointer newPtr) {
+		template<pointer_t value_type> inline UniquePtr& operator=(value_type newPtr) {
 			reset(nullptr);
 			try {
 				commit(newPtr);
@@ -121,7 +101,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Constructor from a raw pointer.
 		/// @param newPtr The new ptr to manage.
-		inline UniquePtr(pointer newPtr) {
+		template<pointer_t value_type> inline UniquePtr(value_type newPtr) {
 			*this = newPtr;
 		}
 
@@ -208,19 +188,18 @@ namespace DiscordCoreAPI {
 		using element_type = std::remove_extent_t<ValueType>;
 		using pointer	   = element_type*;
 		using deleter_type = Deleter;
-		using reference	   = element_type&;
-
-		/// @brief Default constructor.
-		inline UniquePtr() : ptr{ nullptr } {};
+		using reference								  = element_type&;
 
 		inline UniquePtr& operator=(const UniquePtr&) = delete;
 		inline UniquePtr(const UniquePtr&)			  = delete;
 
-		/// @brief Move assignment operator for related arrays.
+		/// @brief Default constructor.
+		inline UniquePtr() : ptr{ nullptr } {};
+
+		/// @brief Move assignment operator for related pointers.
 		/// @param other The other UniquePtr to move from.
 		/// @return UniquePtr The new managed object inside a UniquePtr.
-		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew[]>>
-		inline UniquePtr& operator=(UniquePtr<ValueTypeNew[], OtherDeleter>&& other) noexcept {
+		template<jsonifier_internal::unique_ptr_t ValueTypeNew> inline UniquePtr& operator=(ValueTypeNew&& other) {
 			if (this != static_cast<void*>(&other)) {
 				reset(nullptr);
 				try {
@@ -233,39 +212,16 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		/// @brief Move constructor for related arrays.
+		/// @brief Move constructor for related pointers.
 		/// @param other The other UniquePtr to move from.
-		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew[]>>
-		inline UniquePtr(UniquePtr<ValueTypeNew[], OtherDeleter>&& other) noexcept {
-			*this = std::move(other);
-		}
-
-		/// @brief Move assignment operator for std::unique_ptr arrays.
-		/// @param other The other UniquePtr to move from.
-		/// @return UniquePtr The new managed object inside a UniquePtr.
-		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew[]>>
-		inline UniquePtr& operator=(std::unique_ptr<ValueTypeNew[], OtherDeleter>&& other) noexcept {
-			reset(nullptr);
-			try {
-				commit(other.release());
-			} catch (...) {
-				reset(nullptr);
-				throw;
-			}
-			return *this;
-		}
-
-		/// @brief Move constructor for std::unique_ptr arrays.
-		/// @param other The other UniquePtr to move from.
-		template<IsRelatedPtr<element_type> ValueTypeNew, typename OtherDeleter = std::default_delete<ValueTypeNew[]>>
-		inline UniquePtr(std::unique_ptr<ValueTypeNew[], OtherDeleter>&& other) noexcept {
+		template<jsonifier_internal::unique_ptr_t ValueTypeNew> inline UniquePtr(ValueTypeNew&& other) {
 			*this = std::move(other);
 		}
 
 		/// @brief Move assignment operator for raw pointer.
-		/// @param newPtr The pointer to be managed.
+		/// @param newPtr The new ptr to manage.
 		/// @return UniquePtr The new managed object inside a UniquePtr.
-		inline UniquePtr& operator=(pointer newPtr) {
+		template<pointer_t value_type> inline UniquePtr& operator=(value_type newPtr) {
 			reset(nullptr);
 			try {
 				commit(newPtr);
@@ -277,8 +233,8 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Constructor from a raw pointer.
-		/// @param newPtr The pointer to be managed.
-		inline UniquePtr(pointer newPtr) {
+		/// @param newPtr The new ptr to manage.
+		template<pointer_t value_type> inline UniquePtr(value_type newPtr) {
 			*this = newPtr;
 		}
 

@@ -1,7 +1,7 @@
 Adding a Command {#addingcommand}
 ============
 - First, create an instance of `Discord
-`, and then use from it the `DiscordCoreClient::registerFunction` function. Passing into it an instance of a `Jsonifier::Vector` of `std::string`, which will act as the command names to be triggering the commands, a `UniquePtr` containing a command function derived from the `BaseFunction` class, and an instance of either `CreateGlobalApplicationCommandData` or `CreateGuildApplicationCommandData`.
+`, and then use from it the `DiscordCoreClient::registerFunction` function. Passing into it an instance of a `Jsonifier::Vector` of `jsonifier::string`, which will act as the command names to be triggering the commands, a `UniquePtr` containing a command function derived from the `BaseFunction` class, and an instance of either `CreateGlobalApplicationCommandData` or `CreateGuildApplicationCommandData`.
 - Note that these functions will be registered with the Discord API if any of their properties change.
 
 ```cpp
@@ -19,7 +19,7 @@ int32_t main() {
 	ActivityData activity{};
 	activity.name = "/help for my commands!";
 	activity.type = ActivityType::Game;
-	activities.push_back(activity);
+	activities.pushBack(activity);
 	clientConfig.presenceData.activities = activities;
 	clientConfig.presenceData.afk = false;
 	clientConfig.presenceData.since = 0;
@@ -48,13 +48,13 @@ int32_t main() {
 	createHelpData.name = "help";
 	createHelpData.description = "A help command for this bot.";
 	playCommandDataOptionOne.name = "songname";
-	playCommandDataOptionOne.type = ApplicationCommandOptionType::std::string;
+	playCommandDataOptionOne.type = ApplicationCommandOptionType::jsonifier::string;
 	playCommandDataOptionOne.description = "The name of the song that you would like to search.";
 	playCommandDataOptionOne.required = false;
-	playCommandData.options.push_back(playCommandDataOptionOne);
-	ptr->registerFunction(Jsonifier::Vector<std::string>{ "play" }, makeUnique<Play>(), playCommandData);
-	ptr->registerFunction(Jsonifier::Vector<std::string>{ "botinfo" }, makeUnique<BotInfo>(), createBotInfoCommandData);
-	ptr->registerFunction(Jsonifier::Vector<std::string>{ "help" }, makeUnique<Help>(), createHelpData);
+	playCommandData.options.pushBack(playCommandDataOptionOne);
+	ptr->registerFunction(Jsonifier::Vector<jsonifier::string>{ "play" }, makeUnique<Play>(), playCommandData);
+	ptr->registerFunction(Jsonifier::Vector<jsonifier::string>{ "botinfo" }, makeUnique<BotInfo>(), createBotInfoCommandData);
+	ptr->registerFunction(Jsonifier::Vector<jsonifier::string>{ "help" }, makeUnique<Help>(), createHelpData);
 	ptr->runBot();
 	return 0;
 };

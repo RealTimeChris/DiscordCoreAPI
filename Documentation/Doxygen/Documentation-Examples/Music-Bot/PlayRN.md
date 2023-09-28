@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 					newEmbed->setDescription("__**Title:**__ [" + value.songTitle + "](" + value.viewUrl + ")" + "\n__**Description:**__ " + value.description +
 						"\n__**Duration:**__ " + value.duration);
 					newEmbed->setTimeStamp(getTimeAndDate());
-					newEmbed->setTitle("__**" + std::to_string(x) + " of " + std::to_string(searchResults.size()) + "**__");
+					newEmbed->setTitle("__**" + jsonifier::toString(x) + " of " + jsonifier::toString(searchResults.size()) + "**__");
 					newEmbed->setImage(value.thumbnailUrl);
 					newEmbed->setColor(discordGuild.data.borderColor);
 					embedsFromSearch.emplace_back(*newEmbed);
@@ -249,7 +249,7 @@ namespace DiscordCoreAPI {
 								newEmbed->setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(eventData.guild.id).songTitle + "](" +
 									SongAPI::getCurrentSong(eventData.guild.id).viewUrl + ")" + "\n__**Description:**__ " +
 									SongAPI::getCurrentSong(eventData.guild.id).description + "\n__**Duration:**__ " + SongAPI::getCurrentSong(eventData.guild.id).duration +
-									"\n__**Added By:**__ <@!" + std::to_string(SongAPI::getCurrentSong(eventData.guild.id).addedByUserId) + "> (" +
+									"\n__**Added By:**__ <@!" + jsonifier::toString(SongAPI::getCurrentSong(eventData.guild.id).addedByUserId) + "> (" +
 									SongAPI::getCurrentSong(eventData.guild.id).addedByUserName + ")");
 								newEmbed->setImage(SongAPI::getCurrentSong(eventData.guild.id).thumbnailUrl);
 								newEmbed->setTimeStamp(getTimeAndDate());
@@ -279,7 +279,7 @@ namespace DiscordCoreAPI {
 								newEmbed->setDescription("__**It appears as though there was an error when trying to play the following track!**__\n__**Title:**__ [" +
 									eventData.previousSong.songTitle + "](" + eventData.previousSong.viewUrl + ")" + "\n__**Description:**__ " +
 									eventData.previousSong.description + "\n__**Duration:**__ " + eventData.previousSong.duration + "\n__**Added By:**__ <@!" +
-									std::to_string(eventData.previousSong.addedByUserId) + "> (" + eventData.previousSong.addedByUserName + ")");
+									jsonifier::toString(eventData.previousSong.addedByUserId) + "> (" + eventData.previousSong.addedByUserName + ")");
 								newEmbed->setImage(eventData.previousSong.thumbnailUrl);
 								newEmbed->setTimeStamp(getTimeAndDate());
 								newEmbed->setTitle("__**Playing Error:**__");
@@ -305,7 +305,7 @@ namespace DiscordCoreAPI {
 									newEmbed->setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(eventData.guild.id).songTitle + "](" +
 										SongAPI::getCurrentSong(eventData.guild.id).viewUrl + ")" + "\n__**Description:**__ " +
 										SongAPI::getCurrentSong(eventData.guild.id).description + "\n__**Duration:**__ " + SongAPI::getCurrentSong(eventData.guild.id).duration +
-										"\n__**Added By:**__ <@!" + std::to_string(SongAPI::getCurrentSong(eventData.guild.id).addedByUserId) + "> (" +
+										"\n__**Added By:**__ <@!" + jsonifier::toString(SongAPI::getCurrentSong(eventData.guild.id).addedByUserId) + "> (" +
 										SongAPI::getCurrentSong(eventData.guild.id).addedByUserName + ")");
 									newEmbed->setImage(SongAPI::getCurrentSong(eventData.guild.id).thumbnailUrl);
 									newEmbed->setTimeStamp(getTimeAndDate());
@@ -365,7 +365,7 @@ namespace DiscordCoreAPI {
 					newEmbed->setAuthor(newEvent.getUserName(), newEvent.getAvatarUrl());
 					newEmbed->setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewUrl + ")" +
 						"\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " + SongAPI::getCurrentSong(guild.id).duration +
-						"\n__**Added By:**__ <@!" + std::to_string(SongAPI::getCurrentSong(guild.id).addedByUserId) + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName +
+						"\n__**Added By:**__ <@!" + jsonifier::toString(SongAPI::getCurrentSong(guild.id).addedByUserId) + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName +
 						")");
 					newEmbed->setImage(SongAPI::getCurrentSong(guild.id).thumbnailUrl);
 					newEmbed->setTimeStamp(getTimeAndDate());

@@ -24,35 +24,24 @@ jobs:
       run: |
             brew install gcc
 
-    - name: Copy the Jsonifier repo over.
-      run: |
-           sudo git clone https://github.com/RealTimeChris/Jsonifier
-           sudo cp -r -v ./Jsonifier/Vcpkg/* /usr/local/share/vcpkg/
-
     - name: Install the dependencies.
       run: |
-           vcpkg install jsonifier:x64-osx
            vcpkg install opus:x64-osx
            vcpkg install libsodium:x64-osx
            vcpkg install openssl:x64-osx
 
     - name: Configure CMake
-      working-directory: Tests
+      working-directory: ./
       run: |
-           cmake -S . -B ./Build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=/usr/local/opt/gcc@13/bin/g++-13 -DGITHUB_BRANCH_TYPE=${{github.ref}}
+           cmake -S . -B ./Build -DCMAKE_CXX_COMPILER=/usr/local/opt/gcc@13/bin/g++-13 -DDEV=true  -DDISCORDCOREAPI_TEST=true -DVCPKG_ROOT_DIR=/usr/local/share/vcpkg
 
     - name: Build the Test
-      working-directory: Tests/Build
+      working-directory: ./Build
       run: |
            cmake --build . --config=${{matrix.build_type}}
 
-    - name: Install the Test
-      working-directory: Tests/Build
-      run: |
-           cmake --install ./ --config=${{matrix.build_type}}
-
     - name: Run the Test
-      working-directory: Tests/Install/${{matrix.build_type}}
+      working-directory: ./Build/Tests
       run: |
             chmod u+x ./DiscordCoreAPITest
             ./DiscordCoreAPITest

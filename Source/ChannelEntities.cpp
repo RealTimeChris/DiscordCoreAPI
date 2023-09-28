@@ -100,11 +100,11 @@ namespace DiscordCoreAPI {
 		if (other.permissionOverwrites.size() > 0) {
 			permissionOverwrites = other.permissionOverwrites;
 		}
-		setFlagValue(ChannelFlags::Managed, other.managed);
-		setFlagValue(ChannelFlags::NSFW, other.nsfw);
 		if (static_cast<int64_t>(other.flags) != 0) {
 			flags = other.flags;
 		}
+		setFlagValue(ChannelFlags::Managed, other.managed);
+		setFlagValue(ChannelFlags::NSFW, other.nsfw);
 		if (other.memberCount != 0) {
 			memberCount = other.memberCount;
 		}
@@ -141,11 +141,11 @@ namespace DiscordCoreAPI {
 		if (other.permissionOverwrites.size() > 0) {
 			permissionOverwrites = std::move(other.permissionOverwrites);
 		}
-		setFlagValue(ChannelFlags::Managed, other.managed);
-		setFlagValue(ChannelFlags::NSFW, other.nsfw);
 		if (static_cast<int64_t>(other.flags) != 0) {
 			flags = other.flags;
 		}
+		setFlagValue(ChannelFlags::Managed, other.managed);
+		setFlagValue(ChannelFlags::NSFW, other.nsfw);
 		if (other.memberCount != 0) {
 			memberCount = other.memberCount;
 		}
@@ -179,8 +179,8 @@ namespace DiscordCoreAPI {
 		returnData.managed				= getFlagValue(ChannelFlags::Managed);
 		returnData.permissionOverwrites = permissionOverwrites;
 		returnData.nsfw					= getFlagValue(ChannelFlags::NSFW);
-		returnData.topic				= topic.operator std::string();
-		returnData.name					= name.operator std::string();
+		returnData.topic				= topic;
+		returnData.name					= name;
 		returnData.memberCount			= memberCount;
 		returnData.parentId				= parentId;
 		returnData.position				= position;
@@ -196,20 +196,20 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	std::string ChannelData::getIconUrl() {
-		std::string stringNew{ "https://cdn.discordapp.com/" };
-		stringNew += "splashes/" + id.operator std::string() + "/" + icon + ".png";
+	jsonifier::string ChannelData::getIconUrl() {
+		jsonifier::string stringNew{ "https://cdn.discordapp.com/" };
+		stringNew += "splashes/" + id.operator jsonifier::string() + "/" + icon + ".png";
 		return stringNew;
 	}
 
 	ModifyChannelData::ModifyChannelData(ChannelData newData) {
-		channelData.permissionOverwrites = newData.permissionOverwrites;
+		channelData.parentId			 = newData.parentId.operator jsonifier::string();
 		channelData.nsfw				 = newData.getFlagValue(ChannelFlags::NSFW);
+		channelData.permissionOverwrites = newData.permissionOverwrites;
 		channelData.rateLimitPerUser	 = newData.rateLimitPerUser;
 		channelData.userLimit			 = newData.userLimit;
 		channelData.rtcRgion			 = newData.rtcRegion;
 		channelData.position			 = newData.position;
-		channelData.parentId			 = newData.parentId;
 		channelData.topic				 = newData.topic;
 		channelData.name				 = newData.name;
 		channelData.type				 = newData.type;
@@ -241,7 +241,7 @@ namespace DiscordCoreAPI {
 		if (Channels::cache.contains(dataPackage.channelId)) {
 			return cache[dataPackage.channelId];
 		} else {
-			return {};
+			return getChannelAsync({ .channelId = dataPackage.channelId }).get();
 		}
 	}
 

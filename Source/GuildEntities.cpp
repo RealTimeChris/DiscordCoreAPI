@@ -240,13 +240,32 @@ namespace DiscordCoreAPI {
 		GuildData returnData{};
 		returnData.voiceConnection = voiceConnection;
 		for (auto& value: channels) {
-			returnData.channels.emplace_back(Channels::getCachedChannel({ .channelId = value }));
+			if (Channels::doWeCacheChannels()) {
+				returnData.channels.emplace_back(Channels::getCachedChannel({ .channelId = value }));
+			} else {
+				ChannelData newChannel{};
+				newChannel.id = value;
+				returnData.channels.emplace_back(newChannel);
+			}
 		}
 		for (auto& value: members) {
-			returnData.members.emplace_back(GuildMembers::getCachedGuildMember({ .guildMemberId = value, .guildId = id }));
+			if (GuildMembers::doWeCacheGuildMembers()) {
+				returnData.members.emplace_back(GuildMembers::getCachedGuildMember({ .guildMemberId = value, .guildId = id }));
+			} else {
+				GuildMemberData newChannel{};
+				newChannel.guildId = id;
+				newChannel.user.id = value;
+				returnData.members.emplace_back(newChannel);
+			}
 		}
 		for (auto& value: roles) {
-			returnData.roles.emplace_back(Roles::getCachedRole({ .guildId = id, .roleId = value }));
+			if (Roles::doWeCacheRoles()) {
+				returnData.roles.emplace_back(Roles::getCachedRole({ .guildId = id, .roleId = value }));
+			} else {
+				RoleData newChannel{};
+				newChannel.id = value;
+				returnData.roles.emplace_back(newChannel);
+			}
 		}
 		for (auto& value: emoji) {
 			EmojiData newValue{};
@@ -258,7 +277,6 @@ namespace DiscordCoreAPI {
 		returnData.unavailable				 = getFlagValue(GuildFlags::Unavailable);
 		returnData.large					 = getFlagValue(GuildFlags::Large);
 		returnData.owner					 = getFlagValue(GuildFlags::Owner);
-		returnData.name						 = name.operator std::string();
 		returnData.discoverySplash			 = discoverySplash;
 		returnData.memberCount				 = memberCount;
 		returnData.discovery				 = discovery;
@@ -267,6 +285,7 @@ namespace DiscordCoreAPI {
 		returnData.splash					 = splash;
 		returnData.flags					 = flags;
 		returnData.icon						 = icon;
+		returnData.name						 = name;
 		returnData.id						 = id;
 		return returnData;
 	}
@@ -308,25 +327,25 @@ namespace DiscordCoreAPI {
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/audit-logs";
 		if (dataPackage.userId != 0) {
 			workload.relativePath += "?user_id=" + dataPackage.userId;
-			if (std::to_string(static_cast<uint64_t>(dataPackage.actionType)) != "") {
-				workload.relativePath += "&action_type=" + std::to_string(static_cast<uint64_t>(dataPackage.actionType));
+			if (jsonifier::toString(static_cast<uint64_t>(dataPackage.actionType)) != "") {
+				workload.relativePath += "&action_type=" + jsonifier::toString(static_cast<uint64_t>(dataPackage.actionType));
 			}
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 			if (dataPackage.before != 0) {
 				workload.relativePath += "&before=" + dataPackage.before;
 			}
-		} else if (std::to_string(static_cast<uint64_t>(dataPackage.actionType)) != "") {
-			workload.relativePath += "?action_type=" + std::to_string(static_cast<uint64_t>(dataPackage.actionType));
+		} else if (jsonifier::toString(static_cast<uint64_t>(dataPackage.actionType)) != "") {
+			workload.relativePath += "?action_type=" + jsonifier::toString(static_cast<uint64_t>(dataPackage.actionType));
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 			if (dataPackage.before != 0) {
 				workload.relativePath += "&before=" + dataPackage.before;
 			}
 		} else if (dataPackage.limit != 0) {
-			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+			workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 			if (dataPackage.before != 0) {
 				workload.relativePath += "&before=" + dataPackage.before;
 			}
@@ -381,9 +400,7 @@ namespace DiscordCoreAPI {
 		if (Guilds::cache.contains(dataPackage.guildId)) {
 			return cache[dataPackage.guildId];
 		} else {
-			GuildCacheData newData{};
-			newData.id = dataPackage.guildId;
-			return newData;
+			return getGuildAsync({ .guildId = dataPackage.guildId }).get();
 		}
 	}
 
@@ -440,15 +457,15 @@ namespace DiscordCoreAPI {
 				workload.relativePath += "&before=" + dataPackage.before;
 			}
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 		} else if (dataPackage.before != 0) {
 			workload.relativePath += "?before=" + dataPackage.before;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 		} else if (dataPackage.limit != 0) {
-			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+			workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 		}
 		workload.callStack = "Guilds::getGuildBansAsync()";
 		jsonifier::vector<BanData> returnData{};
@@ -501,11 +518,11 @@ namespace DiscordCoreAPI {
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/prune";
 		workload.callStack	   = "Guilds::getGuildPruneCountAsync()";
 		if (dataPackage.days != 0) {
-			workload.relativePath += "?days=" + std::to_string(dataPackage.days);
+			workload.relativePath += "?days=" + jsonifier::toString(dataPackage.days);
 			if (dataPackage.includeRoles.size() > 0) {
 				workload.relativePath += "&include_roles=";
 				for (uint64_t x = 0; x < dataPackage.includeRoles.size(); ++x) {
-					workload.relativePath += dataPackage.includeRoles.at(x);
+					workload.relativePath += dataPackage.includeRoles.at(x).operator jsonifier::string();
 					if (x < dataPackage.includeRoles.size() - 1) {
 						workload.relativePath += ",";
 					}
@@ -514,7 +531,7 @@ namespace DiscordCoreAPI {
 		} else if (dataPackage.includeRoles.size() > 0) {
 			workload.relativePath += "?include_roles=";
 			for (uint64_t x = 0; x < dataPackage.includeRoles.size(); ++x) {
-				workload.relativePath += dataPackage.includeRoles.at(x);
+				workload.relativePath += dataPackage.includeRoles.at(x).operator jsonifier::string();
 				if (x < dataPackage.includeRoles.size() - 1) {
 					workload.relativePath += ",";
 				}
@@ -824,15 +841,15 @@ namespace DiscordCoreAPI {
 				workload.relativePath += "&before=" + dataPackage.before;
 			}
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 		} else if (dataPackage.before != 0) {
 			workload.relativePath += "?before=" + dataPackage.before;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 		} else if (dataPackage.limit != 0) {
-			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+			workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 		}
 		workload.callStack = "Users::getCurrentUserGuildsAsync()";
 		jsonifier::vector<GuildData> returnData{};

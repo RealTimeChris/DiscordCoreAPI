@@ -194,10 +194,10 @@ namespace DiscordCoreAPI {
 		if (dataPackage.before != "") {
 			workload.relativePath += "?before=" + dataPackage.before;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 		} else if (dataPackage.limit != 0) {
-			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+			workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 		}
 		workload.callStack = "Threads::getPublicArchivedThreadsAsync()";
 		ArchivedThreadsData returnData{};
@@ -213,10 +213,10 @@ namespace DiscordCoreAPI {
 		if (dataPackage.before != "") {
 			workload.relativePath += "?before=" + dataPackage.before;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 		} else if (dataPackage.limit != 0) {
-			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+			workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 		}
 		workload.callStack = "Threads::getPrivateArchivedThreadsAsync()";
 		ArchivedThreadsData returnData{};
@@ -232,10 +232,10 @@ namespace DiscordCoreAPI {
 		if (dataPackage.before != "") {
 			workload.relativePath += "?before=" + dataPackage.before;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			}
 		} else if (dataPackage.limit != 0) {
-			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+			workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 		}
 		workload.callStack = "Threads::getJoinedPrivateArchivedThreadsAsync()";
 		ArchivedThreadsData returnData{};

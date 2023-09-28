@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 	};
 
 	template<EventDelegateTokenT ValueType> struct KeyHasher<ValueType> {
-		inline uint64_t operator()(const ValueType& data) const {
+		inline static uint64_t getHashKey(const ValueType& data) {
 			uint64_t values[2]{};
 			values[0] = data.eventId;
 			values[0] = data.handlerId;
@@ -85,8 +85,8 @@ namespace DiscordCoreAPI {
 			/// @brief Default constructor for EventDelegate class.
 			EventDelegate() = default;
 
-			inline EventDelegate& operator=(const EventDelegate& other) noexcept = delete;
-			inline EventDelegate(const EventDelegate& other) noexcept			 = delete;
+			inline EventDelegate& operator=(const EventDelegate& other) = delete;
+			inline EventDelegate(const EventDelegate& other)			= delete;
 
 			/// @brief Move assignment operator for the EventDelegate class.
 			/// This operator moves the contents of another EventDelegate instance, 'other', into the current instance.
@@ -151,8 +151,8 @@ namespace DiscordCoreAPI {
 		  public:
 			UnorderedMap<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> functions{};
 
-			inline Event& operator=(const Event& other) noexcept = delete;
-			inline Event(const Event& other) noexcept			 = delete;
+			inline Event& operator=(const Event& other) = delete;
+			inline Event(const Event& other)			= delete;
 
 			/// @brief Move assignment operator for the Event class.
 			/// This operator moves the contents of another Event instance, 'other', into the current instance.
@@ -229,8 +229,8 @@ namespace DiscordCoreAPI {
 		  public:
 			template<typename RTy02, typename... ArgTypes02> friend class TriggerEvent;
 
-			inline TriggerEventDelegate& operator=(const TriggerEventDelegate& other) noexcept = delete;
-			inline TriggerEventDelegate(const TriggerEventDelegate& other) noexcept			   = delete;
+			inline TriggerEventDelegate& operator=(const TriggerEventDelegate& other) = delete;
+			inline TriggerEventDelegate(const TriggerEventDelegate& other)			  = delete;
 
 			/// @brief Move assignment operator for TriggerEventDelegate class.
 			/// This operator moves the contents of another TriggerEventDelegate instance ('other') into the current instance.
@@ -311,8 +311,8 @@ namespace DiscordCoreAPI {
 		  public:
 			UnorderedMap<EventDelegateToken, TriggerEventDelegate<ReturnType, ArgTypes...>> functions{};
 
-			inline TriggerEvent& operator=(const TriggerEvent& other) noexcept = delete;
-			inline TriggerEvent(const TriggerEvent& other) noexcept			   = delete;
+			inline TriggerEvent& operator=(const TriggerEvent& other) = delete;
+			inline TriggerEvent(const TriggerEvent& other)			  = delete;
 
 			/// @brief Move assignment operator for the TriggerEvent class.
 			/// This operator moves the contents of another TriggerEvent instance, 'other', into the current instance.

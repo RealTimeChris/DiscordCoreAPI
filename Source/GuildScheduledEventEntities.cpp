@@ -123,7 +123,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/scheduled-events/" + dataPackage.guildScheduledEventId + "/users";
 		if (dataPackage.limit != 0) {
-			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+			workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 			if (dataPackage.after != 0) {
 				workload.relativePath += "&after=" + dataPackage.after;
 			}

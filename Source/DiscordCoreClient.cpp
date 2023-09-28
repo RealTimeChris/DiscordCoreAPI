@@ -78,11 +78,11 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	void atexitHandler() noexcept {
+	void atexitHandler() {
 		doWeQuit.store(true, std::memory_order_release);
 	}
 
-	void signalHandler(int32_t value) noexcept {
+	void signalHandler(int32_t value) {
 		try {
 			switch (value) {
 				case SIGTERM: {
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 			MessagePrinter::printError<PrintMessageType::General>("LibSodium failed to initialize!");
 			return;
 		}
-		httpsClient = makeUnique<DiscordCoreInternal::HttpsClient>(configManager.getBotToken());
+		httpsClient = makeUnique<DiscordCoreInternal::HttpsClient>(jsonifier::string{ configManager.getBotToken() });
 		ApplicationCommands::initialize(httpsClient.get());
 		AutoModerationRules::initialize(httpsClient.get());
 		Channels::initialize(httpsClient.get(), &configManager);
@@ -157,20 +157,24 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
-		if (!instantiateWebSockets()) {
-			doWeQuit.store(true, std::memory_order_release);
-			return;
-		}
-		while (getBotUser().id == 0) {
-			std::this_thread::sleep_for(1ms);
-		}
-		registerFunctionsInternal();
-		while (!doWeQuit.load(std::memory_order_acquire)) {
-			std::this_thread::sleep_for(1ms);
+		try {
+			if (!instantiateWebSockets()) {
+				doWeQuit.store(true, std::memory_order_release);
+				return;
+			}
+			while (getBotUser().id == 0) {
+				std::this_thread::sleep_for(1ms);
+			}
+			registerFunctionsInternal();
+			while (!doWeQuit.load(std::memory_order_acquire)) {
+				std::this_thread::sleep_for(1ms);
+			}
+		} catch (const DCAException& error) {
+			MessagePrinter::printError<PrintMessageType::General>(error.what());
 		}
 	}
 
-	void DiscordCoreClient::registerFunction(const jsonifier::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+	void DiscordCoreClient::registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
 		bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		commandController.registerFunction(functionNames, std::move(baseFunction));
@@ -190,6 +194,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::registerFunctionsInternal() {
+
 		if (getBotUser().id != 0) {
 			jsonifier::vector<ApplicationCommandData> theCommands{
 				ApplicationCommands::getGlobalApplicationCommandsAsync({ .applicationId = getBotUser().id, .withLocalizations = false }).get()
@@ -247,7 +252,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath  = "/gateway/bot";
 			workload.callStack	   = "DiscordCoreClient::getGateWayBot()";
 			GatewayBotData data{};
-			httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
+			httpsClient->submitWorkloadAndGetResult(workload, data);
 			return data;
 		} catch (const DiscordCoreInternal::HttpsError& error) {
 			MessagePrinter::printError<PrintMessageType::Https>(error.what());
@@ -268,21 +273,21 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		uint32_t workerCount = configManager.getTotalShardCount() <= static_cast<uint32_t>(DiscordCoreInternal::ThreadWrapper::hardware_concurrency())
+		uint64_t workerCount = configManager.getTotalShardCount() <= DiscordCoreInternal::ThreadWrapper::hardware_concurrency()
 			? configManager.getTotalShardCount()
-			: static_cast<uint32_t>(DiscordCoreInternal::ThreadWrapper::hardware_concurrency());
+			: static_cast<uint64_t>(DiscordCoreInternal::ThreadWrapper::hardware_concurrency());
 
 		if (configManager.getConnectionAddress() == "") {
-			configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string{ "wss://" }.size()));
+			configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + jsonifier::string{ "wss://" }.size()));
 		}
 		if (configManager.getConnectionPort() == 0) {
 			configManager.setConnectionPort(443);
 		}
 		areWeReadyToConnect.store(false, std::memory_order_release);
 		baseSocketAgentsMap.reserve(workerCount);
-		for (uint32_t x = 0; x < configManager.getTotalShardCount(); ++x) {
+		for (uint64_t x = 0; x < configManager.getTotalShardCount(); ++x) {
 			if (baseSocketAgentsMap.size() < workerCount) {
-				baseSocketAgentsMap[x] = makeUnique<DiscordCoreInternal::BaseSocketAgent>(&doWeQuit, x);
+				baseSocketAgentsMap[x] = makeUnique<DiscordCoreInternal::BaseSocketAgent>(&doWeQuit);
 				baseSocketAgentsMap[x]->shardMap.reserve(configManager.getTotalShardCount() / workerCount);
 			}
 			baseSocketAgentsMap[x % workerCount]->shardMap[x] = DiscordCoreInternal::WebSocketClient{ x, &doWeQuit };

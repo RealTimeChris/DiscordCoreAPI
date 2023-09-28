@@ -27,11 +27,12 @@
 /// Nov 8, 2021
 /// https://discordcoreapi.com
 /// \file Fallback.hpp
-
 #pragma once
 
-#include <cstdint>
-#include <numeric>
+#if (!JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX)) && (!JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX2)) && (!JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX512))
+
+	#include <cstdint>
+	#include <numeric>
 
 namespace DiscordCoreAPI {
 
@@ -73,3 +74,5 @@ namespace DiscordCoreAPI {
 		};
 	}
 }
+
+#endif

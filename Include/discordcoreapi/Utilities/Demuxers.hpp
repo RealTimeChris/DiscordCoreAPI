@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Writes data to the Matroska demuxer.
 			/// @param dataNew The data to be written.
-			inline void writeData(std::basic_string_view<uint8_t> dataNew) {
+			inline void writeData(jsonifier::string_view_base<uint8_t> dataNew) {
 				data = dataNew;
 			}
 
@@ -83,21 +83,22 @@ namespace DiscordCoreAPI {
 				if (!doWeHaveTotalSize) {
 					if (reverseBytes<uint32_t>() != segmentId) {
 						MessagePrinter::printError<PrintMessageType::General>(
-							jsonifier::string{ "Missing a Segment, which was expected at index: " + std::to_string(currentPosition) + std::string{ "..." } });
+							jsonifier::string{ "Missing a Segment, which was expected at index: " + jsonifier::toString(currentPosition) + jsonifier::string{ "..." } });
 						if (!findNextId(segmentId)) {
 							if ((totalSize > 0 && static_cast<int64_t>(currentPosition) >= totalSize)) {
 								areWeDoneVal = true;
 							}
 							return;
 						}
-						MessagePrinter::printSuccess<PrintMessageType::General>(jsonifier::string{ "Missing Segment, found at index: " + std::to_string(currentPosition) + "." });
+						MessagePrinter::printSuccess<PrintMessageType::General>(
+							jsonifier::string{ "Missing Segment, found at index: " + jsonifier::toString(currentPosition) + "." });
 					} else {
 						currentPosition += sizeof(uint32_t);
 					}
 					totalSize		  = collectElementSize();
 					doWeHaveTotalSize = true;
 				}
-				while (currentPosition + 3 < data.size() && data.find(0xa3) != std::string::npos) {
+				while (currentPosition + 3 < data.size() && data.find(static_cast<uint8_t>(0xa3)) != jsonifier::string::npos) {
 					if (currentPosition >= data.size() - 8) {
 						if ((totalSize > 0 && static_cast<int64_t>(currentPosition) >= totalSize)) {
 							areWeDoneVal = true;
@@ -140,7 +141,7 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			std::basic_string_view<uint8_t> data{};///< Input data for demuxing.
+			jsonifier::string_view_base<uint8_t> data{};///< Input data for demuxing.
 			std::deque<AudioFrameData> frames{};///< Queue to store collected frames.
 			bool doWeHaveTotalSize{ false };///< Flag indicating if total size has been determined.
 			bool areWeDoneVal{ false };///< Flag indicating if demuxing is complete.
@@ -208,7 +209,7 @@ namespace DiscordCoreAPI {
 			inline void parseOpusFrame() {
 				AudioFrameData frameNew{};
 				frameNew.currentSize = static_cast<int64_t>(currentSize - 4);
-				frameNew += std::basic_string_view<uint8_t>{ data.data() + currentPosition + 4, static_cast<uint64_t>(frameNew.currentSize) };
+				frameNew += jsonifier::string_view_base<uint8_t>{ data.data() + currentPosition + 4, static_cast<uint64_t>(frameNew.currentSize) };
 				frameNew.type = AudioFrameType::Encoded;
 				currentPosition += currentSize;
 				frames.emplace_back(std::move(frameNew));
@@ -332,7 +333,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Writes data to the Ogg demuxer and processes it.
 			/// @param inputData The data to be written and processed.
-			inline void writeData(std::string_view inputData) {
+			inline void writeData(jsonifier::string_view inputData) {
 				uint64_t pos = 0;
 				data.clear();
 				data.resize(inputData.size());
@@ -340,9 +341,9 @@ namespace DiscordCoreAPI {
 				uint64_t collectedLength{};
 				while (pos < inputData.size()) {
 					uint64_t oggPos = inputData.find("OggS", pos);
-					if (oggPos != std::string::npos) {
+					if (oggPos != jsonifier::string::npos) {
 						uint64_t nextOggPos = inputData.find("OggS", oggPos + 1);
-						if (nextOggPos != std::string::npos) {
+						if (nextOggPos != jsonifier::string::npos) {
 							collectedLength += nextOggPos - oggPos;
 							jsonifier::vector<uint8_t> newerString{};
 							newerString.resize(nextOggPos - oggPos);
@@ -381,7 +382,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			std::deque<AudioFrameData> frames{};///< Queue to store collected audio frames.
-			std::basic_string<uint8_t> data{};///< Input data for demuxing.
+			jsonifier::string_base<uint8_t> data{};///< Input data for demuxing.
 			std::deque<OpusPacket> packets{};///< Queue to store Opus packets.
 			std::deque<OggPage> pages{};///< Queue to store Ogg pages.
 
@@ -404,7 +405,7 @@ namespace DiscordCoreAPI {
 					OpusPacket newPacket = packets.front();
 					packets.pop_front();
 					AudioFrameData newFrame{};
-					newFrame += std::basic_string_view<uint8_t>{ newPacket.data(), newPacket.size() };
+					newFrame += jsonifier::string_view_base<uint8_t>{ newPacket.data(), newPacket.size() };
 					newFrame.currentSize = static_cast<int64_t>(newPacket.size());
 					newFrame.type		 = AudioFrameType::Encoded;
 					frames.emplace_back(std::move(newFrame));

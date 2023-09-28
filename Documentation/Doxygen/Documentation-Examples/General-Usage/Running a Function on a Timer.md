@@ -26,7 +26,7 @@ int32_t main() {
 	function01.function = &onBoot00;
 	function01.intervalInMs = 150;
 	function01.repeated = false;
-	functionVector.push_back(function01);
+	functionVector.pushBack(function01);
 	DiscordCoreClientConfig clientConfig{};
 	clientConfig.functionsToExecute = functionVector;
 	auto ptr = makeUnique<DiscordCoreClient>(clientConfig);

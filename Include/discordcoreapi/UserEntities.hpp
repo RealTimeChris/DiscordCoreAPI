@@ -44,8 +44,8 @@ namespace DiscordCoreAPI {
 	/// @brief For adding a user to a group DM.
 	struct AddRecipientToGroupDMData {
 		Snowflake channelId{};///< The ChannelData Snowflake of the DM.
-		std::string token{};///< The user's access token.
-		std::string nick{};///< The user's nickname.
+		jsonifier::string token{};///< The user's access token.
+		jsonifier::string nick{};///< The user's nickname.
 		Snowflake userId{};///< The user's Snowflake.
 	};
 
@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For updating the bot's current voice state.
 	struct ModifyCurrentUserVoiceStateData {
-		std::string requestToSpeakTimestamp{};///< ISO8601 timeStamp.
+		jsonifier::string requestToSpeakTimestamp{};///< ISO8601 timeStamp.
 		Snowflake channelId{};///< The id of the ChannelData the user is currently in.
 		Snowflake guildId{};///< The Guild within which to update the bot's voice state.
 		bool suppress{};///< Toggles the user's suppress state.
@@ -78,8 +78,8 @@ namespace DiscordCoreAPI {
 
 	/// @brief For modifying the Bot's UserData responseData.
 	struct ModifyCurrentUserData {
-		std::string userName{};///< UserData's username, if changed may cause the user's discriminator to be randomized.
-		std::string avatar{};///< If passed, modifies the user's avatar.
+		jsonifier::string userName{};///< UserData's username, if changed may cause the user's discriminator to be randomized.
+		jsonifier::string avatar{};///< If passed, modifies the user's avatar.
 	};
 
 	/**@}*/

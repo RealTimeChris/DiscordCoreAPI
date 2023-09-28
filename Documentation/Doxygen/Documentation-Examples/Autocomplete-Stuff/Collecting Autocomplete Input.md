@@ -16,7 +16,7 @@ Collecting Autocomplete Input {#collectingautocompleteinput}
 
 void theAutoCompleteFunction(OnAutoCompleteEntryData dataPackage) {
 	RespondToInputEventData dataPackageNew{ dataPackage.inputEvent };
-	if (dataPackage.inputEvent.getInteractionData().data.applicationCommandData.options[0].valueString.find("tes") != std::string::npos) {
+	if (dataPackage.inputEvent.getInteractionData().data.applicationCommandData.options[0].valueString.find("tes") != jsonifier::string::npos) {
 		dataPackageNew.setAutoCompleteChoice("The Test Value", "test_value_name");
 		dataPackageNew.setResponseType(InputEventResponseType::Application_Command_AutoComplete_Result);
 		InputEvents::respondToInputEventAsync(dataPackageNew).get();
@@ -27,10 +27,10 @@ void theAutoCompleteFunction(OnAutoCompleteEntryData dataPackage) {
 }
 
 int32_t main() {
-	std::string botToken = "YOUR_BOT_TOKEN_HERE";
+	jsonifier::string botToken = "YOUR_BOT_TOKEN_HERE";
 	DiscordCoreClient client{ botToken };
 	client.eventManager.onAutoCompleteEntry(&theAutoCompleteFunction);
-	client.registerFunction(jsonifier::vector<std::string>{ "test" }, makeUnique<Test>());
+	client.registerFunction(jsonifier::vector<jsonifier::string>{ "test" }, makeUnique<Test>());
 	client.runBot();
 	return 0;
 }

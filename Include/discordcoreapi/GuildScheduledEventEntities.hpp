@@ -50,12 +50,12 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventPrivacyLevel privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};/// The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
-		std::string scheduledStartTime{};///< The time to schedule the scheduled event.
-		std::string scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
-		std::string description{};///< The description of the scheduled event.
+		jsonifier::string scheduledStartTime{};///< The time to schedule the scheduled event.
+		jsonifier::string scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
+		jsonifier::string description{};///< The description of the scheduled event.
 		Snowflake channelId{};///< The ChannelData id of the scheduled event.
 		Snowflake guildId{};///< The Guild within which to create the event.
-		std::string name{};///< The name of the scheduled event.
+		jsonifier::string name{};///< The name of the scheduled event.
 	};
 
 	/// @brief For collecting a single Guild scheduled event.
@@ -72,12 +72,12 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventMetadata entityMetadata{};///< The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
 		Snowflake guildScheduledEventId{};///< The id of the event to modify.
-		std::string scheduledStartTime{};///< The time to schedule the scheduled event.
-		std::string scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
-		std::string description{};///< The description of the scheduled event.
+		jsonifier::string scheduledStartTime{};///< The time to schedule the scheduled event.
+		jsonifier::string scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
+		jsonifier::string description{};///< The description of the scheduled event.
 		Snowflake channelId{};///< The ChannelData id of the scheduled event, set to null if changing entity type to External.
 		Snowflake guildId{};///< The Guild within which to modify the event.
-		std::string name{};///< The name of the scheduled event.
+		jsonifier::string name{};///< The name of the scheduled event.
 	};
 
 	/// @brief For deleting a single Guild Scheduled Event.

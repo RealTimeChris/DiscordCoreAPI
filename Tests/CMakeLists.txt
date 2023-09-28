@@ -21,59 +21,19 @@
 # CMakeLists.txt - The CMake script for building this library.
 # May 13, 2021
 # https://discordcoreapi.com
-
-cmake_minimum_required(VERSION 3.18)
-
-set(PROJECT_NAME "DiscordCoreAPITest")
-
-project(
-  "${PROJECT_NAME}"
-  VERSION 1.0
-)
-
-set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/Install/")
-
-set(CMAKE_CXX_STANDARD 20)
-
-if (GITHUB_BRANCH_TYPE STREQUAL "refs/heads/main")
-    set(BRANCH "main")
-else()
-    set(BRANCH "dev")
-	set(DEV true)
-endif()
-
-set(BUILD_SHARED_LIBS FALSE)
-
-include(FetchContent)
-FetchContent_Declare(
-    DiscordCoreAPI
-    GIT_REPOSITORY https://github.com/RealTimeChris/DiscordCoreAPI
-    GIT_TAG "${BRANCH}"
-)
-FetchContent_MakeAvailable(DiscordCoreAPI)
-
-FetchContent_Declare(
-    Jsonifier
-    GIT_REPOSITORY https://github.com/RealTimeChris/Jsonifier
-    GIT_TAG "${BRANCH}"
-)
-FetchContent_MakeAvailable(Jsonifier)
+set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/Install/")
 
 add_executable(
-    "${PROJECT_NAME}"
+    "DiscordCoreAPITest"
     "main.cpp" "./Commands/BotInfo.hpp"
 )
 
 target_link_options(
-	"${PROJECT_NAME}" INTERFACE	
-	"$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:-Wl,-rpath,/usr/local/opt/llvm/lib/c++>"
-    "$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:-L/usr/local/opt/llvm/lib/c++>"
+	"DiscordCoreAPITest" INTERFACE	
 )
 
 target_link_libraries(
-	"${PROJECT_NAME}" PRIVATE
-	"$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++abi>"
-    "$<$<NOT:$<BOOL:$<STREQUAL:$<PLATFORM_ID>,Windows>>>:c++>"
+	"DiscordCoreAPITest" PRIVATE
     DiscordCoreAPI::DiscordCoreAPI
 	Jsonifier::Jsonifier
 )
@@ -81,7 +41,7 @@ target_link_libraries(
 if (WIN32)
 	install(
 		FILES 
-		"$<TARGET_PDB_FILE:${PROJECT_NAME}>"
+		"$<TARGET_PDB_FILE:DiscordCoreAPITest>"
 		DESTINATION "${CMAKE_INSTALL_PREFIX}/$<CONFIG>"
 	)
 	install(
@@ -91,13 +51,13 @@ if (WIN32)
 	)	
 	install(
 		FILES 
-		"$<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>"
+		"$<TARGET_RUNTIME_DLLS:DiscordCoreAPITest>"
 		DESTINATION "${CMAKE_INSTALL_PREFIX}/$<CONFIG>"
 	)
 endif()
 
 install(
 	FILES 
-	"$<TARGET_FILE:${PROJECT_NAME}>"
+	"$<TARGET_FILE:DiscordCoreAPITest>"
 	DESTINATION "$<CONFIG>"
 )

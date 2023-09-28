@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 		class ThreadWrapper {
 		  public:
 			/// @brief Default constructor.
-			inline ThreadWrapper() noexcept = default;
+			inline ThreadWrapper() = default;
 
 			/// @brief Move assignment operator.
 			/// @param other The other ThreadWrapper to copy from.
@@ -93,8 +93,8 @@ namespace DiscordCoreAPI {
 				*this = std::move(other);
 			}
 
-			inline ThreadWrapper& operator=(const ThreadWrapper& other) noexcept = delete;
-			inline ThreadWrapper(const ThreadWrapper& other) noexcept			 = delete;
+			inline ThreadWrapper& operator=(const ThreadWrapper& other) = delete;
+			inline ThreadWrapper(const ThreadWrapper& other)			= delete;
 
 			/// @brief Constructor that takes a callable object.
 			/// @tparam Function The type of the callable object.

@@ -65,32 +65,32 @@ namespace DiscordCoreAPI {
 
 	class SIGTERMError : public DCAException {
 	  public:
-		inline SIGTERMError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGTERMError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGSEGVError : public DCAException {
 	  public:
-		inline SIGSEGVError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGSEGVError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGINTError : public DCAException {
 	  public:
-		inline SIGINTError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGINTError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGILLError : public DCAException {
 	  public:
-		inline SIGILLError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGILLError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGABRTError : public DCAException {
 	  public:
-		inline SIGABRTError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGABRTError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	class SIGFPEError : public DCAException {
 	  public:
-		inline SIGFPEError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline SIGFPEError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	using SoundCloudAPIMap = UnorderedMap<uint64_t, UniquePtr<DiscordCoreInternal::SoundCloudAPI>>;
@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 		/// @param commandData A CreateApplicationCommandData structure describing the current function.
 		/// @param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of
 		/// registered commands.
-		void registerFunction(const jsonifier::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+		void registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
 			bool alwaysRegister = false);
 
 		/// @brief For collecting a reference to the CommandController.
@@ -212,13 +212,13 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient(const DiscordCoreClient&)			   = delete;
 
 		UnorderedMap<uint64_t, UniquePtr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
-		StopWatch<Milliseconds> connectionStopWatch01{ 5000ms };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
 		UniquePtr<DiscordCoreInternal::HttpsClient> httpsClient{};
+		StopWatch<Milliseconds> connectionStopWatch01{ 5000ms };
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
-		std::atomic_int32_t currentlyConnectingShard{};
+		std::atomic_uint64_t currentlyConnectingShard{};
 		std::atomic_bool areWeReadyToConnect{ false };
 		CommandController commandController{};
 		Milliseconds startupTimeSinceEpoch{};

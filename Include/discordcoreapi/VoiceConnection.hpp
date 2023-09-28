@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 			{ 4012, VoiceWebSocketCloseCode::Unknown_Protocol }, { 4014, VoiceWebSocketCloseCode::Disconnected }, { 4015, VoiceWebSocketCloseCode::Voice_Server_Crashed },
 			{ 4016, VoiceWebSocketCloseCode::Unknown_Encryption_Mode } };
 
-		inline static UnorderedMap<VoiceWebSocketCloseCode, std::string_view> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." },
+		inline static UnorderedMap<VoiceWebSocketCloseCode, jsonifier::string_view> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." },
 			{ VoiceWebSocketCloseCode::Normal_Close, "Normal close." }, { VoiceWebSocketCloseCode::Unknown_Opcode, "You sent an invalid opcode." },
 			{ VoiceWebSocketCloseCode::Failed_To_Decode, "You sent an invalid payload in your identifying to the Gateway." },
 			{ VoiceWebSocketCloseCode::Not_Authenticated, "You sent a payload before identifying with the Gateway." },
@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 			*this = value;
 		};
 
-		inline operator std::string_view() {
+		inline operator jsonifier::string_view() {
 			return VoiceWebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(value)]];
 		}
 
@@ -106,8 +106,8 @@ namespace DiscordCoreAPI {
 	};
 
 	struct VoiceSocketReadyData {
-		jsonifier::vector<std::string> modes{};
-		std::string ip{};
+		jsonifier::vector<jsonifier::string> modes{};
+		jsonifier::string ip{};
 		uint16_t port{};
 		uint32_t ssrc{};
 	};
@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 
 		VoiceUser(Snowflake userId);
 
-		VoiceUser& operator=(VoiceUser&&) noexcept;
+		VoiceUser& operator=(VoiceUser&& data) noexcept;
 
 		VoiceUser& operator=(const VoiceUser&) = delete;
 
@@ -142,9 +142,9 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::OpusDecoderWrapper& getDecoder();
 
-		std::basic_string_view<uint8_t> extractPayload();
+		jsonifier::string_view_base<uint8_t> extractPayload();
 
-		void insertPayload(std::basic_string_view<uint8_t>);
+		void insertPayload(jsonifier::string_view_base<uint8_t>);
 
 		Snowflake getUserId();
 
@@ -157,13 +157,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
 		RTPPacketEncrypter() = default;
 
-		RTPPacketEncrypter(uint32_t ssrcNew, const std::basic_string<uint8_t>& keysNew);
+		RTPPacketEncrypter(uint32_t ssrcNew, const jsonifier::string_base<uint8_t>& keysNew);
 
-		std::basic_string_view<uint8_t> encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData);
+		jsonifier::string_view_base<uint8_t> encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData);
 
 	  protected:
-		std::basic_string<uint8_t> data{};
-		std::basic_string<uint8_t> keys{};
+		jsonifier::string_base<uint8_t> data{};
+		jsonifier::string_base<uint8_t> keys{};
 		uint32_t timeStamp{};
 		uint16_t sequence{};
 		uint32_t ssrc{};
@@ -221,7 +221,8 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class VoiceConnection;
 
-		VoiceConnectionBridge(std::basic_string<uint8_t>& encryptionKeyNew, StreamType streamType, const std::string& baseUrlNew, const uint16_t portNew, Snowflake guildIdNew,
+		VoiceConnectionBridge(UnorderedMap<uint64_t, UniquePtr<VoiceUser>>* voiceUsersPtrNew, jsonifier::string_base<uint8_t>& encryptionKeyNew, StreamType streamType,
+			jsonifier::string_view baseUrlNew, const uint16_t portNew, Snowflake guildIdNew,
 			std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* tokenNew);
 
 		inline void applyGainRamp(int64_t sampleCount);
@@ -236,12 +237,13 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* token{};
+		UnorderedMap<uint64_t, UniquePtr<VoiceUser>>* voiceUsersPtr{};
+		jsonifier::string_base<uint8_t> decryptedDataString{};
 		std::array<opus_int16, 23040> downSampledVector{};
-		std::basic_string<uint8_t> decryptedDataString{};
+		jsonifier::string_base<uint8_t> encryptionKey{};
 		std::array<opus_int32, 23040> upSampledVector{};
 		DiscordCoreInternal::AudioMixer audioMixer{};
 		jsonifier::vector<uint8_t> resampleVector{};
-		std::basic_string<uint8_t> encryptionKey{};
 		MovingAverager voiceUserCountAverage{ 25 };
 		Snowflake guildId{};
 		float currentGain{};
@@ -253,7 +255,7 @@ namespace DiscordCoreAPI {
 	  public:
 		VoiceUDPConnection() = default;
 
-		VoiceUDPConnection(const std::string& baseUrlNew, uint16_t portNew, StreamType streamType, VoiceConnection* ptrNew,
+		VoiceUDPConnection(jsonifier::string_view baseUrlNew, uint16_t portNew, StreamType streamType, VoiceConnection* ptrNew,
 			std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* stopToken);
 
 		void handleAudioBuffer() override;
@@ -310,32 +312,31 @@ namespace DiscordCoreAPI {
 		UnorderedMap<uint64_t, UniquePtr<VoiceUser>> voiceUsers{};
 		DiscordCoreInternal::OpusEncoderWrapper encoder{};
 		DiscordCoreInternal::WebSocketClient* baseShard{};
+		jsonifier::string_base<uint8_t> encryptionKey{};
 		UniquePtr<VoiceConnectionBridge> streamSocket{};
-		DiscordCoreInternal::AudioMixer audioMixer{};
 		VoiceConnectInitData voiceConnectInitData{};
-		std::basic_string<uint8_t> encryptionKey{};
+		jsonifier::string audioEncryptionMode{};
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
 		CoRoutine<void, false> taskThread{};
 		VoiceUDPConnection udpConnection{};
 		int64_t nsPerSecond{ 1000000000 };
-		std::string audioEncryptionMode{};
+		jsonifier::string externalIp{};
 		AudioFrameData xferAudioData{};
 		std::atomic_bool wasItAFail{};
 		std::atomic_bool* doWeQuit{};
 		std::atomic_bool doWeSkip{};
+		jsonifier::string voiceIp{};
+		jsonifier::string baseUrl{};
 		int64_t samplesPerPacket{};
 		Snowflake currentUserId{};
-		std::string externalIp{};
 		int64_t msPerPacket{};
-		std::string voiceIp{};
-		std::string baseUrl{};
 		uint32_t audioSSRC{};
 		uint16_t port{};
 
-		void parseIncomingVoiceData(std::basic_string_view<uint8_t> rawDataBufferNew);
+		void parseIncomingVoiceData(jsonifier::string_view_base<uint8_t> rawDataBufferNew);
 
-		bool onMessageReceived(std::basic_string_view<uint8_t> data);
+		bool onMessageReceived(jsonifier::string_view_base<uint8_t> data);
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 

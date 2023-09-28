@@ -64,9 +64,9 @@ namespace DiscordCoreAPI {
 		Snowflake systemChannelId{};///< The id of the ChannelData where Guild notices such as welcome messages and boost events are posted.
 		int32_t verificationLevel{};///< Verification level.
 		Snowflake afkChannelId{};///< Snowflake for afk ChannelData.
-		std::string region{};///< The region that the servers are in.
-		std::string icon{};///< base64 128x128 image for the Guild icon.
-		std::string name{};///< The name of the new Guild.
+		jsonifier::string region{};///< The region that the servers are in.
+		jsonifier::string icon{};///< base64 128x128 image for the Guild icon.
+		jsonifier::string name{};///< The name of the new Guild.
 		jsonifier::vector<RoleData> roles{};///< Array of RoleData objects.
 	};
 
@@ -103,13 +103,13 @@ namespace DiscordCoreAPI {
 	struct CreateGuildBanData {
 		int32_t deleteMessageDays{};///< The number of days of their Messages to delete.
 		Snowflake guildMemberId{};///< The id of the member to be banned.
-		std::string reason{};///< The reason for the ban.
+		jsonifier::string reason{};///< The reason for the ban.
 		Snowflake guildId{};///< The id of the Guild from which to ban the member.
 	};
 
 	/// @brief For removing a previous created Ban.
 	struct RemoveGuildBanData {
-		std::string reason{};///< The reason for removing this Ban.
+		jsonifier::string reason{};///< The reason for removing this Ban.
 		Snowflake guildId{};///< The Guild from which to erase the Ban.
 		Snowflake userId{};///< The user Snowflake of the user who's ban to erase.
 	};
@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 	struct BeginGuildPruneData {
 		jsonifier::vector<Snowflake> includeRoles{};/// Roles to be included in the prune.
 		bool computePruneCount{};/// Whether 'pruned' is returned, discouraged for large guilds.
-		std::string reason{};///< Reason for pruning the GuildMembers.
+		jsonifier::string reason{};///< Reason for pruning the GuildMembers.
 		Snowflake guildId{};///< Guild within which to perform the prune.
 		int32_t days{};/// Number of days after which to prune a  given GuildMember.
 	};
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 	/// @brief For deleting a Guild integration.
 	struct DeleteGuildIntegrationData {
 		Snowflake integrationId{};///< The integration's id which we are going to delete.
-		std::string reason{};///< Reason for deleting the integration.
+		jsonifier::string reason{};///< Reason for deleting the integration.
 		Snowflake guildId{};///< The Guild from which to delete the integration from.
 	};
 
@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 	/// @brief For modifying a Guild's widget.
 	struct ModifyGuildWidgetData {
 		GuildWidgetData widgetData{};///< The new Guild widget responseData.
-		std::string reason{};///< Reason for modifying the widget.
+		jsonifier::string reason{};///< Reason for modifying the widget.
 		Snowflake guildId{};///< The Guild for which to modify the widget of.
 	};
 
@@ -188,22 +188,22 @@ namespace DiscordCoreAPI {
 	/// @brief For modifying a Guild's welcome screen.
 	struct ModifyGuildWelcomeScreenData {
 		jsonifier::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
-		std::string description{};///< The description of the welcome screen.
-		std::string reason{};///< The reason for modifying the welcome screen.
+		jsonifier::string description{};///< The description of the welcome screen.
+		jsonifier::string reason{};///< The reason for modifying the welcome screen.
 		Snowflake guildId{};///< The Guild for which to modify the welcome screen of.
 		bool enabled{};///< Is it enabled?
 	};
 
 	/// @brief For collecting a Guild's template.
 	struct GetGuildTemplateData {
-		std::string templateCode{};///< Code for the desired Template.
+		jsonifier::string templateCode{};///< Code for the desired Template.
 	};
 
 	/// @brief For creating a Guild from a Guild template.
 	struct CreateGuildFromGuildTemplateData {
-		std::string templateCode{};///< Code for the desired Template to use.
-		std::string imageData{};///< base64 128x128 image for the Guild icon.
-		std::string name{};///< Desired name of the Guild.
+		jsonifier::string templateCode{};///< Code for the desired Template to use.
+		jsonifier::string imageData{};///< base64 128x128 image for the Guild icon.
+		jsonifier::string name{};///< Desired name of the Guild.
 	};
 
 	/// @brief For collecting a list of Guild Templates from a chosen Guild.
@@ -213,28 +213,28 @@ namespace DiscordCoreAPI {
 
 	/// @brief For creating a Guild Template.
 	struct CreateGuildTemplateData {
-		std::string description{};///< Description for the template (0 - 120 characters).
+		jsonifier::string description{};///< Description for the template (0 - 120 characters).
 		Snowflake guildId{};///< Guild within which you wuold like to create the template.
-		std::string name{};///< Name of the template (1 - 100 characters).
+		jsonifier::string name{};///< Name of the template (1 - 100 characters).
 	};
 
 	/// @brief For syncing a Guild Template.
 	struct SyncGuildTemplateData {
-		std::string templateCode{};///< Template code for which template you would like to sync.
+		jsonifier::string templateCode{};///< Template code for which template you would like to sync.
 		Snowflake guildId{};///< Guild for which you would like to sync the template of.
 	};
 
 	/// @brief For modifying a Guild Template.
 	struct ModifyGuildTemplateData {
-		std::string templateCode{};/// Template which you would like to modify.
-		std::string description{};///< Description for the template (0 - 120 characters).
+		jsonifier::string templateCode{};/// Template which you would like to modify.
+		jsonifier::string description{};///< Description for the template (0 - 120 characters).
 		Snowflake guildId{};///< Guild within which you would like to modify the Template.
-		std::string name{};///< Name of the template (1 - 100 characters).
+		jsonifier::string name{};///< Name of the template (1 - 100 characters).
 	};
 
 	/// @brief For deleting a Guild Template.
 	struct DeleteGuildTemplateData {
-		std::string templateCode{};///< The template which you would like to delete.
+		jsonifier::string templateCode{};///< The template which you would like to delete.
 		Snowflake guildId{};///< The Guild within which you would like to delete the Template.
 	};
 
@@ -248,7 +248,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For deleting a single Guild Invite.
 	struct DeleteInviteData {
-		std::string reason{};///< Reason for deleting the Invite.
+		jsonifier::string reason{};///< Reason for deleting the Invite.
 		Snowflake inviteId{};///< The Invite which you would like to delete.
 	};
 
@@ -270,23 +270,23 @@ namespace DiscordCoreAPI {
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		SystemChannelFlags systemChannelFlags{};///< System ChannelData flags.
 		VerificationLevel verificationLevel{};///< Verification level.
-		jsonifier::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
+		jsonifier::vector<jsonifier::string> features{};///< Array of Guild feature strings enabled Guild features.
 		Snowflake publicUpdatesChannelId{};///< The id of the ChannelData where admins and moderators of Community guilds receive notices from Discord.
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
 		bool premiumProgressBarEnabled{};///< Whether or not the progress bar is enabled.
-		std::string preferredLocale{};///< The preferred locale of a Community Guild used in server discovery.
-		std::string discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
+		jsonifier::string preferredLocale{};///< The preferred locale of a Community Guild used in server discovery.
+		jsonifier::string discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		Snowflake systemChannelId{};///< The id of the ChannelData where Guild notices such as welcome messages and boost events are posted.
 		Snowflake rulesChannelId{};///< The id of the ChannelData where Community guilds display rules and /or guidelines.
-		std::string description{};///< The description for the Guild, if the Guild is discoverable.
+		jsonifier::string description{};///< The description for the Guild, if the Guild is discoverable.
 		Snowflake afkChannelId{};///< Snowflake for afk channels.
-		std::string banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
-		std::string splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
-		std::string reason{};///< Reason for modifying the Guild.
+		jsonifier::string banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
+		jsonifier::string splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
+		jsonifier::string reason{};///< Reason for modifying the Guild.
 		Snowflake ownerId{};///< UserData id to transfer Guild ownership to (must be owner).
 		Snowflake guildId{};///< Snowflake of the chosen Guild to modify.
-		std::string icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon.
-		std::string name{};///< Desired name of the Guild.
+		jsonifier::string icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon.
+		jsonifier::string name{};///< Desired name of the Guild.
 
 		ModifyGuildData(const GuildData& dataPackage);
 	};

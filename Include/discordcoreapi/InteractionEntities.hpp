@@ -41,13 +41,13 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	using AutoCompleteEntryFunction = std::function<std::string(std::string)>;
+	using AutoCompleteEntryFunction = std::function<jsonifier::string(jsonifier::string)>;
 
 	class DiscordCoreAPI_Dll InteractionResponseBase {
 	  public:
 		template<typename ValueType> friend struct jsonifier::core;
 
-		UnorderedSet<std::string_view> excludedKeys{};
+		UnorderedSet<jsonifier::string_view> excludedKeys{};
 
 		/// @brief Adds a button to the response MessageData.
 		/// @param disabled Whether the button is active or not.
@@ -57,8 +57,8 @@ namespace DiscordCoreAPI {
 		/// @param emojiName An emoji name, if desired.
 		/// @param emojiId An emoji id, if desired.
 		/// @param url A url, if applicable.
-		InteractionResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
+		InteractionResponseBase& addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, ButtonStyle buttonStyle,
+			jsonifier::string_view emojiName = "", Snowflake emojiId = Snowflake{}, jsonifier::string_view url = "");
 
 		/// @brief Adds a select-menu to the response MessageData.
 		/// @param disabled Whether the select-menu is active or not.
@@ -67,8 +67,9 @@ namespace DiscordCoreAPI {
 		/// @param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// @param maxValues Maximum number of selections that are possible.
 		/// @param minValues Minimum required number of selections that are required.
-		InteractionResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, jsonifier::vector<SelectOptionData> options, const std::string& placeholder,
-			uint64_t maxValues, uint64_t minValues, SelectMenuType type, jsonifier::vector<ChannelType> channelTypes = jsonifier::vector<ChannelType>{});
+		InteractionResponseBase& addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<SelectOptionData> options,
+			jsonifier::string_view placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType type,
+			jsonifier::vector<ChannelType> channelTypes = jsonifier::vector<ChannelType>{});
 
 		/// @brief Adds a modal to the response MessageData.
 		/// @param topTitleNew A title for the modal.
@@ -82,8 +83,9 @@ namespace DiscordCoreAPI {
 		/// @param label A label for the modal.
 		/// @param placeholder A placeholder for the modal.
 		/// @returns RespondToInputEventData& A reference to this data structure.
-		InteractionResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
-			bool required, uint64_t minLength, uint64_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
+		InteractionResponseBase& addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
+			jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, TextInputStyle inputStyle, jsonifier::string_view label = "",
+			jsonifier::string_view placeholder = "");
 
 		/// @brief Adds a file to the current collection of files for this message response.
 		/// @param theFile The file to be added.
@@ -108,7 +110,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief For setting the content in a response.
 		/// @param dataPackage A string, containing the content.
-		InteractionResponseBase& addContent(const std::string& dataPackage);
+		InteractionResponseBase& addContent(jsonifier::string_view dataPackage);
 
 		/// @brief For setting the tts status of a response.
 		/// @param enabledTTs A bool.
@@ -178,7 +180,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For getting an Interaction response.
 	struct GetInteractionResponseData {
-		std::string interactionToken{};///< Interaction token.
+		jsonifier::string interactionToken{};///< Interaction token.
 		Snowflake applicationId{};///< application id.
 	};
 
@@ -189,7 +191,7 @@ namespace DiscordCoreAPI {
 		friend class Interactions;
 		friend class InputEvents;
 
-		UnorderedSet<std::string_view> excludedKeys{};
+		UnorderedSet<jsonifier::string_view> excludedKeys{};
 
 		EditInteractionResponseData(const RespondToInputEventData& dataPackage);
 
@@ -237,7 +239,7 @@ namespace DiscordCoreAPI {
 		friend class Interactions;
 		friend class InputEvents;
 
-		UnorderedSet<std::string_view> excludedKeys{};
+		UnorderedSet<jsonifier::string_view> excludedKeys{};
 
 		CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage);
 
@@ -253,7 +255,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For getting a follow-up MessageData.
 	struct GetFollowUpMessageData {
-		std::string interactionToken{};///< Interaction token.
+		jsonifier::string interactionToken{};///< Interaction token.
 		Snowflake applicationId{};///< application id.
 		Snowflake messageId{};///< Message id.
 	};
@@ -265,7 +267,7 @@ namespace DiscordCoreAPI {
 		friend class Interactions;
 		friend class InputEvents;
 
-		UnorderedSet<std::string_view> excludedKeys{};
+		UnorderedSet<jsonifier::string_view> excludedKeys{};
 
 		EditFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
@@ -408,8 +410,8 @@ namespace DiscordCoreAPI {
 		inline SelectMenuResponseData() = default;
 
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
-		jsonifier::vector<std::string> values{};///< A vector of the chosen values.
-		std::string selectionId{};///< Selection id.
+		jsonifier::vector<jsonifier::string> values{};///< A vector of the chosen values.
+		jsonifier::string selectionId{};///< Selection id.
 		Snowflake channelId{};///< The ChannelData id where it took place.
 		Snowflake messageId{};///< The Message id where it took place.
 		Snowflake userId{};///< The UserData id who selected the menu options.
@@ -422,7 +424,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static UnorderedMap<std::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBuffersMap;
+		static UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBuffersMap;
 		static DiscordCoreInternal::TriggerEvent<void, InteractionData> selectMenuInteractionEventsMap;
 
 		/// @brief Constructor.
@@ -452,11 +454,11 @@ namespace DiscordCoreAPI {
 		jsonifier::vector<SelectMenuResponseData> responseVector{};
 		CreateInteractionResponseData errorMessageData{};
 		uint32_t currentCollectedSelectMenuCount{};
-		jsonifier::vector<std::string> values{};
+		jsonifier::vector<jsonifier::string> values{};
 		uint32_t maxCollectedSelectMenuCount{};
 		bool getSelectMenuDataForAll{};
-		std::string buffersMapKey{};
-		std::string selectMenuId{};
+		jsonifier::string buffersMapKey{};
+		jsonifier::string selectMenuId{};
 		uint32_t maxTimeInMs{};
 		Snowflake channelId{};
 		Snowflake messageId{};
@@ -507,8 +509,8 @@ namespace DiscordCoreAPI {
 		inline ButtonResponseData() = default;
 
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
-		std::string emojiName{};///< The emoji name, if applicable.
-		std::string buttonId{};///< The id of the button, for identification.
+		jsonifier::string emojiName{};///< The emoji name, if applicable.
+		jsonifier::string buttonId{};///< The id of the button, for identification.
 		Snowflake channelId{};///< The ChannelData id where it took place.
 		Snowflake messageId{};///< The Message id where it took place.
 		Snowflake userId{};///< The UserData id who selected the menu options.
@@ -519,7 +521,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static UnorderedMap<std::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBuffersMap;
+		static UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBuffersMap;
 		static DiscordCoreInternal::TriggerEvent<void, InteractionData> buttonInteractionEventsMap;
 
 		/// @brief Constructor.
@@ -548,13 +550,13 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<InteractionData> buttonIncomingInteractionBuffer{};
 		jsonifier::vector<ButtonResponseData> responseVector{};
 		CreateInteractionResponseData errorMessageData{};
-		jsonifier::vector<std::string> values{};
+		jsonifier::vector<jsonifier::string> values{};
 		uint32_t currentCollectedButtonCount{};
 		uint32_t maxCollectedButtonCount{};
-		std::string buffersMapKey{};
+		jsonifier::string buffersMapKey{};
 		bool getButtonDataForAll{};
 		uint32_t maxTimeInMs{};
-		std::string buttonId{};
+		jsonifier::string buttonId{};
 		Snowflake channelId{};
 		Snowflake messageId{};
 		Snowflake userId{};
@@ -588,10 +590,10 @@ namespace DiscordCoreAPI {
 		inline ModalResponseData() = default;
 
 		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
-		std::string customIdSmall{};///< The customId of the particular input.
-		std::string customId{};///< The customId of the modal component.
+		jsonifier::string customIdSmall{};///< The customId of the particular input.
+		jsonifier::string customId{};///< The customId of the modal component.
 		Snowflake channelId{};///< The ChannelData id where it took place.
-		std::string value{};/// The input value of the modal component.
+		jsonifier::string value{};/// The input value of the modal component.
 		Snowflake userId{};///< The UserData id who selected the menu options.
 	};
 
@@ -600,7 +602,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static UnorderedMap<std::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBuffersMap;
+		static UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBuffersMap;
 		static DiscordCoreInternal::TriggerEvent<void, InteractionData> modalInteractionEventsMap;
 
 		/// @brief Constructor.

@@ -64,10 +64,10 @@ namespace jsonifier {
 
 namespace DiscordCoreAPI {
 
-	template<> UnorderedMap<std::string, UnboundedMessageBlock<MessageData>*> ObjectCollector<MessageData>::objectsBuffersMap{};
+	template<> UnorderedMap<jsonifier::string, UnboundedMessageBlock<MessageData>*> ObjectCollector<MessageData>::objectsBuffersMap{};
 
 	template<> ObjectCollector<MessageData>::ObjectCollector() {
-		collectorId										= std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+		collectorId										= jsonifier::toString(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 		ObjectCollector::objectsBuffersMap[collectorId] = &objectsBuffer;
 	};
 
@@ -184,29 +184,29 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/messages";
 		if (dataPackage.aroundThisId != 0) {
-			workload.relativePath += "?around=" + std::to_string(dataPackage.aroundThisId);
+			workload.relativePath += "?around=" + jsonifier::toString(dataPackage.aroundThisId);
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
 		} else if (dataPackage.beforeThisId != 0) {
 			workload.relativePath += "?before=" + dataPackage.beforeThisId;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
 		} else if (dataPackage.afterThisId != 0) {
 			workload.relativePath += "?after=" + dataPackage.afterThisId;
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "&limit=" + jsonifier::toString(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
 		} else {
 			if (dataPackage.limit != 0) {
-				workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+				workload.relativePath += "?limit=" + jsonifier::toString(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}

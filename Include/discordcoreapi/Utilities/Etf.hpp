@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 			/// @brief Constructs an EtfParseError instance with a message and source location.
 			/// @param message The error message.
 			/// @param location The source location where the error occurred.
-			inline explicit EtfParseError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+			inline explicit EtfParseError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 		};
 
 		enum class EtfType : int8_t {
@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 			/// @brief Parse ETF data to JSON format.
 			/// @param dataToParse The ETF data to be parsed.
 			/// @return The JSON representation of the parsed data.
-			inline std::basic_string_view<uint8_t> parseEtfToJson(std::basic_string_view<uint8_t> dataToParse) {
+			inline jsonifier::string_view_base<uint8_t> parseEtfToJson(jsonifier::string_view_base<uint8_t> dataToParse) {
 				dataBuffer = dataToParse.data();
 				dataSize   = dataToParse.size();
 				finalString.clear();
@@ -249,7 +249,7 @@ namespace DiscordCoreAPI {
 
 			/// @brief Write a character to the final JSON string.
 			/// @param value The character to write.
-			inline void writeCharacter(const char value) {
+			template<typename value_type> inline void writeCharacter(const value_type value) {
 				if (finalString.size() < currentSize + 1) {
 					finalString.resize((finalString.size() + 1) * 2);
 				}
@@ -306,7 +306,7 @@ namespace DiscordCoreAPI {
 						return parseMapExt();
 					}
 					default: {
-						throw EtfParseError{ "EtfParser::singleValueETFToJson() Error: Unknown data type in ETF, the type: " + std::to_string(type) };
+						throw EtfParseError{ "EtfParser::singleValueETFToJson() Error: Unknown data type in ETF, the type: " + jsonifier::toString(type) };
 					}
 				}
 			}
@@ -330,13 +330,13 @@ namespace DiscordCoreAPI {
 
 			/// @brief Parse ETF data representing a small integer and convert to JSON number.
 			inline void parseSmallIntegerExt() {
-				auto string = std::to_string(readBitsFromBuffer<uint8_t>());
+				auto string = jsonifier::toString(readBitsFromBuffer<uint8_t>());
 				writeCharacters(string.data(), string.size());
 			}
 
 			/// @brief Parse ETF data representing an integer and convert to JSON number.
 			inline void parseIntegerExt() {
-				auto string = std::to_string(readBitsFromBuffer<uint32_t>());
+				auto string = jsonifier::toString(readBitsFromBuffer<uint32_t>());
 				writeCharacters(string.data(), string.size());
 			}
 
@@ -358,7 +358,7 @@ namespace DiscordCoreAPI {
 				uint64_t value = readBitsFromBuffer<uint64_t>();
 				double newDouble{};
 				std::memcpy(&newDouble, &value, sizeof(double));
-				std::string valueNew = std::to_string(newDouble);
+				jsonifier::string valueNew = jsonifier::toString(newDouble);
 				writeCharacters(valueNew.data(), valueNew.size());
 			}
 
@@ -382,11 +382,11 @@ namespace DiscordCoreAPI {
 				}
 
 				if (sign == 0) {
-					auto string = std::to_string(value);
+					auto string = jsonifier::toString(value);
 					writeCharacters(string.data(), string.size());
 					writeCharacter<'"'>();
 				} else {
-					auto string = std::to_string(-(static_cast<int64_t>(value)));
+					auto string = jsonifier::toString(-(static_cast<int64_t>(value)));
 					writeCharacters(string.data(), string.size());
 					writeCharacter<'"'>();
 				}
@@ -434,79 +434,31 @@ namespace DiscordCoreAPI {
 			/// @brief Constructor for EtfSerializeError.
 			/// @param message The error message.
 			/// @param location Source location where the error occurred.
-			inline EtfSerializeError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+			inline EtfSerializeError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 		};
 
 		/// @brief Enumeration for different JSON value types.
 		enum class JsonType : uint8_t { Null = 0, Object = 1, Array = 2, String = 3, Float = 4, Uint = 5, Int = 6, Bool = 7 };
 
-		/// @brief Forward declaration of the EtfSerializer class.
-		class EtfSerializer;
-
-		/// @brief Concept for floating-point types excluding EtfSerializer types.
-		template<typename ValueType>
-		concept FloatT = std::floating_point<std::decay_t<ValueType>> && !EtfSerializerT<ValueType>;
-
-		/// @brief Concept for signed integral types excluding EtfSerializer and boolean types.
-		template<typename ValueType>
-		concept SignedT = std::signed_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !EtfSerializerT<ValueType>;
-
-		/// @brief Concept for unsigned integral types excluding EtfSerializer, boolean, and signed types.
-		template<typename ValueType>
-		concept UnsignedT = std::unsigned_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !SignedT<ValueType> && !EtfSerializerT<ValueType>;
-
-		/// @brief Concept for string types excluding EtfSerializer.
-		template<typename ValueType>
-		concept string_t = std::same_as<std::decay_t<ValueType>, std::string> || std::same_as<std::decay_t<ValueType>, std::string_view> ||
-			std::convertible_to<ValueType, std::string> && !std::same_as<std::decay_t<ValueType>, char> && !EtfSerializerT<ValueType>;
-
-		/// @brief Concept for types that have emplace_back method.
-		template<typename ValueType>
-		concept HasEmplaceBack = requires(ValueType data, typename ValueType::reference& valueNew) {
-			{ data.emplace_back(valueNew) } -> std::same_as<typename ValueType::reference>;
-		};
-
-		/// @brief Concept for types that have begin and end methods.
-		template<typename ValueType>
-		concept HasRange = requires(ValueType data) {
-			{ data.begin() } -> std::same_as<typename ValueType::iterator>;
-			{ data.end() } -> std::same_as<typename ValueType::iterator>;
-		};
-
-		/// @brief Concept for types that have resize method.
-		template<typename ValueType>
-		concept HasResize = requires(ValueType data, uint64_t valueNew) {
-			{ data.resize(valueNew) };
-		};
-
-		/// @brief Concept for null types excluding EtfSerializer.
-		template<typename ValueType>
-		concept NullT = std::same_as<std::decay_t<ValueType>, std::nullptr_t> && !EtfSerializerT<ValueType>;
-
-		/// @brief Concept for types that are subscriptable with [] operator.
-		template<typename ValueType>
-		concept VectorSubscriptable = requires(ValueType data, uint64_t valueNew) {
-			{ data[valueNew] } -> std::same_as<typename ValueType::reference>;
-		};
-
 		/// @brief Concept for array types excluding EtfSerializer.
 		template<typename ValueType>
-		concept ArrayT = HasRange<ValueType> && HasResize<std::decay_t<ValueType>> && HasEmplaceBack<std::decay_t<ValueType>> && VectorSubscriptable<std::decay_t<ValueType>> &&
-			requires(ValueType data) { typename ValueType::value_type; } && !EtfSerializerT<ValueType>;
+		concept ArrayT =
+			jsonifier_internal::range<ValueType> && jsonifier_internal::has_resize<std::decay_t<ValueType>> && jsonifier_internal::has_emplace_back<std::decay_t<ValueType>> &&
+			jsonifier_internal::vector_subscriptable<std::decay_t<ValueType>> && requires(ValueType data) { typename ValueType::value_type; };
 
 		/// @brief Concept for object (associative container) types excluding EtfSerializer.
 		template<typename ValueType>
 		concept ObjectT = requires(ValueType data) {
 			typename ValueType::mapped_type;
 			typename ValueType::key_type;
-		} && HasRange<ValueType> && !EtfSerializerT<ValueType>;
+		} && jsonifier_internal::range<ValueType>;
 
 		class EtfSerializer {
 		  public:
 			template<typename ValueType> using allocator = jsonifier_internal::alloc_wrapper<ValueType>;
-			using object_type							 = UnorderedMap<std::string, EtfSerializer>;
+			using object_type							 = UnorderedMap<jsonifier::string, EtfSerializer>;
 			using array_type							 = jsonifier::vector<EtfSerializer>;
-			using string_type							 = std::string;
+			using string_type							 = jsonifier::string;
 			using float_type							 = double;
 			using uint_type								 = uint64_t;
 			using int_type								 = int64_t;
@@ -609,30 +561,30 @@ namespace DiscordCoreAPI {
 				*this = data;
 			}
 
-			template<ObjectT ValueType> inline EtfSerializer& operator=(ValueType&& data) {
+			template<ObjectT ValueType> inline EtfSerializer& operator=(ValueType&& data) noexcept {
 				setValue<JsonType::Object>(std::forward<ValueType>(data));
 				return *this;
 			}
 
-			template<ObjectT ValueType> inline EtfSerializer(ValueType&& data) {
+			template<ObjectT ValueType> inline EtfSerializer(ValueType&& data) noexcept {
 				*this = std::forward<ValueType>(data);
 			}
 
-			template<ArrayT ValueType> inline EtfSerializer& operator=(ValueType&& data) {
+			template<ArrayT ValueType> inline EtfSerializer& operator=(ValueType&& data) noexcept {
 				setValue<JsonType::Array>(std::forward<ValueType>(data));
 				return *this;
 			}
 
-			template<ArrayT ValueType> inline EtfSerializer(ValueType&& data) {
+			template<ArrayT ValueType> inline EtfSerializer(ValueType&& data) noexcept {
 				*this = std::forward<ValueType>(data);
 			}
 
-			template<string_t ValueType> inline EtfSerializer& operator=(ValueType&& data) {
+			template<jsonifier_internal::string_t ValueType> inline EtfSerializer& operator=(ValueType&& data) noexcept {
 				setValue<JsonType::String>(std::forward<ValueType>(data));
 				return *this;
 			}
 
-			template<string_t ValueType> inline EtfSerializer(ValueType&& data) {
+			template<jsonifier_internal::string_t ValueType> inline EtfSerializer(ValueType&& data) noexcept {
 				*this = std::forward<ValueType>(data);
 			}
 
@@ -645,43 +597,43 @@ namespace DiscordCoreAPI {
 				*this = str;
 			}
 
-			template<FloatT ValueType> inline EtfSerializer& operator=(ValueType data) {
+			template<jsonifier_internal::float_t ValueType> inline EtfSerializer& operator=(ValueType data) {
 				setValue<JsonType::Float>(std::forward<ValueType>(data));
 				return *this;
 			}
 
-			template<FloatT ValueType> inline EtfSerializer(ValueType data) {
+			template<jsonifier_internal::float_t ValueType> inline EtfSerializer(ValueType data) {
 				*this = std::forward<ValueType>(data);
 			}
 
-			template<IntegerT ValueType> inline EtfSerializer& operator=(ValueType data) {
-				if constexpr (SignedT<ValueType>) {
+			template<jsonifier_internal::integer_t ValueType> inline EtfSerializer& operator=(ValueType data) {
+				if constexpr (jsonifier_internal::signed_t<ValueType>) {
 					setValue<JsonType::Int>(std::forward<ValueType>(data));
-				} else if constexpr (UnsignedT<ValueType>) {
+				} else if constexpr (jsonifier_internal::unsigned_t<ValueType>) {
 					setValue<JsonType::Uint>(std::forward<ValueType>(data));
 				}
 				return *this;
 			}
 
-			template<IntegerT ValueType> inline EtfSerializer(ValueType data) {
+			template<jsonifier_internal::integer_t ValueType> inline EtfSerializer(ValueType data) {
 				*this = std::forward<ValueType>(data);
 			}
 
-			template<BoolT ValueType> inline EtfSerializer& operator=(ValueType data) {
+			template<jsonifier_internal::bool_t ValueType> inline EtfSerializer& operator=(ValueType data) {
 				setValue<JsonType::Bool>(std::forward<ValueType>(data));
 				return *this;
 			}
 
-			template<BoolT ValueType> inline EtfSerializer(ValueType data) {
+			template<jsonifier_internal::bool_t ValueType> inline EtfSerializer(ValueType data) {
 				*this = std::forward<ValueType>(data);
 			}
 
-			template<EnumT ValueType> inline EtfSerializer& operator=(ValueType&& data) {
+			template<jsonifier_internal::enum_t ValueType> inline EtfSerializer& operator=(ValueType&& data) noexcept {
 				setValue<JsonType::Int>(static_cast<int64_t>(std::forward<ValueType>(data)));
 				return *this;
 			}
 
-			template<EnumT ValueType> inline EtfSerializer(ValueType&& data) {
+			template<jsonifier_internal::enum_t ValueType> inline EtfSerializer(ValueType&& data) noexcept {
 				*this = std::forward<ValueType>(data);
 			}
 
@@ -731,7 +683,7 @@ namespace DiscordCoreAPI {
 				return type;
 			}
 
-			inline operator std::basic_string<uint8_t>() {
+			inline operator jsonifier::string_base<uint8_t>() {
 				stringReal.clear();
 				appendVersion();
 				serializeJsonToEtfString(*this);
@@ -775,13 +727,13 @@ namespace DiscordCoreAPI {
 				throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
 			}
 
-			inline void emplaceBack(EtfSerializer&& other) {
+			inline void emplaceBack(EtfSerializer&& data) {
 				if (type == JsonType::Null) {
 					setValue<JsonType::Array>();
 				}
 
 				if (type == JsonType::Array) {
-					getArray().emplace_back(std::move(other));
+					getArray().emplace_back(std::move(data));
 					return;
 				}
 				throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
@@ -907,12 +859,12 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			std::basic_string<uint8_t> stringReal{};
+			jsonifier::string_base<uint8_t> stringReal{};
 			JsonType type{ JsonType::Null };
 			union {
-				UnorderedMap<std::string, EtfSerializer>* objectValue;
+				UnorderedMap<jsonifier::string, EtfSerializer>* objectValue;
 				jsonifier::vector<EtfSerializer>* arrayValue;
-				std::string* stringValue;
+				jsonifier::string* stringValue;
 				double* floatValue;
 				uint64_t* uintValue;
 				int64_t* intValue;
@@ -1006,7 +958,7 @@ namespace DiscordCoreAPI {
 				std::memcpy(stringReal.data() + oldSize, data, length);
 			}
 
-			inline void appendBinaryExt(const std::string& bytes, uint32_t sizeNew) {
+			inline void appendBinaryExt(jsonifier::string_view bytes, uint32_t sizeNew) {
 				uint8_t newBuffer[5]{ static_cast<uint8_t>(EtfType::Binary_Ext) };
 				storeBits(newBuffer + 1, sizeNew);
 				writeString(newBuffer, std::size(newBuffer));
@@ -1050,7 +1002,7 @@ namespace DiscordCoreAPI {
 				uint8_t newBuffer[11]{ static_cast<uint8_t>(EtfType::Small_Big_Ext) };
 				uint8_t encodedBytes{};
 				while (valueNew > 0) {
-					newBuffer[3 + encodedBytes] = valueNew & 0xFF;
+					newBuffer[3 + encodedBytes] = static_cast<uint8_t>(valueNew & 0xFF);
 					valueNew >>= 8;
 					++encodedBytes;
 				}

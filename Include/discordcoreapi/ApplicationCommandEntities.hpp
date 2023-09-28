@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 	/// @brief For collecting a single global ApplicationCommandData.
 	struct GetGlobalApplicationCommandData {
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		std::string commandId{};///< The id of the command which you would like to collect.
+		jsonifier::string commandId{};///< The id of the command which you would like to collect.
 	};
 
 	/// @brief For creating an application command.
@@ -65,20 +65,21 @@ namespace DiscordCoreAPI {
 
 	/// @brief For editing a single global ApplicationCommandData.
 	struct EditGlobalApplicationCommandData {
-		UnorderedMap<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		UnorderedMap<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		UnorderedMap<jsonifier::string, jsonifier::string>
+			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		UnorderedMap<jsonifier::string, jsonifier::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		jsonifier::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommandData.
-		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		std::string description{};///< A description of the command.
+		jsonifier::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
+		jsonifier::string description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
 		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
-		std::string name{};///< A name for the new command.
+		jsonifier::string name{};///< A name for the new command.
 	};
 
 	/// @brief For deleting a single global ApplicationCommandData.
 	struct DeleteGlobalApplicationCommandData {
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		std::string name{};///< The name of the command to delete.
+		jsonifier::string name{};///< The name of the command to delete.
 	};
 
 	/// @brief For bulk-overwriting a collection of global ApplicationCommands.
@@ -106,22 +107,22 @@ namespace DiscordCoreAPI {
 
 	/// @brief For editing a single Guild ApplicationCommandData.
 	struct EditGuildApplicationCommandData {
-		UnorderedMap<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales.
-		UnorderedMap<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales.
+		UnorderedMap<jsonifier::string, jsonifier::string> descriptionLocalizations{};///< Dictionary with keys in available locales.
+		UnorderedMap<jsonifier::string, jsonifier::string> nameLocalizations{};///< Dictionary with keys in available locales.
 		jsonifier::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommandData.
-		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		std::string description{};///< A description of the command.
+		jsonifier::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
+		jsonifier::string description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
 		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		Snowflake guildId{};///< The id of the Guild which you would like to add the new command to.
-		std::string name{};///< A name for the new command.
+		jsonifier::string name{};///< A name for the new command.
 	};
 
 	/// @brief For deleting a single Guild ApplicationCommandData.
 	struct DeleteGuildApplicationCommandData {
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
 		Snowflake guildId{};///< The id of the Guild which you would like to delete the command from.
-		std::string name{};///< A name of the command which you would like to delete.
+		jsonifier::string name{};///< A name of the command which you would like to delete.
 	};
 
 	/// @brief For bulk-overwriting a collection of Guild ApplicationCommands.
@@ -139,7 +140,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For acquiring the permissions of a single Guild ApplicationCommandData.
 	struct GetApplicationCommandPermissionsData {
-		std::string commandName{};///< The name of the command which you would like to collect the permissions of.
+		jsonifier::string commandName{};///< The name of the command which you would like to collect the permissions of.
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
 	};
@@ -147,7 +148,7 @@ namespace DiscordCoreAPI {
 	/// @brief For editing the permissions of a single Guild ApplicationCommandData.
 	struct EditGuildApplicationCommandPermissionsData {
 		jsonifier::vector<ApplicationCommandPermissionData> permissions{};///< A vector of ApplicationCommandData permissions.
-		std::string commandName{};///< The command name which you would like to edit the permissions of.
+		jsonifier::string commandName{};///< The command name which you would like to edit the permissions of.
 		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
 		uint64_t commandId{};///< The command id which you would like to edit the permissions of.
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.

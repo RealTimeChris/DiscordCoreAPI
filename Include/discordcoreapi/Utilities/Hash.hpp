@@ -40,20 +40,6 @@ namespace DiscordCoreAPI {
 		struct EventDelegateToken;
 	}
 
-	class EtfSerializer;
-
-	template<typename ValueType>
-	concept EtfSerializerT = std::same_as<ValueType, EtfSerializer>;
-
-	template<typename ValueType>
-	concept BoolT = std::same_as<std::decay_t<ValueType>, bool> && !EtfSerializerT<ValueType> && !std::integral<ValueType>;
-
-	template<typename ValueType>
-	concept EnumT = std::is_enum<std::decay_t<ValueType>>::value;
-
-	template<typename ValueType>
-	concept IntegerT = std::integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>>;
-
 	class GuildMemberCacheData;
 	struct VoiceStateDataLight;
 	struct VoiceStateData;
@@ -75,7 +61,7 @@ namespace DiscordCoreAPI {
 	concept EventDelegateTokenT = std::same_as<ValueType, DiscordCoreInternal::EventDelegateToken>;
 
 	struct ObjectCompare {
-		template<typename ValueType01, typename ValueType02> inline bool operator()(const ValueType01& lhs, const ValueType02& rhs) const {
+		template<typename ValueType01, typename ValueType02> inline bool operator()(const ValueType01& lhs, const ValueType02& rhs) {
 			return lhs == rhs;
 		}
 
@@ -107,25 +93,25 @@ namespace DiscordCoreAPI {
 	template<typename ValueType> struct KeyHasher;
 
 	template<HasId ValueType> struct KeyHasher<ValueType> {
-		inline uint64_t operator()(const ValueType& other) const {
+		inline static uint64_t getHashKey(const ValueType& other) {
 			return internalHashFunction(&other.id.operator const uint64_t&(), sizeof(uint64_t));
 		}
 	};
 
 	template<uint64_t size> struct KeyHasher<char[size]> {
-		inline uint64_t operator()(const char (&other)[size]) const {
+		inline static uint64_t getHashKey(const char (&other)[size]) {
 			return internalHashFunction(other, std::char_traits<char>::length(other));
 		}
 	};
 
-	template<IntegerT ValueType> struct KeyHasher<ValueType> {
-		inline uint64_t operator()(const ValueType& other) const {
+	template<jsonifier_internal::integer_t ValueType> struct KeyHasher<ValueType> {
+		inline static uint64_t getHashKey(const ValueType& other) {
 			return internalHashFunction(&other, sizeof(other));
 		}
 	};
 
 	template<> struct KeyHasher<TwoIdKey> {
-		inline uint64_t operator()(const TwoIdKey& other) const {
+		inline static uint64_t getHashKey(const TwoIdKey& other) {
 			uint64_t values[2]{};
 			values[0] = other.idOne.operator const uint64_t&();
 			values[1] = other.idTwo.operator const uint64_t&();
@@ -133,27 +119,27 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	template<EnumT ValueType> struct KeyHasher<ValueType> {
-		inline uint64_t operator()(const ValueType& other) const {
+	template<jsonifier_internal::enum_t ValueType> struct KeyHasher<ValueType> {
+		inline static uint64_t getHashKey(const ValueType& other) {
 			return internalHashFunction(&other, sizeof(other));
 		}
 	};
 
 	template<jsonifier_internal::string_t ValueType> struct KeyHasher<ValueType> {
-		inline uint64_t operator()(const ValueType& other) const {
+		inline static uint64_t getHashKey(const ValueType& other) {
 			return internalHashFunction(other.data(), other.size());
 		}
 	};
 
 	template<> struct KeyHasher<Snowflake> {
-		inline uint64_t operator()(const Snowflake& data) const {
+		inline static uint64_t getHashKey(const Snowflake& data) {
 			return internalHashFunction(&data.operator const uint64_t&(), sizeof(uint64_t));
 		}
 	};
 
-	template<> struct KeyHasher<jsonifier::vector<std::string>> {
-		inline uint64_t operator()(const jsonifier::vector<std::string>& data) const {
-			std::string newString{};
+	template<> struct KeyHasher<jsonifier::vector<jsonifier::string>> {
+		inline static uint64_t getHashKey(const jsonifier::vector<jsonifier::string>& data) {
+			jsonifier::string newString{};
 			for (auto& value: data) {
 				newString.append(value);
 			}
@@ -162,52 +148,70 @@ namespace DiscordCoreAPI {
 	};
 
 	template<HasTwoId ValueType> struct KeyHasher<ValueType> {
-		inline uint64_t operator()(const ValueType& other) const {
-			return KeyHasher<TwoIdKey>{}.operator()(TwoIdKey{ other });
+		inline static uint64_t getHashKey(const ValueType& other) {
+			return KeyHasher<TwoIdKey>::getHashKey(TwoIdKey{ other });
 		}
 	};
 
 	template<jsonifier_internal::unique_ptr_t ValueType> struct KeyHasher<ValueType> {
-		inline uint64_t operator()(const ValueType& other) const {
-			return KeyHasher<typename ValueType::element_type>{}.operator()(*other);
+		inline static uint64_t getHashKey(const ValueType& other) {
+			return KeyHasher<typename ValueType::element_type>::getHashKey(*other);
 		}
 	};
 
-	struct KeyAccessor {
-		template<GuildMemberT ValueType> uint64_t operator()(const ValueType& other) const {
-			return KeyHasher<ValueType>{}.operator()(other);
-		}
+	template<typename value_Type> struct KeyAccessor;
 
-		template<VoiceStateT ValueType> uint64_t operator()(const ValueType& other) const {
-			return KeyHasher<ValueType>{}.operator()(other);
+	template<GuildMemberT ValueType> struct KeyAccessor<ValueType> {
+		inline static uint64_t getHashKey(const ValueType& other) {
+			return KeyHasher<ValueType>::getHashKey(other);
 		}
+	};
 
-		uint64_t operator()(const Snowflake& other) const {
-			return KeyHasher<Snowflake>{}.operator()(other);
+	template<VoiceStateT ValueType> struct KeyAccessor<ValueType> {
+		inline static uint64_t getHashKey(const ValueType& other) {
+			return KeyHasher<ValueType>::getHashKey(other);
 		}
+	};
 
-		uint64_t operator()(const TwoIdKey& other) const {
-			return KeyHasher<TwoIdKey>{}.operator()(other);
+	template<> struct KeyAccessor<Snowflake> {
+		inline static uint64_t getHashKey(const Snowflake& other) {
+			return KeyHasher<Snowflake>::getHashKey(other);
 		}
+	};
 
-		template<uint64_t size> inline uint64_t operator()(const char (&other)[size]) const {
-			return KeyHasher<char[size]>{}.operator()(other);
+	template<> struct KeyAccessor<TwoIdKey> {
+		inline static uint64_t getHashKey(const TwoIdKey& other) {
+			return KeyHasher<TwoIdKey>::getHashKey(other);
 		}
+	};
 
-		template<jsonifier_internal::string_t ValueType> uint64_t operator()(const ValueType& other) const {
-			return KeyHasher<ValueType>{}.operator()(other);
+	template<uint64_t size> struct KeyAccessor<char[size]> {
+		inline static uint64_t getHashKey(const char (&other)[size]) {
+			return KeyHasher<char[size]>::getHashKey(other);
 		}
+	};
 
-		template<HasId ValueType> uint64_t operator()(const ValueType& other) const {
-			return KeyHasher<ValueType>{}.operator()(other);
+	template<jsonifier_internal::string_t ValueType> struct KeyAccessor<ValueType> {
+		inline static uint64_t getHashKey(const ValueType& other) {
+			return KeyHasher<ValueType>::getHashKey(other);
 		}
+	};
 
-		template<jsonifier_internal::unique_ptr_t ValueType> uint64_t operator()(const ValueType& other) const {
-			return KeyHasher<ValueType>{}.operator()(other);
+	template<HasId ValueType> struct KeyAccessor<ValueType> {
+		inline static uint64_t getHashKey(const ValueType& other) {
+			return KeyHasher<ValueType>::getHashKey(other);
 		}
+	};
 
-		uint64_t operator()(const jsonifier::vector<std::string>& other) const {
-			return KeyHasher<jsonifier::vector<std::string>>{}.operator()(other);
+	template<jsonifier_internal::unique_ptr_t ValueType> struct KeyAccessor<ValueType> {
+		inline static uint64_t getHashKey(const ValueType& other) {
+			return KeyHasher<ValueType>::getHashKey(other);
+		}
+	};
+
+	template<> struct KeyAccessor<jsonifier::vector<jsonifier::string>> {
+		inline static uint64_t getHashKey(const jsonifier::vector<jsonifier::string>& other) {
+			return KeyHasher<jsonifier::vector<jsonifier::string>>::getHashKey(other);
 		}
 	};
 
@@ -215,7 +219,7 @@ namespace DiscordCoreAPI {
 
 	template<typename ValueType> struct HashPolicy {
 		template<typename KeyType> inline uint64_t indexForHash(KeyType&& key) const {
-			return KeyHasher<std::remove_cvref_t<KeyType>>{}.operator()(key) & (static_cast<const ValueType*>(this)->capacityVal - 1);
+			return KeyHasher<std::remove_cvref_t<KeyType>>::getHashKey(key) & (static_cast<const ValueType*>(this)->capacityVal - 1);
 		}
 
 		inline static int8_t log2(uint64_t value) {
@@ -266,7 +270,7 @@ namespace DiscordCoreAPI {
 		template<typename... Args> inline Pair(Args&&... args) : Pair{ std::forward<Args>(args)... } {
 		}
 
-		inline bool operator==(const Pair& other) const {
+		inline bool operator==(const Pair& other) {
 			return first == other.first && second == other.second;
 		}
 	};
@@ -281,7 +285,7 @@ namespace DiscordCoreAPI {
 		using pointer_internal	  = value_type_internal*;
 		using size_type			  = uint64_t;
 
-		inline HashIterator() noexcept = default;
+		inline HashIterator() = default;
 
 		inline HashIterator(pointer_internal valueNew, size_type currentIndexNew) : value{ valueNew }, currentIndex{ currentIndexNew } {};
 

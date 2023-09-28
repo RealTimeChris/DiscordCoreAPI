@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 							selectOptions.emplace_back(jsonifier::vector<SelectOptionData>());
 							currentHelpPage += 1;
 						}
-						std::string newString;
+						jsonifier::string newString;
 						newString.emplace_back(( char )toupper(value->commandName[0]));
 						newString += value->commandName.substr(1, value->commandName.size() - 1);
 						SelectOptionData newData;
@@ -76,31 +76,31 @@ namespace DiscordCoreAPI {
 					}
 
 					int32_t counter02{};
-					std::string messageNew = "------\nSelect which page of help items you would like to view, by clicking a button below!\n------";
+					jsonifier::string messageNew = "------\nSelect which page of help items you would like to view, by clicking a button below!\n------";
 					EmbedData msgEmbed{};
 					msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					msgEmbed.setColor("FeFeFe");
 					msgEmbed.setTimeStamp(getTimeAndDate());
 					msgEmbed.setDescription(messageNew);
-					msgEmbed.setTitle("__**" + static_cast<std::string>(DiscordCoreClient::getInstance()->getBotUser().userName) + " Help: Front Page**__");
+					msgEmbed.setTitle("__**" + static_cast<jsonifier::string>(DiscordCoreClient::getInstance()->getBotUser().userName) + " Help: Front Page**__");
 
-					std::string msgString = "------\nHello! How are you doing today?! I'm " + static_cast<std::string>(DiscordCoreClient::getInstance()->getBotUser().userName) +
+					jsonifier::string msgString = "------\nHello! How are you doing today?! I'm " + static_cast<jsonifier::string>(DiscordCoreClient::getInstance()->getBotUser().userName) +
 						" and I'm here to help you out!\n" +
 						"Please, select one of my commands from the drop-down menu below, to gain more information about them! (Or select 'Go Back' to go back "
 						"to the previous menu)\n------";
 					InputEventData newEvent{};
-					jsonifier::vector<std::string> numberEmojiNames{
+					jsonifier::vector<jsonifier::string> numberEmojiNames{
 						"✅",
 						"🍬",
 						"🅱",
 						"❌",
 					};
-					jsonifier::vector<std::string> numberEmojiId;
+					jsonifier::vector<jsonifier::string> numberEmojiId;
 
 					responseData.addMessageEmbed(msgEmbed);
 					for (int32_t x = 0; x < selectOptionsNew.size(); x += 1) {
-						std::string customId{ "select_page_" + std::to_string(x) };
-						responseData.addButton(false, customId, std::to_string(x), ButtonStyle::Success, numberEmojiNames[x]);
+						jsonifier::string customId{ "select_page_" + jsonifier::toString(x) };
+						responseData.addButton(false, customId, jsonifier::toString(x), ButtonStyle::Success, numberEmojiNames[x]);
 						numberEmojiId.emplace_back(customId);
 					}
 					responseData.addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
@@ -122,8 +122,8 @@ namespace DiscordCoreAPI {
 						msgEmbed00.setColor("FeFeFe");
 						msgEmbed00.setTimeStamp(getTimeAndDate());
 						msgEmbed00.setDescription(msgString);
-						msgEmbed00.setTitle("__**" + static_cast<std::string>(DiscordCoreClient::getInstance()->getBotUser().userName) + " Help: Page " + std::to_string(counter03 + 1) +
-							" of " + std::to_string(selectOptions.size()) + "**__");
+						msgEmbed00.setTitle("__**" + static_cast<jsonifier::string>(DiscordCoreClient::getInstance()->getBotUser().userName) + " Help: Page " + jsonifier::toString(counter03 + 1) +
+							" of " + jsonifier::toString(selectOptions.size()) + "**__");
 						RespondToInputEventData responseData03(*buttonData.at(0).interactionData);
 						responseData03.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						responseData03.addMessageEmbed(msgEmbed00);
@@ -138,8 +138,8 @@ namespace DiscordCoreAPI {
 							msgEmbed00.setColor("FeFeFe");
 							msgEmbed00.setTimeStamp(getTimeAndDate());
 							msgEmbed00.setDescription(messageNew);
-							msgEmbed00.setTitle("__**" + static_cast<std::string>(DiscordCoreClient::getInstance()->getBotUser().userName) + " Help: Page " +
-								std::to_string(counter03 + 1) + " of " + std::to_string(selectOptions.size()) + "**__");
+							msgEmbed00.setTitle("__**" + static_cast<jsonifier::string>(DiscordCoreClient::getInstance()->getBotUser().userName) + " Help: Page " +
+								jsonifier::toString(counter03 + 1) + " of " + jsonifier::toString(selectOptions.size()) + "**__");
 							RespondToInputEventData responseData03(*buttonData.at(0).interactionData);
 							responseData03.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 							responseData03.addMessageEmbed(msgEmbed00);
@@ -172,8 +172,8 @@ namespace DiscordCoreAPI {
 						responseData02.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						responseData02.addMessageEmbed(msgEmbed);
 						for (int32_t x = 0; x < selectOptionsNew.size(); x += 1) {
-							std::string customId{ "select_page_" + std::to_string(x) };
-							responseData02.addButton(false, customId, std::to_string(x), ButtonStyle::Success, numberEmojiNames[x]);
+							jsonifier::string customId{ "select_page_" + jsonifier::toString(x) };
+							responseData02.addButton(false, customId, jsonifier::toString(x), ButtonStyle::Success, numberEmojiNames[x]);
 							numberEmojiId.emplace_back(customId);
 						}
 						responseData02.addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");

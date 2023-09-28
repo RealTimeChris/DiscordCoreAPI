@@ -27,11 +27,12 @@
 /// Nov 8, 2021
 /// https://discordcoreapi.com
 /// \file AVX512.hpp
-
 #pragma once
 
-#include <immintrin.h>
-#include <numeric>
+#if JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX512) && !JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX) && !JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX2)
+
+	#include <immintrin.h>
+	#include <numeric>
 
 namespace DiscordCoreAPI {
 
@@ -98,3 +99,5 @@ namespace DiscordCoreAPI {
 
 	};
 }
+
+#endif

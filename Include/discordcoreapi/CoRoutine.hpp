@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief An error type for CoRoutines.
 	struct CoRoutineError : public DCAException {
-		inline CoRoutineError(const std::string& message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline CoRoutineError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
 	};
 
 	template<typename ValueType> class ResultHolder {
@@ -276,7 +276,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief A CoRoutine - representing a potentially asynchronous operation/function.
 	/// \tparam void The type of parameter that is returned by the CoRoutine.
-	template<DiscordCoreInternal::VoidT ReturnType, bool timeOut> class CoRoutine<ReturnType, timeOut> {
+	template<jsonifier_internal::void_t ReturnType, bool timeOut> class CoRoutine<ReturnType, timeOut> {
 	  public:
 		class promise_type {
 		  public:

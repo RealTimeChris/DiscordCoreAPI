@@ -39,10 +39,10 @@ namespace DiscordCoreAPI {
 		template<> struct WebSocketMessageData<UpdateVoiceStateData> {
 			WebSocketMessageData() = default;
 			WebSocketMessageData(const UpdateVoiceStateData& data);
-			UnorderedSet<std::string> excludedKeys{};
+			UnorderedSet<jsonifier::string> excludedKeys{};
 			using type = UpdateVoiceStateData;
 			int64_t op{ -1 };
-			std::string t{};
+			jsonifier::string t{};
 			int32_t s{};
 			type d{};
 			operator EtfSerializer();
@@ -51,10 +51,10 @@ namespace DiscordCoreAPI {
 		template<> struct WebSocketMessageData<UpdateVoiceStateDataDC> {
 			WebSocketMessageData() = default;
 			WebSocketMessageData(const UpdateVoiceStateData& data);
-			UnorderedSet<std::string> excludedKeys{};
+			UnorderedSet<jsonifier::string> excludedKeys{};
 			using type = UpdateVoiceStateDataDC;
 			int64_t op{ -1 };
-			std::string t{};
+			jsonifier::string t{};
 			int32_t s{};
 			type d{};
 			operator EtfSerializer();
@@ -86,14 +86,14 @@ namespace jsonifier_internal {
 
 	template<bool excludeKeys> struct serialize_impl<excludeKeys, DiscordCoreAPI::Snowflake> {
 		template<vector_like BufferType> static void op(const DiscordCoreAPI::Snowflake& value, BufferType& buffer, uint64_t& index) {
-			std::string newString{ static_cast<std::string>(value) };
+			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
 			serialize<excludeKeys>::op(newString, buffer, index);
 		}
 	};
 
 	template<bool printErrors, bool excludeKeys> struct parse_impl<printErrors, excludeKeys, DiscordCoreAPI::Snowflake> {
 		inline static void op(DiscordCoreAPI::Snowflake&& value, structural_iterator& iter) {
-			std::string newString{};
+			jsonifier::string newString{};
 			parse<printErrors, excludeKeys>::op(newString, iter);
 			value = newString;
 		};
@@ -695,7 +695,7 @@ namespace jsonifier {
 
 	template<> struct core<DiscordCoreAPI::ApplicationCommandOptionChoiceData> {
 		using ValueType					 = DiscordCoreAPI::ApplicationCommandOptionChoiceData;
-		static constexpr auto parseValue = createObject("name", &ValueType::name, "value", &ValueType::value, "name_localized", &ValueType::nameLocalizations);
+		static constexpr auto parseValue = createObject("name", &ValueType::name, "value", &ValueType::value, "name_localizations", &ValueType::nameLocalizations);
 	};
 
 	template<> struct core<DiscordCoreAPI::RoleTagsData> {

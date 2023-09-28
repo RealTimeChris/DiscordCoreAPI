@@ -27,27 +27,11 @@
 /// Nov 8, 2021
 /// https://discordcoreapi.com
 /// \file ISADetection.hpp
-
 #pragma once
 
-#define DISCORDCOREAPI_AVX512 1 << 5
-#define DISCORDCOREAPI_AVX2 1 << 4
-#define DISCORDCOREAPI_AVX 1 << 3
+#include <jsonifier/ISADetection/ISADetectionBase.hpp>
 
-#if (CPU_INSTRUCTIONS & DISCORDCOREAPI_AVX512)
-
-	#include <discordcoreapi/Utilities/ISA/AVX512.hpp>
-
-#elif (CPU_INSTRUCTIONS & DISCORDCOREAPI_AVX2)
-
-	#include <discordcoreapi/Utilities/ISA/AVX2.hpp>
-
-#elif (CPU_INSTRUCTIONS & DISCORDCOREAPI_AVX)
-
-	#include <discordcoreapi/Utilities/ISA/AVX.hpp>
-
-#else
-
-	#include <discordcoreapi/Utilities/ISA/Fallback.hpp>
-
-#endif
+#include <discordcoreapi/Utilities/ISA/AVX512.hpp>
+#include <discordcoreapi/Utilities/ISA/AVX2.hpp>
+#include <discordcoreapi/Utilities/ISA/AVX.hpp>
+#include <discordcoreapi/Utilities/ISA/Fallback.hpp>

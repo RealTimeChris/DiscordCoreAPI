@@ -27,7 +27,6 @@
 /// Nov 8, 2021
 /// https://discordcoreapi.com
 /// \file Base.hpp
-
 #pragma once
 
 #if defined _WIN32
@@ -152,19 +151,19 @@ namespace DiscordCoreAPI {
 		WebSocket = 2,
 	};
 
-	inline constexpr std::string_view shiftToBrightGreen() {
+	inline constexpr jsonifier::string_view shiftToBrightGreen() {
 		return "\033[1;40;92m";
 	}
 
-	inline constexpr std::string_view shiftToBrightBlue() {
+	inline constexpr jsonifier::string_view shiftToBrightBlue() {
 		return "\033[1;40;96m";
 	}
 
-	inline constexpr std::string_view shiftToBrightRed() {
+	inline constexpr jsonifier::string_view shiftToBrightRed() {
 		return "\033[1;40;91m";
 	}
 
-	inline constexpr std::string_view reset() {
+	inline constexpr jsonifier::string_view reset() {
 		return "\033[0m";
 	}
 
@@ -213,18 +212,18 @@ namespace DiscordCoreAPI {
 				case PrintMessageType::WebSocket: {
 					if (doWePrintWebSocketErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*outputStream << shiftToBrightRed() << "WebSocket Error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
-									  << ", in: " << where.function_name() << ", it is: " << what << std::endl
-									  << reset() << std::endl;
+						*errorStream << shiftToBrightRed() << "WebSocket Error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+									 << ", in: " << where.function_name() << ", it is: " << what << std::endl
+									 << reset() << std::endl;
 					}
 					break;
 				}
 				case PrintMessageType::Https: {
 					if (doWePrintHttpsErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*outputStream << shiftToBrightRed() << "Https Error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
-									  << ", in: " << where.function_name() << ", it is: " << what << std::endl
-									  << reset() << std::endl;
+						*errorStream << shiftToBrightRed() << "Https Error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+									 << ", in: " << where.function_name() << ", it is: " << what << std::endl
+									 << reset() << std::endl;
 					}
 					break;
 				}
@@ -280,9 +279,6 @@ namespace DiscordCoreAPI {
 		inline static std::mutex accessMutex{};///< Mutex for thread-safe access to shared resources.
 	};
 
-	template<typename ValueType>
-	concept CopyableOrMovable = std::copyable<std::decay_t<ValueType>> || std::movable<std::decay_t<ValueType>>;
-
 	/// @brief Time formatting methods.
 	enum class TimeFormat : char {
 		LongDate	  = 'D',///< "20 April 2021" - Long Date
@@ -302,7 +298,7 @@ namespace DiscordCoreAPI {
 		/// @brief Checks if the time stamp is equal to a string representation.
 		/// @param other The string to compare with.
 		/// @return True if equal, false otherwise.
-		inline bool operator==(const std::string& other) const {
+		inline bool operator==(jsonifier::string_view other) const {
 			return *static_cast<const ValueType*>(this) == other;
 		}
 
@@ -314,7 +310,7 @@ namespace DiscordCoreAPI {
 		/// @param yearsToAdd Number of years to add.
 		/// @param timeFormat Format for the resulting time stamp.
 		/// @return ISO8601 time stamp string.
-		inline static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
+		inline static jsonifier::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
 			TimeFormat timeFormat) {
 			std::time_t result = std::time(nullptr);
 			static constexpr int32_t secondsPerMinute{ 60 };
@@ -330,7 +326,7 @@ namespace DiscordCoreAPI {
 				(minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
 			std::tm resultTwo{ getCurrentTimeVal(result) };
-			std::string returnString{};
+			jsonifier::string returnString{};
 			if (resultTwo.tm_isdst) {
 				if (resultTwo.tm_hour + 4 >= 24) {
 					resultTwo.tm_hour = resultTwo.tm_hour - 24;
@@ -356,10 +352,10 @@ namespace DiscordCoreAPI {
 		/// @brief Converts the current time into an ISO8601 time stamp.
 		/// @param timeFormat Format for the resulting time stamp.
 		/// @return ISO8601 time stamp string.
-		inline static std::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
+		inline static jsonifier::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
 			std::time_t result = std::time(nullptr);
 			std::tm resultTwo{ getCurrentTimeVal(result) };
-			std::string returnString{};
+			jsonifier::string returnString{};
 			if (resultTwo.tm_isdst) {
 				if (resultTwo.tm_hour + 4 >= 24) {
 					resultTwo.tm_hour = resultTwo.tm_hour - 24;
@@ -409,8 +405,8 @@ namespace DiscordCoreAPI {
 		/// @brief Converts milliseconds into a human-readable duration string.
 		/// @param durationInMs Duration in milliseconds to convert.
 		/// @return Human-readable duration string.
-		inline static std::string convertMsToDurationString(uint64_t durationInMs) {
-			std::string newString{};
+		inline static jsonifier::string convertMsToDurationString(uint64_t durationInMs) {
+			jsonifier::string newString{};
 			static constexpr uint64_t msPerSecond{ 1000 };
 			static constexpr uint64_t secondsPerMinute{ 60 };
 			static constexpr uint64_t minutesPerHour{ 60 };
@@ -420,14 +416,14 @@ namespace DiscordCoreAPI {
 			uint64_t minutesLeft = static_cast<uint64_t>(trunc((durationInMs % msPerHour) / msPerMinute));
 			uint64_t secondsLeft = static_cast<uint64_t>(trunc(((durationInMs % msPerHour) % msPerMinute) / msPerSecond));
 			if (hoursLeft >= 1) {
-				newString += std::to_string(hoursLeft) + " Hours, ";
-				newString += std::to_string(minutesLeft) + " Minutes, ";
-				newString += std::to_string(secondsLeft) + " Seconds.";
+				newString += jsonifier::toString(hoursLeft) + " Hours, ";
+				newString += jsonifier::toString(minutesLeft) + " Minutes, ";
+				newString += jsonifier::toString(secondsLeft) + " Seconds.";
 			} else if (minutesLeft >= 1) {
-				newString += std::to_string(minutesLeft) + " Minutes, ";
-				newString += std::to_string(secondsLeft) + " Seconds.";
+				newString += jsonifier::toString(minutesLeft) + " Minutes, ";
+				newString += jsonifier::toString(secondsLeft) + " Seconds.";
 			} else {
-				newString += std::to_string(secondsLeft) + " Seconds.";
+				newString += jsonifier::toString(secondsLeft) + " Seconds.";
 			}
 			return newString;
 		}
@@ -436,11 +432,11 @@ namespace DiscordCoreAPI {
 		/// @param timeFormat Format for the resulting time stamp.
 		/// @param inputTime Input time value.
 		/// @return ISO8601 time stamp string.
-		inline static std::string getISO8601TimeStamp(TimeFormat timeFormat, uint64_t inputTime) {
+		inline static jsonifier::string getISO8601TimeStamp(TimeFormat timeFormat, uint64_t inputTime) {
 			uint64_t timeValue = static_cast<uint64_t>(inputTime) / 1000;
 			time_t rawTime(static_cast<time_t>(timeValue));
 			std::tm resultTwo{ getCurrentTimeVal(rawTime) };
-			std::string timeStamp{};
+			jsonifier::string timeStamp{};
 			timeStamp.resize(48);
 			switch (timeFormat) {
 				case TimeFormat::LongDate: {
@@ -568,11 +564,11 @@ namespace DiscordCoreAPI {
 		/// @brief Converts a string time stamp into a uint64_t time value.
 		/// @param originalTimeStamp Original time stamp string.
 		/// @return Converted time value in milliseconds.
-		inline static uint64_t convertTimeStampToTimeUnits(const std::string& originalTimeStamp) {
+		inline static uint64_t convertTimeStampToTimeUnits(jsonifier::string_view originalTimeStamp) {
 			if (originalTimeStamp != "" && originalTimeStamp != "0") {
-				auto newValue =
-					getTimeSinceEpoch(stoull(originalTimeStamp.substr(0ull, 4ull)), stoull(originalTimeStamp.substr(5ull, 6ull)), stoull(originalTimeStamp.substr(8ull, 9ull)),
-						stoull(originalTimeStamp.substr(11ull, 12ull)), stoull(originalTimeStamp.substr(14ull, 15ull)), stoull(originalTimeStamp.substr(17ull, 18ull)));
+				auto newValue = getTimeSinceEpoch(std::stoull(originalTimeStamp.substr(0ull, 4ull).data()), std::stoull(originalTimeStamp.substr(5ull, 6ull).data()),
+					std::stoull(originalTimeStamp.substr(8ull, 9ull).data()), std::stoull(originalTimeStamp.substr(11ull, 12ull).data()),
+					std::stoull(originalTimeStamp.substr(14ull, 15ull).data()), std::stoull(originalTimeStamp.substr(17ull, 18ull).data()));
 				return newValue;
 			} else {
 				return static_cast<uint64_t>(std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count());
@@ -582,22 +578,26 @@ namespace DiscordCoreAPI {
 		/// @brief Converts a string time stamp into a uint64_t time value.
 		/// @param stringTimeStamp String time stamp to convert.
 		/// @return Converted time value in milliseconds.
-		inline uint64_t convertstring_toUintTimeStamp(const std::string& stringTimeStamp) const {
+		inline uint64_t convertstring_toUintTimeStamp(jsonifier::string_view stringTimeStamp) const {
 			return convertTimeStampToTimeUnits(stringTimeStamp);
 		}
 
 		/// @brief Converts a uint64_t time value into a string time stamp.
 		/// @param uintTimeStamp Time value to convert.
 		/// @return String time stamp.
-		inline std::string convertUintTostring_timeStamp(uint64_t uintTimeStamp) const {
+		inline jsonifier::string convertUintTostring_timeStamp(uint64_t uintTimeStamp) const {
 			return getISO8601TimeStamp(TimeFormat::LongDateTime, uintTimeStamp);
 		}
 	};
 
-	/// @brief A class that extends TimeStampBase and std::string to provide additional functionality.
-	class TimeStampParse : public TimeStampBase<TimeStampParse>, public std::string {
+	/// @brief A class that extends TimeStampBase and jsonifier::string to provide additional functionality.
+	class TimeStampParse : public TimeStampBase<TimeStampParse>, public jsonifier::string {
 	  public:
 		template<typename ValueType> friend class TimeStampBase;
+
+		template<uint64_t size, typename value_type> bool operator==(value_type* lhs) {
+			return jsonifier::string::operator==(lhs);
+		}
 
 		/// @brief Default constructor for TimeStampParse.
 		inline TimeStampParse() = default;
@@ -605,7 +605,7 @@ namespace DiscordCoreAPI {
 		/// @brief Assignment operator to assign a string value to TimeStampParse.
 		/// @param valueNew The new string value to assign.
 		/// @return Reference to the modified TimeStampParse instance.
-		inline TimeStampParse& operator=(const std::string& valueNew) {
+		inline TimeStampParse& operator=(jsonifier::string_view valueNew) {
 			resize(valueNew.size());
 			std::memcpy(data(), valueNew.data(), size());
 			return *this;
@@ -613,14 +613,14 @@ namespace DiscordCoreAPI {
 
 		/// @brief Constructor to create a TimeStampParse instance from a string value.
 		/// @param valueNew The string value to create the instance from.
-		inline TimeStampParse(const std::string& valueNew) {
+		inline TimeStampParse(jsonifier::string_view valueNew) {
 			*this = valueNew;
 		}
 
 		/// @brief Move assignment operator to move a string value into TimeStampParse.
 		/// @param valueNew The string value to move.
 		/// @return Reference to the modified TimeStampParse instance.
-		inline TimeStampParse& operator=(std::string&& valueNew) {
+		inline TimeStampParse& operator=(jsonifier::string&& valueNew) {
 			resize(valueNew.size());
 			std::memcpy(data(), valueNew.data(), size());
 			return *this;
@@ -628,7 +628,7 @@ namespace DiscordCoreAPI {
 
 		/// @brief Move constructor to create a TimeStampParse instance by moving a string value.
 		/// @param valueNew The string value to move.
-		inline TimeStampParse(std::string&& valueNew) {
+		inline TimeStampParse(jsonifier::string&& valueNew) {
 			*this = std::move(valueNew);
 		}
 
@@ -636,7 +636,7 @@ namespace DiscordCoreAPI {
 		/// @param valueNew The new uint64_t value to assign.
 		/// @return Reference to the modified TimeStampParse instance.
 		inline TimeStampParse& operator=(uint64_t valueNew) {
-			*this = std::to_string(valueNew);
+			*this = jsonifier::toString(valueNew);
 			return *this;
 		}
 
@@ -657,13 +657,13 @@ namespace DiscordCoreAPI {
 		/// @brief Returns the size of the TimeStampParse instance.
 		/// @return The size of the TimeStampParse instance.
 		inline uint64_t size() const {
-			return std::string::size();
+			return jsonifier::string::size();
 		}
 
 		/// @brief Returns a pointer to the character data of the TimeStampParse instance.
 		/// @return Pointer to the character data.
-		inline char* data() {
-			return std::string::data();
+		inline char* data() const {
+			return jsonifier::string::data();
 		}
 
 		/// @brief Conversion operator to convert TimeStampParse to uint64_t.
@@ -702,28 +702,28 @@ namespace DiscordCoreAPI {
 		/// @brief Assignment operator to assign a string value to TimeStamp.
 		/// @param valueNew The new string value to assign.
 		/// @return Reference to the modified TimeStamp instance.
-		inline TimeStamp& operator=(const std::string& valueNew) {
-			value = stoull(valueNew);
+		inline TimeStamp& operator=(jsonifier::string_view valueNew) {
+			value = std::stoull(valueNew.data());
 			return *this;
 		}
 
 		/// @brief Constructor to create a TimeStamp instance from a string value.
 		/// @param valueNew The string value to create the instance from.
-		inline TimeStamp(const std::string& valueNew) {
+		inline TimeStamp(jsonifier::string_view valueNew) {
 			*this = valueNew;
 		}
 
 		/// @brief Move assignment operator to move a string value into TimeStamp.
 		/// @param valueNew The string value to move.
 		/// @return Reference to the modified TimeStamp instance.
-		inline TimeStamp& operator=(std::string&& valueNew) {
-			value = stoull(valueNew);
+		inline TimeStamp& operator=(jsonifier::string&& valueNew) {
+			value = std::stoull(valueNew.data());
 			return *this;
 		}
 
 		/// @brief Move constructor to create a TimeStamp instance by moving a string value.
 		/// @param valueNew The string value to move.
-		inline TimeStamp(std::string&& valueNew) {
+		inline TimeStamp(jsonifier::string&& valueNew) {
 			*this = std::move(valueNew);
 		}
 
@@ -747,9 +747,9 @@ namespace DiscordCoreAPI {
 			return value;
 		}
 
-		/// @brief Conversion operator to convert TimeStamp to std::string.
-		/// @return The std::string value represented by the TimeStamp instance.
-		inline operator std::string() const {
+		/// @brief Conversion operator to convert TimeStamp to jsonifier::string.
+		/// @return The jsonifier::string value represented by the TimeStamp instance.
+		inline operator jsonifier::string() const {
 			return convertUintTostring_timeStamp(value);
 		}
 
@@ -757,8 +757,13 @@ namespace DiscordCoreAPI {
 		uint64_t value{};///< The value stored in the TimeStamp instance.
 	};
 
-	template<typename ValueType>
-	concept string_t = std::convertible_to<ValueType, std::string>;
+	class Snowflake;
+
+	template<typename ValueType = void> class ToEntity {
+		inline ValueType toEntity(Snowflake initialId, Snowflake additionalId);
+
+		inline ValueType toEntity(Snowflake initialId);
+	};
 
 	/// @brief A class representing a Snowflake identifier with various operations.
 	class Snowflake {
@@ -766,24 +771,32 @@ namespace DiscordCoreAPI {
 		/// @brief Default constructor for Snowflake.
 		inline Snowflake() = default;
 
+		template<typename ValueType> inline ValueType toEntity() {
+			return ToEntity<ValueType>{}.toEntity(*this);
+		}
+
+		template<typename ValueType> inline ValueType toEntity(Snowflake additionalId) {
+			return ToEntity<ValueType>{}.toEntity(*this, additionalId);
+		}
+
 		/// @brief Assignment operator to assign a string value to Snowflake.
 		/// @param other The string value to assign.
 		/// @return Reference to the modified Snowflake instance.
-		inline Snowflake& operator=(const std::string& other) {
+		inline Snowflake& operator=(jsonifier::string_view other) {
 			if (other.size() > 0) {
 				for (auto& value: other) {
 					if (!std::isdigit(static_cast<uint8_t>(value))) {
 						return *this;
 					}
 				}
-				id = stoull(other);
+				id = std::stoull(other.data());
 			}
 			return *this;
 		}
 
 		/// @brief Constructor to create a Snowflake instance from a string value.
 		/// @param other The string value to create the instance from.
-		inline Snowflake(const std::string& other) {
+		inline Snowflake(jsonifier::string_view other) {
 			*this = other;
 		}
 
@@ -801,10 +814,10 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		/// @brief Conversion operator to convert Snowflake to std::string.
-		/// @return The std::string value represented by the Snowflake instance.
-		inline operator std::string() const {
-			return std::to_string(id);
+		/// @brief Conversion operator to convert Snowflake to jsonifier::string.
+		/// @return The jsonifier::string value represented by the Snowflake instance.
+		inline explicit operator jsonifier::string() const {
+			return jsonifier::toString(id);
 		}
 
 		/// @brief Explicit conversion operator to convert Snowflake to uint64_t.
@@ -813,19 +826,24 @@ namespace DiscordCoreAPI {
 			return id;
 		}
 
-		/// @brief Equality operator to compare two Snowflake instances for equality.
-		/// @param rhs The Snowflake instance to compare with.
-		/// @return `true` if the instances are equal, `false` otherwise.
-		inline bool operator==(const Snowflake& rhs) const {
-			return id == rhs.id;
+		inline bool operator==(const Snowflake& other) const {
+			return this->id == other.id;
+		}
+
+		inline bool operator==(jsonifier::string_view other) const {
+			return this->operator jsonifier::string() == other;
+		}
+
+		inline bool operator==(uint64_t other) const {
+			return this->id == other;
 		}
 
 		/// @brief Concatenation operator to concatenate Snowflake and a string value.
 		/// @tparam ValueType The type of the string value.
 		/// @param rhs The string value to concatenate.
 		/// @return The concatenated string.
-		template<string_t ValueType> inline std::string operator+(const std::string& rhs) const {
-			std::string newString{ operator std::string() };
+		template<jsonifier_internal::string_t ValueType> inline jsonifier::string operator+(jsonifier::string_view rhs) const {
+			jsonifier::string newString{ operator jsonifier::string() };
 			newString += rhs;
 			return newString;
 		}
@@ -834,8 +852,8 @@ namespace DiscordCoreAPI {
 		/// @param lhs The Snowflake instance.
 		/// @param other The string value to concatenate.
 		/// @return The concatenated string.
-		inline friend std::string operator+(const Snowflake& lhs, const std::string& other) {
-			std::string lhsNew{ lhs };
+		inline friend jsonifier::string operator+(const Snowflake& lhs, jsonifier::string_view other) {
+			jsonifier::string lhsNew{ static_cast<jsonifier::string>(lhs) };
 			lhsNew += other;
 			return lhsNew;
 		}
@@ -846,15 +864,27 @@ namespace DiscordCoreAPI {
 		/// @param lhs The first value.
 		/// @param rhs The second value.
 		/// @return The concatenated string.
-		template<string_t ValueType01, typename ValueType02> friend inline std::string operator+(const ValueType01& lhs, const ValueType02& rhs) {
-			std::string newString{ lhs };
-			newString += rhs;
+		template<jsonifier_internal::string_t ValueType01, typename ValueType02> friend inline jsonifier::string operator+(const ValueType01& lhs, const ValueType02& rhs) {
+			jsonifier::string newString{ lhs };
+			newString += rhs.operator jsonifier::string();
+			return newString;
+		}
+
+		/// @brief Friend function to concatenate two values.
+		/// @tparam ValueType01 The type of the first value.
+		/// @tparam ValueType02 The type of the second value.
+		/// @param lhs The first value.
+		/// @param rhs The second value.
+		/// @return The concatenated string.
+		template<uint64_t size> friend inline jsonifier::string operator+(const char (&lhs)[size], const Snowflake& rhs) {
+			jsonifier::string newString{ lhs };
+			newString += rhs.operator jsonifier::string();
 			return newString;
 		}
 
 		/// @brief Converts the Snowflake ID into a time and date stamp.
-		/// @return A std::string containing the timestamp.
-		inline std::string getCreatedAtTimeStamp() {
+		/// @return A jsonifier::string containing the timestamp.
+		inline jsonifier::string getCreatedAtTimeStamp() {
 			uint64_t timeStamp{ static_cast<uint64_t>((id >> 22) + 1420070400000) };
 			return TimeStamp::getISO8601TimeStamp(TimeFormat::LongDateTime, timeStamp);
 		}
@@ -864,7 +894,7 @@ namespace DiscordCoreAPI {
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, Snowflake sf) {
-		os << sf.operator std::string();
+		os << sf.operator jsonifier::string();
 		return os;
 	}
 
@@ -873,9 +903,9 @@ namespace DiscordCoreAPI {
 		/// @brief Constructor to create a DCAException with an error message and optional source location.
 		/// @param error The error message.
 		/// @param location The source location of the exception (default: current location).
-		inline DCAException(const std::string& error, std::source_location location = std::source_location::current())
-			: std::runtime_error("Thrown From: " + std::string{ location.file_name() } + std::string{ " (" } + std::to_string(location.line()) + ":" +
-				  std::to_string(location.column()) + ")\n" + error){};
+		inline DCAException(jsonifier::string_view error, std::source_location location = std::source_location::current())
+			: std::runtime_error(std::string{ "Thrown From: " + jsonifier::string{ location.file_name() } + jsonifier::string{ " (" } + jsonifier::toString(location.line()) + ":" +
+				  jsonifier::toString(location.column()) + ")\n" + error }){};
 	};
 
 	/**@}*/

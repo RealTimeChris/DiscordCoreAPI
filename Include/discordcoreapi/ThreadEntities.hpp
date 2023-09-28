@@ -45,10 +45,10 @@ namespace DiscordCoreAPI {
 	struct StartThreadWithMessageData {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
 		int32_t rateLimitPerUser{};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
-		std::string threadName{};///< The name of the new ThreadData.
+		jsonifier::string threadName{};///< The name of the new ThreadData.
 		Snowflake messageId{};///< The Message Snowflake to base the ThreadData off of.
 		Snowflake channelId{};///< The ChannelData to start the ThreadData in.
-		std::string reason{};///< Reason for starting the ThreadData.
+		jsonifier::string reason{};///< Reason for starting the ThreadData.
 	};
 
 	/// @brief For starting a ThreadData, not based on a Message.
@@ -56,9 +56,9 @@ namespace DiscordCoreAPI {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
 		ThreadType type{ ThreadType::Guild_Public_Thread };///< Type of ThreadData to create.
 		int32_t rateLimitPerUser{};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
-		std::string threadName{};///< The name of the new ThreadData.
+		jsonifier::string threadName{};///< The name of the new ThreadData.
 		Snowflake channelId{};///< The ChannelData to start the ThreadData in.
-		std::string reason{};///< Reason for starting the ThreadData.
+		jsonifier::string reason{};///< Reason for starting the ThreadData.
 		bool invitable{};///< Whether non-moderators can add other non - moderators to a thread; only available when creating a protected thread.
 	};
 
@@ -68,8 +68,8 @@ namespace DiscordCoreAPI {
 		ForumThreadMessageData message{};///< A forum thread message params object contents of the first message in the forum thread.
 		int32_t rateLimitPerUser{};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
 		Snowflake channelId{};///< The id of the channel.
-		std::string reason{};///< Reason for starting the ThreadData.
-		std::string name{};///< 1-100 character channel name auto_archive_duration.
+		jsonifier::string reason{};///< Reason for starting the ThreadData.
+		jsonifier::string name{};///< 1-100 character channel name auto_archive_duration.
 	};
 
 	/// @brief For joining a ThreadData.
@@ -113,21 +113,21 @@ namespace DiscordCoreAPI {
 	/// @brief For collecting puiblic archived Threads from a given Channel.
 	struct GetPublicArchivedThreadsData {
 		Snowflake channelId{};///< The ChannelData to acquire the Threads from.
-		std::string before{};///< Returns threads before this timeStamp.
+		jsonifier::string before{};///< Returns threads before this timeStamp.
 		int32_t limit{};///< Maximum number of threads to return.
 	};
 
 	/// @brief For collecting protected archived Threads from a given Channel.
 	struct GetPrivateArchivedThreadsData {
 		Snowflake channelId{};///< The ChannelData to acquire the Threads from.
-		std::string before{};///< Returns threads before this timeStamp.
+		jsonifier::string before{};///< Returns threads before this timeStamp.
 		int32_t limit{};///< Maximum number of threads to return.
 	};
 
 	/// @brief For collecting joined protected archived Threads from a given Channel.
 	struct GetJoinedPrivateArchivedThreadsData {
 		Snowflake channelId{};///< The ChannelData to acquire the Threads from.
-		std::string before{};///< Returns threads before this timeStamp.
+		jsonifier::string before{};///< Returns threads before this timeStamp.
 		int32_t limit{};///< Maximum number of threads to return.
 	};
 

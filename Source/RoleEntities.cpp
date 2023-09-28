@@ -63,13 +63,14 @@ namespace jsonifier {
 namespace DiscordCoreAPI {
 
 	RoleCacheData& RoleCacheData::operator=(const RoleData& other) {
+		flags = other.flags;
 		setFlagValue<RoleFlags>(RoleFlags::Mentionable, other.mentionable);
 		setFlagValue<RoleFlags>(RoleFlags::Managed, other.managed);
 		setFlagValue<RoleFlags>(RoleFlags::Hoist, other.hoist);
 		if (other.unicodeEmoji != "") {
 			unicodeEmoji = other.unicodeEmoji;
 		}
-		if (other.permissions != "") {
+		if (other.permissions.operator std::string_view() != "") {
 			permissions = other.permissions;
 		}
 		if (other.position != 0) {
@@ -84,7 +85,6 @@ namespace DiscordCoreAPI {
 		if (other.id != 0) {
 			id = other.id;
 		}
-		flags = other.flags;
 		return *this;
 	}
 
@@ -93,13 +93,14 @@ namespace DiscordCoreAPI {
 	}
 
 	RoleCacheData& RoleCacheData::operator=(RoleData&& other) noexcept {
+		flags = other.flags;
 		setFlagValue<RoleFlags>(RoleFlags::Mentionable, other.mentionable);
 		setFlagValue<RoleFlags>(RoleFlags::Managed, other.managed);
 		setFlagValue<RoleFlags>(RoleFlags::Hoist, other.hoist);
 		if (other.unicodeEmoji != "") {
 			unicodeEmoji = std::move(other.unicodeEmoji);
 		}
-		if (other.permissions != "") {
+		if (other.permissions.operator std::string_view() != "") {
 			permissions = std::move(other.permissions);
 		}
 		if (other.name != "") {
@@ -114,7 +115,6 @@ namespace DiscordCoreAPI {
 		if (other.id != 0) {
 			id = other.id;
 		}
-		flags = other.flags;
 		return *this;
 	}
 
@@ -122,13 +122,13 @@ namespace DiscordCoreAPI {
 		RoleData returnData{};
 		returnData.mentionable	= getFlagValue<RoleFlags>(RoleFlags::Mentionable);
 		returnData.managed		= getFlagValue<RoleFlags>(RoleFlags::Managed);
-		returnData.unicodeEmoji = unicodeEmoji.operator std::string();
 		returnData.hoist		= getFlagValue<RoleFlags>(RoleFlags::Hoist);
-		returnData.permissions	= permissions.operator std::string();
-		returnData.name			= name.operator std::string();
+		returnData.permissions	= permissions.operator jsonifier::string();
+		returnData.unicodeEmoji = unicodeEmoji;
 		returnData.position		= position;
 		returnData.flags		= flags;
 		returnData.color		= color;
+		returnData.name			= name;
 		returnData.id			= id;
 		return returnData;
 	}
@@ -324,7 +324,7 @@ namespace DiscordCoreAPI {
 		if (cache.contains(dataPackage.roleId)) {
 			return cache[dataPackage.roleId];
 		} else {
-			return {};
+			return getRoleAsync({ .guildId = dataPackage.guildId, .roleId = dataPackage.roleId }).get();
 		}
 	}
 

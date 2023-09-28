@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For creating a single ReactionData.
 	struct CreateReactionData {
-		std::string emojiName{};///< The emoji name of the ReactionData to add.
+		jsonifier::string emojiName{};///< The emoji name of the ReactionData to add.
 		Snowflake channelId{};///< The ChannelData for which to add the ReactionData.
 		Snowflake messageId{};///< The Message on which to add the ReactionData.
 		Snowflake emojiId{};///< The emoji id of the ReactionData to add.
@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For deleting one's own ReactionData.
 	struct DeleteOwnReactionData {
-		std::string emojiName{};///< The emoji name for which to remove the emoji.
+		jsonifier::string emojiName{};///< The emoji name for which to remove the emoji.
 		Snowflake channelId{};///< The ChannelData from which to remove the ReactionData.
 		Snowflake messageId{};///< The Message from which to remove the ReactionData.
 		Snowflake emojiId{};///< The emoji id for which to remove the emoji.
@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For deleting a reaction, by UserData.
 	struct DeleteUserReactionData {
-		std::string emojiName{};///< The name of which emoji to remove.
+		jsonifier::string emojiName{};///< The name of which emoji to remove.
 		Snowflake channelId{};///< The ChannelData from which to remove the ReactionData.
 		Snowflake messageId{};///< The Message from which to remove the ReactionData.
 		Snowflake emojiId{};///< The id of which emoji to remove.
@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The ChannelData from which to acquire the reactors.
 		Snowflake messageId{};///< The Message from which to acquire the reactors.
 		Snowflake afterId{};///< Get users after this user ID.
-		std::string emoji{};///< The emoji name for which to acquire the reactors.
+		jsonifier::string emoji{};///< The emoji name for which to acquire the reactors.
 		int32_t limit{};///< The maximum number of reactors to collect.
 	};
 
@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 
 	/// @brief For deleting all of the Reactions of a particular Emoji.
 	struct DeleteReactionsByEmojiData {
-		std::string emojiName{};///< The name of which emoji to remove.
+		jsonifier::string emojiName{};///< The name of which emoji to remove.
 		Snowflake channelId{};///< The ChannelData from which you would like to remove the emoji.
 		Snowflake messageId{};///< The Message from which you would like to remove the emoji.
 		Snowflake emojiId{};///< The id of which emoji to remove.
@@ -114,28 +114,28 @@ namespace DiscordCoreAPI {
 		friend class Reactions;
 
 		jsonifier::vector<Snowflake> roles{};///< Roles that can use this Emoji.
-		std::string imageFilePath{};///< The image responseData.
-		std::string reason{};///< Reason for creating the new Emoji.
+		jsonifier::string imageFilePath{};///< The image responseData.
+		jsonifier::string reason{};///< Reason for creating the new Emoji.
 		Snowflake guildId{};///< The Guild within which to create the Emoji.
-		std::string name{};///< Name of the emoji.
+		jsonifier::string name{};///< Name of the emoji.
 		ImageType type{};///< The type of image being uploaded.
 
 	  protected:
-		std::string imageDataFinal{};
+		jsonifier::string imageDataFinal{};
 	};
 
 	/// For modifying a Guild Emoji.
 	struct ModifyGuildEmojiData {
 		jsonifier::vector<Snowflake> roles{};///< Roles that can use this Emoji.
-		std::string reason{};///< Reason for modifying the Emoji.
+		jsonifier::string reason{};///< Reason for modifying the Emoji.
 		Snowflake guildId{};///< The Guild within which to modify the Emoji.
 		Snowflake emojiId{};///< The id of the Emoji to modify.
-		std::string name{};///< Name of the Emoji.
+		jsonifier::string name{};///< Name of the Emoji.
 	};
 
 	/// For deleting a Guild Emoji.
 	struct DeleteGuildEmojiData {
-		std::string reason{};///< Reason for deleting the Emoji.
+		jsonifier::string reason{};///< Reason for deleting the Emoji.
 		Snowflake guildId{};///< The Guild within which to delete the Emoji.
 		Snowflake emojiId{};///< The id of the Emoji to delete.
 	};

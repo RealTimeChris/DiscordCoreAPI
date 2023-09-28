@@ -36,8 +36,8 @@
 #ifndef OPENSSL_NO_DEPRECATED
 	#define OPENSSL_NO_DEPRECATED
 #endif
-
 #include <openssl/err.h>
+
 #include <openssl/ssl.h>
 
 #ifdef _WIN32
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 			SOCKET_Error	 = 7
 		};
 
-		inline jsonifier::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) {
+		inline jsonifier::string reportSSLError(jsonifier::string_view errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) {
 			std::stringstream stream{};
 			stream << errorPosition << " Error: ";
 			if (ssl) {
@@ -111,16 +111,16 @@ namespace DiscordCoreAPI {
 			return jsonifier::string{ stream.str() };
 		}
 
-		inline jsonifier::string reportError(const std::string& errorPosition) {
+		inline jsonifier::string reportError(jsonifier::string_view errorPosition) {
 			std::stringstream stream{};
 			stream << errorPosition << " Error: ";
 #ifdef _WIN32
-		#ifdef UNICODE
+	#ifdef UNICODE
 			UniquePtr<wchar_t[]> string{ makeUnique<wchar_t[]>(1024) };
-		#else
+	#else
 			UniquePtr<char[]> string{ makeUnique<char[]>(1024) };
-		#endif
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+	#endif
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, static_cast<DWORD>(WSAGetLastError()), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 				static_cast<LPTSTR>(string.get()), 1024, nullptr);
 			stream << WSAGetLastError() << ", " << string;
 #else
@@ -314,7 +314,7 @@ namespace DiscordCoreAPI {
 				*this = std::move(other);
 			}
 
-			template<typename ValueTypeNew> inline void writeData(std::basic_string_view<ValueTypeNew> dataToWrite, bool priority) {
+			template<typename ValueTypeNew> inline void writeData(jsonifier::string_view_base<ValueTypeNew> dataToWrite, bool priority) {
 				if (static_cast<ValueType*>(this)->areWeStillConnected()) {
 					if (dataToWrite.size() > 0 && static_cast<ValueType*>(this)->ssl) {
 						if (priority && dataToWrite.size() < maxBufferSize) {
@@ -326,7 +326,7 @@ namespace DiscordCoreAPI {
 							while (remainingBytes > 0) {
 								uint64_t amountToCollect{ dataToWrite.size() >= maxBufferSize ? maxBufferSize : dataToWrite.size() };
 								outputBuffer.writeData(dataToWrite.data(), amountToCollect);
-								dataToWrite	   = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
+								dataToWrite	   = jsonifier::string_view_base{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
 								remainingBytes = dataToWrite.size();
 							}
 						}
@@ -375,17 +375,17 @@ namespace DiscordCoreAPI {
 			TCPConnection& operator=(TCPConnection<ValueType>&& other) = default;
 			TCPConnection(TCPConnection<ValueType>&& other)			   = default;
 
-			inline TCPConnection(const std::string& baseUrlNew, const uint16_t portNew) {
-				std::string addressString{};
+			inline TCPConnection(jsonifier::string_view baseUrlNew, const uint16_t portNew) {
+				jsonifier::string addressString{};
 				auto httpsFind = baseUrlNew.find("https://");
 				auto comFind   = baseUrlNew.find(".com");
 				auto orgFind   = baseUrlNew.find(".org");
-				if (httpsFind != std::string::npos && comFind != std::string::npos) {
-					addressString =
-						baseUrlNew.substr(httpsFind + std::string_view{ "https://" }.size(), comFind + std::string_view{ ".com" }.size() - std::string_view{ "https://" }.size());
-				} else if (httpsFind != std::string::npos && orgFind != std::string::npos) {
-					addressString =
-						baseUrlNew.substr(httpsFind + std::string_view{ "https://" }.size(), orgFind + std::string_view{ ".org" }.size() - std::string_view{ "https://" }.size());
+				if (httpsFind != jsonifier::string::npos && comFind != jsonifier::string::npos) {
+					addressString = baseUrlNew.substr(httpsFind + jsonifier::string_view{ "https://" }.size(),
+						comFind + jsonifier::string_view{ ".com" }.size() - jsonifier::string_view{ "https://" }.size());
+				} else if (httpsFind != jsonifier::string::npos && orgFind != jsonifier::string::npos) {
+					addressString = baseUrlNew.substr(httpsFind + jsonifier::string_view{ "https://" }.size(),
+						orgFind + jsonifier::string_view{ ".org" }.size() - jsonifier::string_view{ "https://" }.size());
 				} else {
 					addressString = baseUrlNew;
 				}
@@ -394,7 +394,7 @@ namespace DiscordCoreAPI {
 				hints->ai_socktype = SOCK_STREAM;
 				hints->ai_protocol = IPPROTO_TCP;
 
-				if (getaddrinfo(addressString.c_str(), std::to_string(portNew).c_str(), hints, address)) {
+				if (getaddrinfo(addressString.data(), jsonifier::toString(portNew).data(), hints, address)) {
 					MessagePrinter::printError<PrintMessageType::WebSocket>(reportError("TCPConnection::getaddrinfo(), to: " + baseUrlNew));
 					currentStatus = ConnectionStatus::CONNECTION_Error;
 					socket		  = INVALID_SOCKET;
@@ -444,7 +444,7 @@ namespace DiscordCoreAPI {
 				}
 
 				/* SNI */
-				if (auto result{ SSL_set_tlsext_host_name(ssl, addressString.c_str()) }; result != 1) {
+				if (auto result{ SSL_set_tlsext_host_name(ssl, addressString.data()) }; result != 1) {
 					MessagePrinter::printError<PrintMessageType::WebSocket>(reportSSLError("TCPConnection::connect::SSL_set_tlsext_host_name(), to: " + baseUrlNew) + "\n" +
 						reportError("TCPConnection::connect::SSL_set_tlsext_host_name(), to: " + baseUrlNew));
 					currentStatus = ConnectionStatus::CONNECTION_Error;
@@ -653,7 +653,7 @@ namespace DiscordCoreAPI {
 							fdSet.events = POLLIN;
 						} else if (value->writeWantWrite || value->readWantWrite) {
 							fdSet.events = POLLOUT;
-						} else if ((value->outputBuffer.getUsedSpace() > 0)) {
+						} else if (value->outputBuffer.getUsedSpace() > 0) {
 							fdSet.events = POLLIN | POLLOUT;
 						} else {
 							fdSet.events = POLLIN;
@@ -730,6 +730,8 @@ namespace DiscordCoreAPI {
 				return returnData;
 			}
 
+			virtual inline void handleBuffer() = 0;
+
 			inline void disconnect() {
 				currentStatus = ConnectionStatus::CONNECTION_Error;
 				static_cast<ValueType*>(this)->reset();
@@ -737,7 +739,7 @@ namespace DiscordCoreAPI {
 				ssl	   = nullptr;
 			}
 
-			inline virtual ~TCPConnection() = default;
+			virtual inline ~TCPConnection() = default;
 
 		  protected:
 			inline TCPConnection() = default;

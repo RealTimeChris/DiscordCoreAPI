@@ -34,6 +34,9 @@
 
 namespace DiscordCoreAPI {
 
+	template<typename ValueType>
+	concept CopyableOrMovable = std::copyable<std::decay_t<ValueType>> || std::movable<std::decay_t<ValueType>>;
+
 	/// @brief A thread-safe messaging block for data-structures.
 	/// @tparam ValueType The type of object that will be sent over the message block.
 	template<CopyableOrMovable ValueType> class UnboundedMessageBlock {

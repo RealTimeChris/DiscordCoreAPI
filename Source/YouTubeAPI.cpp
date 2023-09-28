@@ -38,81 +38,6 @@
 
 namespace jsonifier {
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::ThumbnailElement> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::ThumbnailElement;
-		static constexpr auto parseValue = createObject("url", &ValueType::url);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Background> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Background;
-		static constexpr auto parseValue = createObject("thumbnails", &ValueType::thumbnails);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VideoOwnerRenderer> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::VideoOwnerRenderer;
-		static constexpr auto parseValue = createObject("thumbnail", &ValueType::thumbnail);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Owner> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Owner;
-		static constexpr auto parseValue = createObject("videoOwnerRenderer", &ValueType::video_owner_renderer);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VideoSecondaryInfoRenderer> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::VideoSecondaryInfoRenderer;
-		static constexpr auto parseValue = createObject("owner", &ValueType::owner);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::ResultsContent> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::ResultsContent;
-		static constexpr auto parseValue = createObject("videoPrimaryInfoRenderer", &ValueType::video_secondary_info_renderer);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::ResultsResults> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::ResultsResults;
-		static constexpr auto parseValue = createObject("contents", &ValueType::contents);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Results> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Results;
-		static constexpr auto parseValue = createObject("results", &ValueType::results);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::TwoColumnWatchNextResults> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::TwoColumnWatchNextResults;
-		static constexpr auto parseValue = createObject("results", &ValueType::results);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Contents> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Contents;
-		static constexpr auto parseValue = createObject("twoColumnWatchNextResults", &ValueType::two_column_watch_next_results);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::PlayerOverlayAutoplayRenderer> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::PlayerOverlayAutoplayRenderer;
-		static constexpr auto parseValue = createObject("background", &ValueType::background, "videoId", &ValueType::video_id);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::PlayerOverlayRendererAutoplay> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::PlayerOverlayRendererAutoplay;
-		static constexpr auto parseValue = createObject("playerOverlayAutoplayRenderer", &ValueType::player_overlay_autoplay_renderer);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::PlayerOverlayRenderer> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::PlayerOverlayRenderer;
-		static constexpr auto parseValue = createObject("autoplay", &ValueType::autoplay);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::PlayerOverlays> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::PlayerOverlays;
-		static constexpr auto parseValue = createObject("playerOverlayRenderer", &ValueType::player_overlay_renderer);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Welcome> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Welcome;
-		static constexpr auto parseValue = createObject("contents", &ValueType::contents, "playerOverlays", &ValueType::player_overlays);
-	};
-
 	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::User> {
 		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::User;
 		static constexpr auto parseValue = createObject("lockedSafetyMode", &ValueType::lockedSafetyMode);
@@ -142,61 +67,41 @@ namespace jsonifier {
 			"context", &ValueType::context, "playlistId", &ValueType::playlistId, "params", &ValueType::params);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::YouTubeSearchResult> {
-		using ValueType = DiscordCoreAPI::DiscordCoreInternal::YouTubeSearchResult;
+	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::ThumbnailElement> {
+		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::ThumbnailElement;
+		static constexpr auto parseValue = createObject("url", &ValueType::url, "width", &ValueType::width);
+	};
+
+	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VideoDetailsThumbnail> {
+		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::VideoDetailsThumbnail;
+		static constexpr auto parseValue = createObject("thumbnails", &ValueType::thumbnails);
+	};
+
+	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VideoDetails> {
+		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::VideoDetails;
+		static constexpr auto parseValue = createObject("title", &ValueType::title, "videoId", &ValueType::videoId, "thumbnail", &ValueType::thumbnail, "shortDescription",
+			&ValueType::shortDescription, "lengthSeconds", &ValueType::lengthSeconds);
+	};
+
+	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Format> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::Format;
 		static constexpr auto parseValue =
-			createObject("type", &ValueType::type, "videoId", &ValueType::songId, "url", &ValueType::viewUrl, "descriptionSnippet", &ValueType::description);
+			createObject("url", &ValueType::url, "mimeType", &ValueType::mimeType, "bitrate", &ValueType::bitrate, "contentLength", &ValueType::contentLength);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Thumbnail> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Thumbnail;
-		static constexpr auto parseValue = createObject("url", &ValueType::url);
+	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::StreamingData> {
+		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::StreamingData;
+		static constexpr auto parseValue = createObject("adaptiveFormats", &ValueType::adaptiveFormats);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::ThumbNails> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::ThumbNails;
-		static constexpr auto parseValue = createObject("thumbnails", &ValueType::thumbNails);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::AccessibilityData> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::AccessibilityData;
-		static constexpr auto parseValue = createObject("label", &ValueType::label);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Accessibility> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Accessibility;
-		static constexpr auto parseValue = createObject("accessibilityData", &ValueType::accessibilityData);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::LengthText> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::LengthText;
-		static constexpr auto parseValue = createObject("accessibility", &ValueType::accessibility);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Title> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Title;
-		static constexpr auto parseValue = createObject("runs", &ValueType::runs);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Text> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Text;
-		static constexpr auto parseValue = createObject("text", &ValueType::text);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::SnippetText> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::SnippetText;
-		static constexpr auto parseValue = createObject("runs", &ValueType::runs);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::SnippetTextValue> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::SnippetTextValue;
-		static constexpr auto parseValue = createObject("snippetText", &ValueType::snippetText);
+	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Data> {
+		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Data;
+		static constexpr auto parseValue = createObject("streamingData", &ValueType::streamingData, "videoDetails", &ValueType::videoDetails);
 	};
 
 	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VideoRenderer> {
 		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::VideoRenderer;
-		static constexpr auto parseValue = createObject("videoId", &ValueType::videoId, "thumbnail", &ValueType::thumbnails, "lengthText", &ValueType::lengthText,
-			"detailedMetadataSnippets", &ValueType::detailedMetadataSnippets, "title", &ValueType::title);
+		static constexpr auto parseValue = createObject("videoId", &ValueType::videoId);
 	};
 
 	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VideoRendererType> {
@@ -238,125 +143,66 @@ namespace jsonifier {
 		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::YouTubeSearchResults;
 		static constexpr auto parseValue = createObject("contents", &ValueType::contents);
 	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Format> {
-		using ValueType = DiscordCoreAPI::DiscordCoreInternal::Format;
-		static constexpr auto parseValue =
-			createObject("url", &ValueType::url, "mimeType", &ValueType::mimeType, "bitrate", &ValueType::bitrate, "contentLength", &ValueType::contentLength);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::StreamingData> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::StreamingData;
-		static constexpr auto parseValue = createObject("formats", &ValueType::formats, "adaptiveFormats", &ValueType::adaptiveFormats);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Data> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Data;
-		static constexpr auto parseValue = createObject("streamingData", &ValueType::streamingData);
-	};
 }
 
 namespace DiscordCoreAPI {
 
 	namespace DiscordCoreInternal {
 
-		YouTubeRequestBuilder::YouTubeRequestBuilder(ConfigManager* configManagerNew) : HttpsClientCore{ configManagerNew->getBotToken() } {
-		}
+		YouTubeRequestBuilder::YouTubeRequestBuilder(ConfigManager* configManagerNew) : HttpsClientCore{ jsonifier::string{ configManagerNew->getBotToken() } } {};
 
-		std::string collectVideoIdFromSearchQuery(const std::string& string) {
-			if (string.find("youtube") != std::string::npos) {
-				std::string returnString{};
-				returnString = string.substr(string.find("v=") + 2);
-				return returnString;
+		bool collectVideoIdFromSearchQuery(jsonifier::string_view string, jsonifier::string& stringNew) {
+			if (string.find("youtube") != jsonifier::string::npos && string.find("v=") != jsonifier::string::npos) {
+				auto findValue = string.find("v=") + 2;
+				stringNew	   = string.substr(findValue);
+				return true;
 			} else {
-				return string;
+				return false;
 			}
 		}
 
-		Song YouTubeAPI::collectSingleResult(const std::string& searchQuery) {
-			return YouTubeRequestBuilder::collectSingleResult(searchQuery);
-		}
-
-		Song YouTubeRequestBuilder::collectSingleResult(const std::string& searchQuery) {
+		Song YouTubeRequestBuilder::collectSingleResult(jsonifier::string_view searchQuery) {
 			Song songNew{};
-			songNew.type	= SongType::YouTube;
-			songNew.songId	= collectVideoIdFromSearchQuery(searchQuery);
-			songNew			= constructDownloadInfo(songNew, 0);
-			auto newResults = collectSearchResults(searchQuery);
-			HttpsWorkloadData dataPackage{ HttpsWorkloadType::YouTubeGetSearchResults };
-			dataPackage.headersToInsert["Connection"] = "Keep-Alive";
-			dataPackage.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36";
-			dataPackage.baseUrl						  = baseUrl;
-			dataPackage.relativePath				  = "/watch?v=" + songNew.songId;
-			dataPackage.workloadClass				  = HttpsWorkloadClass::Get;
-			HttpsResponseData returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));
-			if (returnData.responseCode != 200) {
-				MessagePrinter::printError<PrintMessageType::Https>(
-					"YouTubeRequestBuilder::collectSearchResults() Error: " + std::to_string(returnData.responseCode) + returnData.responseData);
-			}
-			auto varInitFind = returnData.responseData.find("var ytInitialData = ");
-			if (varInitFind != std::string::npos) {
-				std::string newString00	   = "var ytInitialData = ";
-				std::string newString	   = returnData.responseData.substr(varInitFind + newString00.length());
-				std::string stringSequence = ";</script><script nonce=";
-				newString				   = newString.substr(0, newString.find(stringSequence));
-				Welcome youtubeSearchResults{};
-				parser.parseJson<true, true>(youtubeSearchResults, newString);
-				for (auto& value: newResults) {
-					if (value.songId == songNew.songId) {
-						songNew.addedByUserId = value.addedByUserId;
-						songNew.contentLength = value.contentLength;
-						songNew.description	  = value.description;
-						songNew.duration	  = value.duration;
-						songNew.songTitle	  = value.songTitle;
-						songNew.thumbnailUrl  = value.thumbnailUrl;
-						songNew.viewUrl		  = value.viewUrl;
-						break;
-					}
-				}
-			}
+			songNew.type   = SongType::YouTube;
+			songNew.songId = searchQuery;
+			songNew		   = constructDownloadInfo(songNew, 0);
 			return songNew;
 		}
 
-		jsonifier::vector<Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
+		jsonifier::vector<Song> YouTubeRequestBuilder::collectSearchResults(jsonifier::string_view searchQuery, int32_t limit) {
 			HttpsWorkloadData dataPackage{ HttpsWorkloadType::YouTubeGetSearchResults };
+			jsonifier::vector<Song> searchResults{};
+			jsonifier::string theId{};
+			if (collectVideoIdFromSearchQuery(searchQuery, theId)) {
+				searchResults.emplace_back(collectSingleResult(theId));
+				return searchResults;
+			}
 			dataPackage.baseUrl			 = baseUrl;
-			dataPackage.relativePath	 = "/results?search_query=" + urlEncode(collectVideoIdFromSearchQuery(searchQuery).c_str());
+			dataPackage.relativePath	 = "/results?search_query=" + urlEncode(searchQuery);
 			dataPackage.workloadClass	 = HttpsWorkloadClass::Get;
 			HttpsResponseData returnData = submitWorkloadAndGetResult(std::move(dataPackage));
 			if (returnData.responseCode != 200) {
 				MessagePrinter::printError<PrintMessageType::Https>(
-					"YouTubeRequestBuilder::collectSearchResults() Error: " + std::to_string(returnData.responseCode) + returnData.responseData);
+					"YouTubeRequestBuilder::collectSearchResults() Error: " + jsonifier::toString(returnData.responseCode.operator uint64_t()) + returnData.responseData);
 			}
-			jsonifier::vector<Song> searchResults{};
 			auto varInitFind = returnData.responseData.find("var ytInitialData = ");
-			if (varInitFind != std::string::npos) {
-				std::string newString00	   = "var ytInitialData = ";
-				std::string newString	   = returnData.responseData.substr(varInitFind + newString00.length());
-				std::string stringSequence = ";</script><script nonce=";
-				newString				   = newString.substr(0, newString.find(stringSequence));
+			if (varInitFind != jsonifier::string::npos) {
+				jsonifier::string newString00	 = "var ytInitialData = ";
+				jsonifier::string newString		 = returnData.responseData.substr(varInitFind + newString00.size());
+				jsonifier::string stringSequence = ";</script><script nonce=";
+				newString						 = newString.substr(0, newString.find(stringSequence));
 				YouTubeSearchResults youtubeSearchResults{};
 				parser.parseJson<true, true>(youtubeSearchResults, newString);
 				for (auto& value: youtubeSearchResults.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents) {
 					for (auto& value02: value.itemSectionRendererContents.contents) {
-						Song songNew{};
-						songNew.type   = SongType::YouTube;
-						songNew.songId = value02.videoRenderer.videoId;
-						if (value02.videoRenderer.title.runs.size() > 0) {
-							songNew.songTitle = value02.videoRenderer.title.runs.at(0).text;
+						if (value02.videoRenderer.videoId != "") {
+							Song songNew{};
+							songNew.type   = SongType::YouTube;
+							songNew.songId = value02.videoRenderer.videoId;
+							searchResults.emplace_back(constructDownloadInfo(songNew, 0));
 						}
-						songNew.viewUrl	 = static_cast<std::string>(baseUrl) + std::string{ "/watch?v=" } + songNew.songId + "&hl=en";
-						songNew.duration = value02.videoRenderer.lengthText.accessibility.accessibilityData.label;
-						if (value02.videoRenderer.detailedMetadataSnippets.size() > 0 && value02.videoRenderer.detailedMetadataSnippets.at(0).snippetText.runs.size() > 0) {
-							songNew.description = value02.videoRenderer.detailedMetadataSnippets.at(0).snippetText.runs.at(0).text;
-						} else {
-							continue;
-						}
-
-						if (value02.videoRenderer.thumbnails.thumbNails.size() > 0) {
-							songNew.thumbnailUrl = value02.videoRenderer.thumbnails.thumbNails[value02.videoRenderer.thumbnails.thumbNails.size() - 1].url;
-							songNew.thumbnailUrl = songNew.thumbnailUrl.substr(0, songNew.thumbnailUrl.find(".jpg") + 4);
-							searchResults.emplace_back(songNew);
+						if (searchResults.size() >= limit) {
+							break;
 						}
 					}
 				}
@@ -378,8 +224,8 @@ namespace DiscordCoreAPI {
 				dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 				responseData				= submitWorkloadAndGetResult(std::move(dataPackage02));
 				if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200) {
-					MessagePrinter::printError<PrintMessageType::Https>(
-						"YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " + std::to_string(responseData.responseCode) + ", " + responseData.responseData);
+					MessagePrinter::printError<PrintMessageType::Https>("YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " +
+						jsonifier::toString(responseData.responseCode.operator uint64_t()) + ", " + responseData.responseData);
 				}
 
 				Data dataNew{};
@@ -390,35 +236,59 @@ namespace DiscordCoreAPI {
 						potentialFormats.emplace_back(value);
 					}
 				}
-				uint64_t currentMax{};
+				int64_t currentMax{};
 				int64_t maxIndex{ -1 };
 				for (uint64_t x = 0; x < potentialFormats.size(); ++x) {
 					if (potentialFormats.at(x).bitrate > currentMax) {
 						maxIndex = static_cast<int64_t>(x);
 					}
 				}
+
 				Song newerSong{ songNew };
-				std::string downloadBaseUrl{};
+				jsonifier::string downloadBaseUrl{};
 				newerSong.type = SongType::YouTube;
 				if (maxIndex > -1) {
+					jsonifier::string thumbnailUrl{};
+					if (dataNew.videoDetails.thumbnail.thumbnails.size() > 0) {
+						int32_t currentLargestThumbnailWidth{};
+						int32_t currentThumbnailIndex{};
+						for (int32_t x = 0; x < dataNew.videoDetails.thumbnail.thumbnails.size(); ++x) {
+							if (dataNew.videoDetails.thumbnail.thumbnails[x].width > currentLargestThumbnailWidth) {
+								currentThumbnailIndex = x;
+							}
+						}
+						thumbnailUrl = dataNew.videoDetails.thumbnail.thumbnails[currentThumbnailIndex].url;
+					}
 					auto httpsFind		   = potentialFormats[maxIndex].url.find("https://");
 					auto videoPlaybackFind = potentialFormats[maxIndex].url.find("/videoplayback?");
-					if (httpsFind != std::string::npos && videoPlaybackFind != std::string::npos) {
-						std::string newString00 = "https://";
-						downloadBaseUrl			= potentialFormats[maxIndex].url.substr(httpsFind + newString00.length(), videoPlaybackFind - newString00.length());
+					if (httpsFind != jsonifier::string::npos && videoPlaybackFind != jsonifier::string::npos) {
+						jsonifier::string newString00 = "https://";
+						downloadBaseUrl				  = potentialFormats[maxIndex].url.substr(httpsFind + newString00.size(), videoPlaybackFind - newString00.size());
 					}
-					std::string requestNew = potentialFormats[maxIndex].url.substr(potentialFormats[maxIndex].url.find(".com") + 4);
+					auto newString = dataNew.videoDetails.shortDescription;
+					if (newString.size() > 0) {
+						if (newString.size() > 256) {
+							newString = newString.substr(0, 256);
+						}
+						newerSong.description = utf8MakeValid(newString);
+						newerSong.description += "...";
+					}
+					jsonifier::string requestNew = potentialFormats[maxIndex].url.substr(potentialFormats[maxIndex].url.find(".com") + 4);
 					newerSong.finalDownloadUrls.resize(3);
 					DownloadUrl downloadUrl01{};
-					downloadUrl01.contentSize = stoull(potentialFormats[maxIndex].contentLength);
+					downloadUrl01.contentSize = std::stoull(potentialFormats[maxIndex].contentLength.data());
 					downloadUrl01.urlPath	  = downloadBaseUrl;
 					DownloadUrl downloadUrl02{};
-					downloadUrl02.contentSize		  = stoull(potentialFormats[maxIndex].contentLength);
+					downloadUrl02.contentSize		  = std::stoull(potentialFormats[maxIndex].contentLength.data());
 					downloadUrl02.urlPath			  = requestNew;
 					newerSong.finalDownloadUrls.at(0) = downloadUrl01;
 					newerSong.finalDownloadUrls.at(1) = downloadUrl02;
 					newerSong.viewUrl				  = newerSong.firstDownloadUrl;
+					newerSong.duration				  = TimeStamp::convertMsToDurationString(std::stoull(static_cast<std::string>(dataNew.videoDetails.lengthSeconds)) * 1000);
+					newerSong.viewUrl				  = "https://www.youtube.com/watch?v=" + songNew.songId;
 					newerSong.contentLength			  = downloadUrl02.contentSize;
+					newerSong.thumbnailUrl			  = thumbnailUrl;
+					newerSong.songTitle				  = dataNew.videoDetails.title;
 					newerSong.type					  = SongType::YouTube;
 				}
 				return newerSong;
@@ -427,7 +297,7 @@ namespace DiscordCoreAPI {
 					++currentRecursionDepth;
 					return constructDownloadInfo(songNew, currentRecursionDepth);
 				} else {
-					MessagePrinter::printError<PrintMessageType::Https>("YouTubeRequestBuilder::constructDownloadInfo() Error: " + std::string{ error.what() });
+					MessagePrinter::printError<PrintMessageType::Https>("YouTubeRequestBuilder::constructDownloadInfo() Error: " + jsonifier::string{ error.what() });
 					return {};
 				}
 			}
@@ -435,7 +305,7 @@ namespace DiscordCoreAPI {
 
 		Song YouTubeRequestBuilder::collectFinalSong(const Song& songNew) {
 			Song newerSong{ songNew };
-			newerSong.firstDownloadUrl = static_cast<std::string>(baseUrl) + "/watch?v=" + newerSong.songId + "&hl=en";
+			newerSong.firstDownloadUrl = static_cast<jsonifier::string>(baseUrl) + "/watch?v=" + newerSong.songId + "&hl=en";
 			newerSong				   = constructDownloadInfo(newerSong, 0);
 			return newerSong;
 		}
@@ -466,7 +336,7 @@ namespace DiscordCoreAPI {
 				for (uint64_t x = 0; x < intervalCount; ++x) {
 					HttpsWorkloadData workloadData{ HttpsWorkloadType::YouTubeGetSearchResults };
 					if (songNew.finalDownloadUrls.size() > 0) {
-						if (songNew.finalDownloadUrls.at(0).urlPath.find(".com") != std::string::npos) {
+						if (songNew.finalDownloadUrls.at(0).urlPath.find(".com") != jsonifier::string::npos) {
 							workloadData.baseUrl = songNew.finalDownloadUrls.at(0).urlPath.substr(0, songNew.finalDownloadUrls.at(0).urlPath.find(".com") + 4);
 						}
 					} else {
@@ -479,12 +349,12 @@ namespace DiscordCoreAPI {
 					workloadData.headersToInsert["Connection"] = "Keep-Alive";
 					workloadData.headersToInsert["Host"]	   = songNew.finalDownloadUrls.at(0).urlPath;
 					workloadData.headersToInsert["Origin"]	   = "https://music.youtube.com";
-					workloadData.relativePath = songNew.finalDownloadUrls.at(1).urlPath + "&range=" + std::to_string(currentStart) + "-" + std::to_string(currentEnd);
+					workloadData.relativePath = songNew.finalDownloadUrls.at(1).urlPath + "&range=" + jsonifier::toString(currentStart) + "-" + jsonifier::toString(currentEnd);
 					workloadVector.emplace_back(std::move(workloadData));
 					currentStart = currentEnd;
 					currentEnd += x == intervalCount - 2 ? remainder : (1024ull * 1024ull);
 				}
-				std::basic_string<uint8_t> buffer{};
+				jsonifier::string_base<uint8_t> buffer{};
 				MatroskaDemuxer demuxer{};
 				uint64_t index{};
 				while (index < intervalCount || !demuxer.areWeDone()) {
@@ -526,7 +396,7 @@ namespace DiscordCoreAPI {
 				DiscordCoreClient::getSongAPI(guildId).audioDataBuffer.send(std::move(frameData));
 				co_return;
 			} catch (const HttpsError& error) {
-				MessagePrinter::printError<PrintMessageType::Https>("YouTubeAPI::downloadAndStreamAudio() Error: " + std::string{ error.what() });
+				MessagePrinter::printError<PrintMessageType::Https>("YouTubeAPI::downloadAndStreamAudio() Error: " + jsonifier::string{ error.what() });
 				weFailedToDownloadOrDecode(songNew);
 				areWeWorkingBool.store(false, std::memory_order_release);
 			}
@@ -537,8 +407,8 @@ namespace DiscordCoreAPI {
 			return areWeWorkingBool.load(std::memory_order_acquire);
 		}
 
-		jsonifier::vector<Song> YouTubeAPI::searchForSong(const std::string& searchQuery) {
-			return collectSearchResults(searchQuery);
+		jsonifier::vector<Song> YouTubeAPI::searchForSong(jsonifier::string_view searchQuery, int32_t limit) {
+			return collectSearchResults(searchQuery, limit);
 		}
 
 		Song YouTubeAPI::collectFinalSong(const Song& songNew) {

@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (!guild.areWeConnected() || !SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					std::string msgString = "------\n**There's no music playing to be stopped!**\n------";
+					jsonifier::string msgString = "------\n**There's no music playing to be stopped!**\n------";
 					EmbedData msgEmbed;
 					msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					msgEmbed.setColor(discordGuild.data.borderColor);
@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 				EmbedData msgEmbed;
 				msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 				msgEmbed.setColor(discordGuild.data.borderColor);
-				msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + std::to_string(SongAPI::getPlaylist(guild.id).songQueue.size()) + "\n------");
+				msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + jsonifier::toString(SongAPI::getPlaylist(guild.id).songQueue.size()) + "\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Stopping Playback:**__");
 				RespondToInputEventData dataPackage02(newArgs.eventData);
