@@ -27,15 +27,14 @@
 /// Jul 29, 2021
 /// https://discordcoreapi.com
 /// \file AudioDecoder.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <opus/opus.h>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	namespace discord_core_internal {
 
 		/**
 		 * \addtogroup discord_core_internal
@@ -43,12 +42,12 @@ namespace DiscordCoreAPI {
 		 */
 
 
-		/// @brief A wrapper class for the Opus audio decoder.
-		struct OpusDecoderWrapper {
-			/// @brief Deleter for OpusDecoder instances.
-			struct OpusDecoderDeleter {
+		/// @brief A wrapper class for the opus audio decoder.
+		struct opus_decoder_wrapper {
+			/// @brief Deleter foropus_decoder instances.
+			struct opus_decoder_deleter {
 				/// @brief Operator to destroy an OpusDecoder instance.
-				/// @param other The OpusDecoder pointer to be deleted.
+				/// @param other the OpusDecoder pointer to be deleted.
 				inline void operator()(OpusDecoder* other) {
 					if (other) {
 						opus_decoder_destroy(other);
@@ -57,41 +56,41 @@ namespace DiscordCoreAPI {
 				}
 			};
 
-			/// @brief Constructor for OpusDecoderWrapper. Initializes and configures the Opus decoder.
-			inline OpusDecoderWrapper() {
+			/// @brief Constructor for opus_decoder_wrapper. initializes and configures the opus decoder.
+			inline opus_decoder_wrapper() {
 				int32_t error{};
 
-				// Ensure data vector has minimum size
+				// ensure data vector has minimum size
 				if (data.size() < 23040) {
 					data.resize(23040);
 				}
 
-				// Create OpusDecoder instance
+				// create OpusDecoder instance
 				ptr.reset(opus_decoder_create(48000, 2, &error));
 
-				// Check for initialization errors
+				// check for initialization errors
 				if (error != OPUS_OK) {
-					throw DCAException{ "Failed to create the Opus decoder, Reason: " + jsonifier::string{ opus_strerror(error) } };
+					throw dca_exception{ "Failed to create the opus decoder, reason: " + jsonifier::string{ opus_strerror(error) } };
 				}
 			}
 
-			/// @brief Decode Opus audio data.
-			/// @param dataToDecode The Opus-encoded audio data to decode.
-			/// @return A basic_string_view containing the decoded audio samples.
-			/// @throws DCAException if decoding fails.
+			/// @brief Decode opus audio data.
+			/// @param dataToDecode the opus-encoded audio data to decode.
+			/// @return a basic_string_view containing the decoded audio samples.
+			/// @throws dca_exception if decoding fails.
 			inline jsonifier::string_view_base<opus_int16> decodeData(jsonifier::string_view_base<uint8_t> dataToDecode) {
 				const int32_t sampleCount = opus_decode(ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.size() & 0x7FFFFFFF), data.data(), 5760, 0);
 
-				// Check for successful decoding
+				// check for successful decoding
 				if (sampleCount > 0) {
-					return jsonifier::string_view_base<opus_int16>{ data.data(), static_cast<uint64_t>(sampleCount) * 2ull };
+					return jsonifier::string_view_base<opus_int16>{ data.data(), static_cast<uint64_t>(sampleCount) * 2ULL };
 				} else {
-					throw DCAException{ "Failed to decode a user's voice payload, Reason: " + jsonifier::string{ opus_strerror(sampleCount) } };
+					throw dca_exception{ "Failed to decode a user's voice payload, reason: " + jsonifier::string{ opus_strerror(sampleCount) } };
 				}
 			}
 
 		  protected:
-			UniquePtr<OpusDecoder, OpusDecoderDeleter> ptr{};///< Unique pointer to OpusDecoder instance.
+			unique_ptr<OpusDecoder, opus_decoder_deleter> ptr{};///< Unique pointer to OpusDecoder instance.
 			jsonifier::vector<opus_int16> data{};///< Buffer for decoded audio samples.
 		};
 

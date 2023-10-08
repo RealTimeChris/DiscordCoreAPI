@@ -23,76 +23,75 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// StageInstanceEntities.hpp - Source file for the Stage Instance related stuff.
+/// StageInstanceEntities.hpp - Source file for the stage instance related stuff.
 /// Nov 29, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file StageInstanceEntities.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	/// @brief For creating a StageInstanceData.
-	struct CreateStageInstanceData {
-		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance(default Guild_Only).
-		Snowflake channelId{};///< The id of the Stage ChannelData.
+	/// @brief For creating a stage_instance_data.
+	struct create_stage_instance_data {
+		stage_instance_privacy_level privacyLevel{};///< The privacy level of the stage instance(default Guild_Only).
+		snowflake channelId{};///< The id of the stage channel_data.
 		jsonifier::string reason{};///< The reason for starting it.
-		jsonifier::string topic{};///< The topic of the Stage instance(1 - 120 characters).
+		jsonifier::string topic{};///< The topic of the stage instance(1 - 120 characters).
 	};
 
-	/// @brief For collecting a single StageInstanceData.
-	struct GetStageInstanceData {
-		Snowflake channelId{};///< The ChannelData id from which you would like to collect the StageInstanceData.
+	/// @brief For collecting a single stage_instance_data.
+	struct get_stage_instance_data {
+		snowflake channelId{};///< The channel_data id from which you would like to collect the stage_instance_data.
 	};
 
-	/// @brief For modifying a single StageInstanceData.
-	struct ModifyStageInstanceData {
-		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance.
-		Snowflake channelId{};///< The ChannelData Snowflake of the StageInstanceData.
-		jsonifier::string reason{};///< Reason for modifying the StageInstanceData.
-		jsonifier::string topic{};///< The topic of the Stage instance(1 - 120 characters).
+	/// @brief For modifying a single stage_instance_data.
+	struct modify_stage_instance_data {
+		stage_instance_privacy_level privacyLevel{};///< The privacy level of the stage instance.
+		snowflake channelId{};///< The channel_data snowflake of the stage_instance_data.
+		jsonifier::string reason{};///< Reason for modifying the stage_instance_data.
+		jsonifier::string topic{};///< The topic of the stage instance(1 - 120 characters).
 	};
 
-	/// @brief For deleting a single StageInstanceData.
-	struct DeleteStageInstanceData {
-		Snowflake channelId{};///< The ChannelData Snowflake of the StageInstanceData.
-		jsonifier::string reason{};///< Reason for deleting the StageInstanceData.
+	/// @brief For deleting a single stage_instance_data.
+	struct delete_stage_instance_data {
+		snowflake channelId{};///< The channel_data snowflake of the stage_instance_data.
+		jsonifier::string reason{};///< Reason for deleting the stage_instance_data.
 	};
 
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// @brief An interface class for the StageInstanceData related Discord endpoints.
-	class DiscordCoreAPI_Dll StageInstances {
+	/// @brief An interface class for the stage_instance_data related discord endpoints.
+	class DiscordCoreAPI_Dll stage_instances {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(discord_core_internal::https_client*);
 
-		/// @brief Creates a StageInstanceData.
-		/// @param dataPackage A CreateStageInstanceData structure.
-		/// @return A CoRoutine containing a StageInstanceData.
-		static CoRoutine<StageInstanceData> createStageInstanceAsync(CreateStageInstanceData dataPackage);
+		/// @brief Creates a stage_instance_data.
+		/// @param dataPackage a create_stage_instance_data structure.
+		/// @return a co_routine containing a stage_instance_data.
+		static co_routine<stage_instance_data> createStageInstanceAsync(create_stage_instance_data dataPackage);
 
-		/// @brief Collects a StageInstanceData.
-		/// @param dataPackage A GetStageInstanceData structure.
-		/// @return A CoRoutine containing a StageInstanceData.
-		static CoRoutine<StageInstanceData> getStageInstanceAsync(GetStageInstanceData dataPackage);
+		/// @brief Collects a stage_instance_data.
+		/// @param dataPackage a get_stage_instance_data structure.
+		/// @return a co_routine containing a stage_instance_data.
+		static co_routine<stage_instance_data> getStageInstanceAsync(get_stage_instance_data dataPackage);
 
-		/// @brief Modifies a StageInstanceData.
-		/// @param dataPackage A ModifyStageInstanceData structure.
-		/// @return A CoRoutine containing a StageInstanceData.
-		static CoRoutine<StageInstanceData> modifyStageInstanceAsync(ModifyStageInstanceData dataPackage);
+		/// @brief Modifies a stage_instance_data.
+		/// @param dataPackage a modify_stage_instance_data structure.
+		/// @return a co_routine containing a stage_instance_data.
+		static co_routine<stage_instance_data> modifyStageInstanceAsync(modify_stage_instance_data dataPackage);
 
-		/// @brief Deletes a StageInstanceData.
-		/// @param dataPackage A DeleteStageInstanceData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteStageInstanceAsync(DeleteStageInstanceData dataPackage);
+		/// @brief Deletes a stage_instance_data.
+		/// @param dataPackage a delete_stage_instance_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteStageInstanceAsync(delete_stage_instance_data dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static discord_core_internal::https_client* httpsClient;
 	};
 
 	/**@}*/

@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// DllMain.cpp : Defines the entry point for the DLL application.
+/// DllMain.cpp : defines the entry point for the dll application.
 /// Feb 18, 2022
 /// https://discordcoreapi.com
 /// \file DllMain.cpp
@@ -31,7 +31,7 @@
 #include <discordcoreapi/Index.hpp>
 
 #if defined _WIN32
-bool __stdcall DllMain(void*, uint64_t fdwReason, void*) {
+bool __stdcall dll_main(void*, uint64_t fdwReason, void*) {
 	switch (fdwReason) {
 		case DLL_PROCESS_ATTACH: {
 			[[fallthrough]];
@@ -46,7 +46,7 @@ bool __stdcall DllMain(void*, uint64_t fdwReason, void*) {
 			[[fallthrough]];
 		}
 		default: {
-			return TRUE;
+			return true;
 		}
 	}
 }

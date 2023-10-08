@@ -23,56 +23,47 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// UniquePtr.hpp - Header for the "UniquePtr" related stuff.
+/// UniquePtr.hpp - Header for the "unique_ptr" related stuff.
 /// Dec 18, 2021
 /// https://discordcoreapi.com
 /// \file UniquePtr.hpp
-
 #pragma once
 
 #include <discordcoreapi/Utilities/Base.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup utilities
 	 * @{
 	 */
 
-	template<typename value_type>
-	concept pointer_t = std::is_pointer_v<value_type> || std::is_null_pointer_v<value_type>;
-
-	/// @brief Concept to check if two types of pointers are related.
-	template<typename ValueType01, typename ValueTypeNew>
-	concept IsRelatedPtr =
-		( std::derived_from<ValueType01, ValueTypeNew> || std::is_base_of_v<ValueType01, ValueTypeNew> || std::same_as<ValueType01, ValueTypeNew> )&&std::is_pointer_v<ValueType01>;
-
 	/// @brief A smart pointer class that provides unique ownership semantics.
-	/// @tparam ValueType The type of the managed object.
-	/// @tparam Deleter The type of the deleter used to destroy the object.
-	template<typename ValueType, typename Deleter = std::default_delete<ValueType>> class UniquePtr : protected Deleter {
+	/// @tparam value_type the type of the managed object.
+	/// @tparam deleter the type of the deleter used to destroy the object.
+	template<typename value_type, typename deleter = std::default_delete<value_type>> class unique_ptr : protected deleter {
 	  public:
-		using element_type = std::remove_extent_t<ValueType>;
+		using element_type = std::remove_extent_t<value_type>;
 		using pointer	   = element_type*;
-		using deleter_type = Deleter;
+		using deleter_type = deleter;
 		using reference	   = element_type&;
 
-		inline UniquePtr& operator=(const UniquePtr&) = delete;
-		inline UniquePtr(const UniquePtr&)			  = delete;
+		inline unique_ptr& operator=(const unique_ptr&) = delete;
+		inline unique_ptr(const unique_ptr&)			= delete;
 
 		/// @brief Default constructor.
-		inline UniquePtr() : ptr{ nullptr } {};
+		inline unique_ptr() : ptr{ nullptr } {};
 
 		/// @brief Move assignment operator for related pointers.
-		/// @param other The other UniquePtr to move from.
-		/// @return UniquePtr The new managed object inside a UniquePtr.
-		template<jsonifier_internal::unique_ptr_t ValueTypeNew> inline UniquePtr& operator=(ValueTypeNew&& other) {
+		/// @param other the other unique_ptr to move from.
+		/// @return unique_ptr the new managed object inside a unique_ptr.
+		template<jsonifier::concepts::unique_ptr_t value_type_new> inline unique_ptr& operator=(value_type_new&& other) {
 			if (this != static_cast<void*>(&other)) {
-				reset(nullptr);
+				reset();
 				try {
 					commit(other.release());
 				} catch (...) {
-					reset(nullptr);
+					reset();
 					throw;
 				}
 			}
@@ -80,33 +71,33 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Move constructor for related pointers.
-		/// @param other The other UniquePtr to move from.
-		template<jsonifier_internal::unique_ptr_t ValueTypeNew> inline UniquePtr(ValueTypeNew&& other) {
+		/// @param other the other unique_ptr to move from.
+		template<jsonifier::concepts::unique_ptr_t value_type_new> inline unique_ptr(value_type_new&& other) {
 			*this = std::move(other);
 		}
 
 		/// @brief Move assignment operator for raw pointer.
-		/// @param newPtr The new ptr to manage.
-		/// @return UniquePtr The new managed object inside a UniquePtr.
-		template<pointer_t value_type> inline UniquePtr& operator=(value_type newPtr) {
-			reset(nullptr);
+		/// @param newPtr the new ptr to manage.
+		/// @return unique_ptr the new managed object inside a unique_ptr.
+		template<jsonifier::concepts::pointer_t value_type_new> inline unique_ptr& operator=(value_type_new newPtr) {
+			reset();
 			try {
 				commit(newPtr);
 			} catch (...) {
-				reset(nullptr);
+				reset();
 				throw;
 			}
 			return *this;
 		}
 
 		/// @brief Constructor from a raw pointer.
-		/// @param newPtr The new ptr to manage.
-		template<pointer_t value_type> inline UniquePtr(value_type newPtr) {
+		/// @param newPtr the new ptr to manage.
+		template<jsonifier::concepts::pointer_t value_type_new> inline unique_ptr(value_type_new newPtr) {
 			*this = newPtr;
 		}
 
 		/// @brief Gets the managed raw pointer.
-		/// @return The managed raw pointer.
+		/// @return the managed raw pointer.
 		inline pointer get() const {
 			return ptr;
 		}
@@ -118,25 +109,25 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Dereference operator.
-		/// @return A reference to the managed object.
+		/// @return a reference to the managed object.
 		inline reference operator*() const {
 			if (!ptr) {
-				throw DCAException{ "Sorry, but you attempted to access a UniquePtr that is nullptr." };
+				throw dca_exception{ "Sorry, but you attempted to access a unique_ptr that is nullptr." };
 			}
 			return *ptr;
 		}
 
 		/// @brief Member access operator.
-		/// @return The managed raw pointer.
+		/// @return the managed raw pointer.
 		inline pointer operator->() const {
 			if (!ptr) {
-				throw DCAException{ "Sorry, but you attempted to access a UniquePtr that is nullptr." };
+				throw dca_exception{ "Sorry, but you attempted to access a unique_ptr that is nullptr." };
 			}
 			return ptr;
 		}
 
 		/// @brief Releases the managed pointer.
-		/// @return The released raw pointer.
+		/// @return the released raw pointer.
 		inline pointer release() {
 			pointer releasedPtr = ptr;
 			ptr					= nullptr;
@@ -144,22 +135,22 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Resets the managed pointer and invokes the deleter.
-		/// @param newPtr The new raw pointer to manage.
-		inline void reset(pointer newPtr) {
+		/// @param newPtr the new raw pointer to manage.
+		inline void reset(pointer newPtr = nullptr) {
 			pointer oldPtr = std::exchange(ptr, newPtr);
 			if (oldPtr) {
 				getDeleter()(oldPtr);
 			}
 		}
 
-		/// @brief Swaps the contents of two UniquePtr objects.
-		/// @param other The other UniquePtr to swap with.
-		inline void swap(UniquePtr& other) {
+		/// @brief Swaps the contents of two unique_ptr objects.
+		/// @param other the other unique_ptr to swap with.
+		inline void swap(unique_ptr& other) {
 			std::swap(ptr, other.ptr);
 		}
 
 		/// @brief Destructor that releases the managed object.
-		inline ~UniquePtr() {
+		inline ~unique_ptr() {
 			reset(nullptr);
 		}
 
@@ -167,45 +158,45 @@ namespace DiscordCoreAPI {
 		pointer ptr{ nullptr };///< The stored object.
 
 		/// @brief Commits a new pointer value and resets the current one.
-		/// @param other The new pointer value to commit.
+		/// @param other the new pointer value to commit.
 		inline void commit(pointer other) {
 			pointer tempPtr = other;
 			reset(tempPtr);
 		}
 
 		/// @brief Gets the deleter associated with the managed object.
-		/// @return The associated deleter.
+		/// @return the associated deleter.
 		inline deleter_type& getDeleter() {
 			return *static_cast<deleter_type*>(this);
 		}
 	};
 
-	/// @brief Specialization of UniquePtr for arrays.
-	/// @tparam ValueType The type of the managed object.
-	/// @tparam Deleter The type of the deleter used to destroy the object.
-	template<typename ValueType, typename Deleter> class UniquePtr<ValueType[], Deleter> : public Deleter {
+	/// @brief Specialization of unique_ptr for arrays.
+	/// @tparam value_type the type of the managed object.
+	/// @tparam deleter the type of the deleter used to destroy the object.
+	template<typename value_type, typename deleter> class unique_ptr<value_type[], deleter> : public deleter {
 	  public:
-		using element_type = std::remove_extent_t<ValueType>;
+		using element_type = std::remove_extent_t<value_type>;
 		using pointer	   = element_type*;
-		using deleter_type = Deleter;
-		using reference								  = element_type&;
+		using deleter_type = deleter;
+		using reference	   = element_type&;
 
-		inline UniquePtr& operator=(const UniquePtr&) = delete;
-		inline UniquePtr(const UniquePtr&)			  = delete;
+		inline unique_ptr& operator=(const unique_ptr&) = delete;
+		inline unique_ptr(const unique_ptr&)			= delete;
 
 		/// @brief Default constructor.
-		inline UniquePtr() : ptr{ nullptr } {};
+		inline unique_ptr() : ptr{ nullptr } {};
 
 		/// @brief Move assignment operator for related pointers.
-		/// @param other The other UniquePtr to move from.
-		/// @return UniquePtr The new managed object inside a UniquePtr.
-		template<jsonifier_internal::unique_ptr_t ValueTypeNew> inline UniquePtr& operator=(ValueTypeNew&& other) {
+		/// @param other the other unique_ptr to move from.
+		/// @return unique_ptr the new managed object inside a unique_ptr.
+		template<jsonifier::concepts::unique_ptr_t value_type_new> inline unique_ptr& operator=(value_type_new&& other) {
 			if (this != static_cast<void*>(&other)) {
-				reset(nullptr);
+				reset();
 				try {
 					commit(other.release());
 				} catch (...) {
-					reset(nullptr);
+					reset();
 					throw;
 				}
 			}
@@ -213,40 +204,40 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Move constructor for related pointers.
-		/// @param other The other UniquePtr to move from.
-		template<jsonifier_internal::unique_ptr_t ValueTypeNew> inline UniquePtr(ValueTypeNew&& other) {
+		/// @param other the other unique_ptr to move from.
+		template<jsonifier::concepts::unique_ptr_t value_type_new> inline unique_ptr(value_type_new&& other) {
 			*this = std::move(other);
 		}
 
 		/// @brief Move assignment operator for raw pointer.
-		/// @param newPtr The new ptr to manage.
-		/// @return UniquePtr The new managed object inside a UniquePtr.
-		template<pointer_t value_type> inline UniquePtr& operator=(value_type newPtr) {
-			reset(nullptr);
+		/// @param newPtr the new ptr to manage.
+		/// @return unique_ptr the new managed object inside a unique_ptr.
+		template<jsonifier::concepts::pointer_t value_type_new> inline unique_ptr& operator=(value_type_new newPtr) {
+			reset();
 			try {
 				commit(newPtr);
 			} catch (...) {
-				reset(nullptr);
+				reset();
 				throw;
 			}
 			return *this;
 		}
 
 		/// @brief Constructor from a raw pointer.
-		/// @param newPtr The new ptr to manage.
-		template<pointer_t value_type> inline UniquePtr(value_type newPtr) {
+		/// @param newPtr the new ptr to manage.
+		template<jsonifier::concepts::pointer_t value_type_new> inline unique_ptr(value_type_new newPtr) {
 			*this = newPtr;
 		}
 
 		/// @brief Gets the managed raw pointer.
-		/// @return pointer The managed raw pointer.
+		/// @return pointer the managed raw pointer.
 		inline pointer get() const {
 			return ptr;
 		}
 
 		/// @brief Square bracket operator for accessing elements of this array.
-		/// @param index The index which is to be accessed.
-		/// @return reference A reference to the object that was accessed.
+		/// @param index the index which is to be accessed.
+		/// @return reference a reference to the object that was accessed.
 		inline reference operator[](std::ptrdiff_t index) const {
 			return ptr[index];
 		}
@@ -258,25 +249,25 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Dereference operator.
-		/// @return A reference to the managed object.
+		/// @return a reference to the managed object.
 		inline reference operator*() const {
 			if (!ptr) {
-				throw DCAException{ "Sorry, but you attempted to access a UniquePtr that is nullptr." };
+				throw dca_exception{ "Sorry, but you attempted to access a unique_ptr that is nullptr." };
 			}
 			return *ptr;
 		}
 
 		/// @brief Member access operator.
-		/// @return The managed raw pointer.
+		/// @return the managed raw pointer.
 		inline pointer operator->() const {
 			if (!ptr) {
-				throw DCAException{ "Sorry, but you attempted to access a UniquePtr that is nullptr." };
+				throw dca_exception{ "Sorry, but you attempted to access a unique_ptr that is nullptr." };
 			}
 			return ptr;
 		}
 
 		/// @brief Releases the managed pointer.
-		/// @return The released raw pointer.
+		/// @return the released raw pointer.
 		inline pointer release() {
 			pointer releasedPtr = ptr;
 			ptr					= nullptr;
@@ -284,66 +275,66 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Resets the managed pointer and invokes the deleter.
-		/// @param newPtr The new raw pointer to manage.
-		inline void reset(pointer newPtr) {
+		/// @param newPtr the new raw pointer to manage.
+		inline void reset(pointer newPtr = nullptr) {
 			pointer oldPtr = std::exchange(ptr, newPtr);
 			if (oldPtr) {
 				getDeleter()(oldPtr);
 			}
 		}
 
-		/// @brief Swaps the contents of two UniquePtr objects.
-		/// @param other The other UniquePtr to swap with.
-		inline void swap(UniquePtr& other) {
+		/// @brief Swaps the contents of two unique_ptr objects.
+		/// @param other the other unique_ptr to swap with.
+		inline void swap(unique_ptr& other) {
 			std::swap(ptr, other.ptr);
 		}
 
 		/// @brief Destructor that releases the managed object.
-		inline ~UniquePtr() {
-			reset(nullptr);
+		inline ~unique_ptr() {
+			reset();
 		}
 
 	  protected:
 		pointer ptr{ nullptr };///< The stored object.
 
 		/// @brief Commits a new pointer value and resets the current one.
-		/// @param other The new pointer value to commit.
+		/// @param other the new pointer value to commit.
 		inline void commit(pointer other) {
 			pointer tempPtr = other;
 			reset(tempPtr);
 		}
 
 		/// @brief Gets the deleter associated with the managed object.
-		/// @return The associated deleter.
+		/// @return the associated deleter.
 		inline deleter_type& getDeleter() {
 			return *static_cast<deleter_type*>(this);
 		}
 	};
 
-	/// @brief Helper function to create a UniquePtr for a non-array object.
-	/// @param args The arguments to construct the new object from.
-	/// @tparam ValueType The type of value to store in the UniquePtr.
-	/// @tparam Deleter The type of deleter to use for the stored object.
-	/// @tparam ArgTypes The types of arguments for constructing the object.
-	/// @return UniquePtr<ValueType, Deleter> The managed object.
-	template<typename ValueType, typename Deleter = std::default_delete<ValueType>, typename... ArgTypes, std::enable_if_t<!std::is_array_v<ValueType>, int32_t> = 0>
-	inline UniquePtr<ValueType, Deleter> makeUnique(ArgTypes&&... args) {
-		return UniquePtr<ValueType, Deleter>(new ValueType(std::forward<ArgTypes>(args)...));
+	/// @brief Helper function to create a unique_ptr for a non-array object.
+	/// @param args the arguments to construct the new object from.
+	/// @tparam value_type the type of value to store in the unique_ptr.
+	/// @tparam deleter the type of deleter to use for the stored object.
+	/// @tparam arg_types the types of arguments for constructing the object.
+	/// @return unique_ptr<value_type, deleter> the managed object.
+	template<typename value_type, typename deleter = std::default_delete<value_type>, typename... arg_types, std::enable_if_t<!std::is_array_v<value_type>, int32_t> = 0>
+	inline unique_ptr<value_type, deleter> makeUnique(arg_types&&... args) {
+		return unique_ptr<value_type, deleter>(new value_type(std::forward<arg_types>(args)...));
 	}
 
-	/// @brief Helper function to create a UniquePtr for a dynamic array.
-	/// @param size The size to allocate for the array.
-	/// @tparam ValueType The type of value to store in the UniquePtr.
-	/// @tparam Deleter The type of deleter to use for the stored object.
-	/// @return UniquePtr<ValueType, Deleter> The managed object.
-	template<typename ValueType, typename Deleter = std::default_delete<ValueType>, std::enable_if_t<std::is_array_v<ValueType> && std::extent_v<ValueType> == 0, int32_t> = 0>
-	inline UniquePtr<ValueType, Deleter> makeUnique(const uint64_t size) {
-		using element_type = std::remove_extent_t<ValueType>;
-		return UniquePtr<ValueType, Deleter>(new element_type[size]());
+	/// @brief Helper function to create a unique_ptr for a dynamic array.
+	/// @param size the size to allocate for the array.
+	/// @tparam value_type the type of value to store in the unique_ptr.
+	/// @tparam deleter the type of deleter to use for the stored object.
+	/// @return unique_ptr<value_type, deleter> the managed object.
+	template<typename value_type, typename deleter = std::default_delete<value_type>, std::enable_if_t<std::is_array_v<value_type> && std::extent_v<value_type> == 0, int32_t> = 0>
+	inline unique_ptr<value_type, deleter> makeUnique(const uint64_t size) {
+		using element_type = std::remove_extent_t<value_type>;
+		return unique_ptr<value_type, deleter>(new element_type[size]());
 	}
 
-	/// @brief Deleted overload for creating UniquePtr for static arrays.
-	template<typename ValueType, typename... ArgTypes, std::enable_if_t<std::extent_v<ValueType> != 0, int32_t> = 0> inline void makeUnique(ArgTypes&&...) = delete;
+	/// @brief Deleted overload for creating unique_ptr for static arrays.
+	template<typename value_type, typename... arg_types, std::enable_if_t<std::extent_v<value_type> != 0, int32_t> = 0> inline void makeUnique(arg_types&&...) = delete;
 
 	/**@}*/
 

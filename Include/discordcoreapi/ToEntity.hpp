@@ -23,77 +23,76 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// Index.hpp - Header for the final index.
+/// ToEntity.hpp - Header for the final index.
 /// Oct 6, 2021
 /// https://discordcoreapi.com
-/// \file Index.hpp
-
+/// \file ToEntity.hpp
 #pragma once
 
 #include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	template<> struct ToEntity<GuildData> {
-		GuildData toEntity(Snowflake id) {
-			if (Guilds::doWeCacheGuilds()) {
-				return Guilds::getCachedGuild({ .guildId = id });
+	template<> struct to_entity<guild_data> {
+		guild_data toEntity(snowflake id) {
+			if (guilds::doWeCacheGuilds()) {
+				return guilds::getCachedGuild({ .guildId = id });
 			} else {
-				return Guilds::getGuildAsync({ .guildId = id }).get();
+				return guilds::getGuildAsync({ .guildId = id }).get();
 			}
 		}
 	};
 
-	template<> struct ToEntity<UserData> {
-		UserData toEntity(Snowflake id) {
-			if (Guilds::doWeCacheGuilds()) {
-				return Users::getCachedUser({ .userId = id });
+	template<> struct to_entity<user_data> {
+		user_data toEntity(snowflake id) {
+			if (guilds::doWeCacheGuilds()) {
+				return users::getCachedUser({ .userId = id });
 			} else {
-				return Users::getUserAsync({ .userId = id }).get();
+				return users::getUserAsync({ .userId = id }).get();
 			}
 		}
 	};
 
-	template<> struct ToEntity<ChannelData> {
-		ChannelData toEntity(Snowflake id) {
-			if (Guilds::doWeCacheGuilds()) {
-				return Channels::getCachedChannel({ .channelId = id });
+	template<> struct to_entity<channel_data> {
+		channel_data toEntity(snowflake id) {
+			if (guilds::doWeCacheGuilds()) {
+				return channels::getCachedChannel({ .channelId = id });
 			} else {
-				return Channels::getChannelAsync({ .channelId = id }).get();
+				return channels::getChannelAsync({ .channelId = id }).get();
 			}
 		}
 	};
 
-	template<> struct ToEntity<RoleData> {
-		RoleData toEntity(Snowflake id) {
-			if (Guilds::doWeCacheGuilds()) {
-				return Roles::getCachedRole({ .roleId = id });
+	template<> struct to_entity<role_data> {
+		role_data toEntity(snowflake id) {
+			if (guilds::doWeCacheGuilds()) {
+				return roles::getCachedRole({ .roleId = id });
 			} else {
-				return Roles::getRoleAsync({ .roleId = id }).get();
+				return roles::getRoleAsync({ .roleId = id }).get();
 			}
 		}
 	};
 
-	template<> struct ToEntity<GuildMemberData> {
-		GuildMemberData toEntity(Snowflake id, Snowflake idTwo) {
-			if (Guilds::doWeCacheGuilds()) {
-				return GuildMembers::getCachedGuildMember({ .guildMemberId = id, .guildId = idTwo });
+	template<> struct to_entity<guild_member_data> {
+		guild_member_data toEntity(snowflake id, snowflake idTwo) {
+			if (guilds::doWeCacheGuilds()) {
+				return guild_members::getCachedGuildMember({ .guildMemberId = id, .guildId = idTwo });
 			} else {
-				return GuildMembers::getGuildMemberAsync({ .guildMemberId = id, .guildId = idTwo }).get();
+				return guild_members::getGuildMemberAsync({ .guildMemberId = id, .guildId = idTwo }).get();
 			}
 		}
 	};
 
-	template<> struct ToEntity<MessageData> {
-		MessageData toEntity(Snowflake idNew, Snowflake channelIdNew) {
-			return Messages::getMessageAsync({ .channelId = channelIdNew, .id = idNew }).get();
+	template<> struct to_entity<message_data> {
+		message_data toEntity(snowflake idNew, snowflake channelIdNew) {
+			return messages::getMessageAsync({ .channelId = channelIdNew, .id = idNew }).get();
 		}
 	};
 
-	template<> struct ToEntity<StageInstanceData> {
-		StageInstanceData toEntity(Snowflake idNew) {
-			return StageInstances::getStageInstanceAsync({ .channelId = idNew }).get();
+	template<> struct to_entity<stage_instance_data> {
+		stage_instance_data toEntity(snowflake idNew) {
+			return stage_instances::getStageInstanceAsync({ .channelId = idNew }).get();
 		}
 	};
 

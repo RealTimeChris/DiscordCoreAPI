@@ -35,441 +35,588 @@
 
 namespace jsonifier {
 
-	template<> struct core<DiscordCoreAPI::AutoModerationActionExecutionEventData> {
-		using ValueType					 = DiscordCoreAPI::AutoModerationActionExecutionEventData;
-		static constexpr auto parseValue = createObject("alert_system_message_id", &ValueType::alertSystemMessageId, "rule_trigger_type", &ValueType::ruleTriggerType,
-			"matched_keyword", &ValueType::matchedKeyword, "matched_content", &ValueType::matchedContent, "content", &ValueType::content, "channel_id", &ValueType::channelId,
-			"message_id", &ValueType::messageId, "action", &ValueType::action, "guild_id", &ValueType::guildId, "rule_id", &ValueType::ruleId, "user_id", &ValueType::userId);
+	template<> struct core<discord_core_api::auto_moderation_action_execution_event_data> {
+		using value_type				 = discord_core_api::auto_moderation_action_execution_event_data;
+		static constexpr auto parseValue = createObject("alert_system_message_id", &value_type::alertSystemMessageId, "rule_trigger_type", &value_type::ruleTriggerType,
+			"matched_keyword", &value_type::matchedKeyword, "matched_content", &value_type::matchedContent, "content", &value_type::content, "channel_id", &value_type::channelId,
+			"message_id", &value_type::messageId, "action", &value_type::action, "guild_id", &value_type::guildId, "rule_id", &value_type::ruleId, "user_id", &value_type::userId);
 	};
 
-	template<> struct core<DiscordCoreAPI::VoiceStateData> {
-		using ValueType2 = DiscordCoreAPI::VoiceStateData;
+	template<> struct core<discord_core_api::voice_state_data> {
+		using value_type2 = discord_core_api::voice_state_data;
 		static constexpr auto parseValue =
-			createObject("request_to_speak_timestamp", &ValueType2::requestToSpeakTimestamp, "session_id", &ValueType2::sessionId, "self_stream", &ValueType2::selfStream,
-				"self_video", &ValueType2::selfVideo, "self_deaf", &ValueType2::selfDeaf, "self_mute", &ValueType2::selfMute, "suppress", &ValueType2::suppress, "deaf",
-				&ValueType2::deaf, "mute", &ValueType2::mute, "user_id", &ValueType2::userId, "channel_id", &ValueType2::channelId, "guild_id", &ValueType2::guildId);
+			createObject("request_to_speak_timestamp", &value_type2::requestToSpeakTimestamp, "session_id", &value_type2::sessionId, "self_stream", &value_type2::selfStream,
+				"self_video", &value_type2::selfVideo, "self_deaf", &value_type2::selfDeaf, "self_mute", &value_type2::selfMute, "suppress", &value_type2::suppress, "deaf",
+				&value_type2::deaf, "mute", &value_type2::mute, "user_id", &value_type2::userId, "channel_id", &value_type2::channelId, "guild_id", &value_type2::guildId);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildEmojisUpdateEventData> {
-		using ValueType					 = DiscordCoreAPI::GuildEmojisUpdateEventData;
-		static constexpr auto parseValue = createObject("emojis", &ValueType::emojis, "guild_id", &ValueType::guildId);
+	template<> struct core<discord_core_api::guild_emojis_update_event_data> {
+		using value_type				 = discord_core_api::guild_emojis_update_event_data;
+		static constexpr auto parseValue = createObject("emojis", &value_type::emojis, "guild_id", &value_type::guildId);
 	};
 
-	template<> struct core<DiscordCoreAPI::ChannelPinsUpdateEventData> {
-		using ValueType					 = DiscordCoreAPI::ChannelPinsUpdateEventData;
-		static constexpr auto parseValue = createObject("last_pin_timestamp", &ValueType::lastPinTimeStamp, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
-	};
-
-	template<> struct core<DiscordCoreAPI::TypingStartData> {
-		using ValueType					 = DiscordCoreAPI::TypingStartData;
-		static constexpr auto parseValue = createObject("member", &ValueType::member, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId, "timestamp",
-			&ValueType::timeStamp, "user_id", &ValueType::userId);
-	};
-
-	template<> struct core<DiscordCoreAPI::ReactionRemoveData> {
-		using ValueType					 = DiscordCoreAPI::ReactionRemoveData;
-		static constexpr auto parseValue = createObject("channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "guild_id", &ValueType::guildId, "user_id",
-			&ValueType::userId, "emoji", &ValueType::emoji);
-	};
-
-	template<> struct core<DiscordCoreAPI::GuildStickersUpdateEventData> {
-		using ValueType					 = DiscordCoreAPI::GuildStickersUpdateEventData;
-		static constexpr auto parseValue = createObject("stickers", &ValueType::stickers, "guild_id", &ValueType::guildId);
-	};
-
-	template<> struct core<DiscordCoreAPI::VoiceServerUpdateData> {
-		using ValueType					 = DiscordCoreAPI::VoiceServerUpdateData;
-		static constexpr auto parseValue = createObject("endpoint", &ValueType::endpoint, "guild_id", &ValueType::guildId, "token", &ValueType::token);
-	};
-
-	template<> struct core<DiscordCoreAPI::GuildMembersChunkEventData> {
-		using ValueType					 = DiscordCoreAPI::GuildMembersChunkEventData;
-		static constexpr auto parseValue = createObject("presences", &ValueType::presences, "members", &ValueType::members, "not_found", &ValueType::notFound, "chunk_index",
-			&ValueType::chunkIndex, "chunk_count", &ValueType::chunkCount, "guild_id", &ValueType::guildId, "nonce", &ValueType::nonce);
-	};
-
-	template<> struct core<DiscordCoreAPI::GuildMemberRemoveData> {
-		using ValueType					 = DiscordCoreAPI::GuildMemberRemoveData;
-		static constexpr auto parseValue = createObject("guild_id", &ValueType::guildId, "user", &ValueType::user);
-	};
-
-	template<> struct core<DiscordCoreAPI::GuildBanAddData> {
-		using ValueType					 = DiscordCoreAPI::GuildBanAddData;
-		static constexpr auto parseValue = createObject("guild_id", &ValueType::guildId, "user", &ValueType::user);
-	};
-
-	template<> struct core<DiscordCoreAPI::GuildBanRemoveData> {
-		using ValueType					 = DiscordCoreAPI::GuildBanRemoveData;
-		static constexpr auto parseValue = createObject("guild_id", &ValueType::guildId, "user", &ValueType::user);
-	};
-
-	template<> struct core<DiscordCoreAPI::RoleCreationData> {
-		using ValueType					 = DiscordCoreAPI::RoleCreationData;
-		static constexpr auto parseValue = createObject("guild_id", &ValueType::guildId, "role", &ValueType::role);
-	};
-
-	template<> struct core<DiscordCoreAPI::RoleUpdateData> {
-		using ValueType					 = DiscordCoreAPI::RoleUpdateData;
-		static constexpr auto parseValue = createObject("guild_id", &ValueType::guildId, "role", &ValueType::role);
-	};
-
-	template<> struct core<DiscordCoreAPI::RoleDeletionData> {
-		using ValueType					 = DiscordCoreAPI::RoleDeletionData;
-		static constexpr auto parseValue = createObject("guild_id", &ValueType::guildId, "role", &ValueType::role);
-	};
-
-	template<> struct core<DiscordCoreAPI::GuildScheduledEventUserAddData> {
-		using ValueType = DiscordCoreAPI::GuildScheduledEventUserAddData;
+	template<> struct core<discord_core_api::channel_pins_update_event_data> {
+		using value_type = discord_core_api::channel_pins_update_event_data;
 		static constexpr auto parseValue =
-			createObject("guild_scheduled_event_id", &ValueType::guildScheduledEventId, "guild_id", &ValueType::guildId, "user_id", &ValueType::userId);
+			createObject("last_pin_timestamp", &value_type::lastPinTimeStamp, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildScheduledEventUserRemoveData> {
-		using ValueType = DiscordCoreAPI::GuildScheduledEventUserRemoveData;
+	template<> struct core<discord_core_api::typing_start_data> {
+		using value_type				 = discord_core_api::typing_start_data;
+		static constexpr auto parseValue = createObject("member", &value_type::member, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "timestamp",
+			&value_type::timeStamp, "user_id", &value_type::userId);
+	};
+
+	template<> struct core<discord_core_api::reaction_remove_data> {
+		using value_type				 = discord_core_api::reaction_remove_data;
+		static constexpr auto parseValue = createObject("channel_id", &value_type::channelId, "message_id", &value_type::messageId, "guild_id", &value_type::guildId, "user_id",
+			&value_type::userId, "emoji", &value_type::emoji);
+	};
+
+	template<> struct core<discord_core_api::guild_stickers_update_event_data> {
+		using value_type				 = discord_core_api::guild_stickers_update_event_data;
+		static constexpr auto parseValue = createObject("stickers", &value_type::stickers, "guild_id", &value_type::guildId);
+	};
+
+	template<> struct core<discord_core_api::voice_server_update_data> {
+		using value_type				 = discord_core_api::voice_server_update_data;
+		static constexpr auto parseValue = createObject("endpoint", &value_type::endpoint, "guild_id", &value_type::guildId, "token", &value_type::token);
+	};
+
+	template<> struct core<discord_core_api::guild_members_chunk_event_data> {
+		using value_type				 = discord_core_api::guild_members_chunk_event_data;
+		static constexpr auto parseValue = createObject("presences", &value_type::presences, "members", &value_type::members, "not_found", &value_type::notFound, "chunk_index",
+			&value_type::chunkIndex, "chunk_count", &value_type::chunkCount, "guild_id", &value_type::guildId, "nonce", &value_type::nonce);
+	};
+
+	template<> struct core<discord_core_api::guild_member_remove_data> {
+		using value_type				 = discord_core_api::guild_member_remove_data;
+		static constexpr auto parseValue = createObject("guild_id", &value_type::guildId, "user", &value_type::user);
+	};
+
+	template<> struct core<discord_core_api::guild_ban_add_data> {
+		using value_type				 = discord_core_api::guild_ban_add_data;
+		static constexpr auto parseValue = createObject("guild_id", &value_type::guildId, "user", &value_type::user);
+	};
+
+	template<> struct core<discord_core_api::guild_ban_remove_data> {
+		using value_type				 = discord_core_api::guild_ban_remove_data;
+		static constexpr auto parseValue = createObject("guild_id", &value_type::guildId, "user", &value_type::user);
+	};
+
+	template<> struct core<discord_core_api::role_creation_data> {
+		using value_type				 = discord_core_api::role_creation_data;
+		static constexpr auto parseValue = createObject("guild_id", &value_type::guildId, "role", &value_type::role);
+	};
+
+	template<> struct core<discord_core_api::role_update_data> {
+		using value_type				 = discord_core_api::role_update_data;
+		static constexpr auto parseValue = createObject("guild_id", &value_type::guildId, "role", &value_type::role);
+	};
+
+	template<> struct core<discord_core_api::role_deletion_data> {
+		using value_type				 = discord_core_api::role_deletion_data;
+		static constexpr auto parseValue = createObject("guild_id", &value_type::guildId, "role", &value_type::role);
+	};
+
+	template<> struct core<discord_core_api::guild_scheduled_event_user_add_data> {
+		using value_type = discord_core_api::guild_scheduled_event_user_add_data;
 		static constexpr auto parseValue =
-			createObject("guild_scheduled_event_id", &ValueType::guildScheduledEventId, "guild_id", &ValueType::guildId, "user_id", &ValueType::userId);
+			createObject("guild_scheduled_event_id", &value_type::guildScheduledEventId, "guild_id", &value_type::guildId, "user_id", &value_type::userId);
 	};
 
-	template<> struct core<DiscordCoreAPI::IntegrationCreationData> {
-		using ValueType					 = DiscordCoreAPI::IntegrationCreationData;
-		static constexpr auto parseValue = createObject("integration_data", &ValueType::integrationData, "guild_id", &ValueType::guildId);
-	};
-
-	template<> struct core<DiscordCoreAPI::IntegrationUpdateData> {
-		using ValueType					 = DiscordCoreAPI::IntegrationUpdateData;
-		static constexpr auto parseValue = createObject("integration_data", &ValueType::integrationData, "guild_id", &ValueType::guildId);
-	};
-
-	template<> struct core<DiscordCoreAPI::IntegrationDeletionData> {
-		using ValueType					 = DiscordCoreAPI::IntegrationDeletionData;
-		static constexpr auto parseValue = createObject("application_id", &ValueType::applicationId, "guild_id", &ValueType::guildId, "id", &ValueType::id);
-	};
-
-	template<> struct core<DiscordCoreAPI::InviteDeletionData> {
-		using ValueType					 = DiscordCoreAPI::InviteDeletionData;
-		static constexpr auto parseValue = createObject("channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId, "code", &ValueType::code);
-	};
-
-	template<> struct core<DiscordCoreAPI::MessageDeletionData> {
-		using ValueType					 = DiscordCoreAPI::MessageDeletionData;
-		static constexpr auto parseValue = createObject("message_id", &ValueType::messageId, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
-	};
-
-	template<> struct core<DiscordCoreAPI::MessageDeletionBulkData> {
-		using ValueType					 = DiscordCoreAPI::MessageDeletionBulkData;
-		static constexpr auto parseValue = createObject("ids", &ValueType::ids, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
-	};
-
-	template<> struct core<DiscordCoreAPI::ReactionRemoveAllData> {
-		using ValueType					 = DiscordCoreAPI::ReactionRemoveAllData;
-		static constexpr auto parseValue = createObject("channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "guild_id", &ValueType::guildId);
-	};
-
-	template<> struct core<DiscordCoreAPI::ReactionRemoveEmojiData> {
-		using ValueType = DiscordCoreAPI::ReactionRemoveEmojiData;
+	template<> struct core<discord_core_api::guild_scheduled_event_user_remove_data> {
+		using value_type = discord_core_api::guild_scheduled_event_user_remove_data;
 		static constexpr auto parseValue =
-			createObject("message_id", &ValueType::messageId, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId, "emoji", &ValueType::emoji);
+			createObject("guild_scheduled_event_id", &value_type::guildScheduledEventId, "guild_id", &value_type::guildId, "user_id", &value_type::userId);
 	};
 
-	template<> struct core<DiscordCoreAPI::WebHookUpdateData> {
-		using ValueType					 = DiscordCoreAPI::WebHookUpdateData;
-		static constexpr auto parseValue = createObject("channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
+	template<> struct core<discord_core_api::integration_creation_data> {
+		using value_type				 = discord_core_api::integration_creation_data;
+		static constexpr auto parseValue = createObject("integration_data", &value_type::integrationData, "guild_id", &value_type::guildId);
+	};
+
+	template<> struct core<discord_core_api::integration_update_data> {
+		using value_type				 = discord_core_api::integration_update_data;
+		static constexpr auto parseValue = createObject("integration_data", &value_type::integrationData, "guild_id", &value_type::guildId);
+	};
+
+	template<> struct core<discord_core_api::integration_deletion_data> {
+		using value_type				 = discord_core_api::integration_deletion_data;
+		static constexpr auto parseValue = createObject("application_id", &value_type::applicationId, "guild_id", &value_type::guildId, "id", &value_type::id);
+	};
+
+	template<> struct core<discord_core_api::invite_deletion_data> {
+		using value_type				 = discord_core_api::invite_deletion_data;
+		static constexpr auto parseValue = createObject("channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "code", &value_type::code);
+	};
+
+	template<> struct core<discord_core_api::message_deletion_data> {
+		using value_type				 = discord_core_api::message_deletion_data;
+		static constexpr auto parseValue = createObject("message_id", &value_type::messageId, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId);
+	};
+
+	template<> struct core<discord_core_api::message_deletion_bulk_data> {
+		using value_type				 = discord_core_api::message_deletion_bulk_data;
+		static constexpr auto parseValue = createObject("ids", &value_type::ids, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId);
+	};
+
+	template<> struct core<discord_core_api::reaction_remove_all_data> {
+		using value_type				 = discord_core_api::reaction_remove_all_data;
+		static constexpr auto parseValue = createObject("channel_id", &value_type::channelId, "message_id", &value_type::messageId, "guild_id", &value_type::guildId);
+	};
+
+	template<> struct core<discord_core_api::reaction_remove_emoji_data> {
+		using value_type = discord_core_api::reaction_remove_emoji_data;
+		static constexpr auto parseValue =
+			createObject("message_id", &value_type::messageId, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "emoji", &value_type::emoji);
+	};
+
+	template<> struct core<discord_core_api::web_hook_update_data> {
+		using value_type				 = discord_core_api::web_hook_update_data;
+		static constexpr auto parseValue = createObject("channel_id", &value_type::channelId, "guild_id", &value_type::guildId);
 	};
 
 }
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	template<> UnorderedMap<jsonifier::string, UnboundedMessageBlock<MessageData>*> ObjectCollector<MessageData>::objectsBuffersMap;
+	template<> unordered_map<jsonifier::string, unbounded_message_block<message_data>*> object_collector<message_data>::objectsBuffersMap;
 
-	template<> UnorderedMap<jsonifier::string, UnboundedMessageBlock<ReactionData>*> ObjectCollector<ReactionData>::objectsBuffersMap;
+	template<> unordered_map<jsonifier::string, unbounded_message_block<reaction_data>*> object_collector<reaction_data>::objectsBuffersMap;
 
-	OnInputEventCreationData::OnInputEventCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnApplicationCommandPermissionsUpdateData::OnApplicationCommandPermissionsUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnAutoModerationRuleCreationData::OnAutoModerationRuleCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnAutoModerationRuleUpdateData::OnAutoModerationRuleUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnAutoModerationRuleDeletionData::OnAutoModerationRuleDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnAutoModerationActionExecutionData::OnAutoModerationActionExecutionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnChannelCreationData::OnChannelCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Channels::doWeCacheChannels()) {
-			Channels::insertChannel(static_cast<ChannelCacheData>(value));
-		}
-		if (Guilds::doWeCacheGuilds()) {
-			if (Guilds::getCache().contains(value.guildId)) {
-				Guilds::getCache()[value.guildId].channels.emplace_back(value.id);
+	on_input_event_creation_data::on_input_event_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
 			}
 		}
 	}
 
-	OnChannelUpdateData::OnChannelUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<UpdatedEventData*>(this), dataToParse);
-		if (Channels::doWeCacheChannels()) {
-			oldValue = Channels::getCachedChannel({ .channelId = value.id });
-			Channels::insertChannel(static_cast<ChannelCacheData>(value));
+	on_application_command_permissions_update_data::on_application_command_permissions_update_data(jsonifier::jsonifier_core& parserNew,
+		jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
 		}
 	}
 
-	OnChannelDeletionData::OnChannelDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Channels::doWeCacheChannels()) {
-			Channels::removeChannel(static_cast<ChannelCacheData>(value));
+	on_auto_moderation_rule_creation_data::on_auto_moderation_rule_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
 		}
-		if (Guilds::doWeCacheGuilds()) {
-			if (Guilds::getCache().contains(value.guildId)) {
-				for (uint64_t x = 0; x < Guilds::getCache().operator[](value.guildId).channels.size(); ++x) {
-					if (Guilds::getCache().operator[](value.guildId).channels.at(x) == static_cast<uint64_t>(value.id)) {
-						Guilds::getCache().operator[](value.guildId).channels.erase(Guilds::getCache().operator[](value.guildId).channels.begin() + static_cast<int64_t>(x));
+	}
+
+	on_auto_moderation_rule_update_data::on_auto_moderation_rule_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+	}
+
+	on_auto_moderation_rule_deletion_data::on_auto_moderation_rule_deletion_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+	}
+
+	on_auto_moderation_action_execution_data::on_auto_moderation_action_execution_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+	}
+
+	on_channel_creation_data::on_channel_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		if (channels::doWeCacheChannels()) {
+			channels::insertChannel(static_cast<channel_cache_data>(value));
+		}
+		if (guilds::doWeCacheGuilds()) {
+			if (guilds::getCache().contains(value.guildId)) {
+				guilds::getCache()[value.guildId].channels.emplace_back(value.id);
+			}
+		}
+	}
+
+	on_channel_update_data::on_channel_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<updated_event_data*>(this), dataToParse);
+		if (channels::doWeCacheChannels()) {
+			oldValue = channels::getCachedChannel({ .channelId = value.id });
+			channels::insertChannel(static_cast<channel_cache_data>(value));
+		}
+	}
+
+	on_channel_deletion_data::on_channel_deletion_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		if (channels::doWeCacheChannels()) {
+			channels::removeChannel(static_cast<channel_cache_data>(value));
+		}
+		if (guilds::doWeCacheGuilds()) {
+			if (guilds::getCache().contains(value.guildId)) {
+				for (uint64_t x = 0; x < guilds::getCache().operator[](value.guildId).channels.size(); ++x) {
+					if (guilds::getCache().operator[](value.guildId).channels.at(x) == static_cast<uint64_t>(value.id)) {
+						guilds::getCache().operator[](value.guildId).channels.erase(guilds::getCache().operator[](value.guildId).channels.begin() + static_cast<int64_t>(x));
 					}
 				}
 			}
 		}
 	}
 
-	OnChannelPinsUpdateData::OnChannelPinsUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_channel_pins_update_data::on_channel_pins_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnThreadCreationData::OnThreadCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_thread_creation_data::on_thread_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnThreadUpdateData::OnThreadUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_thread_update_data::on_thread_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnThreadDeletionData::OnThreadDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_thread_deletion_data::on_thread_deletion_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnThreadListSyncData::OnThreadListSyncData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_thread_list_sync_data::on_thread_list_sync_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnThreadMemberUpdateData::OnThreadMemberUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_thread_member_update_data::on_thread_member_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnThreadMembersUpdateData::OnThreadMembersUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_thread_members_update_data::on_thread_members_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnGuildCreationData::OnGuildCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (GuildMembers::doWeCacheGuildMembers()) {
+	on_guild_creation_data::on_guild_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		if (guild_members::doWeCacheGuildMembers()) {
 			for (auto& valueNew: value.members) {
 				try {
 					valueNew.guildId = value.id;
-					GuildMembers::insertGuildMember(static_cast<GuildMemberCacheData>(valueNew));
+					guild_members::insertGuildMember(static_cast<guild_member_cache_data>(valueNew));
 				} catch (...) {
-					MessagePrinter::printError<PrintMessageType::General>("OnGuildCreationData::OnGuildCreationData()");
+					message_printer::printError<print_message_type::general>("on_guild_creation_data::on_guild_creation_data()");
 				}
 			}
 		}
-		if (Users::doWeCacheUsers()) {
+		if (users::doWeCacheUsers()) {
 			for (auto& valueNew: value.members) {
 				try {
-					if (Users::doWeCacheUsers()) {
-						Users::insertUser(static_cast<UserCacheData>(valueNew.user));
+					if (users::doWeCacheUsers()) {
+						users::insertUser(static_cast<user_cache_data>(valueNew.user));
 					}
 				} catch (...) {
-					MessagePrinter::printError<PrintMessageType::General>("OnGuildCreationData::OnGuildCreationData()");
+					message_printer::printError<print_message_type::general>("on_guild_creation_data::on_guild_creation_data()");
 				}
 			}
 		}
-		if (GuildMembers::doWeCacheVoiceStates()) {
+		if (guild_members::doWeCacheVoiceStates()) {
 			for (auto& valueNew: value.voiceStates) {
 				try {
 					valueNew.guildId = value.id;
-					GuildMembers::insertVoiceState(static_cast<VoiceStateDataLight>(valueNew));
+					guild_members::insertVoiceState(static_cast<voice_state_data_light>(valueNew));
+					guild_member_data newMember{};
+					newMember.guildId = value.id;
+					newMember.user.id = valueNew.userId;
+					two_id_key newKey{ newMember };
 				} catch (...) {
-					MessagePrinter::printError<PrintMessageType::General>("OnGuildCreationData::OnGuildCreationData()");
+					message_printer::printError<print_message_type::general>("on_guild_creation_data::on_guild_creation_data()");
 				}
 			}
 		}
-		if (Channels::doWeCacheChannels()) {
+		if (channels::doWeCacheChannels()) {
 			for (auto& valueNew: value.channels) {
 				try {
 					valueNew.guildId = value.id;
-					Channels::insertChannel(static_cast<ChannelCacheData>(valueNew));
+					channels::insertChannel(static_cast<channel_cache_data>(valueNew));
 				} catch (...) {
-					MessagePrinter::printError<PrintMessageType::General>("OnGuildCreationData::OnGuildCreationData()");
+					message_printer::printError<print_message_type::general>("on_guild_creation_data::on_guild_creation_data()");
 				}
 			}
 		}
-		if (Roles::doWeCacheRoles()) {
+		if (roles::doWeCacheRoles()) {
 			for (auto& valueNew: value.roles) {
 				try {
-					Roles::insertRole(static_cast<RoleCacheData>(valueNew));
+					roles::insertRole(static_cast<role_cache_data>(valueNew));
 				} catch (...) {
-					MessagePrinter::printError<PrintMessageType::General>("OnGuildCreationData::OnGuildCreationData()");
+					message_printer::printError<print_message_type::general>("on_guild_creation_data::on_guild_creation_data()");
 				}
 			}
 		}
-		if (Guilds::doWeCacheGuilds()) {
-			Guilds::insertGuild(static_cast<GuildCacheData>(value));
+		if (guilds::doWeCacheGuilds()) {
+			guilds::insertGuild(static_cast<guild_cache_data>(value));
 		}
 	}
 
-	OnGuildUpdateData::OnGuildUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<UpdatedEventData*>(this), dataToParse);
-		if (Guilds::doWeCacheGuilds()) {
-			oldValue = Guilds::getCachedGuild({ value.id });
-			Guilds::insertGuild(static_cast<GuildCacheData>(value));
+	on_guild_update_data::on_guild_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<updated_event_data*>(this), dataToParse);
+		if (guilds::doWeCacheGuilds()) {
+			oldValue = guilds::getCachedGuild({ value.id });
+			guilds::insertGuild(static_cast<guild_cache_data>(value));
 		}
 	}
 
-	OnGuildDeletionData::OnGuildDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_guild_deletion_data::on_guild_deletion_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 		for (auto& valueNew: value.members) {
-			GuildMembers::removeGuildMember(valueNew);
+			guild_members::removeGuildMember(valueNew);
 		}
 		for (auto& valueNew: value.channels) {
-			Channels::removeChannel(valueNew);
+			channels::removeChannel(valueNew);
 		}
 		for (auto& valueNew: value.roles) {
-			Roles::removeRole(valueNew);
+			roles::removeRole(valueNew);
 		}
-		if (Guilds::doWeCacheGuilds()) {
-			Guilds::removeGuild(value);
+		if (guilds::doWeCacheGuilds()) {
+			guilds::removeGuild(value);
 		}
 	}
 
-	OnGuildBanAddData::OnGuildBanAddData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Guilds::getCache().contains(value.guildId)) {
-			for (uint64_t x = 0; x < Guilds::getCache().operator[](value.guildId).members.size(); ++x) {
-				if (Guilds::getCache().operator[](value.guildId).members.at(x) == static_cast<uint64_t>(value.user.id)) {
-					Guilds::getCache().operator[](value.guildId).members.erase(Guilds::getCache().operator[](value.guildId).members.begin() + static_cast<int64_t>(x));
-					--Guilds::getCache()[value.guildId].memberCount;
+	on_guild_ban_add_data::on_guild_ban_add_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		if (guilds::getCache().contains(value.guildId)) {
+			for (uint64_t x = 0; x < guilds::getCache().operator[](value.guildId).members.size(); ++x) {
+				if (guilds::getCache().operator[](value.guildId).members.at(x) == static_cast<uint64_t>(value.user.id)) {
+					guilds::getCache().operator[](value.guildId).members.erase(guilds::getCache().operator[](value.guildId).members.begin() + static_cast<int64_t>(x));
+					--guilds::getCache()[value.guildId].memberCount;
 				}
 			}
 		}
 	}
 
-	OnGuildBanRemoveData::OnGuildBanRemoveData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_guild_ban_remove_data::on_guild_ban_remove_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnGuildEmojisUpdateData::OnGuildEmojisUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Guilds::getCache().contains(value.guildId)) {
-			Guilds::getCache()[value.guildId].emoji.clear();
+	on_guild_emojis_update_data::on_guild_emojis_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		if (guilds::getCache().contains(value.guildId)) {
+			guilds::getCache()[value.guildId].emoji.clear();
 			for (auto& valueNew: value.emojis) {
-				Guilds::getCache()[value.guildId].emoji.emplace_back(valueNew.id);
+				guilds::getCache()[value.guildId].emoji.emplace_back(valueNew.id);
 			}
 		}
 	}
 
-	OnGuildStickersUpdateData::OnGuildStickersUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnGuildIntegrationsUpdateData::OnGuildIntegrationsUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnGuildMemberAddData::OnGuildMemberAddData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (GuildMembers::doWeCacheGuildMembers()) {
-			GuildMembers::insertGuildMember(static_cast<GuildMemberCacheData>(value));
-		}
-		if (Guilds::doWeCacheGuilds()) {
-			if (Guilds::getCache().contains(value.guildId)) {
-				++Guilds::getCache()[value.guildId].memberCount;
-				Guilds::getCache()[value.guildId].members.emplace_back(value.user.id);
+	on_guild_stickers_update_data::on_guild_stickers_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
 			}
 		}
 	}
 
-	OnGuildMemberRemoveData::OnGuildMemberRemoveData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (GuildMembers::doWeCacheGuildMembers()) {
-			GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
-			GuildMembers::removeGuildMember(guildMember);
+	on_guild_integrations_update_data::on_guild_integrations_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
 		}
-		if (Guilds::doWeCacheGuilds()) {
-			if (Guilds::getCache().contains(value.guildId)) {
-				for (uint64_t x = 0; x < Guilds::getCache().operator[](value.guildId).members.size(); ++x) {
-					if (Guilds::getCache().operator[](value.guildId).members.at(x) == static_cast<uint64_t>(value.user.id)) {
-						Guilds::getCache().operator[](value.guildId).members.erase(Guilds::getCache().operator[](value.guildId).members.begin() + static_cast<int64_t>(x));
-						--Guilds::getCache()[value.guildId].memberCount;
+	}
+
+	on_guild_member_add_data::on_guild_member_add_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		if (guild_members::doWeCacheGuildMembers()) {
+			guild_members::insertGuildMember(static_cast<guild_member_cache_data>(value));
+		}
+		if (guilds::doWeCacheGuilds()) {
+			if (guilds::getCache().contains(value.guildId)) {
+				++guilds::getCache()[value.guildId].memberCount;
+				guilds::getCache()[value.guildId].members.emplace_back(value.user.id);
+			}
+		}
+	}
+
+	on_guild_member_remove_data::on_guild_member_remove_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		if (guild_members::doWeCacheGuildMembers()) {
+			guild_member_data guildMember = guild_members::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
+			guild_members::removeGuildMember(guildMember);
+		}
+		if (guilds::doWeCacheGuilds()) {
+			if (guilds::getCache().contains(value.guildId)) {
+				for (uint64_t x = 0; x < guilds::getCache().operator[](value.guildId).members.size(); ++x) {
+					if (guilds::getCache().operator[](value.guildId).members.at(x) == static_cast<uint64_t>(value.user.id)) {
+						guilds::getCache().operator[](value.guildId).members.erase(guilds::getCache().operator[](value.guildId).members.begin() + static_cast<int64_t>(x));
+						--guilds::getCache()[value.guildId].memberCount;
 					}
 				}
 			}
 		}
 	}
 
-	OnGuildMemberUpdateData::OnGuildMemberUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<UpdatedEventData*>(this), dataToParse);
-		if (GuildMembers::doWeCacheGuildMembers()) {
-			oldValue = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
-			GuildMembers::insertGuildMember(static_cast<GuildMemberCacheData>(value));
+	on_guild_member_update_data::on_guild_member_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<updated_event_data*>(this), dataToParse);
+		if (guild_members::doWeCacheGuildMembers()) {
+			oldValue = guild_members::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
+			guild_members::insertGuildMember(static_cast<guild_member_cache_data>(value));
 		}
 	}
 
-	OnGuildMembersChunkData::OnGuildMembersChunkData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnRoleCreationData::OnRoleCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Roles::doWeCacheRoles()) {
-			Roles::insertRole(static_cast<RoleCacheData>(value.role));
-		}
-		if (Guilds::doWeCacheGuilds()) {
-			if (Guilds::getCache().contains(value.guildId)) {
-				Guilds::getCache()[value.guildId].roles.emplace_back(value.role.id);
+	on_guild_members_chunk_data::on_guild_members_chunk_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
 			}
 		}
 	}
 
-	OnRoleUpdateData::OnRoleUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<UpdatedEventData*>(this), dataToParse);
-		if (Roles::doWeCacheRoles()) {
-			oldValue = Roles::getCachedRole({ .guildId = value.guildId, .roleId = value.role.id });
-			Roles::insertRole(static_cast<RoleCacheData>(value.role));
+	on_role_creation_data::on_role_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		if (roles::doWeCacheRoles()) {
+			roles::insertRole(static_cast<role_cache_data>(value.role));
+		}
+		if (guilds::doWeCacheGuilds()) {
+			if (guilds::getCache().contains(value.guildId)) {
+				guilds::getCache()[value.guildId].roles.emplace_back(value.role.id);
+			}
 		}
 	}
 
-	OnRoleDeletionData::OnRoleDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		if (Roles::doWeCacheRoles()) {
-			Roles::removeRole(static_cast<RoleCacheData>(value.role));
+	on_role_update_data::on_role_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<updated_event_data*>(this), dataToParse);
+		if (roles::doWeCacheRoles()) {
+			oldValue = roles::getCachedRole({ .guildId = value.guildId, .roleId = value.role.id });
+			roles::insertRole(static_cast<role_cache_data>(value.role));
 		}
-		if (Guilds::doWeCacheGuilds()) {
-			if (Guilds::getCache().contains(value.guildId)) {
-				for (uint64_t x = 0; x < Guilds::getCache().operator[](value.guildId).roles.size(); ++x) {
-					if (Guilds::getCache().operator[](value.guildId).roles.at(x) == static_cast<uint64_t>(value.role.id)) {
-						Guilds::getCache().operator[](value.guildId).roles.erase(Guilds::getCache().operator[](value.guildId).roles.begin() + static_cast<int64_t>(x));
+	}
+
+	on_role_deletion_data::on_role_deletion_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		if (roles::doWeCacheRoles()) {
+			roles::removeRole(static_cast<role_cache_data>(value.role));
+		}
+		if (guilds::doWeCacheGuilds()) {
+			if (guilds::getCache().contains(value.guildId)) {
+				for (uint64_t x = 0; x < guilds::getCache().operator[](value.guildId).roles.size(); ++x) {
+					if (guilds::getCache().operator[](value.guildId).roles.at(x) == static_cast<uint64_t>(value.role.id)) {
+						guilds::getCache().operator[](value.guildId).roles.erase(guilds::getCache().operator[](value.guildId).roles.begin() + static_cast<int64_t>(x));
 					}
 				}
 			}
 		}
 	}
 
-	OnVoiceServerUpdateData::OnVoiceServerUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse, DiscordCoreInternal::WebSocketClient* sslShard) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_voice_server_update_data::on_voice_server_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse,
+		discord_core_internal::websocket_client* sslShard) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 		if (sslShard->areWeCollectingData.load(std::memory_order_acquire) && !sslShard->serverUpdateCollected && !sslShard->stateUpdateCollected) {
-			sslShard->voiceConnectionData		   = DiscordCoreInternal::VoiceConnectionData{};
+			sslShard->voiceConnectionData		   = discord_core_internal::voice_connection_data{};
 			sslShard->voiceConnectionData.endPoint = value.endpoint;
 			sslShard->voiceConnectionData.token	   = value.token;
 			sslShard->serverUpdateCollected		   = true;
@@ -485,198 +632,325 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	OnGuildScheduledEventCreationData::OnGuildScheduledEventCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_guild_scheduled_event_creation_data::on_guild_scheduled_event_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnGuildScheduledEventUpdateData::OnGuildScheduledEventUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_guild_scheduled_event_update_data::on_guild_scheduled_event_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnGuildScheduledEventDeletionData::OnGuildScheduledEventDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_guild_scheduled_event_deletion_data::on_guild_scheduled_event_deletion_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnGuildScheduledEventUserAddData::OnGuildScheduledEventUserAddData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_guild_scheduled_event_user_add_data::on_guild_scheduled_event_user_add_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnGuildScheduledEventUserRemoveData::OnGuildScheduledEventUserRemoveData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_guild_scheduled_event_user_remove_data::on_guild_scheduled_event_user_remove_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnIntegrationCreationData::OnIntegrationCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_integration_creation_data::on_integration_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnIntegrationUpdateData::OnIntegrationUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_integration_update_data::on_integration_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnIntegrationDeletionData::OnIntegrationDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_integration_deletion_data::on_integration_deletion_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnInteractionCreationData::OnInteractionCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		UniquePtr<InputEventData> eventData{ makeUnique<InputEventData>(value) };
+	on_interaction_creation_data::on_interaction_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		unique_ptr<input_event_data> eventData{ makeUnique<input_event_data>(value) };
 		switch (value.type) {
-			case InteractionType::Application_Command: {
-				eventData->responseType		= InputEventResponseType::Unset;
-				*eventData->interactionData = value;
-				DiscordCoreClient::getInstance()->getCommandController().checkForAndRunCommand(CommandData{ *eventData });
-				UniquePtr<OnInputEventCreationData> eventCreationData{ makeUnique<OnInputEventCreationData>(parser, dataToParse) };
+			case interaction_type::Application_Command: {
+				eventData->responseType		= input_event_response_type::unset;
+				eventData->interactionData = value;
+				discord_core_client::getInstance()->getCommandController().checkForAndRunCommand(command_data{ *eventData });
+				unique_ptr<on_input_event_creation_data> eventCreationData{ makeUnique<on_input_event_creation_data>(parser, dataToParse) };
 				eventCreationData->value = *eventData;
 				break;
 			}
-			case InteractionType::Message_Component: {
+			case interaction_type::Message_Component: {
 				switch (value.data.componentType) {
-					case ComponentType::Action_Row:
+					case component_type::Action_Row:
 						[[fallthrough]];
-					case ComponentType::Button: {
-						eventData->responseType		= InputEventResponseType::Unset;
-						*eventData->interactionData = value;
-						if (ButtonCollector::buttonInteractionBuffersMap.contains(eventData->getChannelData().id.operator jsonifier::string() + eventData->getMessageData().id.operator jsonifier::string())) {
-							ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id.operator jsonifier::string() +
-								eventData->getMessageData().id.operator jsonifier::string()]
-								->send(value);
-						}
-						ButtonCollector::buttonInteractionEventsMap.operator()(*eventData->interactionData);
-						break;
-					}
-					case ComponentType::Channel_Select:
-						[[fallthrough]];
-					case ComponentType::Mentionable_Select:
-						[[fallthrough]];
-					case ComponentType::Role_Select:
-						[[fallthrough]];
-					case ComponentType::User_Select:
-						[[fallthrough]];
-					case ComponentType::String_Select: {
-						eventData->responseType		= InputEventResponseType::Unset;
-						*eventData->interactionData = value;
-						if (SelectMenuCollector::selectMenuInteractionBuffersMap.contains(
+					case component_type::Button: {
+						eventData->responseType		= input_event_response_type::unset;
+						eventData->interactionData = value;
+						if (button_collector::buttonInteractionBuffersMap.contains(
 								eventData->getChannelData().id.operator jsonifier::string() + eventData->getMessageData().id.operator jsonifier::string())) {
-							SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelData().id.operator jsonifier::string() +
+							button_collector::buttonInteractionBuffersMap[eventData->getChannelData().id.operator jsonifier::string() +
 								eventData->getMessageData().id.operator jsonifier::string()]
 								->send(value);
 						}
-						SelectMenuCollector::selectMenuInteractionEventsMap.operator()(*eventData->interactionData);
+						button_collector::buttonInteractionEventsMap.operator()(eventData->interactionData);
 						break;
 					}
-					case ComponentType::Text_Input: {
+					case component_type::Channel_Select:
+						[[fallthrough]];
+					case component_type::Mentionable_Select:
+						[[fallthrough]];
+					case component_type::Role_Select:
+						[[fallthrough]];
+					case component_type::User_Select:
+						[[fallthrough]];
+					case component_type::String_Select: {
+						eventData->responseType		= input_event_response_type::unset;
+						eventData->interactionData = value;
+						if (select_menu_collector::selectMenuInteractionBuffersMap.contains(
+								eventData->getChannelData().id.operator jsonifier::string() + eventData->getMessageData().id.operator jsonifier::string())) {
+							select_menu_collector::selectMenuInteractionBuffersMap[eventData->getChannelData().id.operator jsonifier::string() +
+								eventData->getMessageData().id.operator jsonifier::string()]
+								->send(value);
+						}
+						select_menu_collector::selectMenuInteractionEventsMap.operator()(eventData->interactionData);
+						break;
+					}
+					case component_type::Text_Input: {
 						break;
 					}
 				}
 				break;
 			}
-			case InteractionType::Modal_Submit: {
-				eventData->responseType		= InputEventResponseType::Unset;
-				*eventData->interactionData = value;
-				UniquePtr<OnInputEventCreationData> eventCreationData{ makeUnique<OnInputEventCreationData>(parser, dataToParse) };
+			case interaction_type::Modal_Submit: {
+				eventData->responseType		= input_event_response_type::unset;
+				eventData->interactionData = value;
+				unique_ptr<on_input_event_creation_data> eventCreationData{ makeUnique<on_input_event_creation_data>(parser, dataToParse) };
 				eventCreationData->value = *eventData;
-				if (ModalCollector::modalInteractionBuffersMap.contains(eventData->getChannelData().id.operator jsonifier::string())) {
-					ModalCollector::modalInteractionBuffersMap[eventData->getChannelData().id]->send(eventData->getInteractionData());
-					ModalCollector::modalInteractionEventsMap.operator()(*eventData->interactionData);
+				if (modal_collector::modalInteractionBuffersMap.contains(eventData->getChannelData().id.operator jsonifier::string())) {
+					modal_collector::modalInteractionBuffersMap[eventData->getChannelData().id.operator jsonifier::string()]->send(eventData->getInteractionData());
+					modal_collector::modalInteractionEventsMap.operator()(eventData->interactionData);
 				}
 				break;
 			}
-			case InteractionType::Application_Command_Autocomplete: {
-				eventData->responseType		= InputEventResponseType::Unset;
-				*eventData->interactionData = value;
-				UniquePtr<OnAutoCompleteEntryData> autocompleteEntryData{ makeUnique<OnAutoCompleteEntryData>(parser, dataToParse) };
+			case interaction_type::Application_Command_Autocomplete: {
+				eventData->responseType	   = input_event_response_type::unset;
+				eventData->interactionData = value;
+				unique_ptr<on_auto_complete_entry_data> autocompleteEntryData{ makeUnique<on_auto_complete_entry_data>(parser, dataToParse) };
 				autocompleteEntryData->value = *eventData;
-				DiscordCoreClient::getInstance()->getEventManager().onAutoCompleteEntryEvent(*autocompleteEntryData);
+				discord_core_client::getInstance()->getEventManager().onAutoCompleteEntryEvent(*autocompleteEntryData);
 				break;
 			}
-			case InteractionType::Ping: {
+			case interaction_type::Ping: {
 				break;
 			}
 		}
 	}
 
-	OnInviteCreationData::OnInviteCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_invite_creation_data::on_invite_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnInviteDeletionData::OnInviteDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_invite_deletion_data::on_invite_deletion_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnMessageCreationData::OnMessageCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		for (auto& [key, valueNew]: MessageCollector::objectsBuffersMap) {
+	on_message_creation_data::on_message_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		for (auto& [key, valueNew]: message_collector::objectsBuffersMap) {
 			valueNew->send(value);
 		}
 	}
 
-	OnMessageUpdateData::OnMessageUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		for (auto& [key, valueNew]: MessageCollector::objectsBuffersMap) {
+	on_message_update_data::on_message_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		for (auto& [key, valueNew]: message_collector::objectsBuffersMap) {
 			valueNew->send(value);
 		}
 	}
 
-	OnMessageDeletionData::OnMessageDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_message_deletion_data::on_message_deletion_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnMessageDeleteBulkData::OnMessageDeleteBulkData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_message_delete_bulk_data::on_message_delete_bulk_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnReactionAddData::OnReactionAddData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-		for (auto& [key, valueNew]: ReactionCollector::objectsBuffersMap) {
+	on_reaction_add_data::on_reaction_add_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		for (auto& [key, valueNew]: reaction_collector::objectsBuffersMap) {
 			valueNew->send(value);
 		}
 	}
 
-	OnReactionRemoveData::OnReactionRemoveData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnReactionRemoveAllData::OnReactionRemoveAllData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnReactionRemoveEmojiData::OnReactionRemoveEmojiData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnPresenceUpdateData::OnPresenceUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnStageInstanceCreationData::OnStageInstanceCreationData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnStageInstanceUpdateData::OnStageInstanceUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnStageInstanceDeletionData::OnStageInstanceDeletionData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnTypingStartData::OnTypingStartData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
-	}
-
-	OnUserUpdateData::OnUserUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<UpdatedEventData*>(this), dataToParse);
-		oldValue = Users::getCachedUser({ value.id });
-		if (Users::doWeCacheUsers()) {
-			Users::insertUser(static_cast<UserCacheData>(value));
+	on_reaction_remove_data::on_reaction_remove_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
 		}
 	}
 
-	OnVoiceStateUpdateData::OnVoiceStateUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse, DiscordCoreInternal::WebSocketClient* sslShard) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_reaction_remove_all_data::on_reaction_remove_all_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+	}
+
+	on_reaction_remove_emoji_data::on_reaction_remove_emoji_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+	}
+
+	on_presence_update_data::on_presence_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+	}
+
+	on_stage_instance_creation_data::on_stage_instance_creation_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+	}
+
+	on_stage_instance_update_data::on_stage_instance_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+	}
+
+	on_stage_instance_deletion_data::on_stage_instance_deletion_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+	}
+
+	on_typing_start_data::on_typing_start_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+	}
+
+	on_user_update_data::on_user_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<updated_event_data*>(this), dataToParse);
+		oldValue = users::getCachedUser({ value.id });
+		if (users::doWeCacheUsers()) {
+			users::insertUser(static_cast<user_cache_data>(value));
+		}
+	}
+
+	on_voice_state_update_data::on_voice_state_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse,
+		discord_core_internal::websocket_client* sslShard) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 		if (sslShard->areWeCollectingData.load(std::memory_order_acquire) && !sslShard->stateUpdateCollected && !sslShard->serverUpdateCollected &&
 			value.userId == sslShard->userId) {
-			sslShard->voiceConnectionData			= DiscordCoreInternal::VoiceConnectionData{};
+			sslShard->voiceConnectionData			= discord_core_internal::voice_connection_data{};
 			sslShard->voiceConnectionData.sessionId = value.sessionId;
 			sslShard->stateUpdateCollected			= true;
 		} else if (sslShard->areWeCollectingData.load(std::memory_order_acquire) && !sslShard->stateUpdateCollected && value.userId == sslShard->userId) {
@@ -688,507 +962,528 @@ namespace DiscordCoreAPI {
 			sslShard->serverUpdateCollected = false;
 			sslShard->stateUpdateCollected	= false;
 		}
-		VoiceStateDataLight voiceDataNew{};
+		voice_state_data_light voiceDataNew{};
 		voiceDataNew.channelId = value.channelId;
 		voiceDataNew.guildId   = value.guildId;
 		voiceDataNew.userId	   = value.userId;
-		GuildMembers::insertVoiceState(std::move(voiceDataNew));
+		guild_members::insertVoiceState(std::move(voiceDataNew));
 	}
 
-	OnWebhookUpdateData::OnWebhookUpdateData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_webhook_update_data::on_webhook_update_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	OnAutoCompleteEntryData::OnAutoCompleteEntryData(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true, true>(*static_cast<EventData*>(this), dataToParse);
+	on_auto_complete_entry_data::on_auto_complete_entry_data(jsonifier::jsonifier_core& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
+		parserNew.parseJson<true, true>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onApplicationCommandsPermissionsUpdate(
+		discord_core_internal::event_delegate<co_routine<void>, on_application_command_permissions_update_data> handler) {
 		return onApplicationCommandPermissionsUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onApplicationCommandsPermissionsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onApplicationCommandsPermissionsUpdate(discord_core_internal::event_delegate_token& token) {
 		return onApplicationCommandPermissionsUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onAutoModerationRuleCreation(
+		discord_core_internal::event_delegate<co_routine<void>, on_auto_moderation_rule_creation_data> handler) {
 		return onAutoModerationRuleCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onAutoModerationRuleCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onAutoModerationRuleCreation(discord_core_internal::event_delegate_token& token) {
 		return onAutoModerationRuleCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onAutoModerationRuleUpdate(
+		discord_core_internal::event_delegate<co_routine<void>, on_auto_moderation_rule_update_data> handler) {
 		return onAutoModerationRuleUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onAutoModerationRuleUpdate(discord_core_internal::event_delegate_token& token) {
 		return onAutoModerationRuleUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleDeletionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onAutoModerationRuleDeletion(
+		discord_core_internal::event_delegate<co_routine<void>, on_auto_moderation_rule_deletion_data> handler) {
 		return onAutoModerationRuleDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onAutoModerationRuleDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onAutoModerationRuleDeletion(discord_core_internal::event_delegate_token& token) {
 		return onAutoModerationRuleDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationActionExecution(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationActionExecutionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onAutoModerationActionExecution(
+		discord_core_internal::event_delegate<co_routine<void>, on_auto_moderation_action_execution_data> handler) {
 		return onAutoModerationActionExecutionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onAutoModerationActionExecution(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onAutoModerationActionExecution(discord_core_internal::event_delegate_token& token) {
 		return onAutoModerationActionExecutionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoCompleteEntryData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onAutoCompleteEntry(discord_core_internal::event_delegate<co_routine<void>, on_auto_complete_entry_data> handler) {
 		return onAutoCompleteEntryEvent.add(std::move(handler));
 	}
 
-	void EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onAutoCompleteEntry(discord_core_internal::event_delegate_token& token) {
 		return onInputEventCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInputEventCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInputEventCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onInputEventCreation(discord_core_internal::event_delegate<co_routine<void>, on_input_event_creation_data> handler) {
 		return onInputEventCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onInputEventCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onInputEventCreation(discord_core_internal::event_delegate_token& token) {
 		return onInputEventCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onChannelCreation(discord_core_internal::event_delegate<co_routine<void>, on_channel_creation_data> handler) {
 		return onChannelCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onChannelCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onChannelCreation(discord_core_internal::event_delegate_token& token) {
 		onChannelCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onChannelUpdate(discord_core_internal::event_delegate<co_routine<void>, on_channel_update_data> handler) {
 		return onChannelUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onChannelUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onChannelUpdate(discord_core_internal::event_delegate_token& token) {
 		onChannelUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelDeletionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onChannelDeletion(discord_core_internal::event_delegate<co_routine<void>, on_channel_deletion_data> handler) {
 		return onChannelDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onChannelDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onChannelDeletion(discord_core_internal::event_delegate_token& token) {
 		onChannelDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelPinsUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelPinsUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onChannelPinsUpdate(discord_core_internal::event_delegate<co_routine<void>, on_channel_pins_update_data> handler) {
 		return onChannelPinsUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onChannelPinsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onChannelPinsUpdate(discord_core_internal::event_delegate_token& token) {
 		return onChannelPinsUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadCreation(discord_core_internal::event_delegate<co_routine<void>, on_thread_creation_data> handler) {
 		return onThreadCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onThreadCreation(discord_core_internal::event_delegate_token& token) {
 		return onThreadCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadUpdate(discord_core_internal::event_delegate<co_routine<void>, on_thread_update_data> handler) {
 		return onThreadUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onThreadUpdate(discord_core_internal::event_delegate_token& token) {
 		return onThreadUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadDeletionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadDeletion(discord_core_internal::event_delegate<co_routine<void>, on_thread_deletion_data> handler) {
 		return onThreadDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onThreadDeletion(discord_core_internal::event_delegate_token& token) {
 		return onThreadDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadListSync(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadListSyncData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadListSync(discord_core_internal::event_delegate<co_routine<void>, on_thread_list_sync_data> handler) {
 		return onThreadListSyncEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadListSync(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onThreadListSync(discord_core_internal::event_delegate_token& token) {
 		return onThreadListSyncEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMemberUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadMemberUpdate(discord_core_internal::event_delegate<co_routine<void>, on_thread_member_update_data> handler) {
 		return onThreadMemberUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadMemberUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onThreadMemberUpdate(discord_core_internal::event_delegate_token& token) {
 		return onThreadMemberUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMembersUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMembersUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadMembersUpdate(
+		discord_core_internal::event_delegate<co_routine<void>, on_thread_members_update_data> handler) {
 		return onThreadMembersUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadMembersUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onThreadMembersUpdate(discord_core_internal::event_delegate_token& token) {
 		return onThreadMembersUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildCreation(discord_core_internal::event_delegate<co_routine<void>, on_guild_creation_data> handler) {
 		return onGuildCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildCreation(discord_core_internal::event_delegate_token& token) {
 		onGuildCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildUpdate(discord_core_internal::event_delegate<co_routine<void>, on_guild_update_data> handler) {
 		return onGuildUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildUpdate(discord_core_internal::event_delegate_token& token) {
 		onGuildUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildDeletion(discord_core_internal::event_delegate<co_routine<void>, on_guild_deletion_data> handler) {
 		return onGuildDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildDeletion(discord_core_internal::event_delegate_token& token) {
 		onGuildDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildBanAddData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildBanAdd(discord_core_internal::event_delegate<co_routine<void>, on_guild_ban_add_data> handler) {
 		return onGuildBanAddEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildBanAdd(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildBanAdd(discord_core_internal::event_delegate_token& token) {
 		onGuildBanAddEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildBanRemoveData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildBanRemove(discord_core_internal::event_delegate<co_routine<void>, on_guild_ban_remove_data> handler) {
 		return onGuildBanRemoveEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildBanRemove(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildBanRemove(discord_core_internal::event_delegate_token& token) {
 		onGuildBanRemoveEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildEmojisUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildEmojisUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildEmojisUpdate(discord_core_internal::event_delegate<co_routine<void>, on_guild_emojis_update_data> handler) {
 		return onGuildEmojisUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildEmojisUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildEmojisUpdate(discord_core_internal::event_delegate_token& token) {
 		onGuildEmojisUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildStickersUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildStickersUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildStickersUpdate(
+		discord_core_internal::event_delegate<co_routine<void>, on_guild_stickers_update_data> handler) {
 		return onGuildStickersUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildStickersUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildStickersUpdate(discord_core_internal::event_delegate_token& token) {
 		onGuildStickersUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildIntegrationsUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildIntegrationsUpdate(
+		discord_core_internal::event_delegate<co_routine<void>, on_guild_integrations_update_data> handler) {
 		return onGuildIntegrationsUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildIntegrationsUpdate(discord_core_internal::event_delegate_token& token) {
 		onGuildIntegrationsUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMembersChunk(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMembersChunkData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildMembersChunk(discord_core_internal::event_delegate<co_routine<void>, on_guild_members_chunk_data> handler) {
 		return onGuildMembersChunkEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildMembersChunk(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildMembersChunk(discord_core_internal::event_delegate_token& token) {
 		onGuildMembersChunkEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberAddData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildMemberAdd(discord_core_internal::event_delegate<co_routine<void>, on_guild_member_add_data> handler) {
 		return onGuildMemberAddEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildMemberAdd(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildMemberAdd(discord_core_internal::event_delegate_token& token) {
 		onGuildMemberAddEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberRemoveData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildMemberRemove(discord_core_internal::event_delegate<co_routine<void>, on_guild_member_remove_data> handler) {
 		return onGuildMemberRemoveEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildMemberRemove(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildMemberRemove(discord_core_internal::event_delegate_token& token) {
 		onGuildMemberRemoveEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildMemberUpdate(discord_core_internal::event_delegate<co_routine<void>, on_guild_member_update_data> handler) {
 		return onGuildMemberUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildMemberUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildMemberUpdate(discord_core_internal::event_delegate_token& token) {
 		onGuildMemberUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onRoleCreation(discord_core_internal::event_delegate<co_routine<void>, on_role_creation_data> handler) {
 		return onRoleCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onRoleCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onRoleCreation(discord_core_internal::event_delegate_token& token) {
 		onRoleCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onRoleUpdate(discord_core_internal::event_delegate<co_routine<void>, on_role_update_data> handler) {
 		return onRoleUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onRoleUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onRoleUpdate(discord_core_internal::event_delegate_token& token) {
 		onRoleUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleDeletionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onRoleDeletion(discord_core_internal::event_delegate<co_routine<void>, on_role_deletion_data> handler) {
 		return onRoleDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onRoleDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onRoleDeletion(discord_core_internal::event_delegate_token& token) {
 		onRoleDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildScheduledEventCreation(
+		discord_core_internal::event_delegate<co_routine<void>, on_guild_scheduled_event_creation_data> handler) {
 		return onGuildScheduledEventCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildScheduledEventCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildScheduledEventCreation(discord_core_internal::event_delegate_token& token) {
 		onGuildScheduledEventCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildScheduledEventUpdate(
+		discord_core_internal::event_delegate<co_routine<void>, on_guild_scheduled_event_update_data> handler) {
 		return onGuildScheduledEventUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildScheduledEventUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildScheduledEventUpdate(discord_core_internal::event_delegate_token& token) {
 		onGuildScheduledEventUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventDeletionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildScheduledEventDeletion(
+		discord_core_internal::event_delegate<co_routine<void>, on_guild_scheduled_event_deletion_data> handler) {
 		return onGuildScheduledEventDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildScheduledEventDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildScheduledEventDeletion(discord_core_internal::event_delegate_token& token) {
 		onGuildScheduledEventDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUserAdd(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserAddData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildScheduledEventUserAdd(
+		discord_core_internal::event_delegate<co_routine<void>, on_guild_scheduled_event_user_add_data> handler) {
 		return onGuildScheduledEventUserAddEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildScheduledEventUserAdd(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildScheduledEventUserAdd(discord_core_internal::event_delegate_token& token) {
 		onGuildScheduledEventUserAddEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUserRemove(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserRemoveData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildScheduledEventUserRemove(
+		discord_core_internal::event_delegate<co_routine<void>, on_guild_scheduled_event_user_remove_data> handler) {
 		return onGuildScheduledEventUserRemoveEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildScheduledEventUserRemove(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onGuildScheduledEventUserRemove(discord_core_internal::event_delegate_token& token) {
 		onGuildScheduledEventUserRemoveEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onIntegrationCreation(
+		discord_core_internal::event_delegate<co_routine<void>, on_integration_creation_data> handler) {
 		return onIntegrationCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onIntegrationCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onIntegrationCreation(discord_core_internal::event_delegate_token& token) {
 		onIntegrationCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onIntegrationUpdate(discord_core_internal::event_delegate<co_routine<void>, on_integration_update_data> handler) {
 		return onIntegrationUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onIntegrationUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onIntegrationUpdate(discord_core_internal::event_delegate_token& token) {
 		onIntegrationUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationDeletionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onIntegrationDeletion(
+		discord_core_internal::event_delegate<co_routine<void>, on_integration_deletion_data> handler) {
 		return onIntegrationDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onIntegrationDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onIntegrationDeletion(discord_core_internal::event_delegate_token& token) {
 		onIntegrationDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInteractionCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInteractionCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onInteractionCreation(
+		discord_core_internal::event_delegate<co_routine<void>, on_interaction_creation_data> handler) {
 		return onInteractionCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onInteractionCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onInteractionCreation(discord_core_internal::event_delegate_token& token) {
 		onInteractionCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInviteCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInviteCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onInviteCreation(discord_core_internal::event_delegate<co_routine<void>, on_invite_creation_data> handler) {
 		return onInviteCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onInviteCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onInviteCreation(discord_core_internal::event_delegate_token& token) {
 		onInviteCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInviteDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInviteDeletionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onInviteDeletion(discord_core_internal::event_delegate<co_routine<void>, on_invite_deletion_data> handler) {
 		return onInviteDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onInviteDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onInviteDeletion(discord_core_internal::event_delegate_token& token) {
 		onInviteDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onMessageCreation(discord_core_internal::event_delegate<co_routine<void>, on_message_creation_data> handler) {
 		return onMessageCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onMessageCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onMessageCreation(discord_core_internal::event_delegate_token& token) {
 		onMessageCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onMessageUpdate(discord_core_internal::event_delegate<co_routine<void>, on_message_update_data> handler) {
 		return onMessageUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onMessageUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onMessageUpdate(discord_core_internal::event_delegate_token& token) {
 		onMessageUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeletionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onMessageDeletion(discord_core_internal::event_delegate<co_routine<void>, on_message_deletion_data> handler) {
 		return onMessageDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onMessageDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onMessageDeletion(discord_core_internal::event_delegate_token& token) {
 		onMessageDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeleteBulk(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeleteBulkData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onMessageDeleteBulk(discord_core_internal::event_delegate<co_routine<void>, on_message_delete_bulk_data> handler) {
 		return onMessageDeleteBulkEvent.add(std::move(handler));
 	}
 
-	void EventManager::onMessageDeleteBulk(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onMessageDeleteBulk(discord_core_internal::event_delegate_token& token) {
 		onMessageDeleteBulkEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionAddData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onReactionAdd(discord_core_internal::event_delegate<co_routine<void>, on_reaction_add_data> handler) {
 		return onReactionAddEvent.add(std::move(handler));
 	}
 
-	void EventManager::onReactionAdd(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onReactionAdd(discord_core_internal::event_delegate_token& token) {
 		onReactionAddEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onReactionRemove(discord_core_internal::event_delegate<co_routine<void>, on_reaction_remove_data> handler) {
 		return onReactionRemoveEvent.add(std::move(handler));
 	}
 
-	void EventManager::onReactionRemove(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onReactionRemove(discord_core_internal::event_delegate_token& token) {
 		onReactionRemoveEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveAll(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveAllData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onReactionRemoveAll(discord_core_internal::event_delegate<co_routine<void>, on_reaction_remove_all_data> handler) {
 		return onReactionRemoveAllEvent.add(std::move(handler));
 	}
 
-	void EventManager::onReactionRemoveAll(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onReactionRemoveAll(discord_core_internal::event_delegate_token& token) {
 		onReactionRemoveAllEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveEmoji(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveEmojiData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onReactionRemoveEmoji(
+		discord_core_internal::event_delegate<co_routine<void>, on_reaction_remove_emoji_data> handler) {
 		return onReactionRemoveEmojiEvent.add(std::move(handler));
 	}
 
-	void EventManager::onReactionRemoveEmoji(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onReactionRemoveEmoji(discord_core_internal::event_delegate_token& token) {
 		onReactionRemoveEmojiEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onPresenceUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnPresenceUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onPresenceUpdate(discord_core_internal::event_delegate<co_routine<void>, on_presence_update_data> handler) {
 		return onPresenceUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onPresenceUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onPresenceUpdate(discord_core_internal::event_delegate_token& token) {
 		onPresenceUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceCreationData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onStageInstanceCreation(
+		discord_core_internal::event_delegate<co_routine<void>, on_stage_instance_creation_data> handler) {
 		return onStageInstanceCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onStageInstanceCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onStageInstanceCreation(discord_core_internal::event_delegate_token& token) {
 		onStageInstanceCreationEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onStageInstanceUpdate(
+		discord_core_internal::event_delegate<co_routine<void>, on_stage_instance_update_data> handler) {
 		return onStageInstanceUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onStageInstanceUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onStageInstanceUpdate(discord_core_internal::event_delegate_token& token) {
 		onStageInstanceUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceDeletionData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onStageInstanceDeletion(
+		discord_core_internal::event_delegate<co_routine<void>, on_stage_instance_deletion_data> handler) {
 		return onStageInstanceDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onStageInstanceDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onStageInstanceDeletion(discord_core_internal::event_delegate_token& token) {
 		onStageInstanceDeletionEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onTypingStart(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnTypingStartData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onTypingStart(discord_core_internal::event_delegate<co_routine<void>, on_typing_start_data> handler) {
 		return onTypingStartEvent.add(std::move(handler));
 	}
 
-	void EventManager::onTypingStart(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onTypingStart(discord_core_internal::event_delegate_token& token) {
 		onTypingStartEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onUserUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnUserUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onUserUpdate(discord_core_internal::event_delegate<co_routine<void>, on_user_update_data> handler) {
 		return onUserUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onUserUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onUserUpdate(discord_core_internal::event_delegate_token& token) {
 		onUserUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceStateUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceStateUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onVoiceStateUpdate(discord_core_internal::event_delegate<co_routine<void>, on_voice_state_update_data> handler) {
 		return onVoiceStateUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onVoiceStateUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onVoiceStateUpdate(discord_core_internal::event_delegate_token& token) {
 		onVoiceStateUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceServerUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceServerUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onVoiceServerUpdate(discord_core_internal::event_delegate<co_routine<void>, on_voice_server_update_data> handler) {
 		return onVoiceServerUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onVoiceServerUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onVoiceServerUpdate(discord_core_internal::event_delegate_token& token) {
 		onVoiceServerUpdateEvent.erase(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onWebhookUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnWebhookUpdateData> handler) {
+	discord_core_internal::event_delegate_token event_manager::onWebhookUpdate(discord_core_internal::event_delegate<co_routine<void>, on_webhook_update_data> handler) {
 		return onWebhookUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onWebhookUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	void event_manager::onWebhookUpdate(discord_core_internal::event_delegate_token& token) {
 		onWebhookUpdateEvent.erase(token);
 	}
 

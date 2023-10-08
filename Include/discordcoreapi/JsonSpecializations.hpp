@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// InteractionEntities.hpp - Header for the jsonifier::core specializations.
+/// JsonSpecializations.hpp - Header for the jsonifier::core specializations.
 /// Mar 24, 2023 Chris M.
 /// https://discordcoreapi.com
 /// \file JsonSpecializations.hpp
@@ -32,732 +32,759 @@
 
 #include <discordcoreapi/FoundationEntities.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	namespace discord_core_internal {
 
-		template<> struct WebSocketMessageData<UpdateVoiceStateData> {
-			WebSocketMessageData() = default;
-			WebSocketMessageData(const UpdateVoiceStateData& data);
-			UnorderedSet<jsonifier::string> excludedKeys{};
-			using type = UpdateVoiceStateData;
+		template<> struct websocket_message_data<update_voice_state_data> {
+			websocket_message_data() = default;
+			websocket_message_data(const update_voice_state_data& data);
+			unordered_set<jsonifier::string> excludedKeys{};
+			using type = update_voice_state_data;
 			int64_t op{ -1 };
 			jsonifier::string t{};
 			int32_t s{};
 			type d{};
-			operator EtfSerializer();
+			operator etf_serializer();
 		};
 
-		template<> struct WebSocketMessageData<UpdateVoiceStateDataDC> {
-			WebSocketMessageData() = default;
-			WebSocketMessageData(const UpdateVoiceStateData& data);
-			UnorderedSet<jsonifier::string> excludedKeys{};
-			using type = UpdateVoiceStateDataDC;
+		template<> struct websocket_message_data<update_voice_state_data_dc> {
+			websocket_message_data() = default;
+			websocket_message_data(const update_voice_state_data& data);
+			unordered_set<jsonifier::string> excludedKeys{};
+			using type = update_voice_state_data_dc;
 			int64_t op{ -1 };
 			jsonifier::string t{};
 			int32_t s{};
 			type d{};
-			operator EtfSerializer();
+			operator etf_serializer();
 		};
 	}
 }
 
 namespace jsonifier {
 
-	template<> struct core<DiscordCoreAPI::ReadyData> {
-		using ValueType					 = DiscordCoreAPI::ReadyData;
-		static constexpr auto parseValue = createObject("resume_gateway_url", &ValueType::resumeGatewayUrl, "shard", &ValueType::shard, "v", &ValueType::v, "session_id",
-			&ValueType::sessionId, "user", &ValueType::user, "application", &ValueType::application, "_trace", &ValueType::trace);
+	template<> struct core<discord_core_api::ready_data> {
+		using value_type				 = discord_core_api::ready_data;
+		static constexpr auto parseValue = createObject("resume_gateway_url", &value_type::resumeGatewayUrl, "shard", &value_type::shard, "v", &value_type::v, "session_id",
+			&value_type::sessionId, "user", &value_type::user, "application", &value_type::application, "_trace", &value_type::trace);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::WebSocketMessage> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::WebSocketMessage;
-		static constexpr auto parseValue = createObject("op", &ValueType::op, "s", &ValueType::s, "t", &ValueType::t);
+	template<> struct core<discord_core_api::discord_core_internal::websocket_message> {
+		using value_type				 = discord_core_api::discord_core_internal::websocket_message;
+		static constexpr auto parseValue = createObject("op", &value_type::op, "s", &value_type::s, "t", &value_type::t);
 	};
 
-	template<typename OTy2> struct core<DiscordCoreAPI::DiscordCoreInternal::WebSocketMessageData<OTy2>> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::WebSocketMessageData<OTy2>;
-		static constexpr auto parseValue = createObject("d", &ValueType::d, "op", &ValueType::op, "s", &ValueType::s);
+	template<typename oty2> struct core<discord_core_api::discord_core_internal::websocket_message_data<oty2>> {
+		using value_type				 = discord_core_api::discord_core_internal::websocket_message_data<oty2>;
+		static constexpr auto parseValue = createObject("d", &value_type::d, "op", &value_type::op, "s", &value_type::s);
 	};
 
 }
 
 namespace jsonifier_internal {
 
-	template<bool excludeKeys> struct serialize_impl<excludeKeys, DiscordCoreAPI::Snowflake> {
-		template<vector_like BufferType> static void op(const DiscordCoreAPI::Snowflake& value, BufferType& buffer, uint64_t& index) {
+	template<bool excludeKeys> struct serialize_impl<excludeKeys, discord_core_api::snowflake> {
+		template<jsonifier::concepts::buffer_like buffer_type> static void op(const discord_core_api::snowflake& value, buffer_type& buffer, uint64_t& index) {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
 			serialize<excludeKeys>::op(newString, buffer, index);
 		}
 	};
 
-	template<bool printErrors, bool excludeKeys> struct parse_impl<printErrors, excludeKeys, DiscordCoreAPI::Snowflake> {
-		inline static void op(DiscordCoreAPI::Snowflake&& value, structural_iterator& iter) {
+	template<bool excludeKeys> struct parse_impl<excludeKeys, discord_core_api::snowflake> {
+		inline static void op(discord_core_api::snowflake& value, structural_iterator& iter, parser& parser) {
+			jsonifier::raw_json_data newString{};
+			parse<excludeKeys>::op(newString, iter, parser);
+			if (newString.getType() == jsonifier::json_type::String) {
+				value = newString.operator jsonifier::string();
+			} else {
+				value = newString.operator uint64_t();
+			}
+		};
+	};
+
+	template<bool excludeKeys> struct serialize_impl<excludeKeys, discord_core_api::time_stamp> {
+		template<jsonifier::concepts::buffer_like buffer_type> static void op(const discord_core_api::time_stamp& value, buffer_type& buffer, uint64_t& index) {
+			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
+			serialize<excludeKeys>::op(newString, buffer, index);
+		}
+	};
+
+	template<bool excludeKeys> struct parse_impl<excludeKeys, discord_core_api::time_stamp> {
+		inline static void op(discord_core_api::time_stamp& value, structural_iterator& iter, parser& parser) {
 			jsonifier::string newString{};
-			parse<printErrors, excludeKeys>::op(newString, iter);
-			value = newString;
+			parse<excludeKeys>::op(newString, iter, parser);
+			value = static_cast<jsonifier::string>(newString);
 		};
 	};
 }
 
 namespace jsonifier {
 
-	template<> struct core<DiscordCoreAPI::ApplicationCommandPermissionData> {
-		using ValueType					 = DiscordCoreAPI::ApplicationCommandPermissionData;
-		static constexpr auto parseValue = createObject("id", &ValueType::id, "permission", &ValueType::permission, "type", &ValueType::type);
+	template<> struct core<discord_core_api::application_command_permission_data> {
+		using value_type				 = discord_core_api::application_command_permission_data;
+		static constexpr auto parseValue = createObject("id", &value_type::id, "permission", &value_type::permission, "type", &value_type::type);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildApplicationCommandPermissionsData> {
-		using ValueType = DiscordCoreAPI::GuildApplicationCommandPermissionsData;
+	template<> struct core<discord_core_api::guild_application_command_permissions_data> {
+		using value_type = discord_core_api::guild_application_command_permissions_data;
 		static constexpr auto parseValue =
-			createObject("application_id", &ValueType::applicationId, "permissions", &ValueType::permissions, "guild_id", &ValueType::guildId, "id", &ValueType::id);
+			createObject("application_id", &value_type::applicationId, "permissions", &value_type::permissions, "guild_id", &value_type::guildId, "id", &value_type::id);
 	};
 
-	template<> struct core<DiscordCoreAPI::SessionStartData> {
-		using ValueType = DiscordCoreAPI::SessionStartData;
+	template<> struct core<discord_core_api::session_start_data> {
+		using value_type = discord_core_api::session_start_data;
 		static constexpr auto parseValue =
-			createObject("max_concurrency", &ValueType::maxConcurrency, "remaining", &ValueType::remaining, "reset_after", &ValueType::resetAfter, "total", &ValueType::total);
+			createObject("max_concurrency", &value_type::maxConcurrency, "remaining", &value_type::remaining, "reset_after", &value_type::resetAfter, "total", &value_type::total);
 	};
 
-	template<> struct core<DiscordCoreAPI::AuthorizationInfoData> {
-		using ValueType = DiscordCoreAPI::AuthorizationInfoData;
+	template<> struct core<discord_core_api::authorization_info_data> {
+		using value_type = discord_core_api::authorization_info_data;
 		static constexpr auto parseValue =
-			createObject("application", &ValueType::application, "expires", &ValueType::expires, "scopes", &ValueType::scopes, "user", &ValueType::user);
+			createObject("application", &value_type::application, "expires", &value_type::expires, "scopes", &value_type::scopes, "user", &value_type::user);
 	};
 
-	template<> struct core<DiscordCoreAPI::TriggerMetaData> {
-		using ValueType					 = DiscordCoreAPI::TriggerMetaData;
-		static constexpr auto parseValue = createObject("allow_list", &ValueType::allowList, "keyword_filter", &ValueType::keywordFilter, "mention_total_limit",
-			&ValueType::mentionTotalLimit, "presets", &ValueType::presets);
+	template<> struct core<discord_core_api::trigger_meta_data> {
+		using value_type				 = discord_core_api::trigger_meta_data;
+		static constexpr auto parseValue = createObject("allow_list", &value_type::allowList, "keyword_filter", &value_type::keywordFilter, "mention_total_limit",
+			&value_type::mentionTotalLimit, "presets", &value_type::presets);
 	};
 
-	template<> struct core<DiscordCoreAPI::PartialEmojiData> {
-		using ValueType					 = DiscordCoreAPI::PartialEmojiData;
-		static constexpr auto parseValue = createObject("id", &ValueType::id, "name", &ValueType::name, "animated", &ValueType::animated);
+	template<> struct core<discord_core_api::partial_emoji_data> {
+		using value_type				 = discord_core_api::partial_emoji_data;
+		static constexpr auto parseValue = createObject("id", &value_type::id, "name", &value_type::name, "animated", &value_type::animated);
 	};
 
-	template<> struct core<DiscordCoreAPI::EmojiData> {
-		using ValueType					 = DiscordCoreAPI::EmojiData;
-		static constexpr auto parseValue = createObject("id", &ValueType::id, "name", &ValueType::name, "roles", &ValueType::roles, "require_colons", &ValueType::requireColons,
-			"managed", &ValueType::managed, "animated", &ValueType::animated, "available", &ValueType::available);
+	template<> struct core<discord_core_api::emoji_data> {
+		using value_type				 = discord_core_api::emoji_data;
+		static constexpr auto parseValue = createObject("id", &value_type::id, "name", &value_type::name, "roles", &value_type::roles, "require_colons", &value_type::requireColons,
+			"managed", &value_type::managed, "animated", &value_type::animated, "available", &value_type::available);
 	};
 
-	template<> struct core<DiscordCoreAPI::TeamMembersObjectData> {
-		using ValueType = DiscordCoreAPI::TeamMembersObjectData;
+	template<> struct core<discord_core_api::team_members_object_data> {
+		using value_type = discord_core_api::team_members_object_data;
 		static constexpr auto parseValue =
-			createObject("membership_state", &ValueType::membershipState, "permissions", &ValueType::permissions, "team_id", &ValueType::teamId, "user", &ValueType::user);
+			createObject("membership_state", &value_type::membershipState, "permissions", &value_type::permissions, "team_id", &value_type::teamId, "user", &value_type::user);
 	};
 
-	template<> struct core<DiscordCoreAPI::TeamObjectData> {
-		using ValueType					 = DiscordCoreAPI::TeamObjectData;
-		static constexpr auto parseValue = createObject("icon", &ValueType::icon, "id", &ValueType::id, "members", &ValueType::members, "owner_user_id", &ValueType::ownerUserId);
-	};
-
-	template<> struct core<DiscordCoreAPI::InstallParamsData> {
-		using ValueType					 = DiscordCoreAPI::InstallParamsData;
-		static constexpr auto parseValue = createObject("scopes", &ValueType::scopes, "permissions", &ValueType::permissions);
-	};
-
-	template<> struct core<DiscordCoreAPI::ApplicationData> {
-		using ValueType					 = DiscordCoreAPI::ApplicationData;
-		static constexpr auto parseValue = createObject("bot_public", &ValueType::botPublic, "bot_require_code_grant", &ValueType::botRequireCodeGrant, "cover_image",
-			&ValueType::coverImage, "custom_install_url", &ValueType::customInstallUrl, "description", &ValueType::description, "", "flags", &ValueType::flags, "guild_id",
-			&ValueType::guildId, "icon", &ValueType::icon, "name", &ValueType::name, "owner", &ValueType::owner, "params", &ValueType::params, "primary_sku_id",
-			&ValueType::primarySkuId, "privacy_policy_url", &ValueType::privacyPolicyUrl, "rpc_origins", &ValueType::rpcOrigins, "slug", &ValueType::slug, "summary",
-			&ValueType::summary, "tags", &ValueType::tags, "team", &ValueType::team, "terms_of_service_url", &ValueType::termsOfServiceUrl, "verify_key", &ValueType::verifyKey);
-	};
-
-	template<> struct core<DiscordCoreAPI::ThreadMetadataData> {
-		using ValueType					 = DiscordCoreAPI::ThreadMetadataData;
-		static constexpr auto parseValue = createObject("archived", &ValueType::archived, "archived_timestamp", &ValueType::archiveTimestamp, "auto_archive_duration",
-			&ValueType::autoArchiveDuration, "invitable", &ValueType::invitable, "locked", &ValueType::locked);
-	};
-
-	template<> struct core<DiscordCoreAPI::GatewayBotData> {
-		using ValueType					 = DiscordCoreAPI::GatewayBotData;
-		static constexpr auto parseValue = createObject("session_start_limit", &ValueType::sessionStartLimit, "shards", &ValueType::shards, "url", &ValueType::url);
-	};
-
-	template<> struct core<DiscordCoreAPI::UserIdBase> {
-		using ValueType					 = DiscordCoreAPI::UserIdBase;
-		static constexpr auto parseValue = createObject("id", &ValueType::id);
-	};
-
-	template<> struct core<DiscordCoreAPI::UserData> {
-		using ValueType					 = DiscordCoreAPI::UserData;
-		static constexpr auto parseValue = createObject("id", &ValueType::id, "username", &ValueType::userName, "discriminator", &ValueType::discriminator, "global_name",
-			&ValueType::globalName, "avatar", &ValueType::avatar, "bot", &ValueType::bot, "system", &ValueType::system, "mfa_enabled", &ValueType::mfaEnabled, "banner",
-			&ValueType::banner, "accentColor", &ValueType::accentColor, "locale", &ValueType::locale, "verified", &ValueType::verified, "email", &ValueType::email, "flags",
-			&ValueType::flags, "premium_type", &ValueType::premiumType, "public_flags", &ValueType::publicFlags, "avatar_decoration", &ValueType::avatarDecoration);
-	};
-
-	template<> struct core<DiscordCoreAPI::WelcomeScreenChannelData> {
-		using ValueType = DiscordCoreAPI::WelcomeScreenChannelData;
+	template<> struct core<discord_core_api::team_object_data> {
+		using value_type = discord_core_api::team_object_data;
 		static constexpr auto parseValue =
-			createObject("channel_id", &ValueType::channelId, "description", &ValueType::description, "emoji_id", &ValueType::emojiId, "emoji_name", &ValueType::emojiName);
+			createObject("icon", &value_type::icon, "id", &value_type::id, "members", &value_type::members, "owner_user_id", &value_type::ownerUserId);
 	};
 
-	template<> struct core<DiscordCoreAPI::WelcomeScreenData> {
-		using ValueType					 = DiscordCoreAPI::WelcomeScreenData;
-		static constexpr auto parseValue = createObject("description", &ValueType::description, "welcome_screen_channels", &ValueType::welcomeChannels);
+	template<> struct core<discord_core_api::install_params_data> {
+		using value_type				 = discord_core_api::install_params_data;
+		static constexpr auto parseValue = createObject("scopes", &value_type::scopes, "permissions", &value_type::permissions);
 	};
 
-	template<> struct core<DiscordCoreAPI::ActionMetaData> {
-		using ValueType					 = DiscordCoreAPI::ActionMetaData;
-		static constexpr auto parseValue = createObject("channel_id", &ValueType::channelId, "duration_seconds", &ValueType::durationSeconds);
-	};
-
-	template<> struct core<DiscordCoreAPI::ActionData> {
-		using ValueType					 = DiscordCoreAPI::ActionData;
-		static constexpr auto parseValue = createObject("meta_data", &ValueType::metadata, "type", &ValueType::type);
-	};
-
-	template<> struct core<DiscordCoreAPI::GuildPreviewData> {
-		using ValueType					 = DiscordCoreAPI::GuildPreviewData;
-		static constexpr auto parseValue = createObject("approximate_member_count", &ValueType::approximateMemberCount, "approximate_presence_count",
-			&ValueType::approximatePresenceCount, "description", &ValueType::description, "discovery_splash", &ValueType::discoverySplash, "emojis", &ValueType::emojis, "features",
-			&ValueType::features, "icon", &ValueType::icon, "id", &ValueType::id, "name", &ValueType::name, "splash", &ValueType::splash, "stickers", &ValueType::stickers);
-	};
-
-	template<> struct core<DiscordCoreAPI::ThreadMemberData> {
-		using ValueType					 = DiscordCoreAPI::ThreadMemberData;
-		static constexpr auto parseValue = createObject("flags", &ValueType::flags, "join_timestamp", &ValueType::joinTimestamp, "user_id", &ValueType::userId);
-	};
-
-	template<> struct core<DiscordCoreAPI::AuditLogData> {
-		using ValueType					 = DiscordCoreAPI::AuditLogData;
-		static constexpr auto parseValue = createObject("audit_log_entries", &ValueType::auditLogEntries, "auto_moderation_rules", &ValueType::autoModerationRules,
-			"guild_scheduled_events", &ValueType::guildScheduledEvents, "integrations", &ValueType::integrations, "threads", &ValueType::threads, "users", &ValueType::users,
-			"webhooks", &ValueType::webhooks);
-	};
-
-	template<> struct core<DiscordCoreAPI::BanData> {
-		using ValueType					 = DiscordCoreAPI::BanData;
-		static constexpr auto parseValue = createObject("failed_due_to_perms", &ValueType::failedDueToPerms, "reason", &ValueType::reason, "user", &ValueType::user);
-	};
-
-	template<> struct core<DiscordCoreAPI::UpdateVoiceStateData> {
-		using ValueType = DiscordCoreAPI::UpdateVoiceStateData;
+	template<> struct core<discord_core_api::application_data> {
+		using value_type = discord_core_api::application_data;
 		static constexpr auto parseValue =
-			createObject("channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId, "self_deaf", &ValueType::selfDeaf, "self_mute", &ValueType::selfMute);
+			createObject("bot_public", &value_type::botPublic, "bot_require_code_grant", &value_type::botRequireCodeGrant, "cover_image", &value_type::coverImage,
+				"custom_install_url", &value_type::customInstallUrl, "description", &value_type::description, "flags", &value_type::flags, "guild_id", &value_type::guildId, "icon",
+				&value_type::icon, "name", &value_type::name, "owner", &value_type::owner, "params", &value_type::params, "primary_sku_id", &value_type::primarySkuId,
+				"privacy_policy_url", &value_type::privacyPolicyUrl, "rpc_origins", &value_type::rpcOrigins, "slug", &value_type::slug, "summary", &value_type::summary, "tags",
+				&value_type::tags, "team", &value_type::team, "terms_of_service_url", &value_type::termsOfServiceUrl, "verify_key", &value_type::verifyKey);
 	};
 
-	template<> struct core<DiscordCoreAPI::UpdateVoiceStateDataDC> {
-		using ValueType = DiscordCoreAPI::UpdateVoiceStateDataDC;
+	template<> struct core<discord_core_api::thread_metadata_data> {
+		using value_type				 = discord_core_api::thread_metadata_data;
+		static constexpr auto parseValue = createObject("archived", &value_type::archived, "archived_timestamp", &value_type::archiveTimestamp, "auto_archive_duration",
+			&value_type::autoArchiveDuration, "invitable", &value_type::invitable, "locked", &value_type::locked);
+	};
+
+	template<> struct core<discord_core_api::gateway_bot_data> {
+		using value_type				 = discord_core_api::gateway_bot_data;
+		static constexpr auto parseValue = createObject("session_start_limit", &value_type::sessionStartLimit, "shards", &value_type::shards, "url", &value_type::url);
+	};
+
+	template<> struct core<discord_core_api::user_id_base> {
+		using value_type				 = discord_core_api::user_id_base;
+		static constexpr auto parseValue = createObject("id", &value_type::id);
+	};
+
+	template<> struct core<discord_core_api::user_data> {
+		using value_type				 = discord_core_api::user_data;
+		static constexpr auto parseValue = createObject("id", &value_type::id, "username", &value_type::userName, "discriminator", &value_type::discriminator, "global_name",
+			&value_type::globalName, "avatar", &value_type::avatar, "bot", &value_type::bot, "system", &value_type::system, "mfa_enabled", &value_type::mfaEnabled, "banner",
+			&value_type::banner, "accentColor", &value_type::accentColor, "locale", &value_type::locale, "verified", &value_type::verified, "email", &value_type::email, "flags",
+			&value_type::flags, "premium_type", &value_type::premiumType, "public_flags", &value_type::publicFlags, "avatar_decoration", &value_type::avatarDecoration);
+	};
+
+	template<> struct core<discord_core_api::welcome_screen_channel_data> {
+		using value_type = discord_core_api::welcome_screen_channel_data;
 		static constexpr auto parseValue =
-			createObject("channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId, "self_deaf", &ValueType::selfDeaf, "self_mute", &ValueType::selfMute);
+			createObject("channel_id", &value_type::channelId, "description", &value_type::description, "emoji_id", &value_type::emojiId, "emoji_name", &value_type::emojiName);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildWidgetData> {
-		using ValueType					 = DiscordCoreAPI::GuildWidgetData;
-		static constexpr auto parseValue = createObject("channel_id", &ValueType::channelId, "enabled", &ValueType::enabled);
+	template<> struct core<discord_core_api::welcome_screen_data> {
+		using value_type				 = discord_core_api::welcome_screen_data;
+		static constexpr auto parseValue = createObject("description", &value_type::description, "welcome_screen_channels", &value_type::welcomeChannels);
 	};
 
-	template<> struct core<DiscordCoreAPI::ChannelData> {
-		using ValueType					 = DiscordCoreAPI::ChannelData;
-		static constexpr auto parseValue = createObject("permission_overwrites", &ValueType::permissionOverwrites, "default_reaction_emoji", &ValueType::defaultReactionEmoji,
-			"available_tags", &ValueType::availableTags, "default_thread_rate_limit_per_user", &ValueType::defaultThreadRateLimitPerUser, "applied_tags", &ValueType::appliedTags,
-			"default_forum_layout", &ValueType::defaultForumLayout, "default_auto_archive_duration", &ValueType::defaultAutoArchiveDuration, "thread_metadata",
-			&ValueType::threadMetadata, "recipients", &ValueType::recipients, "default_sort_order", &ValueType::defaultSortOrder, "last_pin_timestamp",
-			&ValueType::lastPinTimestamp, "last_message_id", &ValueType::lastMessageId, "application_id", &ValueType::applicationId, "total_message_sent",
-			&ValueType::totalMessageSent, "rate_limit_per_user", &ValueType::rateLimitPerUser, "video_quality_mode", &ValueType::videoQualityMode, "member", &ValueType::member,
-			"permissions", &ValueType::permissions, "rtc_region", &ValueType::rtcRegion, "message_count", &ValueType::messageCount, "owner_id", &ValueType::ownerId, "member_count",
-			&ValueType::memberCount, "flags", &ValueType::flags, "topic", &ValueType::topic, "user_limit", &ValueType::userLimit, "parent_id", &ValueType::parentId, "type",
-			&ValueType::type, "guild_id", &ValueType::guildId, "position", &ValueType::position, "name", &ValueType::name, "icon", &ValueType::icon, "bitrate", &ValueType::bitrate,
-			"id", &ValueType::id, "managed", &ValueType::managed, "nsfw", &ValueType::nsfw);
+	template<> struct core<discord_core_api::action_meta_data> {
+		using value_type				 = discord_core_api::action_meta_data;
+		static constexpr auto parseValue = createObject("channel_id", &value_type::channelId, "duration_seconds", &value_type::durationSeconds);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildMemberData> {
-		using ValueType					 = DiscordCoreAPI::GuildMemberData;
-		static constexpr auto parseValue = createObject("user", &ValueType::user, "nick", &ValueType::nick, "avatar", &ValueType::avatar, "roles", &ValueType::roles, "joined_at",
-			&ValueType::joinedAt, "premium_since", &ValueType::premiumSince, "deaf", &ValueType::deaf, "mute", &ValueType::mute, "flags", &ValueType::flags, "pending",
-			&ValueType::pending, "permissions", &ValueType::permissions, "communication_disabled_until", &ValueType::communicationDisabledUntil, "guild_id", &ValueType::guildId);
+	template<> struct core<discord_core_api::action_data> {
+		using value_type				 = discord_core_api::action_data;
+		static constexpr auto parseValue = createObject("meta_data", &value_type::metadata, "type", &value_type::type);
 	};
 
-	template<> struct core<DiscordCoreAPI::ThreadListSyncData> {
-		using ValueType = DiscordCoreAPI::ThreadListSyncData;
+	template<> struct core<discord_core_api::guild_preview_data> {
+		using value_type = discord_core_api::guild_preview_data;
 		static constexpr auto parseValue =
-			createObject("members", &ValueType::members, "channel_ids", &ValueType::channelIds, "threads", &ValueType::threads, "guild_id", &ValueType::guildId);
+			createObject("approximate_member_count", &value_type::approximateMemberCount, "approximate_presence_count", &value_type::approximatePresenceCount, "description",
+				&value_type::description, "discovery_splash", &value_type::discoverySplash, "emojis", &value_type::emojis, "features", &value_type::features, "icon",
+				&value_type::icon, "id", &value_type::id, "name", &value_type::name, "splash", &value_type::splash, "stickers", &value_type::stickers);
 	};
 
-	template<> struct core<DiscordCoreAPI::InteractionDataData> {
-		using ValueType					 = DiscordCoreAPI::InteractionDataData;
-		static constexpr auto parseValue = createObject("options", &ValueType::options, "type", &ValueType::type, "resolved", &ValueType::resolved, "guild_id", &ValueType::guildId,
-			"name", &ValueType::name, "values", &ValueType::values, "component_type", &ValueType::componentType, "custom_id", &ValueType::customId, "custom_id_small",
-			&ValueType::customIdSmall, "value", &ValueType::value, "target_id", &ValueType::targetId);
+	template<> struct core<discord_core_api::thread_member_data> {
+		using value_type				 = discord_core_api::thread_member_data;
+		static constexpr auto parseValue = createObject("flags", &value_type::flags, "join_timestamp", &value_type::joinTimestamp, "user_id", &value_type::userId);
 	};
 
-	template<> struct core<DiscordCoreAPI::ResolvedData> {
-		using ValueType					 = DiscordCoreAPI::ResolvedData;
-		static constexpr auto parseValue = createObject("attachments", &ValueType::attachments, "members", &ValueType::members, "messages", &ValueType::messages, "channels",
-			&ValueType::channels, "users", &ValueType::users, "roles", &ValueType::roles);
+	template<> struct core<discord_core_api::audit_log_data> {
+		using value_type				 = discord_core_api::audit_log_data;
+		static constexpr auto parseValue = createObject("audit_log_entries", &value_type::auditLogEntries, "auto_moderation_rules", &value_type::autoModerationRules,
+			"guild_scheduled_events", &value_type::guildScheduledEvents, "integrations", &value_type::integrations, "threads", &value_type::threads, "users", &value_type::users,
+			"webhooks", &value_type::webhooks);
 	};
 
-	template<> struct core<DiscordCoreAPI::ApplicationCommandInteractionDataOption> {
-		using ValueType = DiscordCoreAPI::ApplicationCommandInteractionDataOption;
+	template<> struct core<discord_core_api::ban_data> {
+		using value_type				 = discord_core_api::ban_data;
+		static constexpr auto parseValue = createObject("failed_due_to_perms", &value_type::failedDueToPerms, "reason", &value_type::reason, "user", &value_type::user);
+	};
+
+	template<> struct core<discord_core_api::update_voice_state_data> {
+		using value_type = discord_core_api::update_voice_state_data;
 		static constexpr auto parseValue =
-			createObject("name", &ValueType::name, "type", &ValueType::type, "value", &ValueType::value, "focused", &ValueType::focused, "options", &ValueType::options);
+			createObject("channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "self_deaf", &value_type::selfDeaf, "self_mute", &value_type::selfMute);
 	};
 
-	template<> struct core<DiscordCoreAPI::InteractionData> {
-		using ValueType					 = DiscordCoreAPI::InteractionData;
-		static constexpr auto parseValue = createObject("app_permissions", &ValueType::appPermissions, "data", &ValueType::data, "guild_locale", &ValueType::guildLocale,
-			"application_id", &ValueType::applicationId, "member", &ValueType::member, "type", &ValueType::type, "message", &ValueType::message, "channel_id",
-			&ValueType::channelId, "locale", &ValueType::locale, "guild_id", &ValueType::guildId, "token", &ValueType::token, "version", &ValueType::version, "user",
-			&ValueType::user, "id", &ValueType::id, "channel", &ValueType::channel);
-	};
-
-	template<> struct core<DiscordCoreAPI::InputEventData> {
-		using ValueType					 = DiscordCoreAPI::InputEventData;
-		static constexpr auto parseValue = createObject("response_type", &ValueType::responseType, "interaction_data", &ValueType::interactionData);
-	};
-
-	template<> struct core<DiscordCoreAPI::ThreadMembersUpdateData> {
-		using ValueType					 = DiscordCoreAPI::ThreadMembersUpdateData;
-		static constexpr auto parseValue = createObject("added_members", &ValueType::addedMembers, "member_count", &ValueType::memberCount, "guild_id", &ValueType::guildId,
-			"removed_member_ids", &ValueType::removedMemberIds);
-	};
-
-	template<> struct core<DiscordCoreAPI::WebHookData> {
-		using ValueType					 = DiscordCoreAPI::WebHookData;
-		static constexpr auto parseValue = createObject("application_id", &ValueType::applicationId, "avatar", &ValueType::avatar, "channel_id", &ValueType::channelId, "guild_id",
-			&ValueType::guildId, "id", &ValueType::id, "name", &ValueType::name, "source_channel", &ValueType::sourceChannel, "source_guild", &ValueType::sourceGuild, "token",
-			&ValueType::token, "type", &ValueType::type, "url", &ValueType::url, "user", &ValueType::user);
-	};
-
-	template<> struct core<DiscordCoreAPI::AuditLogChangeData> {
-		using ValueType					 = DiscordCoreAPI::AuditLogChangeData;
-		static constexpr auto parseValue = createObject("key", &ValueType::key, "new_value", &ValueType::newValue, "old_value", &ValueType::oldValue);
-	};
-
-	template<> struct core<DiscordCoreAPI::OptionalAuditEntryInfoData> {
-		using ValueType = DiscordCoreAPI::OptionalAuditEntryInfoData;
+	template<> struct core<discord_core_api::update_voice_state_data_dc> {
+		using value_type = discord_core_api::update_voice_state_data_dc;
 		static constexpr auto parseValue =
-			createObject("delete_member_days", &ValueType::deleteMemberDays, "members_removed", &ValueType::membersRemoved, "application_id", &ValueType::applicationId,
-				"role_name", &ValueType::roleName, "channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "count", &ValueType::count, "type", &ValueType::type);
+			createObject("channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "self_deaf", &value_type::selfDeaf, "self_mute", &value_type::selfMute);
 	};
 
-	template<> struct core<DiscordCoreAPI::ArchivedThreadsData> {
-		using ValueType					 = DiscordCoreAPI::ArchivedThreadsData;
-		static constexpr auto parseValue = createObject("has_more", &ValueType::hasMore, "member", &ValueType::members, "threads", &ValueType::threads);
+	template<> struct core<discord_core_api::guild_widget_data> {
+		using value_type				 = discord_core_api::guild_widget_data;
+		static constexpr auto parseValue = createObject("channel_id", &value_type::channelId, "enabled", &value_type::enabled);
 	};
 
-	template<> struct core<DiscordCoreAPI::ConnectionData> {
-		using ValueType = DiscordCoreAPI::ConnectionData;
+	template<> struct core<discord_core_api::channel_data> {
+		using value_type				 = discord_core_api::channel_data;
+		static constexpr auto parseValue = createObject("permission_overwrites", &value_type::permissionOverwrites, "default_reaction_emoji", &value_type::defaultReactionEmoji,
+			"available_tags", &value_type::availableTags, "default_thread_rate_limit_per_user", &value_type::defaultThreadRateLimitPerUser, "applied_tags",
+			&value_type::appliedTags, "default_forum_layout", &value_type::defaultForumLayout, "default_auto_archive_duration", &value_type::defaultAutoArchiveDuration,
+			"thread_metadata", &value_type::threadMetadata, "recipients", &value_type::recipients, "default_sort_order", &value_type::defaultSortOrder, "last_pin_timestamp",
+			&value_type::lastPinTimestamp, "last_message_id", &value_type::lastMessageId, "application_id", &value_type::applicationId, "total_message_sent",
+			&value_type::totalMessageSent, "rate_limit_per_user", &value_type::rateLimitPerUser, "video_quality_mode", &value_type::videoQualityMode, "member", &value_type::member,
+			"permissions", &value_type::permissions, "rtc_region", &value_type::rtcRegion, "message_count", &value_type::messageCount, "owner_id", &value_type::ownerId,
+			"member_count", &value_type::memberCount, "flags", &value_type::flags, "topic", &value_type::topic, "user_limit", &value_type::userLimit, "parent_id",
+			&value_type::parentId, "type", &value_type::type, "guild_id", &value_type::guildId, "position", &value_type::position, "name", &value_type::name, "icon",
+			&value_type::icon, "bitrate", &value_type::bitrate, "id", &value_type::id, "managed", &value_type::managed, "nsfw", &value_type::nsfw);
+	};
+
+	template<> struct core<discord_core_api::guild_member_data> {
+		using value_type = discord_core_api::guild_member_data;
 		static constexpr auto parseValue =
-			createObject("friend_sync", &ValueType::friendSync, "id", &ValueType::id, "integrations", &ValueType::integrations, "name", &ValueType::name, "revoked",
-				&ValueType::revoked, "show_activity", &ValueType::showActivity, "type", &ValueType::type, "verified", &ValueType::verified, "visibility", &ValueType::visibility);
+			createObject("user", &value_type::user, "nick", &value_type::nick, "avatar", &value_type::avatar, "roles", &value_type::roles, "joined_at", &value_type::joinedAt,
+				"premium_since", &value_type::premiumSince, "deaf", &value_type::deaf, "mute", &value_type::mute, "flags", &value_type::flags, "pending", &value_type::pending,
+				"permissions", &value_type::permissions, "communication_disabled_until", &value_type::communicationDisabledUntil, "guild_id", &value_type::guildId);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildPruneCountData> {
-		using ValueType					 = DiscordCoreAPI::GuildPruneCountData;
-		static constexpr auto parseValue = createObject("count", &ValueType::count);
-	};
-
-	template<> struct core<DiscordCoreAPI::ThreadData> {
-		using ValueType					 = DiscordCoreAPI::ThreadData;
-		static constexpr auto parseValue = createObject("application_id", &ValueType::applicationId, "applied_tags", &ValueType::appliedTags, "available_tags",
-			&ValueType::availableTags, "guild_id", &ValueType::guildId, "bitrate", &ValueType::bitrate, "default_auto_archive_duration", &ValueType::defaultAutoArchiveDuration,
-			"default_reaction_emoji", &ValueType::defaultReactionEmoji, "flags", &ValueType::flags, "icon", &ValueType::icon, "id", &ValueType::id, "last_message_id",
-			&ValueType::lastMessageId, "last_pin_timestamp", &ValueType::lastPinTimestamp, "member", &ValueType::member, "member_count", &ValueType::memberCount, "message_count",
-			&ValueType::messageCount, "name", &ValueType::name, "owner_id", &ValueType::ownerId, "parent_id", &ValueType::parentId, "permission_overwrites",
-			&ValueType::permissionOverwrites, "permissions", &ValueType::permissions, "position", &ValueType::position, "rate_limit_per_user", &ValueType::rateLimitPerUser,
-			"recipients", &ValueType::recipients, "rtc_region", &ValueType::rtcRegion, "thread_metadata", &ValueType::threadMetadata, "topic", &ValueType::topic,
-			"total_message_sent", &ValueType::totalMessageSent, "type", &ValueType::type, "user_limit", &ValueType::userLimit, "video_quality_mode", &ValueType::videoQualityMode);
-	};
-
-	template<> struct core<DiscordCoreAPI::OverWriteData> {
-		using ValueType					 = DiscordCoreAPI::OverWriteData;
-		static constexpr auto parseValue = createObject("allow", &ValueType::allow, "deny", &ValueType::deny, "id", &ValueType::id, "type", &ValueType::type);
-	};
-
-	template<> struct core<DiscordCoreAPI::ForumTagData> {
-		using ValueType = DiscordCoreAPI::ForumTagData;
+	template<> struct core<discord_core_api::thread_list_sync_data> {
+		using value_type = discord_core_api::thread_list_sync_data;
 		static constexpr auto parseValue =
-			createObject("emoji_id", &ValueType::emojiId, "emoji_name", &ValueType::emojiName, "id", &ValueType::id, "moderated", &ValueType::moderated, "name", &ValueType::name);
+			createObject("members", &value_type::members, "channel_ids", &value_type::channelIds, "threads", &value_type::threads, "guild_id", &value_type::guildId);
 	};
 
-	template<> struct core<DiscordCoreAPI::DefaultReactionData> {
-		using ValueType					 = DiscordCoreAPI::DefaultReactionData;
-		static constexpr auto parseValue = createObject("emoji_id", &ValueType::emojiId, "emoji_name", &ValueType::emojiName);
+	template<> struct core<discord_core_api::interaction_data_data> {
+		using value_type				 = discord_core_api::interaction_data_data;
+		static constexpr auto parseValue = createObject("options", &value_type::options, "type", &value_type::type, "resolved", &value_type::resolved, "guild_id",
+			&value_type::guildId, "name", &value_type::name, "values", &value_type::values, "component_type", &value_type::componentType, "custom_id", &value_type::customId,
+			"custom_id_small", &value_type::customIdSmall, "value", &value_type::value, "target_id", &value_type::targetId);
 	};
 
-	template<> struct core<DiscordCoreAPI::VoiceRegionData> {
-		using ValueType = DiscordCoreAPI::VoiceRegionData;
+	template<> struct core<discord_core_api::resolved_data> {
+		using value_type				 = discord_core_api::resolved_data;
+		static constexpr auto parseValue = createObject("attachments", &value_type::attachments, "members", &value_type::members, "messages", &value_type::messages, "channels",
+			&value_type::channels, "users", &value_type::users, "roles", &value_type::roles);
+	};
+
+	template<> struct core<discord_core_api::application_command_interaction_data_option> {
+		using value_type = discord_core_api::application_command_interaction_data_option;
 		static constexpr auto parseValue =
-			createObject("custom", &ValueType::custom, "depracated", &ValueType::deprecated, "id", &ValueType::id, "name", &ValueType::name, "optimal", &ValueType::optimal);
+			createObject("name", &value_type::name, "type", &value_type::type, "value", &value_type::value, "focused", &value_type::focused, "options", &value_type::options);
 	};
 
-	template<> struct core<DiscordCoreAPI::InviteData> {
-		using ValueType					 = DiscordCoreAPI::InviteData;
-		static constexpr auto parseValue = createObject("approximate_member_count", &ValueType::approximateMemberCount, "approximate_presence_count",
-			&ValueType::approximatePresenceCount, "channel", &ValueType::channel, "guild_id", &ValueType::guildId, "code", &ValueType::code, "created_at", &ValueType::createdAt,
-			"expires_at", &ValueType::expiresAt, "guild", &ValueType::guild, "guild_scheduled_event", &ValueType::guildScheduledEvent, "inviter", &ValueType::inviter, "max_age",
-			&ValueType::maxAge, "max_uses", &ValueType::maxUses, "stage_instance", &ValueType::stageInstance, "target_application", &ValueType::targetApplication, "target_type",
-			&ValueType::targetType, "target_user", &ValueType::targetUser, "temporary", &ValueType::temporary, "uses", &ValueType::uses);
+	template<> struct core<discord_core_api::interaction_data> {
+		using value_type				 = discord_core_api::interaction_data;
+		static constexpr auto parseValue = createObject("app_permissions", &value_type::appPermissions, "data", &value_type::data, "guild_locale", &value_type::guildLocale,
+			"application_id", &value_type::applicationId, "member", &value_type::member, "type", &value_type::type, "message", &value_type::message, "channel_id",
+			&value_type::channelId, "locale", &value_type::locale, "guild_id", &value_type::guildId, "token", &value_type::token, "version", &value_type::version, "user",
+			&value_type::user, "id", &value_type::id, "channel", &value_type::channel);
 	};
 
-	template<> struct core<DiscordCoreAPI::AutoModerationRuleData> {
-		using ValueType					 = DiscordCoreAPI::AutoModerationRuleData;
-		static constexpr auto parseValue = createObject("actions", &ValueType::actions, "creator_id", &ValueType::creatorId, "enabled", &ValueType::enabled, "guild_id",
-			&ValueType::guildId, "event_type", &ValueType::eventType, "exempt_channels", &ValueType::exemptChannels, "exempt_roles", &ValueType::exemptRoles, "id", &ValueType::id,
-			"trigger_meta_data", &ValueType::triggerMetaData, "trigger_type", &ValueType::triggerType);
+	template<> struct core<discord_core_api::input_event_data> {
+		using value_type				 = discord_core_api::input_event_data;
+		static constexpr auto parseValue = createObject("response_type", &value_type::responseType, "interaction_data", &value_type::interactionData);
 	};
 
-	template<> struct core<DiscordCoreAPI::ApplicationCommandData> {
-		using ValueType					 = DiscordCoreAPI::ApplicationCommandData;
-		static constexpr auto parseValue = createObject("application_id", &ValueType::applicationId, "default_member_permissions", &ValueType::defaultMemberPermissions,
-			"description", &ValueType::description, "guild_id", &ValueType::guildId, "description_localizations", &ValueType::descriptionLocalizations, "dm_permission",
-			&ValueType::dmPermission, "id", &ValueType::id, "name", &ValueType::name, "name_localizations", &ValueType::nameLocalizations, "options", &ValueType::options, "type",
-			&ValueType::type, "version", &ValueType::version);
+	template<> struct core<discord_core_api::thread_members_update_data> {
+		using value_type				 = discord_core_api::thread_members_update_data;
+		static constexpr auto parseValue = createObject("added_members", &value_type::addedMembers, "member_count", &value_type::memberCount, "guild_id", &value_type::guildId,
+			"removed_member_ids", &value_type::removedMemberIds);
 	};
 
-	template<> struct core<DiscordCoreAPI::StickerData> {
-		using ValueType					 = DiscordCoreAPI::StickerData;
-		static constexpr auto parseValue = createObject("asset", &ValueType::asset, "description", &ValueType::description, "format_type", &ValueType::formatType, "id",
-			&ValueType::id, "name", &ValueType::name, "pack_id", &ValueType::packId, "tags", &ValueType::tags, "type", &ValueType::type, "user", &ValueType::user, "guild_id",
-			&ValueType::guildId, "sort_value", &ValueType::sortValue, "nsfw_level", &ValueType::nsfwLevel, "flags", &ValueType::flags);
+	template<> struct core<discord_core_api::web_hook_data> {
+		using value_type				 = discord_core_api::web_hook_data;
+		static constexpr auto parseValue = createObject("application_id", &value_type::applicationId, "avatar", &value_type::avatar, "channel_id", &value_type::channelId,
+			"guild_id", &value_type::guildId, "id", &value_type::id, "name", &value_type::name, "source_channel", &value_type::sourceChannel, "source_guild",
+			&value_type::sourceGuild, "token", &value_type::token, "type", &value_type::type, "url", &value_type::url, "user", &value_type::user);
 	};
 
-	template<> struct core<DiscordCoreAPI::MessageActivityData> {
-		using ValueType					 = DiscordCoreAPI::MessageActivityData;
-		static constexpr auto parseValue = createObject("type", &ValueType::type, "party_id", &ValueType::partyId);
+	template<> struct core<discord_core_api::audit_log_change_data> {
+		using value_type				 = discord_core_api::audit_log_change_data;
+		static constexpr auto parseValue = createObject("key", &value_type::key, "new_value", &value_type::newValue, "old_value", &value_type::oldValue);
 	};
 
-	template<> struct core<DiscordCoreAPI::ActiveThreadsData> {
-		using ValueType					 = DiscordCoreAPI::ActiveThreadsData;
-		static constexpr auto parseValue = createObject("has_more", &ValueType::hasMore, "members", &ValueType::members, "threads", &ValueType::threads);
+	template<> struct core<discord_core_api::optional_audit_entry_info_data> {
+		using value_type				 = discord_core_api::optional_audit_entry_info_data;
+		static constexpr auto parseValue = createObject("delete_member_days", &value_type::deleteMemberDays, "members_removed", &value_type::membersRemoved, "application_id",
+			&value_type::applicationId, "role_name", &value_type::roleName, "channel_id", &value_type::channelId, "message_id", &value_type::messageId, "count", &value_type::count,
+			"type", &value_type::type);
 	};
 
-	template<> struct core<DiscordCoreAPI::ClientStatus> {
-		using ValueType					 = DiscordCoreAPI::ClientStatus;
-		static constexpr auto parseValue = createObject("web", &ValueType::web, "mobile", &ValueType::mobile, "desktop", &ValueType::desktop);
+	template<> struct core<discord_core_api::archived_threads_data> {
+		using value_type				 = discord_core_api::archived_threads_data;
+		static constexpr auto parseValue = createObject("has_more", &value_type::hasMore, "member", &value_type::members, "threads", &value_type::threads);
 	};
 
-	template<> struct core<DiscordCoreAPI::ActivityData> {
-		using ValueType					 = DiscordCoreAPI::ActivityData;
-		static constexpr auto parseValue = createObject("name", &ValueType::name, "type", &ValueType::type, "url", &ValueType::url, "state", &ValueType::state, "created_at",
-			&ValueType::created_at, "details", &ValueType::details, "application_id", &ValueType::applicationId);
+	template<> struct core<discord_core_api::connection_data> {
+		using value_type				 = discord_core_api::connection_data;
+		static constexpr auto parseValue = createObject("friend_sync", &value_type::friendSync, "id", &value_type::id, "integrations", &value_type::integrations, "name",
+			&value_type::name, "revoked", &value_type::revoked, "show_activity", &value_type::showActivity, "type", &value_type::type, "verified", &value_type::verified,
+			"visibility", &value_type::visibility);
 	};
 
-	template<> struct core<DiscordCoreAPI::PresenceUpdateData> {
-		using ValueType					 = DiscordCoreAPI::PresenceUpdateData;
-		static constexpr auto parseValue = createObject("client_status", &ValueType::clientStatus, "guild_id", &ValueType::guildId, "status", &ValueType::status, "user",
-			&ValueType::user, "activities", &ValueType::activities);
+	template<> struct core<discord_core_api::guild_prune_count_data> {
+		using value_type				 = discord_core_api::guild_prune_count_data;
+		static constexpr auto parseValue = createObject("count", &value_type::count);
 	};
 
-	template<> struct core<DiscordCoreAPI::AccountData> {
-		using ValueType					 = DiscordCoreAPI::AccountData;
-		static constexpr auto parseValue = createObject("name", &ValueType::name);
+	template<> struct core<discord_core_api::thread_data> {
+		using value_type				 = discord_core_api::thread_data;
+		static constexpr auto parseValue = createObject("application_id", &value_type::applicationId, "applied_tags", &value_type::appliedTags, "available_tags",
+			&value_type::availableTags, "guild_id", &value_type::guildId, "bitrate", &value_type::bitrate, "default_auto_archive_duration", &value_type::defaultAutoArchiveDuration,
+			"default_reaction_emoji", &value_type::defaultReactionEmoji, "flags", &value_type::flags, "icon", &value_type::icon, "id", &value_type::id, "last_message_id",
+			&value_type::lastMessageId, "last_pin_timestamp", &value_type::lastPinTimestamp, "member", &value_type::member, "member_count", &value_type::memberCount,
+			"message_count", &value_type::messageCount, "name", &value_type::name, "owner_id", &value_type::ownerId, "parent_id", &value_type::parentId, "permission_overwrites",
+			&value_type::permissionOverwrites, "permissions", &value_type::permissions, "position", &value_type::position, "rate_limit_per_user", &value_type::rateLimitPerUser,
+			"recipients", &value_type::recipients, "rtc_region", &value_type::rtcRegion, "thread_metadata", &value_type::threadMetadata, "topic", &value_type::topic,
+			"total_message_sent", &value_type::totalMessageSent, "type", &value_type::type, "user_limit", &value_type::userLimit, "video_quality_mode",
+			&value_type::videoQualityMode);
 	};
 
-	template<> struct core<DiscordCoreAPI::EmbedData> {
-		using ValueType					 = DiscordCoreAPI::EmbedData;
-		static constexpr auto parseValue = createObject("author", &ValueType::author, "color", &ValueType::hexColorValue, "description", &ValueType::description, "fields",
-			&ValueType::fields, "footer", &ValueType::footer, "image", &ValueType::image, "provider", &ValueType::provider, "thumbnail", &ValueType::thumbnail, "timestamp",
-			&ValueType::timeStamp, "title", &ValueType::title, "type", &ValueType::type, "url", &ValueType::url, "video", &ValueType::video);
+	template<> struct core<discord_core_api::over_write_data> {
+		using value_type				 = discord_core_api::over_write_data;
+		static constexpr auto parseValue = createObject("allow", &value_type::allow, "deny", &value_type::deny, "id", &value_type::id, "type", &value_type::type);
 	};
 
-	template<> struct core<DiscordCoreAPI::MessageDataOld> {
-		using ValueType					 = DiscordCoreAPI::MessageDataOld;
-		static constexpr auto parseValue = createObject("activity", &ValueType::activity, "application", &ValueType::application, "application_id", &ValueType::applicationId,
-			"attachments", &ValueType::attachments, "author", &ValueType::author, "channel_id", &ValueType::channelId, "components", &ValueType::components, "content",
-			&ValueType::content, "edited_timestamp", &ValueType::editedTimestamp, "embeds", &ValueType::embeds, "flags", &ValueType::flags, "guild_id", &ValueType::guildId, "id",
-			&ValueType::id, "interaction", &ValueType::interaction, "mention_channels", &ValueType::mentionChannels, "mention_everyone", &ValueType::mentionEveryone,
-			"mention_roles", &ValueType::mentionRoles, "mentions", &ValueType::mentions, "message_reference", &ValueType::messageReference, "nonce", &ValueType::nonce, "pinned",
-			&ValueType::pinned, "reactions", &ValueType::reactions, "sticker_items", &ValueType::stickerItems, "stickers", &ValueType::stickers, "thread", &ValueType::thread,
-			"timestamp", &ValueType::timeStamp, "tts", &ValueType::tts, "type", &ValueType::type, "webhook_id", &ValueType::webHookId);
+	template<> struct core<discord_core_api::forum_tag_data> {
+		using value_type				 = discord_core_api::forum_tag_data;
+		static constexpr auto parseValue = createObject("emoji_id", &value_type::emojiId, "emoji_name", &value_type::emojiName, "id", &value_type::id, "moderated",
+			&value_type::moderated, "name", &value_type::name);
 	};
 
-	template<> struct core<DiscordCoreAPI::ReactionData> {
-		using ValueType					 = DiscordCoreAPI::ReactionData;
-		static constexpr auto parseValue = createObject("channel_id", &ValueType::channelId, "count", &ValueType::count, "emoji", &ValueType::emoji, "guild_id",
-			&ValueType::guildId, "id", &ValueType::id, "member", &ValueType::member, "me", &ValueType::me, "message_id", &ValueType::messageId, "user_id", &ValueType::userId);
+	template<> struct core<discord_core_api::default_reaction_data> {
+		using value_type				 = discord_core_api::default_reaction_data;
+		static constexpr auto parseValue = createObject("emoji_id", &value_type::emojiId, "emoji_name", &value_type::emojiName);
 	};
 
-	template<> struct core<DiscordCoreAPI::StickerItemData> {
-		using ValueType					 = DiscordCoreAPI::StickerItemData;
-		static constexpr auto parseValue = createObject("format_type", &ValueType::formatType, "name", &ValueType::name);
-	};
-
-	template<> struct core<DiscordCoreAPI::AttachmentData> {
-		using ValueType					 = DiscordCoreAPI::AttachmentData;
-		static constexpr auto parseValue = createObject("content_type", &ValueType::contentType, "description", &ValueType::description, "filename", &ValueType::filename, "height",
-			&ValueType::height, "id", &ValueType::id, "proxy_url", &ValueType::proxyUrl, "size", &ValueType::size, "url", &ValueType::url, "width", &ValueType::width, "ephemeral",
-			&ValueType::ephemeral);
-	};
-
-	template<> struct core<DiscordCoreAPI::ChannelMentionData> {
-		using ValueType					 = DiscordCoreAPI::ChannelMentionData;
-		static constexpr auto parseValue = createObject("id", &ValueType::id, "guild_id", &ValueType::guildId, "name", &ValueType::name, "type", &ValueType::type);
-	};
-
-	template<> struct core<DiscordCoreAPI::SelectDefaultValueData> {
-		using ValueType					 = DiscordCoreAPI::SelectDefaultValueData;
-		static constexpr auto parseValue = createObject("id", &ValueType::id, "type", &ValueType::type);
-	};
-
-	template<> struct core<DiscordCoreAPI::ActionRowData> {
-		using ValueType					 = DiscordCoreAPI::ActionRowData;
-		static constexpr auto parseValue = createObject("components", &ValueType::components, "type", &ValueType::type);
-	};
-
-	template<> struct core<DiscordCoreAPI::EmbedFooterData> {
-		using ValueType					 = DiscordCoreAPI::EmbedFooterData;
-		static constexpr auto parseValue = createObject("proxy_icon_url", &ValueType::proxyIconUrl, "icon_url", &ValueType::iconUrl, "text", &ValueType::text);
-	};
-
-	template<> struct core<DiscordCoreAPI::EmbedImageData> {
-		using ValueType					 = DiscordCoreAPI::EmbedImageData;
-		static constexpr auto parseValue = createObject("proxy_url", &ValueType::proxyUrl, "url", &ValueType::url, "height", &ValueType::height, "width", &ValueType::width);
-	};
-
-	template<> struct core<DiscordCoreAPI::EmbedThumbnailData> {
-		using ValueType					 = DiscordCoreAPI::EmbedThumbnailData;
-		static constexpr auto parseValue = createObject("proxy_url", &ValueType::proxyUrl, "url", &ValueType::url, "height", &ValueType::height, "width", &ValueType::width);
-	};
-
-	template<> struct core<DiscordCoreAPI::EmbedVideoData> {
-		using ValueType					 = DiscordCoreAPI::EmbedVideoData;
-		static constexpr auto parseValue = createObject("proxy_url", &ValueType::proxyUrl, "url", &ValueType::url, "height", &ValueType::height, "width", &ValueType::width);
-	};
-
-	template<> struct core<DiscordCoreAPI::EmbedProviderData> {
-		using ValueType					 = DiscordCoreAPI::EmbedProviderData;
-		static constexpr auto parseValue = createObject("name", &ValueType::name, "url", &ValueType::url);
-	};
-
-	template<> struct core<DiscordCoreAPI::EmbedAuthorData> {
-		using ValueType = DiscordCoreAPI::EmbedAuthorData;
+	template<> struct core<discord_core_api::voice_region_data> {
+		using value_type = discord_core_api::voice_region_data;
 		static constexpr auto parseValue =
-			createObject("proxy_icon_url", &ValueType::proxyIconUrl, "icon_url", &ValueType::iconUrl, "name", &ValueType::name, "url", &ValueType::url);
+			createObject("custom", &value_type::custom, "depracated", &value_type::deprecated, "id", &value_type::id, "name", &value_type::name, "optimal", &value_type::optimal);
 	};
 
-	template<> struct core<DiscordCoreAPI::EmbedFieldData> {
-		using ValueType					 = DiscordCoreAPI::EmbedFieldData;
-		static constexpr auto parseValue = createObject("name", &ValueType::name, "value", &ValueType::value, "inline", &ValueType::Inline);
-	};
-
-	template<> struct core<DiscordCoreAPI::GuildMemberCacheData> {
-		using ValueType					 = DiscordCoreAPI::GuildMemberCacheData;
-		static constexpr auto parseValue = createObject("avatar", &ValueType::avatar, "flags", &ValueType::flags, "guild_id", &ValueType::guildId, "joined_at",
-			&ValueType::joinedAt, "nick", &ValueType::nick, "permissions", &ValueType::permissions, "roles", &ValueType::roles, "user", &ValueType::user);
-	};
-
-	template<> struct core<DiscordCoreAPI::AuditLogEntryData> {
-		using ValueType					 = DiscordCoreAPI::AuditLogEntryData;
-		static constexpr auto parseValue = createObject("action_type", &ValueType::actionType, "changes", &ValueType::changes, "created_at", &ValueType::createdTimeStamp, "id",
-			&ValueType::id, "options", &ValueType::options, "reason", &ValueType::reason, "target_id", &ValueType::targetId, "user_id", &ValueType::userId);
-	};
-
-	template<> struct core<DiscordCoreAPI::ComponentData> {
-		using ValueType					 = DiscordCoreAPI::ComponentData;
-		static constexpr auto parseValue = createObject("type", &ValueType::type, "custom_id", &ValueType::customId, "options", &ValueType::options, "channel_types",
-			&ValueType::channelTypes, "placeholder", &ValueType::placeholder, "min_values", &ValueType::minValues, "max_values", &ValueType::maxValues, "min_length",
-			&ValueType::minLength, "max_length", &ValueType::maxLength, "label", &ValueType::label, "value", &ValueType::value, "title", &ValueType::title, "emoji",
-			&ValueType::emoji, "url", &ValueType::url, "required", &ValueType::required, "disabled", &ValueType::disabled, "style", &ValueType::style);
-	};
-
-	template<> struct core<DiscordCoreAPI::SelectOptionData> {
-		using ValueType					 = DiscordCoreAPI::SelectOptionData;
-		static constexpr auto parseValue = createObject("description", &ValueType::description, "label", &ValueType::label, "value", &ValueType::value, "emoji", &ValueType::emoji,
-			"default", &ValueType::_default);
-	};
-
-	template<> struct core<DiscordCoreAPI::VoiceStateDataLight> {
-		using ValueType					 = DiscordCoreAPI::VoiceStateDataLight;
-		static constexpr auto parseValue = createObject("channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId, "user_id", &ValueType::userId);
-	};
-
-	template<> struct core<DiscordCoreAPI::GuildData> {
-		using ValueType					 = DiscordCoreAPI::GuildData;
-		static constexpr auto parseValue = createObject("default_message_notifications", &ValueType::defaultMessageNotifications, "guild_scheduled_events",
-			&ValueType::guildScheduledEvents, "explicit_content_filter", &ValueType::explicitContentFilter, "stage_instances", &ValueType::stageInstances, "presences",
-			&ValueType::presences, "system_channel_flags", &ValueType::systemChannelFlags, "widget_enabled", &ValueType::widgetEnabled, "unavailable", &ValueType::unavailable,
-			"owner", &ValueType::owner, "large", &ValueType::large, "member_count", &ValueType::memberCount, "verification_level", &ValueType::verificationLevel, "id",
-			&ValueType::id, "channels", &ValueType::channels, "roles", &ValueType::roles, "members", &ValueType::members, "voice_states", &ValueType::voiceStates, "owner_id",
-			&ValueType::ownerId, "permissions", &ValueType::permissions, "afk_channel_id", &ValueType::afkChannelId, "features", &ValueType::features, "stickers",
-			&ValueType::stickers, "max_stage_video_channel_users", &ValueType::maxStageVideoChannelUsers, "public_updates_channel_id", &ValueType::publicUpdatesChannelId,
-			"premium_subscription_count", &ValueType::premiumSubscriptionCount, "approximate_presence_count", &ValueType::approximatePresenceCount, "threads", &ValueType::threads,
-			"welcome_screen", &ValueType::welcomeScreen, "safety_alerts_channel_id", &ValueType::safetyAlertsChannelId, "approximate_member_count",
-			&ValueType::approximateMemberCount, "premium_progress_bar_enabled", &ValueType::premiumProgressBarEnabled, "max_video_channel_users", &ValueType::maxVideoChannelUsers,
-			"emoji", &ValueType::emoji, "preferred_locale", &ValueType::preferredLocale, "vanity_url_code", &ValueType::vanityUrlCode, "system_channel_id",
-			&ValueType::systemChannelId, "discovery_splash", &ValueType::discoverySplash, "widget_channel_id", &ValueType::widgetChannelId, "rules_channel_id",
-			&ValueType::rulesChannelId, "nsfw_level", &ValueType::nsfwLevel, "application_id", &ValueType::applicationId, "description", &ValueType::description, "premium_tier",
-			&ValueType::premiumTier, "afk_timeout", &ValueType::afkTimeout, "max_members", &ValueType::maxMembers, "mfa_level", &ValueType::mfaLevel, "splash", &ValueType::splash,
-			"name", &ValueType::name, "banner", &ValueType::banner, "icon", &ValueType::icon);
-	};
-
-	template<> struct core<DiscordCoreAPI::PartialGuildData> {
-		using ValueType					 = DiscordCoreAPI::PartialGuildData;
-		static constexpr auto parseValue = createObject("unavailable", &ValueType::unavailable, "id", &ValueType::id);
-	};
-
-	template<> struct core<DiscordCoreAPI::IntegrationData> {
-		using ValueType					 = DiscordCoreAPI::IntegrationData;
-		static constexpr auto parseValue = createObject("account", &ValueType::account, "application", &ValueType::application, "enabled", &ValueType::enabled, "enable_emoticons",
-			&ValueType::enableEmoticons, "expire_behavior", &ValueType::expireBehavior, "expire_grace_period", &ValueType::expireGracePeriod, "id", &ValueType::id, "name",
-			&ValueType::name, "revoked", &ValueType::revoked, "role_id", &ValueType::roleId, "subscriber_count", &ValueType::subscriberCount, "syncing", &ValueType::syncing,
-			"synced_at", &ValueType::syncedAt, "type", &ValueType::type, "user", &ValueType::user);
-	};
-
-	template<> struct core<DiscordCoreAPI::File> {
-		using ValueType					 = DiscordCoreAPI::File;
-		static constexpr auto parseValue = createArray(&ValueType::data);
-	};
-
-	template<> struct core<DiscordCoreAPI::AllowedMentionsData> {
-		using ValueType = DiscordCoreAPI::AllowedMentionsData;
+	template<> struct core<discord_core_api::invite_data> {
+		using value_type = discord_core_api::invite_data;
 		static constexpr auto parseValue =
-			createObject("replied_user", &ValueType::repliedUser, "parse", &ValueType::parse, "roles", &ValueType::roles, "users", &ValueType::users);
+			createObject("approximate_member_count", &value_type::approximateMemberCount, "approximate_presence_count", &value_type::approximatePresenceCount, "channel",
+				&value_type::channel, "guild_id", &value_type::guildId, "code", &value_type::code, "created_at", &value_type::createdAt, "expires_at", &value_type::expiresAt,
+				"guild", &value_type::guild, "guild_scheduled_event", &value_type::guildScheduledEvent, "inviter", &value_type::inviter, "max_age", &value_type::maxAge, "max_uses",
+				&value_type::maxUses, "stage_instance", &value_type::stageInstance, "target_application", &value_type::targetApplication, "target_type", &value_type::targetType,
+				"target_user", &value_type::targetUser, "temporary", &value_type::temporary, "uses", &value_type::uses);
 	};
 
-	template<> struct core<DiscordCoreAPI::MessageReferenceData> {
-		using ValueType					 = DiscordCoreAPI::MessageReferenceData;
-		static constexpr auto parseValue = createObject("fail_if_not_exists", &ValueType::failIfNotExists, "message_id", &ValueType::messageId, "channel_id", &ValueType::channelId,
-			"guild_id", &ValueType::guildId);
+	template<> struct core<discord_core_api::auto_moderation_rule_data> {
+		using value_type				 = discord_core_api::auto_moderation_rule_data;
+		static constexpr auto parseValue = createObject("actions", &value_type::actions, "creator_id", &value_type::creatorId, "enabled", &value_type::enabled, "guild_id",
+			&value_type::guildId, "event_type", &value_type::eventType, "exempt_channels", &value_type::exemptChannels, "exempt_roles", &value_type::exemptRoles, "id",
+			&value_type::id, "trigger_meta_data", &value_type::triggerMetaData, "trigger_type", &value_type::triggerType);
 	};
 
-	template<> struct core<DiscordCoreAPI::MessageInteractionData> {
-		using ValueType = DiscordCoreAPI::MessageInteractionData;
+	template<> struct core<discord_core_api::application_command_data> {
+		using value_type				 = discord_core_api::application_command_data;
+		static constexpr auto parseValue = createObject("application_id", &value_type::applicationId, "default_member_permissions", &value_type::defaultMemberPermissions,
+			"description", &value_type::description, "guild_id", &value_type::guildId, "description_localizations", &value_type::descriptionLocalizations, "dm_permission",
+			&value_type::dmPermission, "id", &value_type::id, "name", &value_type::name, "name_localizations", &value_type::nameLocalizations, "options", &value_type::options,
+			"type", &value_type::type, "version", &value_type::version);
+	};
+
+	template<> struct core<discord_core_api::sticker_data> {
+		using value_type				 = discord_core_api::sticker_data;
+		static constexpr auto parseValue = createObject("asset", &value_type::asset, "description", &value_type::description, "format_type", &value_type::formatType, "id",
+			&value_type::id, "name", &value_type::name, "pack_id", &value_type::packId, "tags", &value_type::tags, "type", &value_type::type, "user", &value_type::user, "guild_id",
+			&value_type::guildId, "sort_value", &value_type::sortValue, "nsfw_level", &value_type::nsfwLevel, "flags", &value_type::flags);
+	};
+
+	template<> struct core<discord_core_api::message_activity_data> {
+		using value_type				 = discord_core_api::message_activity_data;
+		static constexpr auto parseValue = createObject("type", &value_type::type, "party_id", &value_type::partyId);
+	};
+
+	template<> struct core<discord_core_api::active_threads_data> {
+		using value_type				 = discord_core_api::active_threads_data;
+		static constexpr auto parseValue = createObject("has_more", &value_type::hasMore, "members", &value_type::members, "threads", &value_type::threads);
+	};
+
+	template<> struct core<discord_core_api::client_status> {
+		using value_type				 = discord_core_api::client_status;
+		static constexpr auto parseValue = createObject("web", &value_type::web, "mobile", &value_type::mobile, "desktop", &value_type::desktop);
+	};
+
+	template<> struct core<discord_core_api::activity_data> {
+		using value_type				 = discord_core_api::activity_data;
+		static constexpr auto parseValue = createObject("name", &value_type::name, "type", &value_type::type, "url", &value_type::url, "state", &value_type::state, "created_at",
+			&value_type::createdAt, "details", &value_type::details, "application_id", &value_type::applicationId);
+	};
+
+	template<> struct core<discord_core_api::presence_update_data> {
+		using value_type				 = discord_core_api::presence_update_data;
+		static constexpr auto parseValue = createObject("client_status", &value_type::clientStatus, "guild_id", &value_type::guildId, "status", &value_type::status, "user",
+			&value_type::user, "activities", &value_type::activities);
+	};
+
+	template<> struct core<discord_core_api::account_data> {
+		using value_type				 = discord_core_api::account_data;
+		static constexpr auto parseValue = createObject("name", &value_type::name);
+	};
+
+	template<> struct core<discord_core_api::embed_data> {
+		using value_type				 = discord_core_api::embed_data;
+		static constexpr auto parseValue = createObject("author", &value_type::author, "color", &value_type::hexColorValue, "description", &value_type::description, "fields",
+			&value_type::fields, "footer", &value_type::footer, "image", &value_type::image, "provider", &value_type::provider, "thumbnail", &value_type::thumbnail, "timestamp",
+			&value_type::timeStamp, "title", &value_type::title, "type", &value_type::type, "url", &value_type::url, "video", &value_type::video);
+	};
+
+	template<> struct core<discord_core_api::message_data_old> {
+		using value_type				 = discord_core_api::message_data_old;
+		static constexpr auto parseValue = createObject("activity", &value_type::activity, "application", &value_type::application, "application_id", &value_type::applicationId,
+			"attachments", &value_type::attachments, "author", &value_type::author, "channel_id", &value_type::channelId, "components", &value_type::components, "content",
+			&value_type::content, "edited_timestamp", &value_type::editedTimestamp, "embeds", &value_type::embeds, "flags", &value_type::flags, "guild_id", &value_type::guildId,
+			"id", &value_type::id, "interaction", &value_type::interaction, "mention_channels", &value_type::mentionChannels, "mention_everyone", &value_type::mentionEveryone,
+			"mention_roles", &value_type::mentionRoles, "mentions", &value_type::mentions, "message_reference", &value_type::messageReference, "nonce", &value_type::nonce,
+			"pinned", &value_type::pinned, "reactions", &value_type::reactions, "sticker_items", &value_type::stickerItems, "stickers", &value_type::stickers, "thread",
+			&value_type::thread, "timestamp", &value_type::timeStamp, "tts", &value_type::tts, "type", &value_type::type, "webhook_id", &value_type::webHookId);
+	};
+
+	template<> struct core<discord_core_api::reaction_data> {
+		using value_type = discord_core_api::reaction_data;
 		static constexpr auto parseValue =
-			createObject("id", &ValueType::id, "member", &ValueType::member, "name", &ValueType::name, "type", &ValueType::type, "user", &ValueType::user);
+			createObject("channel_id", &value_type::channelId, "count", &value_type::count, "emoji", &value_type::emoji, "guild_id", &value_type::guildId, "id", &value_type::id,
+				"member", &value_type::member, "me", &value_type::me, "message_id", &value_type::messageId, "user_id", &value_type::userId);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildScheduledEventData> {
-		using ValueType					 = DiscordCoreAPI::GuildScheduledEventData;
-		static constexpr auto parseValue = createObject("id", &ValueType::id, "privacy_level", &ValueType::privacyLevel, "entity_metadata", &ValueType::entityMetadata,
-			"entity_type", &ValueType::entityType, "status", &ValueType::status, "scheduled_start_time", &ValueType::scheduledStartTime, "scheduled_end_time",
-			&ValueType::scheduledEndTime, "description", &ValueType::description, "creator_id", &ValueType::creatorId, "channel_id", &ValueType::channelId, "entity_id",
-			&ValueType::entityId, "user_count", &ValueType::userCount, "guild_id", &ValueType::guildId, "creator", &ValueType::creator, "name", &ValueType::name);
+	template<> struct core<discord_core_api::sticker_item_data> {
+		using value_type				 = discord_core_api::sticker_item_data;
+		static constexpr auto parseValue = createObject("format_type", &value_type::formatType, "name", &value_type::name);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildScheduledEventUserData> {
-		using ValueType					 = DiscordCoreAPI::GuildScheduledEventUserData;
-		static constexpr auto parseValue = createObject("guild_scheduled_event_id", &ValueType::guildScheduledEventId, "member", &ValueType::member, "user", &ValueType::user);
+	template<> struct core<discord_core_api::attachment_data> {
+		using value_type				 = discord_core_api::attachment_data;
+		static constexpr auto parseValue = createObject("content_type", &value_type::contentType, "description", &value_type::description, "filename", &value_type::filename,
+			"height", &value_type::height, "id", &value_type::id, "proxy_url", &value_type::proxyUrl, "size", &value_type::size, "url", &value_type::url, "width",
+			&value_type::width, "ephemeral", &value_type::ephemeral);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildScheduledEventMetadata> {
-		using ValueType					 = DiscordCoreAPI::GuildScheduledEventMetadata;
-		static constexpr auto parseValue = createObject("location", &ValueType::location);
+	template<> struct core<discord_core_api::channel_mention_data> {
+		using value_type				 = discord_core_api::channel_mention_data;
+		static constexpr auto parseValue = createObject("id", &value_type::id, "guild_id", &value_type::guildId, "name", &value_type::name, "type", &value_type::type);
 	};
 
-	template<> struct core<DiscordCoreAPI::RoleData> {
-		using ValueType					 = DiscordCoreAPI::RoleData;
-		static constexpr auto parseValue = createObject("id", &ValueType::id, "name", &ValueType::name, "color", &ValueType::color, "hoist", &ValueType::hoist, "icon",
-			&ValueType::icon, "unicode_emoji", &ValueType::unicodeEmoji, "position", &ValueType::position, "permissions", &ValueType::permissions, "managed", &ValueType::managed,
-			"mentionable", &ValueType::mentionable, "tags", &ValueType::tags, "flags", &ValueType::flags);
+	template<> struct core<discord_core_api::select_default_value_data> {
+		using value_type				 = discord_core_api::select_default_value_data;
+		static constexpr auto parseValue = createObject("id", &value_type::id, "type", &value_type::type);
 	};
 
-	template<> struct core<DiscordCoreAPI::MessageData> {
-		using ValueType					 = DiscordCoreAPI::MessageData;
-		static constexpr auto parseValue = createObject("activity", &ValueType::activity, "application", &ValueType::application, "application_id", &ValueType::applicationId,
-			"attachments", &ValueType::attachments, "author", &ValueType::author, "channel_id", &ValueType::channelId, "components", &ValueType::components, "content",
-			&ValueType::content, "edited_timestamp", &ValueType::editedTimestamp, "embeds", &ValueType::embeds, "flags", &ValueType::flags, "guild_id", &ValueType::guildId, "id",
-			&ValueType::id, "interaction", &ValueType::interaction, "member", &ValueType::member, "mention_channels", &ValueType::mentionChannels, "mention_everyone",
-			&ValueType::mentionEveryone, "mention_roles", &ValueType::mentionRoles, "mentions", &ValueType::mentions, "message_reference", &ValueType::messageReference, "nonce",
-			&ValueType::nonce, "pinned", &ValueType::pinned, "reactions", &ValueType::reactions, "referenced_message", &ValueType::referencedMessage, "sticker_items",
-			&ValueType::stickerItems, "stickers", &ValueType::stickers, "thread", &ValueType::thread, "timestamp", &ValueType::timeStamp, "tts", &ValueType::tts, "type",
-			&ValueType::type, "webhook_id", &ValueType::webHookId);
+	template<> struct core<discord_core_api::action_row_data> {
+		using value_type				 = discord_core_api::action_row_data;
+		static constexpr auto parseValue = createObject("components", &value_type::components, "type", &value_type::type);
 	};
 
-	template<> struct core<DiscordCoreAPI::StickerPackData> {
-		using ValueType					 = DiscordCoreAPI::StickerPackData;
-		static constexpr auto parseValue = createObject("banner_asset_id", &ValueType::bannerAssetId, "cover_sticker_id", &ValueType::coverStickerId, "description",
-			&ValueType::description, "id", &ValueType::snowflake, "name", &ValueType::name, "sku_id", &ValueType::skuId, "stickers", &ValueType::stickers);
+	template<> struct core<discord_core_api::embed_footer_data> {
+		using value_type				 = discord_core_api::embed_footer_data;
+		static constexpr auto parseValue = createObject("proxy_icon_url", &value_type::proxyIconUrl, "icon_url", &value_type::iconUrl, "text", &value_type::text);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildWidgetImageData> {
-		using ValueType					 = DiscordCoreAPI::GuildWidgetImageData;
-		static constexpr auto parseValue = createObject("url", &ValueType::url);
+	template<> struct core<discord_core_api::embed_image_data> {
+		using value_type				 = discord_core_api::embed_image_data;
+		static constexpr auto parseValue = createObject("proxy_url", &value_type::proxyUrl, "url", &value_type::url, "height", &value_type::height, "width", &value_type::width);
 	};
 
-	template<> struct core<DiscordCoreAPI::GuildTemplateData> {
-		using ValueType					 = DiscordCoreAPI::GuildTemplateData;
-		static constexpr auto parseValue = createObject("code", &ValueType::code, "created_at", &ValueType::createdAt, "creator", &ValueType::creator, "creator_id",
-			&ValueType::creatorId, "description", &ValueType::description, "is_dirty", &ValueType::isDirty, "name", &ValueType::name, "serialized_source_guild",
-			&ValueType::serializedSourceGuild, "source_guild_id", &ValueType::sourceGuildId, "updated_at", &ValueType::updatedAt);
+	template<> struct core<discord_core_api::embed_thumbnail_data> {
+		using value_type				 = discord_core_api::embed_thumbnail_data;
+		static constexpr auto parseValue = createObject("proxy_url", &value_type::proxyUrl, "url", &value_type::url, "height", &value_type::height, "width", &value_type::width);
 	};
 
-	template<> struct core<DiscordCoreAPI::ApplicationCommandOptionData> {
-		using ValueType					 = DiscordCoreAPI::ApplicationCommandOptionData;
-		static constexpr auto parseValue = createObject("type", &ValueType::type, "name", &ValueType::name, "description", &ValueType::description, "required",
-			&ValueType::required, "autocomplete", &ValueType::autocomplete, "min_value", &ValueType::minValue, "max_value", &ValueType::maxValue, "channel_types",
-			&ValueType::channelTypes, "description_localizations", &ValueType::descriptionLocalizations, "name_localizations", &ValueType::nameLocalizations, "choices",
-			&ValueType::choices, "options", &ValueType::options);
+	template<> struct core<discord_core_api::embed_video_data> {
+		using value_type				 = discord_core_api::embed_video_data;
+		static constexpr auto parseValue = createObject("proxy_url", &value_type::proxyUrl, "url", &value_type::url, "height", &value_type::height, "width", &value_type::width);
 	};
 
-	template<> struct core<DiscordCoreAPI::StageInstanceData> {
-		using ValueType					 = DiscordCoreAPI::StageInstanceData;
-		static constexpr auto parseValue = createObject("privacy_level", &ValueType::privacyLevel, "discoverable_disabled", &ValueType::discoverableDisabled, "channel_id",
-			&ValueType::channelId, "guild_id", &ValueType::guildId, "topic", &ValueType::topic);
+	template<> struct core<discord_core_api::embed_provider_data> {
+		using value_type				 = discord_core_api::embed_provider_data;
+		static constexpr auto parseValue = createObject("name", &value_type::name, "url", &value_type::url);
 	};
 
-	template<> struct core<DiscordCoreAPI::ApplicationCommandOptionChoiceData> {
-		using ValueType					 = DiscordCoreAPI::ApplicationCommandOptionChoiceData;
-		static constexpr auto parseValue = createObject("name", &ValueType::name, "value", &ValueType::value, "name_localizations", &ValueType::nameLocalizations);
-	};
-
-	template<> struct core<DiscordCoreAPI::RoleTagsData> {
-		using ValueType = DiscordCoreAPI::RoleTagsData;
+	template<> struct core<discord_core_api::embed_author_data> {
+		using value_type = discord_core_api::embed_author_data;
 		static constexpr auto parseValue =
-			createObject("premium_subscriber", &ValueType::premiumSubscriber, "integration_id", &ValueType::integrationId, "bot_id", &ValueType::botId);
+			createObject("proxy_icon_url", &value_type::proxyIconUrl, "icon_url", &value_type::iconUrl, "name", &value_type::name, "url", &value_type::url);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::ConnectProperties> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::ConnectProperties;
-		static constexpr auto parseValue = createObject("os", &ValueType::os, "device", &ValueType::device, "browser", &ValueType::browser);
+	template<> struct core<discord_core_api::embed_field_data> {
+		using value_type				 = discord_core_api::embed_field_data;
+		static constexpr auto parseValue = createObject("name", &value_type::name, "value", &value_type::value, "inline", &value_type::Inline);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::WebSocketIdentifyData> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::WebSocketIdentifyData;
-		static constexpr auto parseValue = createObject("token", &ValueType::botToken, "shard", &ValueType::shard, "intents", &ValueType::intents, "large_threshold",
-			&ValueType::largeThreshold, "presence", &ValueType::presence, "properties", &ValueType::properties);
+	template<> struct core<discord_core_api::guild_member_cache_data> {
+		using value_type				 = discord_core_api::guild_member_cache_data;
+		static constexpr auto parseValue = createObject("avatar", &value_type::avatar, "flags", &value_type::flags, "guild_id", &value_type::guildId, "joined_at",
+			&value_type::joinedAt, "nick", &value_type::nick, "permissions", &value_type::permissionsVal, "roles", &value_type::roles, "user", &value_type::user);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::WebSocketResumeData> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::WebSocketResumeData;
-		static constexpr auto parseValue = createObject("token", &ValueType::botToken, "session_id", &ValueType::sessionId, "seq", &ValueType::lastNumberReceived);
+	template<> struct core<discord_core_api::audit_log_entry_data> {
+		using value_type				 = discord_core_api::audit_log_entry_data;
+		static constexpr auto parseValue = createObject("action_type", &value_type::actionType, "changes", &value_type::changes, "created_at", &value_type::createdTimeStamp, "id",
+			&value_type::id, "options", &value_type::options, "reason", &value_type::reason, "target_id", &value_type::targetId, "user_id", &value_type::userId);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VoiceSocketProtocolPayloadDataData> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::VoiceSocketProtocolPayloadDataData;
-		static constexpr auto parseValue = createObject("address", &ValueType::address, "mode", &ValueType::mode, "port", &ValueType::port);
+	template<> struct core<discord_core_api::component_data> {
+		using value_type				 = discord_core_api::component_data;
+		static constexpr auto parseValue = createObject("type", &value_type::type, "custom_id", &value_type::customId, "options", &value_type::options, "channel_types",
+			&value_type::channelTypes, "placeholder", &value_type::placeholder, "min_values", &value_type::minValues, "max_values", &value_type::maxValues, "min_length",
+			&value_type::minLength, "max_length", &value_type::maxLength, "label", &value_type::label, "value", &value_type::value, "title", &value_type::title, "emoji",
+			&value_type::emoji, "url", &value_type::url, "required", &value_type::required, "disabled", &value_type::disabled, "style", &value_type::style);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VoiceSocketProtocolPayloadData> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::VoiceSocketProtocolPayloadData;
-		static constexpr auto parseValue = createObject("data", &ValueType::data, "protocol", &ValueType::protocol);
+	template<> struct core<discord_core_api::select_option_data> {
+		using value_type				 = discord_core_api::select_option_data;
+		static constexpr auto parseValue = createObject("description", &value_type::description, "label", &value_type::label, "value", &value_type::value, "emoji",
+			&value_type::emoji, "default", &value_type::_default);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VoiceIdentifyData> {
-		using ValueType = DiscordCoreAPI::DiscordCoreInternal::VoiceIdentifyData;
+	template<> struct core<discord_core_api::voice_state_data_light> {
+		using value_type				 = discord_core_api::voice_state_data_light;
+		static constexpr auto parseValue = createObject("channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "user_id", &value_type::userId);
+	};
+
+	template<> struct core<discord_core_api::guild_data> {
+		using value_type				 = discord_core_api::guild_data;
+		static constexpr auto parseValue = createObject("default_message_notifications", &value_type::defaultMessageNotifications, "guild_scheduled_events",
+			&value_type::guildScheduledEvents, "explicit_content_filter", &value_type::explicitContentFilter, "stage_instances", &value_type::stageInstances, "presences",
+			&value_type::presences, "system_channel_flags", &value_type::systemChannelFlags, "widget_enabled", &value_type::widgetEnabled, "unavailable", &value_type::unavailable,
+			"owner", &value_type::owner, "large", &value_type::large, "member_count", &value_type::memberCount, "verification_level", &value_type::verificationLevel, "id",
+			&value_type::id, "channels", &value_type::channels, "roles", &value_type::roles, "members", &value_type::members, "voice_states", &value_type::voiceStates, "owner_id",
+			&value_type::ownerId, "permissions", &value_type::permissions, "afk_channel_id", &value_type::afkChannelId, "features", &value_type::features, "stickers",
+			&value_type::stickers, "max_stage_video_channel_users", &value_type::maxStageVideoChannelUsers, "public_updates_channel_id", &value_type::publicUpdatesChannelId,
+			"premium_subscription_count", &value_type::premiumSubscriptionCount, "approximate_presence_count", &value_type::approximatePresenceCount, "threads",
+			&value_type::threads, "welcome_screen", &value_type::welcomeScreen, "safety_alerts_channel_id", &value_type::safetyAlertsChannelId, "approximate_member_count",
+			&value_type::approximateMemberCount, "premium_progress_bar_enabled", &value_type::premiumProgressBarEnabled, "max_video_channel_users",
+			&value_type::maxVideoChannelUsers, "emoji", &value_type::emoji, "preferred_locale", &value_type::preferredLocale, "vanity_url_code", &value_type::vanityUrlCode,
+			"system_channel_id", &value_type::systemChannelId, "discovery_splash", &value_type::discoverySplash, "widget_channel_id", &value_type::widgetChannelId,
+			"rules_channel_id", &value_type::rulesChannelId, "nsfw_level", &value_type::nsfwLevel, "application_id", &value_type::applicationId, "description",
+			&value_type::description, "premium_tier", &value_type::premiumTier, "afk_timeout", &value_type::afkTimeout, "max_members", &value_type::maxMembers, "mfa_level",
+			&value_type::mfaLevel, "splash", &value_type::splash, "name", &value_type::name, "banner", &value_type::banner, "icon", &value_type::icon);
+	};
+
+	template<> struct core<discord_core_api::partial_guild_data> {
+		using value_type				 = discord_core_api::partial_guild_data;
+		static constexpr auto parseValue = createObject("unavailable", &value_type::unavailable, "id", &value_type::id);
+	};
+
+	template<> struct core<discord_core_api::integration_data> {
+		using value_type				 = discord_core_api::integration_data;
+		static constexpr auto parseValue = createObject("account", &value_type::account, "application", &value_type::application, "enabled", &value_type::enabled,
+			"enable_emoticons", &value_type::enableEmoticons, "expire_behavior", &value_type::expireBehavior, "expire_grace_period", &value_type::expireGracePeriod, "id",
+			&value_type::id, "name", &value_type::name, "revoked", &value_type::revoked, "role_id", &value_type::roleId, "subscriber_count", &value_type::subscriberCount,
+			"syncing", &value_type::syncing, "synced_at", &value_type::syncedAt, "type", &value_type::type, "user", &value_type::user);
+	};
+
+	template<> struct core<discord_core_api::file> {
+		using value_type				 = discord_core_api::file;
+		static constexpr auto parseValue = createArray(&value_type::data);
+	};
+
+	template<> struct core<discord_core_api::allowed_mentions_data> {
+		using value_type = discord_core_api::allowed_mentions_data;
 		static constexpr auto parseValue =
-			createObject("session_id", &ValueType::sessionId, "user_id", &ValueType::userId, "token", &ValueType::token, "server_id", &ValueType::serverId);
+			createObject("replied_user", &value_type::repliedUser, "parse", &value_type::parse, "roles", &value_type::roles, "users", &value_type::users);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::SendSpeakingData> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::SendSpeakingData;
-		static constexpr auto parseValue = createObject("speaking", &ValueType::type, "delay", &ValueType::delay, "ssrc", &ValueType::ssrc);
+	template<> struct core<discord_core_api::message_reference_data> {
+		using value_type				 = discord_core_api::message_reference_data;
+		static constexpr auto parseValue = createObject("fail_if_not_exists", &value_type::failIfNotExists, "message_id", &value_type::messageId, "channel_id",
+			&value_type::channelId, "guild_id", &value_type::guildId);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::HelloData> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::HelloData;
-		static constexpr auto parseValue = createObject("heartbeat_interval", &ValueType::heartbeatInterval, "_trace", &ValueType::_trace);
+	template<> struct core<discord_core_api::message_interaction_data> {
+		using value_type = discord_core_api::message_interaction_data;
+		static constexpr auto parseValue =
+			createObject("id", &value_type::id, "member", &value_type::member, "name", &value_type::name, "type", &value_type::type, "user", &value_type::user);
 	};
 
-	template<> struct core<DiscordCoreAPI::UpdatePresenceData> {
-		using ValueType					 = DiscordCoreAPI::UpdatePresenceData;
-		static constexpr auto parseValue = createObject("afk", &ValueType::afk, "since", &ValueType::since, "status", &ValueType::statusReal, "activities", &ValueType::activities);
+	template<> struct core<discord_core_api::guild_scheduled_event_data> {
+		using value_type				 = discord_core_api::guild_scheduled_event_data;
+		static constexpr auto parseValue = createObject("id", &value_type::id, "privacy_level", &value_type::privacyLevel, "entity_metadata", &value_type::entityMetadata,
+			"entity_type", &value_type::entityType, "status", &value_type::status, "scheduled_start_time", &value_type::scheduledStartTime, "scheduled_end_time",
+			&value_type::scheduledEndTime, "description", &value_type::description, "creator_id", &value_type::creatorId, "channel_id", &value_type::channelId, "entity_id",
+			&value_type::entityId, "user_count", &value_type::userCount, "guild_id", &value_type::guildId, "creator", &value_type::creator, "name", &value_type::name);
 	};
 
-	template<typename ValueType> struct core<DiscordCoreAPI::EventData<ValueType>> {
-		using ValueType02				 = DiscordCoreAPI::EventData<ValueType>;
-		static constexpr auto parseValue = createObject("d", &ValueType02::value);
+	template<> struct core<discord_core_api::guild_scheduled_event_user_data> {
+		using value_type				 = discord_core_api::guild_scheduled_event_user_data;
+		static constexpr auto parseValue = createObject("guild_scheduled_event_id", &value_type::guildScheduledEventId, "member", &value_type::member, "user", &value_type::user);
 	};
 
-	template<typename ValueType, typename ValueType01> struct core<DiscordCoreAPI::UpdatedEventData<ValueType, ValueType01>> {
-		using ValueType02				 = DiscordCoreAPI::UpdatedEventData<ValueType, ValueType01>;
-		static constexpr auto parseValue = createObject("d", &ValueType02::value);
+	template<> struct core<discord_core_api::guild_scheduled_event_metadata> {
+		using value_type				 = discord_core_api::guild_scheduled_event_metadata;
+		static constexpr auto parseValue = createObject("location", &value_type::location);
+	};
+
+	template<> struct core<discord_core_api::role_data> {
+		using value_type				 = discord_core_api::role_data;
+		static constexpr auto parseValue = createObject("id", &value_type::id, "name", &value_type::name, "color", &value_type::color, "hoist", &value_type::hoist, "icon",
+			&value_type::icon, "unicode_emoji", &value_type::unicodeEmoji, "position", &value_type::position, "permissions", &value_type::permissions, "managed",
+			&value_type::managed, "mentionable", &value_type::mentionable, "tags", &value_type::tags, "flags", &value_type::flags);
+	};
+
+	template<> struct core<discord_core_api::message_data> {
+		using value_type				 = discord_core_api::message_data;
+		static constexpr auto parseValue = createObject("activity", &value_type::activity, "application", &value_type::application, "application_id", &value_type::applicationId,
+			"attachments", &value_type::attachments, "author", &value_type::author, "channel_id", &value_type::channelId, "components", &value_type::components, "content",
+			&value_type::content, "edited_timestamp", &value_type::editedTimestamp, "embeds", &value_type::embeds, "flags", &value_type::flags, "guild_id", &value_type::guildId,
+			"id", &value_type::id, "interaction", &value_type::interaction, "member", &value_type::member, "mention_channels", &value_type::mentionChannels, "mention_everyone",
+			&value_type::mentionEveryone, "mention_roles", &value_type::mentionRoles, "mentions", &value_type::mentions, "message_reference", &value_type::messageReference,
+			"nonce", &value_type::nonce, "pinned", &value_type::pinned, "reactions", &value_type::reactions, "referenced_message", &value_type::referencedMessage, "sticker_items",
+			&value_type::stickerItems, "stickers", &value_type::stickers, "thread", &value_type::thread, "timestamp", &value_type::timeStamp, "tts", &value_type::tts, "type",
+			&value_type::type, "webhook_id", &value_type::webHookId);
+	};
+
+	template<> struct core<discord_core_api::sticker_pack_data> {
+		using value_type				 = discord_core_api::sticker_pack_data;
+		static constexpr auto parseValue = createObject("banner_asset_id", &value_type::bannerAssetId, "cover_sticker_id", &value_type::coverStickerId, "description",
+			&value_type::description, "id", &value_type::id, "name", &value_type::name, "sku_id", &value_type::skuId, "stickers", &value_type::stickers);
+	};
+
+	template<> struct core<discord_core_api::guild_widget_image_data> {
+		using value_type				 = discord_core_api::guild_widget_image_data;
+		static constexpr auto parseValue = createObject("url", &value_type::url);
+	};
+
+	template<> struct core<discord_core_api::guild_template_data> {
+		using value_type				 = discord_core_api::guild_template_data;
+		static constexpr auto parseValue = createObject("code", &value_type::code, "created_at", &value_type::createdAt, "creator", &value_type::creator, "creator_id",
+			&value_type::creatorId, "description", &value_type::description, "is_dirty", &value_type::isDirty, "name", &value_type::name, "serialized_source_guild",
+			&value_type::serializedSourceGuild, "source_guild_id", &value_type::sourceGuildId, "updated_at", &value_type::updatedAt);
+	};
+
+	template<> struct core<discord_core_api::application_command_option_data> {
+		using value_type				 = discord_core_api::application_command_option_data;
+		static constexpr auto parseValue = createObject("type", &value_type::type, "name", &value_type::name, "description", &value_type::description, "required",
+			&value_type::required, "autocomplete", &value_type::autocomplete, "min_value", &value_type::minValue, "max_value", &value_type::maxValue, "channel_types",
+			&value_type::channelTypes, "description_localizations", &value_type::descriptionLocalizations, "name_localizations", &value_type::nameLocalizations, "choices",
+			&value_type::choices, "options", &value_type::options);
+	};
+
+	template<> struct core<discord_core_api::stage_instance_data> {
+		using value_type				 = discord_core_api::stage_instance_data;
+		static constexpr auto parseValue = createObject("privacy_level", &value_type::privacyLevel, "discoverable_disabled", &value_type::discoverableDisabled, "channel_id",
+			&value_type::channelId, "guild_id", &value_type::guildId, "topic", &value_type::topic);
+	};
+
+	template<> struct core<discord_core_api::application_command_option_choice_data> {
+		using value_type				 = discord_core_api::application_command_option_choice_data;
+		static constexpr auto parseValue = createObject("name", &value_type::name, "value", &value_type::value, "name_localizations", &value_type::nameLocalizations);
+	};
+
+	template<> struct core<discord_core_api::role_tags_data> {
+		using value_type = discord_core_api::role_tags_data;
+		static constexpr auto parseValue =
+			createObject("premium_subscriber", &value_type::premiumSubscriber, "integration_id", &value_type::integrationId, "bot_id", &value_type::botId);
+	};
+
+	template<> struct core<discord_core_api::discord_core_internal::connect_properties> {
+		using value_type				 = discord_core_api::discord_core_internal::connect_properties;
+		static constexpr auto parseValue = createObject("os", &value_type::os, "device", &value_type::device, "browser", &value_type::browser);
+	};
+
+	template<> struct core<discord_core_api::discord_core_internal::websocket_identify_data> {
+		using value_type				 = discord_core_api::discord_core_internal::websocket_identify_data;
+		static constexpr auto parseValue = createObject("token", &value_type::botToken, "shard", &value_type::shard, "intents", &value_type::intents, "large_threshold",
+			&value_type::largeThreshold, "presence", &value_type::presence, "properties", &value_type::properties);
+	};
+
+	template<> struct core<discord_core_api::discord_core_internal::websocket_resume_data> {
+		using value_type				 = discord_core_api::discord_core_internal::websocket_resume_data;
+		static constexpr auto parseValue = createObject("token", &value_type::botToken, "session_id", &value_type::sessionId, "seq", &value_type::lastNumberReceived);
+	};
+
+	template<> struct core<discord_core_api::discord_core_internal::voice_socket_protocol_payload_data_data> {
+		using value_type				 = discord_core_api::discord_core_internal::voice_socket_protocol_payload_data_data;
+		static constexpr auto parseValue = createObject("address", &value_type::address, "mode", &value_type::mode, "port", &value_type::port);
+	};
+
+	template<> struct core<discord_core_api::discord_core_internal::voice_socket_protocol_payload_data> {
+		using value_type				 = discord_core_api::discord_core_internal::voice_socket_protocol_payload_data;
+		static constexpr auto parseValue = createObject("data", &value_type::data, "protocol", &value_type::protocol);
+	};
+
+	template<> struct core<discord_core_api::discord_core_internal::voice_identify_data> {
+		using value_type = discord_core_api::discord_core_internal::voice_identify_data;
+		static constexpr auto parseValue =
+			createObject("session_id", &value_type::sessionId, "user_id", &value_type::userId, "token", &value_type::token, "server_id", &value_type::serverId);
+	};
+
+	template<> struct core<discord_core_api::discord_core_internal::send_speaking_data> {
+		using value_type				 = discord_core_api::discord_core_internal::send_speaking_data;
+		static constexpr auto parseValue = createObject("speaking", &value_type::type, "delay", &value_type::delay, "ssrc", &value_type::ssrc);
+	};
+
+	template<> struct core<discord_core_api::discord_core_internal::hello_data> {
+		using value_type				 = discord_core_api::discord_core_internal::hello_data;
+		static constexpr auto parseValue = createObject("heartbeat_interval", &value_type::heartbeatInterval, "_trace", &value_type::_trace);
+	};
+
+	template<> struct core<discord_core_api::update_presence_data> {
+		using value_type = discord_core_api::update_presence_data;
+		static constexpr auto parseValue =
+			createObject("afk", &value_type::afk, "since", &value_type::since, "status", &value_type::statusReal, "activities", &value_type::activities);
+	};
+
+	template<typename value_type> struct core<discord_core_api::event_data<value_type>> {
+		using value_type02				 = discord_core_api::event_data<value_type>;
+		static constexpr auto parseValue = createObject("d", &value_type02::value);
+	};
+
+	template<typename value_type, typename value_type01> struct core<discord_core_api::updated_event_data<value_type, value_type01>> {
+		using value_type02				 = discord_core_api::updated_event_data<value_type, value_type01>;
+		static constexpr auto parseValue = createObject("d", &value_type02::value);
 	};
 }

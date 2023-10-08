@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// Utilities.cpp - Source file for the Utilities.
+/// Utilities.cpp - Source file for the utilities.
 /// Jun 28, 2022
 /// https://discordcoreapi.com
 /// \file Utilities.cpp
@@ -42,194 +42,206 @@
 #include <discordcoreapi/Utilities.hpp>
 #include <fstream>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	UpdatePresenceData::UpdatePresenceData(PresenceUpdateState state) {
+	thread_local jsonifier::jsonifier_core parser{};
+
+	update_presence_data::update_presence_data(presence_update_state state) {
 		status = state;
 		switch (status) {
-			case PresenceUpdateState::Online: {
+			case presence_update_state::online: {
 				statusReal = "online";
 				return;
 			}
-			case PresenceUpdateState::Do_Not_Disturb: {
+			case presence_update_state::Do_Not_Disturb: {
 				statusReal = "dnd";
 				return;
 			}
-			case PresenceUpdateState::Idle: {
+			case presence_update_state::idle: {
 				statusReal = "idle";
 				return;
 			}
-			case PresenceUpdateState::Invisible: {
+			case presence_update_state::invisible: {
 				statusReal = "invisible";
 				return;
 			}
-			case PresenceUpdateState::Offline: {
+			case presence_update_state::offline: {
 				statusReal = "offline";
 				return;
 			}
 		}
 	}
 
-	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, jsonifier::string_view (*function)( void )) {
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, jsonifier::string_view (*function)(void)) {
 		outputSttream << function();
 		return outputSttream;
 	}
 
-	ConfigManager::ConfigManager(const DiscordCoreClientConfig& configNew) {
+	config_manager::config_manager(const discord_core_client_config& configNew) {
 		config = configNew;
 	}
 
-	bool ConfigManager::doWePrintWebSocketSuccessMessages() const {
+	bool config_manager::doWePrintWebSocketSuccessMessages() const {
 		return config.logOptions.logWebSocketSuccessMessages;
 	}
 
-	bool ConfigManager::doWePrintWebSocketErrorMessages() const {
+	bool config_manager::doWePrintWebSocketErrorMessages() const {
 		return config.logOptions.logWebSocketErrorMessages;
 	}
 
-	bool ConfigManager::doWePrintHttpsSuccessMessages() const {
+	bool config_manager::doWePrintHttpsSuccessMessages() const {
 		return config.logOptions.logHttpsSuccessMessages;
 	}
 
-	bool ConfigManager::doWePrintHttpsErrorMessages() const {
+	bool config_manager::doWePrintHttpsErrorMessages() const {
 		return config.logOptions.logHttpsErrorMessages;
 	}
 
-	bool ConfigManager::doWePrintGeneralSuccessMessages() const {
+	bool config_manager::doWePrintGeneralSuccessMessages() const {
 		return config.logOptions.logGeneralSuccessMessages;
 	}
 
-	bool ConfigManager::doWePrintGeneralErrorMessages() const {
+	bool config_manager::doWePrintGeneralErrorMessages() const {
 		return config.logOptions.logGeneralErrorMessages;
 	}
 
-	bool ConfigManager::doWeCacheGuildMembers() const {
+	bool config_manager::doWeCacheGuildMembers() const {
 		return config.cacheOptions.cacheGuildMembers;
 	}
 
-	bool ConfigManager::doWeCacheChannels() const {
+	bool config_manager::doWeCacheChannels() const {
 		return config.cacheOptions.cacheChannels;
 	}
 
-	bool ConfigManager::doWeCacheUsers() const {
+	bool config_manager::doWeCacheUsers() const {
 		return config.cacheOptions.cacheUsers;
 	}
 
-	bool ConfigManager::doWeCacheVoiceStates() const {
+	bool config_manager::doWeCacheVoiceStates() const {
 		return config.cacheOptions.cacheVoiceStates;
 	}
 
-	bool ConfigManager::doWeCacheGuilds() const {
+	bool config_manager::doWeCacheGuilds() const {
 		return config.cacheOptions.cacheGuilds;
 	}
 
-	bool ConfigManager::doWeCacheRoles() const {
+	bool config_manager::doWeCacheRoles() const {
 		return config.cacheOptions.cacheRoles;
 	}
 
-	UpdatePresenceData ConfigManager::getPresenceData() const {
+	update_presence_data config_manager::getPresenceData() const {
 		return config.presenceData;
 	}
 
-	jsonifier::string ConfigManager::getBotToken() const {
+	jsonifier::string config_manager::getBotToken() const {
 		return config.botToken;
 	}
 
-	uint64_t ConfigManager::getTotalShardCount() const {
+	std::ostream* config_manager::getErrorStream() const {
+		return config.logOptions.errorStream;
+	}
+
+	std::ostream* config_manager::getOutputStream() const {
+		return config.logOptions.outputStream;
+	}
+
+	uint64_t config_manager::getTotalShardCount() const {
 		return config.shardOptions.totalNumberOfShards;
 	}
 
-	uint64_t ConfigManager::getStartingShard() const {
+	uint64_t config_manager::getStartingShard() const {
 		return config.shardOptions.startingShard;
 	}
 
-	uint64_t ConfigManager::getShardCountForThisProcess() const {
+	uint64_t config_manager::getShardCountForThisProcess() const {
 		return config.shardOptions.numberOfShardsForThisProcess;
 	}
 
-	jsonifier::string ConfigManager::getConnectionAddress() const {
+	jsonifier::string config_manager::getConnectionAddress() const {
 		return config.connectionAddress;
 	}
 
-	void ConfigManager::setConnectionAddress(jsonifier::string_view connectionAddressNew) {
+	void config_manager::setConnectionAddress(jsonifier::string_view connectionAddressNew) {
 		config.connectionAddress = connectionAddressNew;
 	}
 
-	uint16_t ConfigManager::getConnectionPort() const {
+	uint16_t config_manager::getConnectionPort() const {
 		return config.connectionPort;
 	}
 
-	void ConfigManager::setConnectionPort(const uint16_t connectionPortNew) {
+	void config_manager::setConnectionPort(const uint16_t connectionPortNew) {
 		config.connectionPort = connectionPortNew;
 	}
 
-	jsonifier::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
+	jsonifier::vector<repeated_function_data> config_manager::getFunctionsToExecute() const {
 		return config.functionsToExecute;
 	}
 
-	TextFormat ConfigManager::getTextFormat() const {
+	text_format config_manager::getTextFormat() const {
 		return config.textFormat;
 	}
 
-	GatewayIntents ConfigManager::getGatewayIntents() {
+	gateway_intents config_manager::getGatewayIntents() {
 		return config.intents;
 	}
 
-	AudioFrameData::AudioFrameData(AudioFrameType frameTypeNew) {
+	audio_frame_data::audio_frame_data(audio_frame_type frameTypeNew) {
 		type = frameTypeNew;
 	}
 
-	AudioFrameData& AudioFrameData::operator+=(jsonifier::string_view_base<uint8_t> other) {
+	audio_frame_data& audio_frame_data::operator+=(jsonifier::string_view_base<uint8_t> other) {
 		if (other.size() > 0) {
 			if (data.size() < other.size()) {
 				data.resize(other.size());
 			}
 			std::memcpy(data.data(), other.data(), other.size());
 		}
-		currentSize = other.size();
+		currentSize = static_cast<int64_t>(other.size());
 		return *this;
 	}
 
-	void AudioFrameData::clearData() {
-		type		  = AudioFrameType::Unset;
-		guildMemberId = 0;
-		currentSize	  = 0;
+	void audio_frame_data::clearData() {
+		type		= audio_frame_type::unset;
+		currentSize = 0;
 		data.clear();
 	}
 
-	ColorValue::ColorValue(uint32_t colorValue) {
+	color_value::color_value(uint32_t colorValue) {
 		color = colorValue;
 	}
 
-	ColorValue::ColorValue(jsonifier::string_view hexColorValue) {
+	color_value::color_value(jsonifier::string_view hexColorValue) {
+		jsonifier::string returnString{};
 		if (hexColorValue == "") {
-			hexColorValue = "fefefe";
+			returnString = jsonifier::string{ "fefefe" };
+		} else {
+			returnString = hexColorValue;
 		}
-		color = static_cast<uint32_t>(std::stoi(hexColorValue.data(), nullptr, 16));
+		color = static_cast<uint32_t>(jsonifier::strToInt64<16>(returnString));
 	}
 
-	RGBColorValue ColorValue::getRgbColorValue() {
+	rgbcolor_value color_value::getRgbColorValue() {
 		uint8_t red	  = static_cast<uint8_t>(color >> 16);
 		uint8_t green = static_cast<uint8_t>(color >> 8);
 		uint8_t blue  = static_cast<uint8_t>(color);
-		RGBColorValue colorNew{};
+		rgbcolor_value colorNew{};
 		colorNew.green = green;
 		colorNew.blue  = blue;
 		colorNew.red   = red;
 		return colorNew;
 	}
 
-	HexColorValue ColorValue::getHexColorValue() {
+	hex_color_value color_value::getHexColorValue() {
 		std::stringstream stream{};
 		stream << std::hex << color;
 		return jsonifier::string{ stream.str() };
 	}
 
-	uint32_t ColorValue::getIntColorValue() {
+	uint32_t color_value::getIntColorValue() {
 		return color;
 	}
 
-	IconHash& IconHash::operator=(jsonifier::string_view string) {
+	icon_hash& icon_hash::operator=(jsonifier::string_view string) {
 		jsonifier::string newHash{ string };
 		if (newHash.empty() || newHash == "0") {
 			highBits = 0;
@@ -240,18 +252,18 @@ namespace DiscordCoreAPI {
 			newHash = newHash.substr(newHash.find("a_") + 2);
 		}
 		if (newHash.size() != 32) {
-			throw DCAException{ "Sorry, but that is an incorrect IconHash length, it must be 32 characters long." };
+			throw dca_exception{ "Sorry, but that is an incorrect icon_hash length, it must be 32 characters long." };
 		}
 		lowBits	 = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
 		highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
 		return *this;
 	}
 
-	IconHash::IconHash(jsonifier::string_view string) {
+	icon_hash::icon_hash(jsonifier::string_view string) {
 		*this = string;
 	}
 
-	IconHash::operator jsonifier::string() const {
+	icon_hash::operator jsonifier::string() const {
 		if (highBits == 0 || lowBits == 0) {
 			return {};
 		} else {
@@ -259,29 +271,26 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	jsonifier::string operator+(const IconHash& lhs, jsonifier::string_view rhs) {
+	jsonifier::string operator+(const icon_hash& lhs, jsonifier::string_view rhs) {
 		jsonifier::string newString = lhs.operator jsonifier::string() += rhs;
 		return newString;
 	}
 
-	bool IconHash::operator==(const IconHash& rhs) const {
+	bool icon_hash::operator==(const icon_hash& rhs) const {
 		return highBits == rhs.highBits && lowBits == rhs.lowBits;
 	}
 
-	bool IconHash::operator==(jsonifier::string_view rhs) const {
+	bool icon_hash::operator==(jsonifier::string_view rhs) const {
 		return operator jsonifier::string() == rhs;
 	}
 
-	uint64_t strtoull(jsonifier::string_view string) {
-		return std::stoull(string.data());
-	}
-
-	template<> jsonifier::string PermissionsBase<Permissions>::computeOverwrites(jsonifier::string_view basePermissions, const GuildMemberData& guildMember, const ChannelData& channel) {
-		if ((std::stoull(basePermissions.data()) & static_cast<uint64_t>(Permission::Administrator)) & static_cast<uint64_t>(Permission::Administrator)) {
+	template<>
+	jsonifier::string permissions_base<permissions>::computeOverwrites(jsonifier::string_view basePermissions, const guild_member_data& guildMember, const channel_data& channel) {
+		if ((jsonifier::strToUint64(basePermissions.data()) & static_cast<uint64_t>(permission::administrator)) & static_cast<uint64_t>(permission::administrator)) {
 			return getAllPermissions();
 		}
 
-		uint64_t permissions = std::stoull(basePermissions.data());
+		uint64_t permissions = jsonifier::strToUint64(basePermissions.data());
 		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
 			if (channel.permissionOverwrites.at(x).id == guildMember.guildId) {
 				permissions &= ~channel.permissionOverwrites.at(x).deny;
@@ -289,9 +298,9 @@ namespace DiscordCoreAPI {
 				break;
 			}
 		}
-		jsonifier::vector<RoleData> guildMemberRoles{};
+		jsonifier::vector<role_data> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
-			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
+			guildMemberRoles.emplace_back(roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
 		}
 		uint64_t allow{};
 		uint64_t deny{};
@@ -315,20 +324,20 @@ namespace DiscordCoreAPI {
 		return jsonifier::toString(permissions);
 	}
 
-	template<> jsonifier::string PermissionsBase<Permissions>::computeBasePermissions(const GuildMemberData& guildMember) {
-		const GuildCacheData guild = Guilds::getCachedGuild({ .guildId = guildMember.guildId });
+	template<> jsonifier::string permissions_base<permissions>::computeBasePermissions(const guild_member_data& guildMember) {
+		const guild_cache_data guild = guilds::getCachedGuild({ .guildId = guildMember.guildId });
 		if (guild.ownerId == guildMember.user.id) {
 			return getAllPermissions();
 		}
-		jsonifier::vector<RoleData> guildRoles{};
-		if (Roles::doWeCacheRoles()) {
+		jsonifier::vector<role_data> guildRoles{};
+		if (roles::doWeCacheRoles()) {
 			for (auto& value: guild.roles) {
-				guildRoles.emplace_back(Roles::getCachedRole({ .roleId = value }));
+				guildRoles.emplace_back(roles::getCachedRole({ .roleId = value }));
 			}
 		} else {
-			guildRoles = Roles::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();
+			guildRoles = roles::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();
 		}
-		RoleData roleEveryone{};
+		role_data roleEveryone{};
 		for (auto& value: guildRoles) {
 			if (value.id == guild.id) {
 				roleEveryone = value;
@@ -338,34 +347,34 @@ namespace DiscordCoreAPI {
 		if (roleEveryone.permissions.operator std::basic_string_view<char, std::char_traits<char>>() != "0") {
 			permissions = roleEveryone.permissions;
 		}
-		GetGuildMemberRolesData getRolesData{};
+		get_guild_member_roles_data getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId	 = guildMember.guildId;
-		jsonifier::vector<RoleData> guildMemberRoles{};
-		if (Roles::doWeCacheRoles()) {
+		jsonifier::vector<role_data> guildMemberRoles{};
+		if (roles::doWeCacheRoles()) {
 			for (auto& value: guildMember.roles) {
-				guildMemberRoles.emplace_back(Roles::getCachedRole({ .roleId = value }));
+				guildMemberRoles.emplace_back(roles::getCachedRole({ .roleId = value }));
 			}
 		} else {
-			guildMemberRoles = Roles::getGuildMemberRolesAsync({ .guildMember = guildMember, .guildId = guildMember.guildId }).get();
+			guildMemberRoles = roles::getGuildMemberRolesAsync({ .guildMember = guildMember, .guildId = guildMember.guildId }).get();
 		}
 		for (auto& value: guildMemberRoles) {
 			permissions |= value.permissions.operator uint64_t();
 		}
-		if (permissions & static_cast<uint64_t>(Permission::Administrator)) {
+		if (permissions & static_cast<uint64_t>(permission::administrator)) {
 			return getAllPermissions();
 		}
 
 		return jsonifier::toString(permissions);
 	}
 
-	template<>
-	jsonifier::string PermissionsBase<PermissionsParse>::computeOverwrites(jsonifier::string_view basePermissions, const GuildMemberData& guildMember, const ChannelData& channel) {
-		if ((std::stoull(basePermissions.data()) & static_cast<uint64_t>(Permission::Administrator)) & static_cast<uint64_t>(Permission::Administrator)) {
+	template<> jsonifier::string permissions_base<permissions_parse>::computeOverwrites(jsonifier::string_view basePermissions, const guild_member_data& guildMember,
+		const channel_data& channel) {
+		if ((jsonifier::strToUint64(basePermissions.data()) & static_cast<uint64_t>(permission::administrator)) & static_cast<uint64_t>(permission::administrator)) {
 			return getAllPermissions();
 		}
 
-		uint64_t permissions = std::stoull(basePermissions.data());
+		uint64_t permissions = jsonifier::strToUint64(basePermissions.data());
 		for (uint64_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
 			if (channel.permissionOverwrites.at(x).id == guildMember.guildId) {
 				permissions &= ~channel.permissionOverwrites.at(x).deny;
@@ -373,13 +382,13 @@ namespace DiscordCoreAPI {
 				break;
 			}
 		}
-		jsonifier::vector<RoleData> guildMemberRoles{};
-		if (Roles::doWeCacheRoles()) {
+		jsonifier::vector<role_data> guildMemberRoles{};
+		if (roles::doWeCacheRoles()) {
 			for (auto& value: guildMember.roles) {
-				guildMemberRoles.emplace_back(Roles::getCachedRole({ .roleId = value }));
+				guildMemberRoles.emplace_back(roles::getCachedRole({ .roleId = value }));
 			}
 		} else {
-			guildMemberRoles = Roles::getGuildMemberRolesAsync({ .guildMember = guildMember, .guildId = guildMember.guildId }).get();
+			guildMemberRoles = roles::getGuildMemberRolesAsync({ .guildMember = guildMember, .guildId = guildMember.guildId }).get();
 		}
 		uint64_t allow{};
 		uint64_t deny{};
@@ -403,16 +412,16 @@ namespace DiscordCoreAPI {
 		return jsonifier::toString(permissions);
 	}
 
-	template<> jsonifier::string PermissionsBase<PermissionsParse>::computeBasePermissions(const GuildMemberData& guildMember) {
-		const GuildData guild = Guilds::getCachedGuild({ .guildId = guildMember.guildId });
+	template<> jsonifier::string permissions_base<permissions_parse>::computeBasePermissions(const guild_member_data& guildMember) {
+		const guild_data guild = guilds::getCachedGuild({ .guildId = guildMember.guildId });
 		if (guild.ownerId == guildMember.user.id) {
 			return getAllPermissions();
 		}
-		jsonifier::vector<RoleData> guildRoles{};
+		jsonifier::vector<role_data> guildRoles{};
 		for (auto& value: guild.roles) {
 			guildRoles.emplace_back(value);
 		}
-		RoleData roleEveryone{};
+		role_data roleEveryone{};
 		for (auto& value: guildRoles) {
 			if (value.id == guild.id) {
 				roleEveryone = value;
@@ -422,10 +431,10 @@ namespace DiscordCoreAPI {
 		if (roleEveryone.permissions.operator std::basic_string_view<char, std::char_traits<char>>() != "0") {
 			permissions = roleEveryone.permissions;
 		}
-		GetGuildMemberRolesData getRolesData{};
+		get_guild_member_roles_data getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId	 = guildMember.guildId;
-		jsonifier::vector<RoleData> guildMemberRoles{};
+		jsonifier::vector<role_data> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(value);
 		}
@@ -433,20 +442,20 @@ namespace DiscordCoreAPI {
 			permissions |= value.permissions.operator uint64_t();
 		}
 
-		if (permissions & static_cast<uint64_t>(Permission::Administrator)) {
+		if (permissions & static_cast<uint64_t>(permission::administrator)) {
 			return getAllPermissions();
 		}
 
 		return jsonifier::toString(permissions);
 	}
 
-	jsonifier::string constructMultiPartData(jsonifier::string_view data, const jsonifier::vector<File>& files) {
+	jsonifier::string constructMultiPartData(jsonifier::string_view data, const jsonifier::vector<file>& files) {
 		const jsonifier::string boundary("boundary25");
-		const jsonifier::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
+		const jsonifier::string partStart("--" + boundary + "\r\nContent-type: application/octet-stream\r\nContent-disposition: form-data; ");
 
 		jsonifier::string content("--" + boundary);
 
-		content += "\r\nContent-Type: application/json\r\nContent-Disposition: form-data; "
+		content += "\r\nContent-type: application/json\r\nContent-disposition: form-data; "
 				   "name=\"payload_json\"\r\n\r\n";
 		content += data + "\r\n";
 		if (files.size() == 1) {
@@ -476,47 +485,47 @@ namespace DiscordCoreAPI {
 	}
 
 	jsonifier::string base64Encode(jsonifier::string_view string, bool url) {
-		const char* base64CharsArray[2] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		const char* base64CharsArray[2] = { "abcdefghijklmnopqrstuvwxyz"
 											"abcdefghijklmnopqrstuvwxyz"
 											"0123456789"
 											"+/",
 
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			"abcdefghijklmnopqrstuvwxyz"
 			"abcdefghijklmnopqrstuvwxyz"
 			"0123456789"
 			"-_" };
 
 		uint64_t encodedLength = (string.size() + 2) / 3 * 4;
 
-		uint8_t trailing_char = url ? '.' : '=';
+		char trailing_char = url ? '.' : '=';
 
 		const char* base64Chars = base64CharsArray[url];
 
 		jsonifier::string returnString{};
 		returnString.reserve(encodedLength);
-		StopWatch<Milliseconds> stopWatch{ 1500ms };
+		stop_watch<milliseconds> stopWatch{ 1500ms };
 		stopWatch.reset();
 		uint64_t pos = 0;
 		while (pos < string.size()) {
 			if (stopWatch.hasTimeElapsed()) {
 				break;
 			}
-			returnString.pushBack(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
+			returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < string.size()) {
-				returnString.pushBack(base64Chars[((string[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
+				returnString.push_back(base64Chars[((string[static_cast<uint64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<uint64_t>(pos + 1)] & 0xf0) >> 4)]);
 
 				if (static_cast<uint64_t>(pos + 2) < string.size()) {
-					returnString.pushBack(base64Chars[((string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
-					returnString.pushBack(base64Chars[string[static_cast<int64_t>(pos + 2)] & 0x3f]);
+					returnString.push_back(base64Chars[((string[static_cast<uint64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<uint64_t>(pos + 2)] & 0xc0) >> 6)]);
+					returnString.push_back(base64Chars[string[static_cast<uint64_t>(pos + 2)] & 0x3f]);
 				} else {
-					returnString.pushBack(base64Chars[(string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2]);
-					returnString.pushBack(trailing_char);
+					returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 1)] & 0x0f) << 2]);
+					returnString.push_back(trailing_char);
 				}
 			} else {
-				returnString.pushBack(base64Chars[(string[static_cast<int64_t>(pos + 0)] & 0x03) << 4]);
-				returnString.pushBack(trailing_char);
-				returnString.pushBack(trailing_char);
+				returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0x03) << 4]);
+				returnString.push_back(trailing_char);
+				returnString.push_back(trailing_char);
 			}
 
 			pos += 3;
@@ -536,14 +545,14 @@ namespace DiscordCoreAPI {
 		jsonifier::string returnString{};
 		for (auto& value: inputString) {
 			if (static_cast<uint8_t>(value) >= 128 || value < 0) {
-				uint64_t difference = 0ull - value;
+				uint64_t difference = 0ULL - value;
 				if (value + difference == '\0') {
 					continue;
 				} else {
-					returnString.pushBack(value + static_cast<char>(difference));
+					returnString.push_back(value + static_cast<char>(difference));
 				}
 			} else {
-				returnString.pushBack(value);
+				returnString.push_back(value);
 			}
 		}
 		return returnString;
@@ -570,19 +579,19 @@ namespace DiscordCoreAPI {
 	}
 
 	void spinLock(uint64_t timeInNsToSpinLockFor) {
-		uint64_t startTime = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
+		uint64_t startTime = std::chrono::duration_cast<nanoseconds>(hrclock::now().time_since_epoch()).count();
 		uint64_t timePassed{};
 		while (timePassed < timeInNsToSpinLockFor) {
-			timePassed = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count() - startTime;
+			timePassed = std::chrono::duration_cast<nanoseconds>(hrclock::now().time_since_epoch()).count() - startTime;
 		}
 	}
 
 	jsonifier::string generateBase64EncodedKey() {
 		jsonifier::string returnString{};
 		returnString.resize(16);
-		std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
+		std::mt19937_64 randomEngine{ static_cast<uint64_t>(hrclock::now().time_since_epoch().count()) };
 		for (uint64_t x = 0; x < 16; ++x) {
-			returnString.at(x) = static_cast<uint8_t>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
+			returnString.at(x) = static_cast<char>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
 		}
 		returnString = base64Encode(returnString, false);
 		return returnString;
@@ -603,7 +612,7 @@ namespace DiscordCoreAPI {
 		WaitForSingleObjectEx(timer, INFINITE, false);
 		CloseHandle(timer);
 #else
-		std::this_thread::sleep_for(Nanoseconds{ ns });
+		std::this_thread::sleep_for(nanoseconds{ ns });
 #endif
 		return true;
 	}

@@ -3,7 +3,7 @@
 
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2022, 2023 Chris M. (RealTimeChris)
+	Copyright ,  Chris M. (RealTimeChris)
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -23,228 +23,261 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// CountedPtr.hpp - Header for the "CountedPtr" related stuff.
-/// Dec 18, 2021
+/// CountedPtr.hpp - Header for the "counted_ptr" related stuff.
+/// Dec ,
 /// https://discordcoreapi.com
 /// \file CountedPtr.hpp
 
 #pragma once
 
 #include <discordcoreapi/Utilities/UniquePtr.hpp>
+#include <algorithm>
+#include <atomic>
+#include <cassert>
+#include <iosfwd>
+#include <type_traits>
+#include <utility>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup utilities
 	 * @{
 	 */
 
-	/// @brief A smart pointer class that maintains a reference count for shared ownership.
-	/// @tparam ValueType The type of the managed object.
-	/// @tparam Deleter The type of the deleter used to destroy the managed object (optional).
-	template<typename ValueType, typename Deleter = std::default_delete<ValueType>> class CountedPtr : protected Deleter {
+	template<typename value_type, typename deleter = std::default_delete<value_type>> class counted_ptr : public deleter {
 	  public:
-		using element_type = ValueType;
-		using pointer	   = element_type*;
-		using deleter_type = Deleter;
+		using element_type = value_type;
 		using reference	   = element_type&;
+		using pointer	   = element_type*;
 
-		/// @brief Default constructor.
-		inline CountedPtr() : refCount(new std::atomic_uint32_t{}) {
-		}
+		template<typename Other, typename OtherDeleter> friend class counted_ptr;
 
-		/// @brief Move assignment operator for related arrays.
-		/// @param other The other CountedPtr to move from.
-		/// @return CountedPtr The new managed object inside a CountedPtr.
-		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr& operator=(ValueTypeNew&& other) {
-			if (this != static_cast<void*>(&other)) {
-				reset(nullptr);
-				try {
-					commit(other.release());
-				} catch (...) {
-					reset(nullptr);
-					throw;
-				}
-			}
+		template<jsonifier::concepts::shared_ptr_t value_type_newer> inline counted_ptr& operator=(value_type_newer&& other) {
+			if (ptr == other.ptr)
+				return *this;
+			decrement();
+			ptr		  = other.ptr;
+			other.ptr = nullptr;
 			return *this;
 		}
 
-		/// @brief Move constructor for related arrays.
-		/// @param other The other CountedPtr to move from.
-		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr(ValueTypeNew&& other) : Deleter{} {
-			*this = std::move(other);
+		template<jsonifier::concepts::shared_ptr_t value_type_newer> inline counted_ptr(value_type_newer&& other) {
+			*this	  = std::move(other);
+			other.ptr = nullptr;
 		}
 
-		/// @brief Copy assignment operator.
-		/// @param other The other CountedPtr to copy from.
-		/// @return Reference to this CountedPtr after assignment.
-		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr& operator=(const ValueTypeNew& other) {
-			if (this != static_cast<void*>(&other)) {
-				reset(nullptr);
-				try {
-					commit(other.get());
-					refCount = other.refCount;
-					if (ptr) {
-						increment();
-					}
-				} catch (...) {
-					reset(nullptr);
-					throw;
-				}
-			}
+		template<jsonifier::concepts::shared_ptr_t value_type_newer> inline counted_ptr& operator=(const value_type_newer& other) {
+			if (ptr == other.ptr)
+				return *this;
+			increment(other.ptr);
+			decrement();
+			ptr = other.ptr;
 			return *this;
 		}
 
-		/// @brief Copy constructor.
-		/// @param other The other CountedPtr to copy from.
-		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr(const ValueTypeNew& other) : Deleter{} {
+		template<jsonifier::concepts::shared_ptr_t value_type_newer> inline counted_ptr(const value_type_newer& other) : counted_ptr() {
 			*this = other;
 		}
 
-		/// @brief Move assignment operator for raw pointer.
-		/// @param newPtr The pointer to be managed.
-		/// @return CountedPtr The new managed object inside a CountedPtr.
-		template<pointer_t value_type> inline CountedPtr& operator=(value_type newPtr) {
-			reset(nullptr);
-			try {
-				commit(newPtr);
-			} catch (...) {
-				reset(nullptr);
-				throw;
-			}
-			return *this;
+		inline explicit counted_ptr(pointer ptr = nullptr) noexcept : ptr(ptr) {
+			increment(ptr);
 		}
 
-		/// @brief Move construction operator for raw pointer.
-		/// @param newPtr The pointer to be managed.
-		template<pointer_t value_type> inline CountedPtr(value_type newPtr) : Deleter{} {
-			*this = newPtr;
-		}
-
-		/// @brief Swap the contents of this CountedPtr with another.
-		/// @param other The other CountedPtr to swap with.
-		inline void swap(CountedPtr& other) {
-			std::swap(refCount, other.refCount);
-			std::swap(ptr, other.ptr);
-		}
-
-		/// @brief Get the raw pointer managed by this CountedPtr.
-		/// @return The raw pointer.
-		inline pointer get() const {
-			return ptr;
-		}
-
-		/// @brief Conversion operator to check if the pointer is valid.
-		/// @return `true` if the pointer is valid, `false` otherwise.
-		inline operator bool() const {
-			return ptr != nullptr;
-		}
-
-		/// @brief Dereference operator.
-		/// @return A reference to the managed object.
-		inline reference operator*() const {
+		inline reference operator*() const noexcept {
+			assert(ptr);
 			return *ptr;
 		}
 
-		/// @brief Member access operator.
-		/// @return The managed raw pointer.
-		inline pointer operator->() const {
+		inline pointer operator->() const noexcept {
+			assert(ptr);
 			return ptr;
 		}
 
-		/// @brief Releases the managed pointer.
-		/// @return The released raw pointer.
-		inline pointer release() {
-			pointer releasedPtr = ptr;
-			ptr					= nullptr;
-			reset(nullptr);
-			return releasedPtr;
+		inline pointer get() const noexcept {
+			return ptr;
 		}
 
-		/// @brief Reset the managed object and decrement the reference count.
-		/// @param newPtr The new raw pointer to manage (optional).
-		inline void reset(pointer newPtr = nullptr) {
-			if (decrement() <= 0) {
-				if (refCount) {
-					delete refCount;
-					refCount = nullptr;
-				}
-				if (ptr) {
-					getDeleter()(ptr);
-					ptr = nullptr;
-				}
-			}
-			if (newPtr) {
-				ptr		 = newPtr;
-				refCount = new std::atomic_uint32_t{};
-				increment();
-			}
+		inline bool valid() const noexcept {
+			return (ptr != nullptr);
 		}
 
-		/// @brief Destructor.
-		inline ~CountedPtr() {
-			reset(nullptr);
+		inline operator bool() const noexcept {
+			return valid();
+		}
+
+		inline void swap(counted_ptr& other) {
+			std::swap(other.ptr, ptr);
+		}
+
+		inline bool empty() const noexcept {
+			return (ptr == nullptr);
+		}
+
+		inline bool unique() const noexcept {
+			return ptr && ptr->unique();
+		}
+
+		inline size_t use_count() const noexcept {
+			return ptr->reference_count();
+		}
+
+		inline void reset() {
+			decrement();
+			ptr = nullptr;
+		}
+
+		inline void unify() {
+			if (ptr && !ptr->unique())
+				operator=(counted_ptr(new value_type(*ptr)));
+		}
+
+		inline bool operator==(const counted_ptr& other) const noexcept {
+			return ptr == other.ptr;
+		}
+
+		inline bool operator!=(const counted_ptr& other) const noexcept {
+			return ptr != other.ptr;
+		}
+
+		inline bool operator==(pointer other) const noexcept {
+			return ptr == other;
+		}
+
+		inline bool operator!=(pointer other) const noexcept {
+			return ptr != other;
+		}
+
+		inline bool operator<(const counted_ptr& other) const noexcept {
+			return ptr < other.ptr;
+		}
+
+		inline bool operator<=(const counted_ptr& other) const noexcept {
+			return ptr <= other.ptr;
+		}
+
+		inline bool operator>(const counted_ptr& other) const noexcept {
+			return ptr > other.ptr;
+		}
+
+		inline bool operator>=(const counted_ptr& other) const noexcept {
+			return ptr >= other.ptr;
+		}
+
+		inline bool operator<(pointer other) const noexcept {
+			return ptr < other;
+		}
+
+		inline bool operator<=(pointer other) const noexcept {
+			return ptr <= other;
+		}
+
+		inline bool operator>(pointer other) const noexcept {
+			return ptr > other;
+		}
+
+		inline bool operator>=(pointer other) const noexcept {
+			return ptr >= other;
+		}
+
+		inline ~counted_ptr() {
+			decrement();
 		}
 
 	  protected:
-		std::atomic_uint32_t* refCount{ nullptr };///< Pointer to the reference count.
-		pointer ptr{ nullptr };///< Pointer to the managed object.
+		pointer ptr{};
 
-		/// @brief Increment the reference count.
-		inline void increment() {
-			if (refCount) {
-				std::atomic_fetch_add(refCount, 1);
+		void increment(pointer o) noexcept {
+			if (o) {
+				o->increment();
+			}
+		};
+
+		void decrement() noexcept {
+			if (ptr && ptr->decrement()) {
+				getDeleter()(ptr);
 			}
 		}
 
-		/// @brief Commits a new pointer value and resets the current one.
-		/// @param other The new pointer value to commit.
-		inline void commit(pointer other) {
-			pointer tempPtr = other;
-			reset(tempPtr);
-		}
-
-		/// @brief Decrement the reference count and return the new count.
-		/// @return The new reference count.
-		inline uint32_t decrement() {
-			if (refCount) {
-				return std::atomic_fetch_sub(refCount, 1) - 1;
-			} else {
-				return 0;
-			}
-		}
-
-		/// @brief Get the deleter object.
-		/// @return Reference to the deleter object.
-		inline deleter_type& getDeleter() {
+		inline deleter& getDeleter() {
 			return *this;
 		}
 	};
 
-	/// @brief A smart pointer class that maintains a reference count for shared ownership.
-	/// @tparam ValueType The type of the managed object.
-	/// @tparam Deleter The type of the deleter used to destroy the managed object (optional).
-	template<typename ValueType, typename Deleter> class CountedPtr<ValueType[], Deleter> : protected Deleter {
+	template<typename value_type, typename... Args> counted_ptr<value_type> makeCounted(Args&&... args) {
+		return counted_ptr<value_type>(new value_type(std::forward<Args>(args)...));
+	}
+
+	template<typename A, typename D> void swap(counted_ptr<A, D>& a1, counted_ptr<A, D>& a2) noexcept {
+		a1.swap(a2);
+	}
+
+	template<typename A, typename D> std::ostream& operator<<(std::ostream& os, const counted_ptr<A, D>& c) {
+		return os << c.get();
+	}
+
+	class reference_counter {
+	  protected:
+		mutable std::atomic<size_t> reference_count_;
+
 	  public:
-		using element_type = std::remove_extent_t<ValueType>;
+		reference_counter() noexcept : reference_count_(0) {
+		}
+
+		reference_counter(const reference_counter&) noexcept : reference_count_(0) {
+		}
+
+		reference_counter& operator=(const reference_counter&) noexcept {
+			return *this;
+		}
+
+		~reference_counter() {
+			assert(reference_count_ == 0);
+		}
+
+	  public:
+		void increment() const noexcept {
+			++reference_count_;
+		}
+
+		bool decrement() const noexcept {
+			assert(reference_count_ > 0);
+			return (--reference_count_ == 0);
+		}
+
+		bool unique() const noexcept {
+			return (reference_count_ == 1);
+		}
+
+		size_t reference_count() const noexcept {
+			return reference_count_;
+		}
+	};
+
+	/// @brief A smart pointer class that maintains a reference count for shared ownership.
+	/// @tparam value_type The type of the managed object.
+	/// @tparam deleter The type of the deleter used to destroy the managed object (optional).
+	template<typename value_type_new, typename deleter> class counted_ptr<value_type_new[], deleter> : protected deleter {
+	  public:
+		using element_type = std::remove_extent_t<value_type_new>;
 		using pointer	   = element_type*;
-		using deleter_type = Deleter;
+		using deleter_type = deleter;
 		using reference	   = element_type&;
 
 		/// @brief Default constructor.
-		inline CountedPtr() : refCount(new std::atomic_uint32_t{}) {
+		inline counted_ptr() : refCount(new std::atomic_uint32_t{}) {
 		}
 
 		/// @brief Move assignment operator for related arrays.
-		/// @param other The other CountedPtr to move from.
-		/// @return CountedPtr The new managed object inside a CountedPtr.
-		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr& operator=(ValueTypeNew&& other) {
+		/// @param other The other counted_ptr to move from.
+		/// @return counted_ptr The new managed object inside a counted_ptr.
+		template<jsonifier::concepts::shared_ptr_t value_type_newer> inline counted_ptr& operator=(value_type_newer&& other) {
 			if (this != static_cast<void*>(&other)) {
-				reset(nullptr);
+				reset();
 				try {
 					commit(other.release());
 				} catch (...) {
-					reset(nullptr);
+					reset();
 					throw;
 				}
 			}
@@ -252,25 +285,23 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Move constructor for related arrays.
-		/// @param other The other CountedPtr to move from.
-		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr(ValueTypeNew&& other) : Deleter{} {
+		/// @param other The other counted_ptr to move from.
+		template<jsonifier::concepts::shared_ptr_t value_type_newer> inline counted_ptr(value_type_newer&& other) {
 			*this = std::move(other);
 		}
 
 		/// @brief Copy assignment operator.
-		/// @param other The other CountedPtr to copy from.
-		/// @return Reference to this CountedPtr after assignment.
-		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr& operator=(const ValueTypeNew& other) {
-			if (this != static_cast<void*>(&other)) {
-				reset(nullptr);
+		/// @param other The other counted_ptr to copy from.
+		/// @return Reference to this counted_ptr after assignment.
+		template<jsonifier::concepts::shared_ptr_t value_type_newer> inline counted_ptr& operator=(const value_type_newer& other) {
+			if (this != &other) {
+				reset();
 				try {
-					commit(other.get());
 					refCount = other.refCount;
-					if (ptr) {
-						increment();
-					}
+					ptr		 = other.ptr;
+					increment();// Increment the reference count since we are sharing ownership.
 				} catch (...) {
-					reset(nullptr);
+					reset();
 					throw;
 				}
 			}
@@ -278,20 +309,20 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Copy constructor.
-		/// @param other The other CountedPtr to copy from.
-		template<jsonifier_internal::shared_ptr_t ValueTypeNew> inline CountedPtr(const ValueTypeNew& other) : Deleter{} {
+		/// @param other The other counted_ptr to copy from.
+		template<jsonifier::concepts::shared_ptr_t value_type_newer> inline counted_ptr(const value_type_newer& other) : counted_ptr() {
 			*this = other;
 		}
 
 		/// @brief Move assignment operator for raw pointer.
 		/// @param newPtr The pointer to be managed.
-		/// @return CountedPtr The new managed object inside a CountedPtr.
-		template<pointer_t value_type> inline CountedPtr& operator=(value_type newPtr) {
-			reset(nullptr);
+		/// @return counted_ptr The new managed object inside a counted_ptr.
+		inline counted_ptr& operator=(pointer newPtr) {
+			reset();
 			try {
 				commit(newPtr);
 			} catch (...) {
-				reset(nullptr);
+				reset();
 				throw;
 			}
 			return *this;
@@ -299,18 +330,18 @@ namespace DiscordCoreAPI {
 
 		/// @brief Move construction operator for raw pointer.
 		/// @param newPtr The pointer to be managed.
-		template<pointer_t value_type> inline CountedPtr(value_type newPtr) : Deleter{} {
+		inline counted_ptr(pointer newPtr) {
 			*this = newPtr;
 		}
 
-		/// @brief Swap the contents of this CountedPtr with another.
-		/// @param other The other CountedPtr to swap with.
-		inline void swap(CountedPtr& other) {
+		/// @brief Swap the contents of this counted_ptr with another.
+		/// @param other The other counted_ptr to swap with.
+		inline void swap(counted_ptr& other) noexcept {
 			std::swap(refCount, other.refCount);
 			std::swap(ptr, other.ptr);
 		}
 
-		/// @brief Get the raw pointer managed by this CountedPtr.
+		/// @brief Get the raw pointer managed by this counted_ptr.
 		/// @return The raw pointer.
 		inline pointer get() const {
 			return ptr;
@@ -346,13 +377,13 @@ namespace DiscordCoreAPI {
 		inline pointer release() {
 			pointer releasedPtr = ptr;
 			ptr					= nullptr;
-			reset(nullptr);
+			reset();
 			return releasedPtr;
 		}
 
 		/// @brief Reset the managed object and decrement the reference count.
 		/// @param newPtr The new raw pointer to manage (optional).
-		inline void reset(pointer newPtr) {
+		inline void reset(pointer newPtr = nullptr) {
 			if (decrement() <= 0) {
 				if (refCount) {
 					delete refCount;
@@ -364,15 +395,17 @@ namespace DiscordCoreAPI {
 				}
 			}
 			if (newPtr) {
-				ptr		 = newPtr;
-				refCount = new std::atomic_uint32_t{};
+				ptr = newPtr;
+				if (!refCount) {
+					refCount = new std::atomic_uint32_t{};
+				}
 				increment();
 			}
 		}
 
 		/// @brief Destructor.
-		inline ~CountedPtr() {
-			reset(nullptr);
+		inline ~counted_ptr() {
+			reset();
 		}
 
 	  protected:
@@ -382,7 +415,7 @@ namespace DiscordCoreAPI {
 		/// @brief Increment the reference count.
 		inline void increment() {
 			if (refCount) {
-				std::atomic_fetch_add(refCount, 1);
+				refCount->fetch_add(1, std::memory_order_release);
 			}
 		}
 
@@ -397,7 +430,7 @@ namespace DiscordCoreAPI {
 		/// @return The new reference count.
 		inline uint32_t decrement() {
 			if (refCount) {
-				return std::atomic_fetch_sub(refCount, 1) - 1;
+				return refCount->fetch_sub(1, std::memory_order_release) - 1;
 			} else {
 				return 0;
 			}
@@ -410,32 +443,21 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	/// @brief Creates a CountedPtr instance for non-array types.
-	/// @tparam ValueType The type of value to be managed.
-	/// @tparam Deleter The deleter type to be used (default: std::default_delete<ValueType>).
-	/// @tparam ArgTypes The argument types for constructing the value.
-	/// @param args The arguments for constructing the value.
-	/// @return A CountedPtr instance managing the created value.
-	template<typename ValueType, typename Deleter = std::default_delete<ValueType>, typename... ArgTypes, std::enable_if_t<!std::is_array_v<ValueType>, int32_t> = 0>
-	inline CountedPtr<ValueType, Deleter> makeCounted(ArgTypes&&... args) {
-		return CountedPtr<ValueType, Deleter>(new ValueType(std::forward<ArgTypes>(args)...));
-	}
-
-	/// @brief Creates a CountedPtr instance for arrays with zero extent.
-	/// @tparam ValueType The type of array element.
-	/// @tparam Deleter The deleter type to be used (default: std::default_delete<ValueType>).
+	/// @brief Creates a counted_ptr instance for arrays with zero extent.
+	/// @tparam value_type The type of array element.
+	/// @tparam deleter The deleter type to be used (default: std::default_delete<value_type>).
 	/// @param size The size of the array to be created.
-	/// @return A CountedPtr instance managing the created array.
-	template<typename ValueType, typename Deleter = std::default_delete<ValueType>, std::enable_if_t<std::is_array_v<ValueType> && std::extent_v<ValueType> == 0, int32_t> = 0>
-	inline CountedPtr<ValueType, Deleter> makeCounted(const uint64_t size) {
-		using element_type = std::remove_extent_t<ValueType>;
-		return CountedPtr<ValueType, Deleter>(new element_type[size]());
+	/// @return A counted_ptr instance managing the created array.
+	template<typename value_type, typename deleter = std::default_delete<value_type>, std::enable_if_t<std::is_array_v<value_type> && std::extent_v<value_type> == 0, int32_t> = 0>
+	inline counted_ptr<value_type, deleter> makeCounted(const uint64_t size) {
+		using element_type = std::remove_extent_t<value_type>;
+		return counted_ptr<value_type, deleter>(new element_type[size]());
 	}
 
 	/// @brief Explicitly deletes the function for arrays with non-zero extent.
-	/// @tparam ValueType The type of array with non-zero extent.
+	/// @tparam value_type The type of array with non-zero extent.
 	/// @tparam ArgTypes The argument types (not applicable for deletion).
-	template<typename ValueType, typename... ArgTypes, std::enable_if_t<std::extent_v<ValueType> != 0, int32_t> = 0> inline void makeCounted(ArgTypes&&...) = delete;
+	template<typename value_type, typename... ArgTypes, std::enable_if_t<std::extent_v<value_type> != 0, int32_t> = 0> inline void makeCounted(ArgTypes&&...) = delete;
 
 	/**@}*/
 

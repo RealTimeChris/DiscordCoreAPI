@@ -27,7 +27,6 @@
 /// Sep 17, 2021
 /// https://discordcoreapi.com
 /// \file SongAPI.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
@@ -35,71 +34,68 @@
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup voice_connection
 	 * @{
 	 */
 
-	/// @brief A class representing the Song APIs.
-	class DiscordCoreAPI_Dll SongAPI {
+	/// @brief A class representing the song apis.
+	class DiscordCoreAPI_Dll song_api {
 	  public:
-		friend class DiscordCoreInternal::SoundCloudAPI;
-		friend class DiscordCoreInternal::YouTubeAPI;
-		friend class VoiceConnection;
-		friend class GuildCacheData;
-		friend class GuildData;
+		friend class discord_core_internal::sound_cloud_api;
+		friend class discord_core_internal::you_tube_api;
+		friend class voice_connection;
+		friend class guild_cache_data;
+		friend class guild_data;
 
-		DiscordCoreInternal::Event<CoRoutine<void, false>, SongCompletionEventData> onSongCompletionEvent{};
-		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
-		DiscordCoreInternal::EventDelegateToken eventToken{};
+		discord_core_internal::event<co_routine<void, false>, song_completion_event_data> onSongCompletionEvent{};
+		unbounded_message_block<audio_frame_data> audioDataBuffer{};
+		discord_core_internal::event_delegate_token eventToken{};
 
-		SongAPI(Snowflake guildId);
+		song_api(snowflake guildId);
 
 		/// @brief For setting up behavior in response to a completed song
-		/// @param handler A delegate taking a SongCompletionEventData structure as an argument.
-		void onSongCompletion(std::function<CoRoutine<void, false>(SongCompletionEventData)> handler);
+		/// @param handler a delegate taking a song_completion_event_data structure as an argument.
+		void onSongCompletion(std::function<co_routine<void, false>(song_completion_event_data)> handler);
 
-		/// @brief Skips to the next Song in the queue, if applicable.
-		/// @param guildMember The GuildMemberData structure of the individual who is skipping the Song.
-		/// @param wasItAfail A bool representing whether or not this skip is due to a playing failure.
-		/// @return A bool suggesting the success or failure of the skip command.
-		bool skip(const GuildMemberData& guildMember, bool wasItAfail = false);
+		/// @brief Skips to the next song in the queue, if applicable.
+		/// @param wasItAfail a bool representing whether or not this skip is due to a playing failure.
+		/// @return a bool suggesting the success or failure of the skip command.
+		bool skip(bool wasItAfail = false);
 
-		/// @brief Search for a Song to play.
-		/// @param searchQuery The Song to search for.
-		/// @return A vector of Song objects representing the search results.
-		jsonifier::vector<Song> searchForSong(jsonifier::string_view searchQuery, int32_t limit = 20);
+		/// @brief Search for a song to play.
+		/// @param searchQuery the song to search for.
+		/// @param limit The maximum number of search results to return.
+		/// @return a vector of song objects representing the search results.
+		jsonifier::vector<song> searchForSong(jsonifier::string_view searchQuery, uint64_t limit = 20);
 
-		/// @brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
-		/// @param songNew The song to play.
-		/// @param guildMember The GuildMemberData that is running this song.
-		/// @return A bool suggesting the success or failure of the play command.
-		bool play(Song songNew, const GuildMemberData& guildMember);
+		/// @brief Plays the current song. (assuming that you are currently connected to a voice_connection).
+		/// @param songNew the song to play.
+		/// @return a bool suggesting the success or failure of the play command.
+		bool play(song songNew);
 
-		/// @brief Checks if there is currently playing music for the current Guild.
-		/// @return A bool representing the currently playing status.
+		/// @brief Checks if there is currently playing music for the current guild.
+		/// @return a bool representing the currently playing status.
 		bool areWeCurrentlyPlaying() const;
 
 		/// @brief Toggles pausing on and off.
-		/// @return A bool suggesting the success or failure of the pauseToggle command.
+		/// @return a bool suggesting the success or failure of the pauseToggle command.
 		bool pauseToggle();
 
-		/// @brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
-		/// @return A bool suggesting the success or failure of the play command.
+		/// @brief Plays the current song. (assuming that you are currently connected to a voice_connection).
+		/// @return a bool suggesting the success or failure of the play command.
 		bool play();
 
-		/// @brief Stops the currently playing Song.
-		/// @return A bool suggesting the success or failure of the stop command.
+		/// @brief Stops the currently playing song.
+		/// @return a bool suggesting the success or failure of the stop command.
 		bool stop();
 
-		~SongAPI();
-
 	  protected:
-		CoRoutine<void, false> taskThread{};
+		co_routine<void, false> taskThread{};
 		std::recursive_mutex accessMutex{};
-		Snowflake guildId{};
+		snowflake guildId{};
 
 		void disconnect();
 	};

@@ -23,68 +23,67 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// HttpsClient.hpp - Header file for the "Https Stuff".
+/// HttpsClient.hpp - Header file for the "Https stuff".
 /// May 12, 2021
 /// https://discordcoreapi.com
 /// \file HttpsClient.hpp
-
 #pragma once
 
 #include <discordcoreapi/Utilities/RateLimitQueue.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	namespace discord_core_internal {
 
-		/// \brief Voice Websocket close codes.
-		class HttpsResponseCode {
+		/// \brief Voice websocket close codes.
+		class https_response_code {
 		  public:
-			/// \brief Voice Websocket close codes.
-			enum class HttpsResponseCodes : uint32_t {
-				Unset				= std::numeric_limits<uint32_t>::max(),
-				Ok					= 200,///< The request completed successfully.
-				Created				= 201,///< The entity was created successfully.
+			/// \brief Voice websocket close codes.
+			enum class https_response_codes : uint64_t {
+				unset				= std::numeric_limits<uint64_t>::max(),
+				ok					= 200,///< The request completed successfully.
+				created				= 201,///< The entity was created successfully.
 				No_Content			= 204,///< The request completed successfully but returned no content.
 				Not_Modifies		= 304,///< The entity was not modified (no action was taken).
 				Bad_Request			= 400,///< The request was improperly formatted, or the server couldn't understand it.
-				Unauthorized		= 401,///< The Authorization header was missing or invalid.
-				Forbidden			= 403,///< The Authorization token you passed did not have permission to the resource.
+				unauthorized		= 401,///< The authorization header was missing or invalid.
+				forbidden			= 403,///< The authorization token you passed did not have permission to the resource.
 				Not_Found			= 404,///< The resource at the location specified doesn't exist.
-				Method_Not_Allowed	= 405,///< The HTTPS method used is not valid for the location specified.
-				Too_Many_Requests	= 429,///< You are being rate limited, see Rate Limits.
-				Gateway_Unavailable = 502,///< There was not a gateway available to process your request. Wait a bit and retry.
+				Method_Not_Allowed	= 405,///< The https method used is not valid for the location specified.
+				Too_Many_Requests	= 429,///< You are being rate limited, see rate limits.
+				Gateway_Unavailable = 502,///< There was not a gateway available to process your request. wait a bit and retry.
 			};
 
-			inline static UnorderedMap<HttpsResponseCodes, jsonifier::string_view> outputErrorValues{
-				{ static_cast<HttpsResponseCodes>(200), "The request completed successfully" }, { static_cast<HttpsResponseCodes>(201), "The entity was created successfully" },
-				{ static_cast<HttpsResponseCodes>(204), "The request completed successfully but returned no content" },
-				{ static_cast<HttpsResponseCodes>(304), "The entity was not modified (no action was taken)" },
-				{ static_cast<HttpsResponseCodes>(400), "The request was improperly formatted, or the server couldn't understand it" },
-				{ static_cast<HttpsResponseCodes>(401), "The Authorization header was missing or invalid" },
-				{ static_cast<HttpsResponseCodes>(403), "The Authorization token you passed did not have permission to the resource" },
-				{ static_cast<HttpsResponseCodes>(404), "The resource at the location specified doesn't exist" },
-				{ static_cast<HttpsResponseCodes>(405), "The HTTPS method used is not valid for the location specified" },
-				{ static_cast<HttpsResponseCodes>(429), "You are being rate limited, see Rate Limits" },
-				{ static_cast<HttpsResponseCodes>(502), "There was not a gateway available to process your request.Wait a bit and retry" },
-				{ static_cast<HttpsResponseCodes>(500), "The server had an error processing your request(these are rare)" }
+			inline static unordered_map<https_response_codes, jsonifier::string_view> outputErrorValues{
+				{ static_cast<https_response_codes>(200), "the request completed successfully" }, { static_cast<https_response_codes>(201), "the entity was created successfully" },
+				{ static_cast<https_response_codes>(204), "the request completed successfully but returned no content" },
+				{ static_cast<https_response_codes>(304), "the entity was not modified (no action was taken)" },
+				{ static_cast<https_response_codes>(400), "the request was improperly formatted, or the server couldn't understand it" },
+				{ static_cast<https_response_codes>(401), "the authorization header was missing or invalid" },
+				{ static_cast<https_response_codes>(403), "the authorization token you passed did not have permission to the resource" },
+				{ static_cast<https_response_codes>(404), "the resource at the location specified doesn't exist" },
+				{ static_cast<https_response_codes>(405), "the https method used is not valid for the location specified" },
+				{ static_cast<https_response_codes>(429), "you are being rate limited, see rate limits" },
+				{ static_cast<https_response_codes>(502), "there was not a gateway available to process your request.wait a bit and retry" },
+				{ static_cast<https_response_codes>(500), "the server had an error processing your request(these are rare)" }
 			};
 
-			HttpsResponseCodes value{};
+			https_response_codes value{};
 
-			inline HttpsResponseCode() = default;
+			inline https_response_code() = default;
 
-			inline HttpsResponseCode& operator=(uint32_t valueNew) {
-				value = static_cast<HttpsResponseCodes>(valueNew);
+			inline https_response_code& operator=(uint64_t valueNew) {
+				value = static_cast<https_response_codes>(valueNew);
 				return *this;
 			}
 
-			inline HttpsResponseCode(uint32_t value) {
+			inline https_response_code(uint64_t value) {
 				*this = value;
 			}
 
 			inline operator jsonifier::string() {
-				return jsonifier::string{ "Code: " + jsonifier::toString(static_cast<uint32_t>(value)) + jsonifier::string{ ", Message: " } +
-					static_cast<jsonifier::string>(HttpsResponseCode::outputErrorValues[value]) };
+				return jsonifier::string{ "code: " + jsonifier::toString(static_cast<uint32_t>(value)) + jsonifier::string{ ", message: " } +
+					static_cast<jsonifier::string>(https_response_code::outputErrorValues[value]) };
 			}
 
 			inline operator uint64_t() {
@@ -92,25 +91,25 @@ namespace DiscordCoreAPI {
 			}
 		};
 
-		class HttpsConnectionManager;
-		struct RateLimitData;
+		class https_connection_manager;
+		struct rate_limit_data;
 
-		enum class HttpsState { Collecting_Headers = 0, Collecting_Contents = 1, Collecting_Chunked_Contents = 2, Complete = 3 };
+		enum class https_state { Collecting_Headers = 0, Collecting_Contents = 1, Collecting_Chunked_Contents = 2, complete = 3 };
 
-		class HttpsError : public DCAException {
+		class https_error : public dca_exception {
 		  public:
-			HttpsResponseCode errorCode{};
-			inline HttpsError(jsonifier::string message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+			https_response_code errorCode{};
+			inline https_error(jsonifier::string_view message, const std::source_location& location = std::source_location::current()) : dca_exception{ message, location } {};
 		};
 
-		struct HttpsResponseData {
-			friend class HttpsRnRBuilder;
-			friend class HttpsConnection;
-			friend class HttpsClient;
+		struct DiscordCoreAPI_Dll https_response_data {
+			friend class https_rnr_builder;
+			friend class https_connection;
+			friend class https_client;
 
-			HttpsResponseCode responseCode{ std::numeric_limits<uint32_t>::max() };
-			HttpsState currentState{ HttpsState::Collecting_Headers };
-			UnorderedMap<jsonifier::string, jsonifier::string> responseHeaders{};
+			https_response_code responseCode{ std::numeric_limits<uint32_t>::max() };
+			unordered_map<jsonifier::string, jsonifier::string> responseHeaders{};
+			https_state currentState{ https_state::Collecting_Headers };
 			jsonifier::string responseData{};
 			uint64_t contentLength{};
 
@@ -118,35 +117,21 @@ namespace DiscordCoreAPI {
 			bool isItChunked{};
 		};
 
-		class HttpsConnection;
-
-		class HttpsTCPConnection : public TCPConnection<HttpsTCPConnection> {
+		class DiscordCoreAPI_Dll https_rnr_builder {
 		  public:
-			HttpsTCPConnection() = default;
+			friend class https_client;
 
-			HttpsTCPConnection(jsonifier::string_view baseUrlNew, const uint16_t portNew, HttpsConnection* ptrNew);
+			https_rnr_builder() = default;
 
-			void handleBuffer() override;
+			https_response_data finalizeReturnValues(rate_limit_data& rateLimitData);
 
-		  protected:
-			HttpsConnection* ptr{};
-		};
+			jsonifier::string buildRequest(const https_workload_data& workload);
 
-		class HttpsRnRBuilder {
-		  public:
-			friend class HttpsClient;
-
-			HttpsRnRBuilder() = default;
-
-			HttpsResponseData finalizeReturnValues(RateLimitData& rateLimitData);
-
-			jsonifier::string buildRequest(const HttpsWorkloadData& workload);
-
-			void updateRateLimitData(RateLimitData& rateLimitData);
+			void updateRateLimitData(rate_limit_data& rateLimitData);
 
 			bool parseHeaders();
 
-			virtual ~HttpsRnRBuilder() = default;
+			virtual ~https_rnr_builder() = default;
 
 		  protected:
 			bool parseContents();
@@ -154,68 +139,71 @@ namespace DiscordCoreAPI {
 			bool parseChunk();
 		};
 
-		class HttpsConnection : public HttpsRnRBuilder {
+		class DiscordCoreAPI_Dll https_connection : public https_rnr_builder, public tcp_connection<https_connection> {
 		  public:
-			friend class HttpsTCPConnection;
+			template<typename value_type> friend class https_tcp_connection;
 
-			RateLimitData* currentRateLimitData{};
+			rate_limit_data* currentRateLimitData{};
 			const int32_t maxReconnectTries{ 3 };
-			HttpsTCPConnection tcpConnection{};
-			int32_t currentReconnectTries{};
 			jsonifier::string inputBufferReal{};
 			jsonifier::string currentBaseUrl{};
-			HttpsWorkloadData workload{};
-			HttpsResponseData data{};
+			int32_t currentReconnectTries{};
+			https_workload_data workload{};
+			https_response_data data{};
 
-			HttpsConnection() = default;
+			https_connection() = default;
 
-			void resetValues(HttpsWorkloadData&& workloadNew, RateLimitData* newRateLimitData);
+			https_connection(const jsonifier::string& baseUrlNew, const uint16_t portNew);
+
+			void resetValues(https_workload_data&& workloadNew, rate_limit_data* newRateLimitData);
+
+			void handleBuffer() override;
 
 			bool areWeConnected();
 
 			void disconnect();
 
-			virtual ~HttpsConnection() = default;
+			virtual ~https_connection() = default;
 		};
 
-		class HttpsConnectionManager {
+		class DiscordCoreAPI_Dll https_connection_manager {
 		  public:
-			friend class HttpsClient;
+			friend class https_client;
 
-			HttpsConnectionManager() = default;
+			https_connection_manager() = default;
 
-			HttpsConnectionManager(RateLimitQueue*);
+			https_connection_manager(rate_limit_queue*);
 
-			HttpsConnection& getConnection(HttpsWorkloadType workloadType);
+			https_connection& getConnection(https_workload_type workloadType);
 
-			RateLimitQueue& getRateLimitQueue();
+			rate_limit_queue& getRateLimitQueue();
 
 		  protected:
-			UnorderedMap<HttpsWorkloadType, UniquePtr<HttpsConnection>> httpsConnections{};
-			RateLimitQueue* rateLimitQueue{};
+			unordered_map<https_workload_type, unique_ptr<https_connection>> httpsConnections{};
+			rate_limit_queue* rateLimitQueue{};
 			std::mutex accessMutex{};
 		};
 
-		class HttpsConnectionStackHolder {
+		class DiscordCoreAPI_Dll https_connection_stack_holder {
 		  public:
-			HttpsConnectionStackHolder(HttpsConnectionManager& connectionManager, HttpsWorkloadData&& workload);
+			https_connection_stack_holder(https_connection_manager& connectionManager, https_workload_data&& workload);
 
-			HttpsConnection& getConnection();
+			https_connection& getConnection();
 
-			~HttpsConnectionStackHolder();
+			~https_connection_stack_holder();
 
 		  protected:
-			RateLimitQueue* rateLimitQueue{};
-			HttpsConnection* connection{};
+			rate_limit_queue* rateLimitQueue{};
+			https_connection* connection{};
 		};
 
-		class DiscordCoreAPI_Dll HttpsClientCore {
+		class DiscordCoreAPI_Dll https_client_core {
 		  public:
-			HttpsClientCore(jsonifier::string_view botTokenNew);
+			https_client_core(jsonifier::string_view botTokenNew);
 
-			inline HttpsResponseData submitWorkloadAndGetResult(HttpsWorkloadData&& workloadNew) {
-				HttpsConnection connection{};
-				RateLimitData rateLimitData{};
+			inline https_response_data submitWorkloadAndGetResult(https_workload_data&& workloadNew) {
+				https_connection connection{};
+				rate_limit_data rateLimitData{};
 				connection.resetValues(std::move(workloadNew), &rateLimitData);
 				auto returnData = httpsRequestInternal(connection);
 				if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
@@ -223,7 +211,7 @@ namespace DiscordCoreAPI {
 					if (connection.workload.callStack != "") {
 						errorMessage += connection.workload.callStack + " ";
 					}
-					errorMessage += "Https Error: " + returnData.responseCode.operator jsonifier::string() + "\nThe Request: Base Url: " + connection.workload.baseUrl + "\n";
+					errorMessage += "Https error: " + returnData.responseCode.operator jsonifier::string() + "\nThe request: base url: " + connection.workload.baseUrl + "\n";
 					if (!connection.workload.relativePath.empty()) {
 						errorMessage += "Relative Url: " + connection.workload.relativePath + "\n";
 					}
@@ -233,7 +221,7 @@ namespace DiscordCoreAPI {
 					if (!returnData.responseData.empty()) {
 						errorMessage += "The Response: " + static_cast<jsonifier::string>(returnData.responseData);
 					}
-					HttpsError theError{ errorMessage };
+					https_error theError{ errorMessage };
 					theError.errorCode = returnData.responseCode;
 					throw theError;
 				}
@@ -243,20 +231,29 @@ namespace DiscordCoreAPI {
 		  protected:
 			jsonifier::string botToken{};
 
-			HttpsResponseData httpsRequestInternal(HttpsConnection& connection);
+			https_response_data httpsRequestInternal(https_connection& connection);
 
-			HttpsResponseData recoverFromError(HttpsConnection& connection);
+			https_response_data recoverFromError(https_connection& connection);
 
-			HttpsResponseData getResponse(HttpsConnection& connection);
+			https_response_data getResponse(https_connection& connection);
 		};
 
-		class DiscordCoreAPI_Dll HttpsClient : public HttpsClientCore {
+		class DiscordCoreAPI_Dll https_client : public https_client_core {
 		  public:
-			HttpsClient(jsonifier::string_view botTokenNew);
+			https_client(jsonifier::string_view botTokenNew);
 
-			template<typename WorkloadType, typename... Args> void submitWorkloadAndGetResult(WorkloadType&& workload, Args&... args) {
-				HttpsConnectionStackHolder stackHolder{ connectionManager, std::move(workload) };
-				HttpsResponseData returnData = httpsRequest(stackHolder.getConnection());
+			template<typename value_type, typename string_type> void getParseErrors(jsonifier::jsonifier_core& parser, value_type& value, string_type& stringNew) {
+				parser.parseJson<true, true>(value, stringNew);
+				if (auto result = parser.getErrors(); result.size() > 0) {
+					for (auto& valueNew: result) {
+						message_printer::printError<print_message_type::websocket>(valueNew.reportError());
+					}
+				}
+			}
+
+			template<typename workload_type, typename... args> void submitWorkloadAndGetResult(workload_type&& workload, args&... argsNew) {
+				https_connection_stack_holder stackHolder{ connectionManager, std::move(workload) };
+				https_response_data returnData = httpsRequest(stackHolder.getConnection());
 				if (static_cast<uint32_t>(returnData.responseCode) != 200 && static_cast<uint32_t>(returnData.responseCode) != 204 &&
 					static_cast<uint32_t>(returnData.responseCode) != 201) {
 					jsonifier::string errorMessage{};
@@ -264,7 +261,7 @@ namespace DiscordCoreAPI {
 						errorMessage += stackHolder.getConnection().workload.callStack + " ";
 					}
 					errorMessage +=
-						"Https Error: " + returnData.responseCode.operator jsonifier::string() + "\nThe Request: Base Url: " + stackHolder.getConnection().workload.baseUrl + "\n";
+						"Https error: " + returnData.responseCode.operator jsonifier::string() + "\nThe request: base url: " + stackHolder.getConnection().workload.baseUrl + "\n";
 					if (!stackHolder.getConnection().workload.relativePath.empty()) {
 						errorMessage += "Relative Url: " + stackHolder.getConnection().workload.relativePath + "\n";
 					}
@@ -274,26 +271,27 @@ namespace DiscordCoreAPI {
 					if (!returnData.responseData.empty()) {
 						errorMessage += "The Response: " + static_cast<jsonifier::string>(returnData.responseData);
 					}
-					HttpsError theError{ errorMessage };
+					https_error theError{ errorMessage };
 					theError.errorCode = returnData.responseCode;
+
 					throw theError;
 				}
 
-				if constexpr ((( !std::is_void_v<Args> ) || ...)) {
+				if constexpr ((( !std::is_void_v<args> ) || ...)) {
 					if (returnData.responseData.size() > 0) {
-						(parser.parseJson<true, true>(args, returnData.responseData), ...);
+						(getParseErrors(parser, argsNew, returnData.responseData), ...);
 					}
 				}
 			}
 
 		  protected:
-			HttpsConnectionManager connectionManager{};
-			RateLimitQueue rateLimitQueue{};
+			https_connection_manager connectionManager{};
+			rate_limit_queue rateLimitQueue{};
 
-			HttpsResponseData executeByRateLimitData(HttpsConnection& connection);
+			https_response_data executeByRateLimitData(https_connection& connection);
 
-			HttpsResponseData httpsRequest(HttpsConnection& connection);
+			https_response_data httpsRequest(https_connection& connection);
 		};
 
-	}// namespace DiscordCoreInternal
+	}// namespace discord_core_internal
 }

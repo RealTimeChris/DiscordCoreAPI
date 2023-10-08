@@ -27,54 +27,53 @@
 /// May 13, 2021
 /// https://discordcoreapi.com
 /// \file StickerEntities.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
 
-	/// @brief For getting a StickerData object for the given sticker ID.
-	struct GetStickerData {
-		Snowflake stickerId{};///< The chosen StickerData's Snowflake.
+	/// @brief For getting a sticker_data object for the given sticker id.
+	struct get_sticker_data {
+		snowflake stickerId{};///< The chosen sticker_data's snowflake.
 	};
 
-	/// @brief For collecting a list of Stickers from a chosen Guild.
-	struct GetGuildStickersData {
-		Snowflake guildId{};///< The chosen Guild from which you would like to collect the Stickers from.
+	/// @brief For collecting a list of stickers from a chosen guild.
+	struct get_guild_stickers_data {
+		snowflake guildId{};///< The chosen guild from which you would like to collect the stickers from.
 	};
 
-	/// @brief For creating a single StickerData.
-	struct CreateGuildStickerData {
-		jsonifier::string description{};///< Description of the StickerData.
-		jsonifier::string reason{};///< The reason for creating the StickerData.
-		Snowflake guildId{};///< The Guild within which to create the StickerData.
-		jsonifier::string file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
-		jsonifier::string name{};///< Name of the StickerData.
+	/// @brief For creating a single sticker_data.
+	struct create_guild_sticker_data {
+		jsonifier::string description{};///< Description of the sticker_data.
+		jsonifier::string reason{};///< The reason for creating the sticker_data.
+		snowflake guildId{};///< The guild within which to create the sticker_data.
+		jsonifier::string file{};///< The sticker file to upload, must be a png, apng, or lottie json file, max 500 kb.
+		jsonifier::string name{};///< Name of the sticker_data.
 		jsonifier::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
-	/// @brief For modifying a single StickerData.
-	struct ModifyGuildStickerData {
-		jsonifier::string description{};///< Description of the StickerData.
-		Snowflake stickerId{};///< The StickerData you wish to modify.
-		jsonifier::string reason{};///< The reason for modifying the StickerData.
-		Snowflake guildId{};///< The Guild within which to modify the StickerData.
-		jsonifier::string name{};///< Name of the StickerData.
+	/// @brief For modifying a single sticker_data.
+	struct modify_guild_sticker_data {
+		jsonifier::string description{};///< Description of the sticker_data.
+		snowflake stickerId{};///< The sticker_data you wish to modify.
+		jsonifier::string reason{};///< The reason for modifying the sticker_data.
+		snowflake guildId{};///< The guild within which to modify the sticker_data.
+		jsonifier::string name{};///< Name of the sticker_data.
 		jsonifier::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
-	/// @brief For deleting a single StickerData.
-	struct DeleteGuildStickerData {
-		Snowflake stickerId{};///< The StickerData you wish to delete.
-		jsonifier::string reason{};///< The reason for deleting the StickerData.
-		Snowflake guildId{};///< The Guild within which to delete the StickerData.
+	/// @brief For deleting a single sticker_data.
+	struct delete_guild_sticker_data {
+		snowflake stickerId{};///< The sticker_data you wish to delete.
+		jsonifier::string reason{};///< The reason for deleting the sticker_data.
+		snowflake guildId{};///< The guild within which to delete the sticker_data.
 	};
 
 	/**@}*/
@@ -84,42 +83,42 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// @brief An interface class for the StickerData related Discord endpoints.
-	class DiscordCoreAPI_Dll Stickers {
+	/// @brief An interface class for the sticker_data related discord endpoints.
+	class DiscordCoreAPI_Dll stickers {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(discord_core_internal::https_client*);
 
-		/// @brief Gets a single StickerData item.
-		/// @param dataPackage A GetStickerData structure.
-		/// @return A CoRoutine containing a StickerData.
-		static CoRoutine<StickerData> getStickerAsync(GetStickerData dataPackage);
+		/// @brief Gets a single sticker_data item.
+		/// @param dataPackage a get_sticker_data structure.
+		/// @return a co_routine containing a sticker_data.
+		static co_routine<sticker_data> getStickerAsync(get_sticker_data dataPackage);
 
-		/// @brief Gets a list of nitro-available StickerData packs
-		/// @return A CoRoutine containing a StickerPackData
-		static CoRoutine<jsonifier::vector<StickerPackData>> getNitroStickerPacksAsync();
+		/// @brief Gets a list of nitro-available sticker_data packs
+		/// @return a co_routine containing a sticker_pack_data
+		static co_routine<jsonifier::vector<sticker_pack_data>> getNitroStickerPacksAsync();
 
-		/// @brief Gets a list of Stickers from a Guild.
-		/// @param dataPackage A GetGuildStickersData structure.
-		/// @return A CoRoutine containing a jsonifier::vector<StickerData>.
-		static CoRoutine<jsonifier::vector<StickerData>> getGuildStickersAsync(GetGuildStickersData dataPackage);
+		/// @brief Gets a list of stickers from a guild.
+		/// @param dataPackage a get_guild_stickers_data structure.
+		/// @return a co_routine containing a jsonifier::vector<sticker_data>.
+		static co_routine<jsonifier::vector<sticker_data>> getGuildStickersAsync(get_guild_stickers_data dataPackage);
 
-		/// @brief Creates a new StickerData within a chosen Guild.
-		/// @param dataPackage A CreateGuildStickerData structure.
-		/// @return A CoRoutine containing a StickerData.
-		static CoRoutine<StickerData> createGuildStickerAsync(CreateGuildStickerData dataPackage);
+		/// @brief Creates a new sticker_data within a chosen guild.
+		/// @param dataPackage a create_guild_sticker_data structure.
+		/// @return a co_routine containing a sticker_data.
+		static co_routine<sticker_data> createGuildStickerAsync(create_guild_sticker_data dataPackage);
 
-		/// @brief Modifies a StickerData within a chosen Guild.
-		/// @param dataPackage A ModifyGuildStickerData structure.
-		/// @return A CoRoutine containing a StickerData.
-		static CoRoutine<StickerData> modifyGuildStickerAsync(ModifyGuildStickerData dataPackage);
+		/// @brief Modifies a sticker_data within a chosen guild.
+		/// @param dataPackage a modify_guild_sticker_data structure.
+		/// @return a co_routine containing a sticker_data.
+		static co_routine<sticker_data> modifyGuildStickerAsync(modify_guild_sticker_data dataPackage);
 
-		/// @brief Deletes a StickerData within a chosen Guild.
-		/// @param dataPackage A DeleteGuildStickerData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildStickerAsync(DeleteGuildStickerData dataPackage);
+		/// @brief Deletes a sticker_data within a chosen guild.
+		/// @param dataPackage a delete_guild_sticker_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteGuildStickerAsync(delete_guild_sticker_data dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static discord_core_internal::https_client* httpsClient;
 	};
 	/**@}*/
 };

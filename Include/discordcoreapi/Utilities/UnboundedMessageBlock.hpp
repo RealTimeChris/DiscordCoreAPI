@@ -23,41 +23,40 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// ObjectCache.hpp - Header file for the "ObjectCache" stuff.
+/// UnboundedMessageBlock.hpp - Header file for the "UnboundedMessageBlock" stuff.
 /// Dec 12, 2021
 /// https://discordcoreapi.com
-/// \file ObjectCache.hpp
-
+/// \file UnboundedMessageBlock.hpp
 #pragma once
 
 #include <discordcoreapi/Utilities/Base.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	template<typename ValueType>
-	concept CopyableOrMovable = std::copyable<std::decay_t<ValueType>> || std::movable<std::decay_t<ValueType>>;
+	template<typename value_type>
+	concept copyable_or_movable = std::copyable<std::unwrap_ref_decay_t<value_type>> || std::movable<std::unwrap_ref_decay_t<value_type>>;
 
 	/// @brief A thread-safe messaging block for data-structures.
-	/// @tparam ValueType The type of object that will be sent over the message block.
-	template<CopyableOrMovable ValueType> class UnboundedMessageBlock {
+	/// @tparam value_type the type of object that will be sent over the message block.
+	template<copyable_or_movable value_type_new> class unbounded_message_block {
 	  public:
-		using value_type = ValueType;
+		using value_type = value_type_new;
 
-		inline UnboundedMessageBlock(){};
+		inline unbounded_message_block(){};
 
-		inline UnboundedMessageBlock<value_type>& operator=(UnboundedMessageBlock<value_type>&& other) noexcept {
+		inline unbounded_message_block& operator=(unbounded_message_block&& other) noexcept {
 			if (this != &other) {
 				std::swap(queue, other.queue);
 			}
 			return *this;
 		}
 
-		inline UnboundedMessageBlock<value_type>& operator=(const UnboundedMessageBlock<value_type>&) = delete;
-		inline UnboundedMessageBlock(const UnboundedMessageBlock&)									  = delete;
+		inline unbounded_message_block& operator=(const unbounded_message_block&) = delete;
+		inline unbounded_message_block(const unbounded_message_block&)			  = delete;
 
-		template<CopyableOrMovable ValueTypeNew> inline void send(ValueTypeNew&& object) {
+		template<copyable_or_movable value_type_newer> inline void send(value_type_newer&& object) {
 			std::unique_lock lock{ accessMutex };
-			queue.emplace_back(std::forward<ValueTypeNew>(object));
+			queue.emplace_back(std::forward<value_type_newer>(object));
 		}
 
 		inline void clearContents() {
@@ -81,15 +80,15 @@ namespace DiscordCoreAPI {
 			return queue.size();
 		}
 
-		inline ~UnboundedMessageBlock() = default;
+		inline ~unbounded_message_block() = default;
 
 	  protected:
 		std::deque<value_type> queue{};
 		std::mutex accessMutex{};
 	};
 
-	template<typename ValueType> inline bool waitForTimeToPass(UnboundedMessageBlock<std::decay_t<ValueType>>& outBuffer, ValueType& argOne, uint64_t timeInMsNew) {
-		StopWatch<Milliseconds> stopWatch{ Milliseconds{ timeInMsNew } };
+	template<typename value_type> inline bool waitForTimeToPass(unbounded_message_block<std::unwrap_ref_decay_t<value_type>>& outBuffer, value_type& argOne, uint64_t timeInMsNew) {
+		stop_watch<milliseconds> stopWatch{ milliseconds{ timeInMsNew } };
 		stopWatch.reset();
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(1ms);

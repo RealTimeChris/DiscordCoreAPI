@@ -23,121 +23,120 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// ReactionEntities.hpp - Header for the ReactionData related classes and structs.
+/// ReactionEntities.hpp - Header for the reaction_data related classes and structs.
 /// May 13, 2021
 /// https://discordcoreapi.com
 /// \file ReactionEntities.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/MessageEntities.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	using ReactionCollector = ObjectCollector<ReactionData>;
+	using reaction_collector = object_collector<reaction_data>;
 
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
 
-	/// @brief For creating a single ReactionData.
-	struct CreateReactionData {
-		jsonifier::string emojiName{};///< The emoji name of the ReactionData to add.
-		Snowflake channelId{};///< The ChannelData for which to add the ReactionData.
-		Snowflake messageId{};///< The Message on which to add the ReactionData.
-		Snowflake emojiId{};///< The emoji id of the ReactionData to add.
+	/// @brief For creating a single reaction_data.
+	struct create_reaction_data {
+		jsonifier::string emojiName{};///< The emoji name of the reaction_data to add.
+		snowflake channelId{};///< The channel_data for which to add the reaction_data.
+		snowflake messageId{};///< The message on which to add the reaction_data.
+		snowflake emojiId{};///< The emoji id of the reaction_data to add.
 	};
 
-	/// @brief For deleting one's own ReactionData.
-	struct DeleteOwnReactionData {
+	/// @brief For deleting one's own reaction_data.
+	struct delete_own_reaction_data {
 		jsonifier::string emojiName{};///< The emoji name for which to remove the emoji.
-		Snowflake channelId{};///< The ChannelData from which to remove the ReactionData.
-		Snowflake messageId{};///< The Message from which to remove the ReactionData.
-		Snowflake emojiId{};///< The emoji id for which to remove the emoji.
+		snowflake channelId{};///< The channel_data from which to remove the reaction_data.
+		snowflake messageId{};///< The message from which to remove the reaction_data.
+		snowflake emojiId{};///< The emoji id for which to remove the emoji.
 	};
 
-	/// @brief For deleting a reaction, by UserData.
-	struct DeleteUserReactionData {
+	/// @brief For deleting a reaction, by user_data.
+	struct delete_user_reaction_data {
 		jsonifier::string emojiName{};///< The name of which emoji to remove.
-		Snowflake channelId{};///< The ChannelData from which to remove the ReactionData.
-		Snowflake messageId{};///< The Message from which to remove the ReactionData.
-		Snowflake emojiId{};///< The id of which emoji to remove.
-		Snowflake userId{};///< The UserData id for whom to remove their emoji.
+		snowflake channelId{};///< The channel_data from which to remove the reaction_data.
+		snowflake messageId{};///< The message from which to remove the reaction_data.
+		snowflake emojiId{};///< The id of which emoji to remove.
+		snowflake userId{};///< The user_data id for whom to remove their emoji.
 	};
 
-	/// @brief For getting all of the Reactions.
-	struct GetReactionsData {
-		Snowflake channelId{};///< The ChannelData from which to acquire the reactors.
-		Snowflake messageId{};///< The Message from which to acquire the reactors.
-		Snowflake afterId{};///< Get users after this user ID.
+	/// @brief For getting all of the reactions.
+	struct get_reactions_data {
+		snowflake channelId{};///< The channel_data from which to acquire the reactors.
+		snowflake messageId{};///< The message from which to acquire the reactors.
+		snowflake afterId{};///< Get users after this user id.
 		jsonifier::string emoji{};///< The emoji name for which to acquire the reactors.
 		int32_t limit{};///< The maximum number of reactors to collect.
 	};
 
-	/// @brief For deleting all of the Reactions on a particular MessageData.
-	struct DeleteAllReactionsData {
-		Snowflake channelId{};///< The ChannelData from which you would like to remove the emoji.
-		Snowflake messageId{};///< The Message from which you would like to remove the emoji.
+	/// @brief For deleting all of the reactions on a particular message_data.
+	struct delete_all_reactions_data {
+		snowflake channelId{};///< The channel_data from which you would like to remove the emoji.
+		snowflake messageId{};///< The message from which you would like to remove the emoji.
 	};
 
-	/// @brief For deleting all of the Reactions of a particular Emoji.
-	struct DeleteReactionsByEmojiData {
+	/// @brief For deleting all of the reactions of a particular emoji.
+	struct delete_reactions_by_emoji_data {
 		jsonifier::string emojiName{};///< The name of which emoji to remove.
-		Snowflake channelId{};///< The ChannelData from which you would like to remove the emoji.
-		Snowflake messageId{};///< The Message from which you would like to remove the emoji.
-		Snowflake emojiId{};///< The id of which emoji to remove.
+		snowflake channelId{};///< The channel_data from which you would like to remove the emoji.
+		snowflake messageId{};///< The message from which you would like to remove the emoji.
+		snowflake emojiId{};///< The id of which emoji to remove.
 	};
 
-	/// For collecting a list of Emoji from a Guild.
-	struct GetEmojiListData {
-		Snowflake guildId{};///< The id of the chosen Guild.
+	/// for collecting a list of emoji from a guild.
+	struct get_emoji_list_data {
+		snowflake guildId{};///< The id of the chosen guild.
 	};
 
-	/// For collecting a single Guild Emoji.
-	struct GetGuildEmojiData {
-		Snowflake guildId{};///< The id of the chosen Guild.
-		Snowflake emojiId{};///< The id of the chosen Emoji
+	/// for collecting a single guild emoji.
+	struct get_guild_emoji_data {
+		snowflake guildId{};///< The id of the chosen guild.
+		snowflake emojiId{};///< The id of the chosen emoji
 	};
 
-	enum class ImageType {
-		Jpg = 0,
-		Png = 1,
-		Gif = 2,
+	enum class image_type {
+		jpg = 0,
+		png = 1,
+		gif = 2,
 	};
 
-	/// For creating a new Guild Emoji.
-	struct CreateGuildEmojiData {
-		template<typename ValueType> friend struct jsonifier::core;
-		friend class Reactions;
+	/// for creating a new guild emoji.
+	struct create_guild_emoji_data {
+		template<typename value_type> friend struct jsonifier::core;
+		friend class reactions;
 
-		jsonifier::vector<Snowflake> roles{};///< Roles that can use this Emoji.
+		jsonifier::vector<snowflake> roles{};///< Roles that can use this emoji.
 		jsonifier::string imageFilePath{};///< The image responseData.
-		jsonifier::string reason{};///< Reason for creating the new Emoji.
-		Snowflake guildId{};///< The Guild within which to create the Emoji.
+		jsonifier::string reason{};///< Reason for creating the new emoji.
+		snowflake guildId{};///< The guild within which to create the emoji.
 		jsonifier::string name{};///< Name of the emoji.
-		ImageType type{};///< The type of image being uploaded.
+		image_type type{};///< The type of image being uploaded.
 
 	  protected:
 		jsonifier::string imageDataFinal{};
 	};
 
-	/// For modifying a Guild Emoji.
-	struct ModifyGuildEmojiData {
-		jsonifier::vector<Snowflake> roles{};///< Roles that can use this Emoji.
-		jsonifier::string reason{};///< Reason for modifying the Emoji.
-		Snowflake guildId{};///< The Guild within which to modify the Emoji.
-		Snowflake emojiId{};///< The id of the Emoji to modify.
-		jsonifier::string name{};///< Name of the Emoji.
+	/// for modifying a guild emoji.
+	struct modify_guild_emoji_data {
+		jsonifier::vector<snowflake> roles{};///< Roles that can use this emoji.
+		jsonifier::string reason{};///< Reason for modifying the emoji.
+		snowflake guildId{};///< The guild within which to modify the emoji.
+		snowflake emojiId{};///< The id of the emoji to modify.
+		jsonifier::string name{};///< Name of the emoji.
 	};
 
-	/// For deleting a Guild Emoji.
-	struct DeleteGuildEmojiData {
-		jsonifier::string reason{};///< Reason for deleting the Emoji.
-		Snowflake guildId{};///< The Guild within which to delete the Emoji.
-		Snowflake emojiId{};///< The id of the Emoji to delete.
+	/// for deleting a guild emoji.
+	struct delete_guild_emoji_data {
+		jsonifier::string reason{};///< Reason for deleting the emoji.
+		snowflake guildId{};///< The guild within which to delete the emoji.
+		snowflake emojiId{};///< The id of the emoji to delete.
 	};
 
 	/**@}*/
@@ -146,68 +145,68 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// @brief An interface class for the ReactionData related Discord endpoints.
-	class DiscordCoreAPI_Dll Reactions {
+	/// @brief An interface class for the reaction_data related discord endpoints.
+	class DiscordCoreAPI_Dll reactions {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(discord_core_internal::https_client*);
 
-		/// @brief Creates a ReactionData on a Message.
-		/// @param dataPackage A CreateReactionData structure.
-		/// @return A CoRoutine containing a ReactionData.
-		static CoRoutine<ReactionData> createReactionAsync(CreateReactionData dataPackage);
+		/// @brief Creates a reaction_data on a message.
+		/// @param dataPackage a create_reaction_data structure.
+		/// @return a co_routine containing a reaction_data.
+		static co_routine<reaction_data> createReactionAsync(create_reaction_data dataPackage);
 
-		/// @brief Deletes your own Reactions from a given MessageData.
-		/// @param dataPackage A DeleteOwnReactionData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteOwnReactionAsync(DeleteOwnReactionData dataPackage);
+		/// @brief Deletes your own reactions from a given message_data.
+		/// @param dataPackage a delete_own_reaction_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteOwnReactionAsync(delete_own_reaction_data dataPackage);
 
-		/// @brief Deletes all of the Reactions by a specific UserData from a given MessageData.
-		/// @param dataPackage A DeleteUserReactionData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteUserReactionAsync(DeleteUserReactionData dataPackage);
+		/// @brief Deletes all of the reactions by a specific user_data from a given message_data.
+		/// @param dataPackage a delete_user_reaction_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteUserReactionAsync(delete_user_reaction_data dataPackage);
 
-		/// @brief Get a list of users that reacted with this emoji. Returns an array of user objects on success.
-		/// @param dataPackage A GetReactionsData structure.
-		/// @return A CoRoutine containing a jsonifier::vector<UserData>.
-		static CoRoutine<jsonifier::vector<UserData>> getReactionsAsync(GetReactionsData dataPackage);
+		/// @brief Get a list of users that reacted with this emoji. returns An array of user objects on success.
+		/// @param dataPackage a get_reactions_data structure.
+		/// @return a co_routine containing a jsonifier::vector<user_data>.
+		static co_routine<jsonifier::vector<user_data>> getReactionsAsync(get_reactions_data dataPackage);
 
-		/// @brief Deletes all of the Reactions from a given MessageData.
-		/// @param dataPackage A DeleteAllReactionsData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteAllReactionsAsync(DeleteAllReactionsData dataPackage);
+		/// @brief Deletes all of the reactions from a given message_data.
+		/// @param dataPackage a delete_all_reactions_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteAllReactionsAsync(delete_all_reactions_data dataPackage);
 
-		/// @brief Deletes all of the Reactions by a specific emoji from a given MessageData.
-		/// @param dataPackage A DeleteReactionsByEmojiData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage);
+		/// @brief Deletes all of the reactions by a specific emoji from a given message_data.
+		/// @param dataPackage a delete_reactions_by_emoji_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteReactionsByEmojiAsync(delete_reactions_by_emoji_data dataPackage);
 
-		/// @brief Collects a list of Guild Emoji from a chosen Guild.
-		/// @param dataPackage A GetEmojiListData structure.
-		/// @return A CoRoutine containing a jsonifier::vector<EmojiData>.
-		static CoRoutine<jsonifier::vector<EmojiData>> getEmojiListAsync(GetEmojiListData dataPackage);
+		/// @brief Collects a list of guild emoji from a chosen guild.
+		/// @param dataPackage a get_emoji_list_data structure.
+		/// @return a co_routine containing a jsonifier::vector<emoji_data>.
+		static co_routine<jsonifier::vector<emoji_data>> getEmojiListAsync(get_emoji_list_data dataPackage);
 
-		/// @brief Collects a single Guild Emoji from a chosen Guild.
-		/// @param dataPackage A GetGuildEmojiData structure.
-		/// @return A CoRoutine containing an EmojiData.
-		static CoRoutine<EmojiData> getGuildEmojiAsync(GetGuildEmojiData dataPackage);
+		/// @brief Collects a single guild emoji from a chosen guild.
+		/// @param dataPackage a get_guild_emoji_data structure.
+		/// @return a co_routine containing an emoji_data.
+		static co_routine<emoji_data> getGuildEmojiAsync(get_guild_emoji_data dataPackage);
 
-		/// @brief Creates a single Guild Emoji within a chosen Guild.
-		/// @param dataPackage A CreateGuildEmojiData structure.
-		/// @return A CoRoutine containing an EmojiData.
-		static CoRoutine<EmojiData> createGuildEmojiAsync(CreateGuildEmojiData dataPackage);
+		/// @brief Creates a single guild emoji within a chosen guild.
+		/// @param dataPackage a create_guild_emoji_data structure.
+		/// @return a co_routine containing an emoji_data.
+		static co_routine<emoji_data> createGuildEmojiAsync(create_guild_emoji_data dataPackage);
 
-		/// @brief Modifies a single Guild Emoji within a chosen Guild.
-		/// @param dataPackage A ModifyGuildEmojiData structure.
-		/// @return A CoRoutine containing an EmojiData.
-		static CoRoutine<EmojiData> modifyGuildEmojiAsync(ModifyGuildEmojiData dataPackage);
+		/// @brief Modifies a single guild emoji within a chosen guild.
+		/// @param dataPackage a modify_guild_emoji_data structure.
+		/// @return a co_routine containing an emoji_data.
+		static co_routine<emoji_data> modifyGuildEmojiAsync(modify_guild_emoji_data dataPackage);
 
-		/// @brief Deletes a single Guild Emoji within a chosen Guild.
-		/// @param dataPackage A DeleteGuildEmojiData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildEmojiAsync(DeleteGuildEmojiData dataPackage);
+		/// @brief Deletes a single guild emoji within a chosen guild.
+		/// @param dataPackage a delete_guild_emoji_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteGuildEmojiAsync(delete_guild_emoji_data dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static discord_core_internal::https_client* httpsClient;
 	};
 	/**@}*/
 }

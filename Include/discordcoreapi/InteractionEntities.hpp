@@ -24,270 +24,269 @@
 	SOFTWARE.
 */
 /// InteractionEntities.hpp - Header for the interaction related classes and
-/// structs. May 28, 2021 Chris M.
+/// structs. may 28, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file InteractionEntities.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/MessageEntities.hpp>
 #include <discordcoreapi/WebHookEntities.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
 
-	using AutoCompleteEntryFunction = std::function<jsonifier::string(jsonifier::string)>;
+	using auto_complete_entry_function = std::function<jsonifier::string(jsonifier::string)>;
 
-	class DiscordCoreAPI_Dll InteractionResponseBase {
+	class DiscordCoreAPI_Dll interaction_response_base {
 	  public:
-		template<typename ValueType> friend struct jsonifier::core;
+		template<typename value_type> friend struct jsonifier::core;
 
-		UnorderedSet<jsonifier::string_view> excludedKeys{};
+		unordered_set<jsonifier::string_view> excludedKeys{};
 
-		/// @brief Adds a button to the response MessageData.
-		/// @param disabled Whether the button is active or not.
-		/// @param customIdNew A custom id to give for identifying the button.
-		/// @param buttonLabel A visible label for the button.
-		/// @param buttonStyle The style of the button.
-		/// @param emojiName An emoji name, if desired.
-		/// @param emojiId An emoji id, if desired.
-		/// @param url A url, if applicable.
-		InteractionResponseBase& addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, ButtonStyle buttonStyle,
-			jsonifier::string_view emojiName = "", Snowflake emojiId = Snowflake{}, jsonifier::string_view url = "");
+		/// @brief Adds a button to the response message_data.
+		/// @param disabled whether the button is active or not.
+		/// @param customIdNew a custom id to give for identifying the button.
+		/// @param buttonLabel a visible label for the button.
+		/// @param buttonStyle the style of the button.
+		/// @param emojiName an emoji name, if desired.
+		/// @param emojiId an emoji id, if desired.
+		/// @param url a url, if applicable.
+		interaction_response_base& addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, button_style buttonStyle,
+			jsonifier::string_view emojiName = "", snowflake emojiId = snowflake{}, jsonifier::string_view url = "");
 
-		/// @brief Adds a select-menu to the response MessageData.
-		/// @param disabled Whether the select-menu is active or not.
-		/// @param customIdNew A custom id to give for identifying the select-menu.
-		/// @param options A vector of select-menu-options to offer.
-		/// @param placeholder Custom placeholder text if nothing is selected, max 100 characters.
-		/// @param maxValues Maximum number of selections that are possible.
-		/// @param minValues Minimum required number of selections that are required.
-		InteractionResponseBase& addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<SelectOptionData> options,
-			jsonifier::string_view placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType type,
-			jsonifier::vector<ChannelType> channelTypes = jsonifier::vector<ChannelType>{});
+		/// @brief Adds a select-menu to the response message_data.
+		/// @param disabled whether the select-menu is active or not.
+		/// @param customIdNew a custom id to give for identifying the select-menu.
+		/// @param options a vector of select-menu-options to offer.
+		/// @param placeholder custom placeholder text if nothing is selected, max 100 characters.
+		/// @param maxValues maximum number of selections that are possible.
+		/// @param minValues minimum required number of selections that are required.
+		interaction_response_base& addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<select_option_data> options,
+			jsonifier::string_view placeholder, uint64_t maxValues, uint64_t minValues, select_menu_type type,
+			jsonifier::vector<channel_type> channelTypes = jsonifier::vector<channel_type>{});
 
-		/// @brief Adds a modal to the response MessageData.
-		/// @param topTitleNew A title for the modal.
-		/// @param topCustomIdNew A custom id to give for the modal.
-		/// @param titleNew A title for the modal's individual input.
-		/// @param customIdNew A custom id to give for the modal's individual input.
-		/// @param required Is it a required response?
-		/// @param minLength Minimum length.
-		/// @param maxLength Maximum length.
-		/// @param inputStyle The input style.
-		/// @param label A label for the modal.
-		/// @param placeholder A placeholder for the modal.
-		/// @returns RespondToInputEventData& A reference to this data structure.
-		InteractionResponseBase& addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
-			jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, TextInputStyle inputStyle, jsonifier::string_view label = "",
+		/// @brief Adds a modal to the response message_data.
+		/// @param topTitleNew a title for the modal.
+		/// @param topCustomIdNew a custom id to give for the modal.
+		/// @param titleNew a title for the modal's individual input.
+		/// @param customIdNew a custom id to give for the modal's individual input.
+		/// @param required is it a required response?
+		/// @param minLength minimum length.
+		/// @param maxLength maximum length.
+		/// @param inputStyle the input style.
+		/// @param label a label for the modal.
+		/// @param placeholder a placeholder for the modal.
+		/// @return respond_to_input_event_data& a reference to this data structure.
+		interaction_response_base& addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
+			jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, text_input_style inputStyle, jsonifier::string_view label = "",
 			jsonifier::string_view placeholder = "");
 
 		/// @brief Adds a file to the current collection of files for this message response.
-		/// @param theFile The file to be added.
-		/// @returns MessageResponseBase& A reference to this data structure.
-		InteractionResponseBase& addFile(const File& theFile);
+		/// @param theFile the file to be added.
+		/// @return message_response_base& a reference to this data structure.
+		interaction_response_base& addFile(const file& theFile);
 
 		/// @brief For setting the allowable mentions in a response.
-		/// @param dataPackage An AllowedMentionsData structure.
-		InteractionResponseBase& addAllowedMentions(const AllowedMentionsData& dataPackage);
+		/// @param dataPackage an allowed_mentions_data structure.
+		interaction_response_base& addAllowedMentions(const allowed_mentions_data& dataPackage);
 
 		/// @brief For setting the components in a response.
-		/// @param dataPackage An ActionRowData structure.
-		InteractionResponseBase& addComponentRow(const ActionRowData& dataPackage);
+		/// @param dataPackage an action_row_data structure.
+		interaction_response_base& addComponentRow(const action_row_data& dataPackage);
 
-		/// @brief Sets the response type of the current MessageData.
-		/// @param type Interaction callback type.
-		InteractionResponseBase& setResponseType(InteractionCallbackType type);
+		/// @brief Sets the response type of the current message_data.
+		/// @param type interaction callback type.
+		interaction_response_base& setResponseType(interaction_callback_type type);
 
 		/// @brief For setting the embeds in a response.
-		/// @param dataPackage An EmbedData structure.SendDMData
-		InteractionResponseBase& addMessageEmbed(const EmbedData& dataPackage);
+		/// @param dataPackage an embed_data structure.send_dmdata
+		interaction_response_base& addMessageEmbed(const embed_data& dataPackage);
 
 		/// @brief For setting the content in a response.
-		/// @param dataPackage A string, containing the content.
-		InteractionResponseBase& addContent(jsonifier::string_view dataPackage);
+		/// @param dataPackage a string, containing the content.
+		interaction_response_base& addContent(jsonifier::string_view dataPackage);
 
 		/// @brief For setting the tts status of a response.
-		/// @param enabledTTs A bool.
-		InteractionResponseBase& setTTSStatus(bool enabledTTs);
+		/// @param enabledTTs a bool.
+		interaction_response_base& setTTSStatus(bool enabledTTs);
 
-		InteractionResponseBase& setFlags(uint64_t flag);
+		interaction_response_base& setFlags(uint64_t flag);
 
-		InteractionResponseData getInteractionResponseData();
+		interaction_response_data getInteractionResponseData();
 
 		void generateExcludedKeys();
 
-		virtual ~InteractionResponseBase() = default;
+		virtual ~interaction_response_base() = default;
 
 	  protected:
-		InteractionPackageData interactionPackage{};
-		MessagePackageData messagePackage{};
-		InteractionCallbackData data{};
-		InteractionCallbackType type{};
+		interaction_package_data interactionPackage{};
+		message_package_data messagePackage{};
+		interaction_callback_data data{};
+		interaction_callback_type type{};
 	};
 
-	/// @brief For creating an ephemeral Interaction response.
-	class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponseBase {
+	/// @brief For creating an ephemeral interaction response.
+	class DiscordCoreAPI_Dll create_ephemeral_interaction_response_data : public interaction_response_base {
 	  public:
-		friend class CreateInteractionResponseData;
-		friend class Interactions;
-		friend class InputEvents;
+		friend class create_interaction_response_data;
+		friend class interactions;
+		friend class input_events;
 
-		CreateEphemeralInteractionResponseData(const RespondToInputEventData& dataPackage);
+		create_ephemeral_interaction_response_data(const respond_to_input_event_data& dataPackage);
 
-		virtual ~CreateEphemeralInteractionResponseData() = default;
+		virtual ~create_ephemeral_interaction_response_data() = default;
 	};
 
-	/// @brief For creating a deferred Interaction response.
-	class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponseBase {
+	/// @brief For creating a deferred interaction response.
+	class DiscordCoreAPI_Dll create_deferred_interaction_response_data : public interaction_response_base {
 	  public:
-		friend class CreateInteractionResponseData;
-		friend class Interactions;
-		friend class InputEvents;
+		friend class create_interaction_response_data;
+		friend class interactions;
+		friend class input_events;
 
-		CreateDeferredInteractionResponseData(const RespondToInputEventData& dataPackage);
+		create_deferred_interaction_response_data(const respond_to_input_event_data& dataPackage);
 
-		virtual ~CreateDeferredInteractionResponseData() = default;
+		virtual ~create_deferred_interaction_response_data() = default;
 	};
 
-	/// @brief For creating an Interaction response.
-	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponseBase {
+	/// @brief For creating an interaction response.
+	class DiscordCoreAPI_Dll create_interaction_response_data : public interaction_response_base {
 	  public:
-		template<typename ValueType> friend struct jsonifier::core;
-		friend class SelectMenuCollector;
-		friend class ButtonCollector;
-		friend class ModalCollector;
-		friend class Interactions;
-		friend class InputEvents;
+		template<typename value_type> friend struct jsonifier::core;
+		friend class select_menu_collector;
+		friend class button_collector;
+		friend class modal_collector;
+		friend class interactions;
+		friend class input_events;
 
-		CreateInteractionResponseData(const CreateEphemeralInteractionResponseData& dataPackage);
+		create_interaction_response_data(const create_ephemeral_interaction_response_data& dataPackage);
 
-		CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage);
+		create_interaction_response_data(const create_deferred_interaction_response_data& dataPackage);
 
-		CreateInteractionResponseData(const RespondToInputEventData& dataPackage);
+		create_interaction_response_data(const respond_to_input_event_data& dataPackage);
 
-		CreateInteractionResponseData(const InteractionData& dataPackage);
+		create_interaction_response_data(const interaction_data& dataPackage);
 
-		CreateInteractionResponseData() = default;
+		create_interaction_response_data() = default;
 
-		virtual ~CreateInteractionResponseData() = default;
+		virtual ~create_interaction_response_data() = default;
 	};
 
-	/// @brief For getting an Interaction response.
-	struct GetInteractionResponseData {
+	/// @brief For getting an interaction response.
+	struct get_interaction_response_data {
 		jsonifier::string interactionToken{};///< Interaction token.
-		Snowflake applicationId{};///< application id.
+		snowflake applicationId{};///< Application id.
 	};
 
-	/// @brief For editing an Interaction response.
-	class DiscordCoreAPI_Dll EditInteractionResponseData : public EditWebHookData {
+	/// @brief For editing an interaction response.
+	class DiscordCoreAPI_Dll edit_interaction_response_data : public edit_web_hook_data {
 	  public:
-		template<typename ValueType> friend struct jsonifier::core;
-		friend class Interactions;
-		friend class InputEvents;
+		template<typename value_type> friend struct jsonifier::core;
+		friend class interactions;
+		friend class input_events;
 
-		UnorderedSet<jsonifier::string_view> excludedKeys{};
+		unordered_set<jsonifier::string_view> excludedKeys{};
 
-		EditInteractionResponseData(const RespondToInputEventData& dataPackage);
+		edit_interaction_response_data(const respond_to_input_event_data& dataPackage);
 
 		void generateExcludedKeys();
 
-		virtual ~EditInteractionResponseData() = default;
+		virtual ~edit_interaction_response_data() = default;
 
 	  protected:
-		InteractionPackageData interactionPackage{};
+		interaction_package_data interactionPackage{};
 	};
 
-	/// @brief For deleting an Interaction response.
-	struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
-		friend class Interactions;
-		friend class InputEvents;
+	/// @brief For deleting an interaction response.
+	struct DiscordCoreAPI_Dll delete_interaction_response_data {
+		friend class interactions;
+		friend class input_events;
 
-		DeleteInteractionResponseData(const RespondToInputEventData& dataPackage);
+		delete_interaction_response_data(const respond_to_input_event_data& dataPackage);
 
 	  protected:
-		InteractionPackageData interactionPackage{};
+		interaction_package_data interactionPackage{};
 		uint32_t timeDelay{};
 	};
 
-	/// @brief For creating an ephemeral follow up MessageData.
-	class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public ExecuteWebHookData {
+	/// @brief For creating an ephemeral follow up message_data.
+	class DiscordCoreAPI_Dll create_ephemeral_follow_up_message_data : public execute_web_hook_data {
 	  public:
-		friend class CreateFollowUpMessageData;
-		friend class Interactions;
-		friend class InputEvents;
+		friend class create_follow_up_message_data;
+		friend class interactions;
+		friend class input_events;
 
-		CreateEphemeralFollowUpMessageData(const RespondToInputEventData& dataPackage);
+		create_ephemeral_follow_up_message_data(const respond_to_input_event_data& dataPackage);
 
-		virtual ~CreateEphemeralFollowUpMessageData() = default;
+		virtual ~create_ephemeral_follow_up_message_data() = default;
 
 	  protected:
-		InteractionPackageData interactionPackage{};
+		interaction_package_data interactionPackage{};
 	};
 
-	/// @brief For creating a follow up MessageData.
-	class DiscordCoreAPI_Dll CreateFollowUpMessageData : public ExecuteWebHookData {
+	/// @brief For creating a follow up message_data.
+	class DiscordCoreAPI_Dll create_follow_up_message_data : public execute_web_hook_data {
 	  public:
-		template<typename ValueType> friend struct jsonifier::core;
-		friend class SelectMenuCollector;
-		friend class ButtonCollector;
-		friend class Interactions;
-		friend class InputEvents;
+		template<typename value_type> friend struct jsonifier::core;
+		friend class select_menu_collector;
+		friend class button_collector;
+		friend class interactions;
+		friend class input_events;
 
-		UnorderedSet<jsonifier::string_view> excludedKeys{};
+		unordered_set<jsonifier::string_view> excludedKeys{};
 
-		CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage);
+		create_follow_up_message_data(const create_ephemeral_follow_up_message_data& dataPackage);
 
-		CreateFollowUpMessageData(const RespondToInputEventData& dataPackage);
+		create_follow_up_message_data(const respond_to_input_event_data& dataPackage);
 
 		void generateExcludedKeys();
 
-		virtual ~CreateFollowUpMessageData() = default;
+		virtual ~create_follow_up_message_data() = default;
 
 	  protected:
-		InteractionPackageData interactionPackage{};
+		interaction_package_data interactionPackage{};
 	};
 
-	/// @brief For getting a follow-up MessageData.
-	struct GetFollowUpMessageData {
+	/// @brief For getting a follow-up message_data.
+	struct get_follow_up_message_data {
 		jsonifier::string interactionToken{};///< Interaction token.
-		Snowflake applicationId{};///< application id.
-		Snowflake messageId{};///< Message id.
+		snowflake applicationId{};///< Application id.
+		snowflake messageId{};///< Message id.
 	};
 
-	/// @brief For editing a follow up MessageData.
-	class DiscordCoreAPI_Dll EditFollowUpMessageData : public EditWebHookData {
+	/// @brief For editing a follow up message_data.
+	class DiscordCoreAPI_Dll edit_follow_up_message_data : public edit_web_hook_data {
 	  public:
-		template<typename ValueType> friend struct jsonifier::core;
-		friend class Interactions;
-		friend class InputEvents;
+		template<typename value_type> friend struct jsonifier::core;
+		friend class interactions;
+		friend class input_events;
 
-		UnorderedSet<jsonifier::string_view> excludedKeys{};
+		unordered_set<jsonifier::string_view> excludedKeys{};
 
-		EditFollowUpMessageData(const RespondToInputEventData& dataPackage);
+		edit_follow_up_message_data(const respond_to_input_event_data& dataPackage);
 
-		virtual ~EditFollowUpMessageData() = default;
+		virtual ~edit_follow_up_message_data() = default;
 
 	  protected:
-		InteractionPackageData interactionPackage{};
-		MessagePackageData messagePackage{};
+		interaction_package_data interactionPackage{};
+		message_package_data messagePackage{};
 	};
 
-	/// @brief For deleting a follow up MessageData.
-	struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
-		friend class Interactions;
-		friend class InputEvents;
+	/// @brief For deleting a follow up message_data.
+	struct DiscordCoreAPI_Dll delete_follow_up_message_data {
+		friend class interactions;
+		friend class input_events;
 
-		DeleteFollowUpMessageData(const RespondToInputEventData& dataPackage);
+		delete_follow_up_message_data(const respond_to_input_event_data& dataPackage);
 
 	  protected:
-		InteractionPackageData interactionPackage{};
-		MessagePackageData messagePackage{};
+		interaction_package_data interactionPackage{};
+		message_package_data messagePackage{};
 		uint32_t timeDelay{};
 	};
 
@@ -298,68 +297,68 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// @brief An interface class for the Interaction related Discord endpoints.
-	class DiscordCoreAPI_Dll Interactions {
+	/// @brief An interface class for the interaction related discord endpoints.
+	class DiscordCoreAPI_Dll interactions {
 	  public:
-		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreClient;
-		friend class EventManager;
-		friend class InputEvents;
+		friend class discord_core_internal::base_socket_agent;
+		friend class discord_core_client;
+		friend class event_manager;
+		friend class input_events;
 
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(discord_core_internal::https_client*);
 
-		/// @brief Creates a response to an input Interaction.
-		/// @param dataPackage A CreateInteractionResponseData structure.
-		/// @returns A CoRoutine containing a Message.
-		static CoRoutine<MessageData> createInteractionResponseAsync(CreateInteractionResponseData dataPackage);
+		/// @brief Creates a response to an input interaction.
+		/// @param dataPackage a create_interaction_response_data structure.
+		/// @return A co_routine containing a message.
+		static co_routine<message_data> createInteractionResponseAsync(create_interaction_response_data dataPackage);
 
-		/// @brief Collects an Interaction response.
-		/// @param dataPackage A GetInteractionResponseData structure.
-		/// @returns A CoRoutine containing an InteractionResponseData.
-		static CoRoutine<MessageData> getInteractionResponseAsync(GetInteractionResponseData dataPackage);
+		/// @brief Collects an interaction response.
+		/// @param dataPackage a get_interaction_response_data structure.
+		/// @return A co_routine containing an interaction_response_data.
+		static co_routine<message_data> getInteractionResponseAsync(get_interaction_response_data dataPackage);
 
-		/// @brief Edits an Interaction response.
-		/// @param dataPackage A EditInteractionResponseData structure.
-		/// @returns A CoRoutine containing a Message.
-		static CoRoutine<MessageData> editInteractionResponseAsync(EditInteractionResponseData dataPackage);
+		/// @brief Edits an interaction response.
+		/// @param dataPackage a edit_interaction_response_data structure.
+		/// @return A co_routine containing a message.
+		static co_routine<message_data> editInteractionResponseAsync(edit_interaction_response_data dataPackage);
 
-		/// @brief Deletes an Interaction respnose.
-		/// @param dataPackage A DeleteInteractionResponseData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage);
+		/// @brief Deletes an interaction respnose.
+		/// @param dataPackage a delete_interaction_response_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> deleteInteractionResponseAsync(delete_interaction_response_data dataPackage);
 
-		/// @brief Creates a follow up Message to an input Interaction.
-		/// @param dataPackage A CreateFollowUpMessageData structure.
-		/// @returns A CoRoutine containing a Message.
-		static CoRoutine<MessageData> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
+		/// @brief Creates a follow up message to an input interaction.
+		/// @param dataPackage a create_follow_up_message_data structure.
+		/// @return A co_routine containing a message.
+		static co_routine<message_data> createFollowUpMessageAsync(create_follow_up_message_data dataPackage);
 
-		/// @brief Creates a follow up Message to an input Interaction.
-		/// @param dataPackage A CreateFollowUpMessageData structure.
-		/// @returns A CoRoutine containing a Message.
-		static CoRoutine<MessageData> getFollowUpMessageAsync(GetFollowUpMessageData dataPackage);
+		/// @brief Creates a follow up message to an input interaction.
+		/// @param dataPackage a create_follow_up_message_data structure.
+		/// @return A co_routine containing a message.
+		static co_routine<message_data> getFollowUpMessageAsync(get_follow_up_message_data dataPackage);
 
-		/// @brief Edits a follow up MessageData.
-		/// @param dataPackage A EditFollowUpMessageData structure.
-		/// @returns A CoRoutine containing a Message.
-		static CoRoutine<MessageData> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage);
+		/// @brief Edits a follow up message_data.
+		/// @param dataPackage a edit_follow_up_message_data structure.
+		/// @return A co_routine containing a message.
+		static co_routine<message_data> editFollowUpMessageAsync(edit_follow_up_message_data dataPackage);
 
-		/// @brief Deletes a follow up MessageData.
-		/// @param dataPackage A DeleteFollowUpMessageData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
+		/// @brief Deletes a follow up message_data.
+		/// @param dataPackage a delete_follow_up_message_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> deleteFollowUpMessageAsync(delete_follow_up_message_data dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static discord_core_internal::https_client* httpsClient;
 
-		static MessageData createInteractionResponse(CreateInteractionResponseData dataPackage);
+		static message_data createInteractionResponse(create_interaction_response_data dataPackage);
 
-		static MessageData editInteractionResponse(EditInteractionResponseData dataPackage);
+		static message_data editInteractionResponse(edit_interaction_response_data dataPackage);
 
-		static MessageData getInteractionResponse(GetInteractionResponseData dataPackage);
+		static message_data getInteractionResponse(get_interaction_response_data dataPackage);
 
-		static MessageData createFollowUpMessage(CreateFollowUpMessageData dataPackage);
+		static message_data createFollowUpMessage(create_follow_up_message_data dataPackage);
 
-		static MessageData editFollowUpMessage(EditFollowUpMessageData dataPackage);
+		static message_data editFollowUpMessage(edit_follow_up_message_data dataPackage);
 	};
 
 	/**@}*/
@@ -370,12 +369,12 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// @brief Select menu response data.
-	struct SelectMenuResponseData {
-		inline operator InteractionData() {
+	struct select_menu_response_data {
+		inline operator interaction_data() {
 			return *interactionData;
 		}
 
-		inline SelectMenuResponseData& operator=(const SelectMenuResponseData& other) {
+		inline select_menu_response_data& operator=(const select_menu_response_data& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
 				selectionId		 = other.selectionId;
@@ -387,11 +386,11 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline SelectMenuResponseData(const SelectMenuResponseData& other) {
+		inline select_menu_response_data(const select_menu_response_data& other) {
 			*this = other;
 		}
 
-		inline SelectMenuResponseData& operator=(SelectMenuResponseData& other) {
+		inline select_menu_response_data& operator=(select_menu_response_data& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
 				selectionId		 = other.selectionId;
@@ -403,56 +402,56 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline SelectMenuResponseData(SelectMenuResponseData& other) {
+		inline select_menu_response_data(select_menu_response_data& other) {
 			*this = other;
 		}
 
-		inline SelectMenuResponseData() = default;
+		inline select_menu_response_data() = default;
 
-		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
+		unique_ptr<interaction_data> interactionData{ makeUnique<interaction_data>() };///< Interaction data.
 		jsonifier::vector<jsonifier::string> values{};///< A vector of the chosen values.
 		jsonifier::string selectionId{};///< Selection id.
-		Snowflake channelId{};///< The ChannelData id where it took place.
-		Snowflake messageId{};///< The Message id where it took place.
-		Snowflake userId{};///< The UserData id who selected the menu options.
+		snowflake channelId{};///< The channel_data id where it took place.
+		snowflake messageId{};///< The message id where it took place.
+		snowflake userId{};///< The user_data id who selected the menu options.
 	};
 
-	/// SelectMenuCollector, for collecting select-menu input from one or more
-	/// @brief SelectMenuCollector, for collecting select-menu input from one
-	/// or more Users.
-	class DiscordCoreAPI_Dll SelectMenuCollector {
+	/// select_menu_collector, for collecting select-menu input from one or more
+	/// @brief Select_menu_collector, for collecting select-menu input from one
+	/// or more users.
+	class DiscordCoreAPI_Dll select_menu_collector {
 	  public:
-		friend class DiscordCoreClient;
+		friend class discord_core_client;
 
-		static UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBuffersMap;
-		static DiscordCoreInternal::TriggerEvent<void, InteractionData> selectMenuInteractionEventsMap;
+		static unordered_map<jsonifier::string, unbounded_message_block<interaction_data>*> selectMenuInteractionBuffersMap;
+		static discord_core_internal::trigger_event<void, interaction_data> selectMenuInteractionEventsMap;
 
 		/// @brief Constructor.
-		/// @param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
-		SelectMenuCollector(InputEventData& dataPackage);
+		/// @param dataPackage an input_event_data structure, from the response that came from the submitted select-menu.
+		select_menu_collector(input_event_data& dataPackage);
 
 		/// @brief Used to collect the select-menu inputs from one or more users.
-		/// @param getSelectMenuDataForAllNew Whether or not to collect select-menu input from a single target UserData or all potential users.
-		/// @param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
-		/// @param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping.
-		/// @param errorMessageDataNew The message-data for when an individual other than the selected individual attemps to use this interaction.
-		/// @param targetUserId The id of the single UserData to collect inputs from, if getSelectMenuDataForAllNew is set to false.
-		/// @returns A vector of SelectMenuResponseData.
-		CoRoutine<jsonifier::vector<SelectMenuResponseData>, false> collectSelectMenuData(bool getSelectMenuDataForAllNew, uint32_t maxWaitTimeInMsNew,
-			uint32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
+		/// @param getSelectMenuDataForAllNew whether or not to collect select-menu input from a single target user_data or all potential users.
+		/// @param maxWaitTimeInMsNew the maximum amount of time to wait for new inputs, in milliseconds.
+		/// @param maxCollectedSelectMenuCountNew the maximum number of inputs to collect before stopping.
+		/// @param errorMessageDataNew the message-data for when an individual other than the selected individual attemps to use this interaction.
+		/// @param targetUserId the id of the single user_data to collect inputs from, if getSelectMenuDataForAllNew is set to false.
+		/// @return A vector of select_menu_response_data.
+		co_routine<jsonifier::vector<select_menu_response_data>, false> collectSelectMenuData(bool getSelectMenuDataForAllNew, uint32_t maxWaitTimeInMsNew,
+			uint32_t maxCollectedSelectMenuCountNew, create_interaction_response_data errorMessageDataNew, snowflake targetUserId = snowflake{});
 
 		/// @brief Used to collect the select-menu inputs from one or more users.
-		/// @param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.
-		/// @param functionNew Takes a DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> as a function to be executed upon returning true from the "trigger-function".
-		void collectSelectMenuData(std::function<bool(InteractionData)> triggerFunctionNew, DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
+		/// @param triggerFunctionNew a std::function<bool(interaction_data)> to decide whether or not to trigger the event's main function.
+		/// @param functionNew takes a discord_core_internal::trigger_event_delegate<void, interaction_data> as a function to be executed upon returning true from the "trigger-function".
+		void collectSelectMenuData(std::function<bool(interaction_data)> triggerFunctionNew, discord_core_internal::trigger_event_delegate<void, interaction_data> functionNew);
 
-		~SelectMenuCollector();
+		~select_menu_collector();
 
 	  protected:
-		UnboundedMessageBlock<InteractionData> selectMenuIncomingInteractionBuffer{};
-		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };
-		jsonifier::vector<SelectMenuResponseData> responseVector{};
-		CreateInteractionResponseData errorMessageData{};
+		unbounded_message_block<interaction_data> selectMenuIncomingInteractionBuffer{};
+		unique_ptr<interaction_data> interactionData{ makeUnique<interaction_data>() };
+		jsonifier::vector<select_menu_response_data> responseVector{};
+		create_interaction_response_data errorMessageData{};
 		uint32_t currentCollectedSelectMenuCount{};
 		jsonifier::vector<jsonifier::string> values{};
 		uint32_t maxCollectedSelectMenuCount{};
@@ -460,21 +459,21 @@ namespace DiscordCoreAPI {
 		jsonifier::string buffersMapKey{};
 		jsonifier::string selectMenuId{};
 		uint32_t maxTimeInMs{};
-		Snowflake channelId{};
-		Snowflake messageId{};
-		Snowflake userId{};
+		snowflake channelId{};
+		snowflake messageId{};
+		snowflake userId{};
 		bool doWeQuit{};
 
 		void run();
 	};
 
 	/// @brief Button response data.
-	struct ButtonResponseData {
-		inline operator InteractionData() {
+	struct button_response_data {
+		inline operator interaction_data() {
 			return *interactionData;
 		}
 
-		inline ButtonResponseData& operator=(const ButtonResponseData& other) {
+		inline button_response_data& operator=(const button_response_data& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
 				messageId		 = other.messageId;
@@ -486,11 +485,11 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline ButtonResponseData(const ButtonResponseData& other) {
+		inline button_response_data(const button_response_data& other) {
 			*this = other;
 		}
 
-		inline ButtonResponseData& operator=(ButtonResponseData& other) {
+		inline button_response_data& operator=(button_response_data& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
 				messageId		 = other.messageId;
@@ -502,54 +501,54 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline ButtonResponseData(ButtonResponseData& other) {
+		inline button_response_data(button_response_data& other) {
 			*this = other;
 		}
 
-		inline ButtonResponseData() = default;
+		inline button_response_data() = default;
 
-		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
+		unique_ptr<interaction_data> interactionData{ makeUnique<interaction_data>() };///< Interaction data.
 		jsonifier::string emojiName{};///< The emoji name, if applicable.
 		jsonifier::string buttonId{};///< The id of the button, for identification.
-		Snowflake channelId{};///< The ChannelData id where it took place.
-		Snowflake messageId{};///< The Message id where it took place.
-		Snowflake userId{};///< The UserData id who selected the menu options.
+		snowflake channelId{};///< The channel_data id where it took place.
+		snowflake messageId{};///< The message id where it took place.
+		snowflake userId{};///< The user_data id who selected the menu options.
 	};
 
-	/// @brief ButtonCollector, for collecting button input from one or more Users.
-	class DiscordCoreAPI_Dll ButtonCollector {
+	/// @brief Button_collector, for collecting button input from one or more users.
+	class DiscordCoreAPI_Dll button_collector {
 	  public:
-		friend class DiscordCoreClient;
+		friend class discord_core_client;
 
-		static UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBuffersMap;
-		static DiscordCoreInternal::TriggerEvent<void, InteractionData> buttonInteractionEventsMap;
+		static unordered_map<jsonifier::string, unbounded_message_block<interaction_data>*> buttonInteractionBuffersMap;
+		static discord_core_internal::trigger_event<void, interaction_data> buttonInteractionEventsMap;
 
 		/// @brief Constructor.
-		/// @param dataPackage An InputEventData structure, from the response that came from the submitted button.
-		ButtonCollector(InputEventData& dataPackage);
+		/// @param dataPackage an input_event_data structure, from the response that came from the submitted button.
+		button_collector(input_event_data& dataPackage);
 
 		/// @brief Used to collect the button inputs from one or more users.
-		/// @param getButtonDataForAllNew Whether or not to collect input from a single target UserData or all potential users.
-		/// @param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
-		/// @param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
-		/// @param errorMessageDataNew The message-data for when an individual other than the selected individual attemps to use this interaction.
-		/// @param targetUserId The id of the single UserData to collect inputs from, if getButtonDataForAllNew is set to false.
-		/// @returns A vector of ButtonResponseData.
-		CoRoutine<jsonifier::vector<ButtonResponseData>, false> collectButtonData(bool getButtonDataForAllNew, uint32_t maxWaitTimeInMsNew, uint32_t maxNumberOfPressesNew,
-			CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
+		/// @param getButtonDataForAllNew whether or not to collect input from a single target user_data or all potential users.
+		/// @param maxWaitTimeInMsNew the maximum amount of time to wait for new inputs, in milliseconds.
+		/// @param maxNumberOfPressesNew the maximum number of inputs to collect before stopping.
+		/// @param errorMessageDataNew the message-data for when an individual other than the selected individual attemps to use this interaction.
+		/// @param targetUserId the id of the single user_data to collect inputs from, if getButtonDataForAllNew is set to false.
+		/// @return A vector of button_response_data.
+		co_routine<jsonifier::vector<button_response_data>, false> collectButtonData(bool getButtonDataForAllNew, uint32_t maxWaitTimeInMsNew, uint32_t maxNumberOfPressesNew,
+			create_interaction_response_data errorMessageDataNew, snowflake targetUserId = snowflake{});
 
 		/// @brief Used to collect the button inputs from one or more users.
-		/// @param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.
-		/// @param functionNew Takes a DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> as a function to be executed upon returning true from the "trigger-function".
-		void collectButtonData(std::function<bool(InteractionData)> triggerFunctionNew, DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
+		/// @param triggerFunctionNew a std::function<bool(interaction_data)> to decide whether or not to trigger the event's main function.
+		/// @param functionNew takes a discord_core_internal::trigger_event_delegate<void, interaction_data> as a function to be executed upon returning true from the "trigger-function".
+		void collectButtonData(std::function<bool(interaction_data)> triggerFunctionNew, discord_core_internal::trigger_event_delegate<void, interaction_data> functionNew);
 
-		~ButtonCollector();
+		~button_collector();
 
 	  protected:
-		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };
-		UnboundedMessageBlock<InteractionData> buttonIncomingInteractionBuffer{};
-		jsonifier::vector<ButtonResponseData> responseVector{};
-		CreateInteractionResponseData errorMessageData{};
+		unique_ptr<interaction_data> interactionData{ makeUnique<interaction_data>() };
+		unbounded_message_block<interaction_data> buttonIncomingInteractionBuffer{};
+		jsonifier::vector<button_response_data> responseVector{};
+		create_interaction_response_data errorMessageData{};
 		jsonifier::vector<jsonifier::string> values{};
 		uint32_t currentCollectedButtonCount{};
 		uint32_t maxCollectedButtonCount{};
@@ -557,21 +556,21 @@ namespace DiscordCoreAPI {
 		bool getButtonDataForAll{};
 		uint32_t maxTimeInMs{};
 		jsonifier::string buttonId{};
-		Snowflake channelId{};
-		Snowflake messageId{};
-		Snowflake userId{};
+		snowflake channelId{};
+		snowflake messageId{};
+		snowflake userId{};
 		bool doWeQuit{};
 
 		void run();
 	};
 
 	/// @brief Button response data.
-	struct ModalResponseData {
-		inline operator InteractionData() {
+	struct modal_response_data {
+		inline operator interaction_data() {
 			return *interactionData;
 		}
 
-		inline ModalResponseData& operator=(const ModalResponseData& other) {
+		inline modal_response_data& operator=(const modal_response_data& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
 				customIdSmall	 = other.customIdSmall;
@@ -583,51 +582,51 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline ModalResponseData(const ModalResponseData& other) {
+		inline modal_response_data(const modal_response_data& other) {
 			*this = other;
 		}
 
-		inline ModalResponseData() = default;
+		inline modal_response_data() = default;
 
-		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };///< Interaction data.
+		unique_ptr<interaction_data> interactionData{ makeUnique<interaction_data>() };///< Interaction data.
 		jsonifier::string customIdSmall{};///< The customId of the particular input.
 		jsonifier::string customId{};///< The customId of the modal component.
-		Snowflake channelId{};///< The ChannelData id where it took place.
-		jsonifier::string value{};/// The input value of the modal component.
-		Snowflake userId{};///< The UserData id who selected the menu options.
+		snowflake channelId{};///< The channel_data id where it took place.
+		jsonifier::string value{};/// the input value of the modal component.
+		snowflake userId{};///< The user_data id who selected the menu options.
 	};
 
-	/// @brief ModalCollector, for collecting modal text input from one or more Users.
-	class DiscordCoreAPI_Dll ModalCollector {
+	/// @brief Modal_collector, for collecting modal text input from one or more users.
+	class DiscordCoreAPI_Dll modal_collector {
 	  public:
-		friend class DiscordCoreClient;
+		friend class discord_core_client;
 
-		static UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBuffersMap;
-		static DiscordCoreInternal::TriggerEvent<void, InteractionData> modalInteractionEventsMap;
+		static unordered_map<jsonifier::string, unbounded_message_block<interaction_data>*> modalInteractionBuffersMap;
+		static discord_core_internal::trigger_event<void, interaction_data> modalInteractionEventsMap;
 
 		/// @brief Constructor.
-		/// @param dataPackage An InputEventData structure, from the response that came from the submitted button.
-		ModalCollector(InputEventData& dataPackage);
+		/// @param dataPackage an input_event_data structure, from the response that came from the submitted button.
+		modal_collector(input_event_data& dataPackage);
 
 		/// @brief Used to collect the button inputs from one or more users.
-		/// @param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
-		/// @returns A vector of ButtonResponseData.
-		CoRoutine<ModalResponseData, false> collectModalData(uint32_t maxWaitTimeInMsNew);
+		/// @param maxWaitTimeInMsNew the maximum amount of time to wait for new inputs, in milliseconds.
+		/// @return A vector of button_response_data.
+		co_routine<modal_response_data, false> collectModalData(uint32_t maxWaitTimeInMsNew);
 
 		/// @brief Used to collect the modal from one or more users.
-		/// @param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.
-		/// @param functionNew Takes a DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> as a function to be executed upon returning true from the "trigger-function".
-		void collectModalData(std::function<bool(InteractionData)> triggerFunctionNew, DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
+		/// @param triggerFunctionNew a std::function<bool(interaction_data)> to decide whether or not to trigger the event's main function.
+		/// @param functionNew takes a discord_core_internal::trigger_event_delegate<void, interaction_data> as a function to be executed upon returning true from the "trigger-function".
+		void collectModalData(std::function<bool(interaction_data)> triggerFunctionNew, discord_core_internal::trigger_event_delegate<void, interaction_data> functionNew);
 
-		~ModalCollector();
+		~modal_collector();
 
 	  protected:
-		UnboundedMessageBlock<InteractionData> modalIncomingInteractionBuffer{};
-		CreateInteractionResponseData errorMessageData{};
+		unbounded_message_block<interaction_data> modalIncomingInteractionBuffer{};
+		create_interaction_response_data errorMessageData{};
 		uint32_t currentCollectedButtonCount{};
-		ModalResponseData responseData{};
+		modal_response_data responseData{};
 		uint32_t maxTimeInMs{};
-		Snowflake channelId{};
+		snowflake channelId{};
 		bool doWeQuit{};
 
 		void run();

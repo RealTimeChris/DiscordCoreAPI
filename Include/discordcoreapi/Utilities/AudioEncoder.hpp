@@ -27,15 +27,14 @@
 /// Aug 22, 2021
 /// https://discordcoreapi.com
 /// \file AudioEncoder.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <opus/opus.h>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	namespace discord_core_internal {
 
 		/**
 		 * \addtogroup discord_core_internal
@@ -43,17 +42,17 @@ namespace DiscordCoreAPI {
 		 */
 
 		/// @brief Structure to hold the encoded data and sample count returned by the encoder.
-		struct EncoderReturnData {
+		struct encoder_return_data {
 			jsonifier::string_view_base<uint8_t> data{};///< Encoded data.
 			uint64_t sampleCount{};///< Number of audio samples in the input frame.
 		};
 
-		/// @brief Wrapper class for the Opus audio encoder.
-		struct OpusEncoderWrapper {
+		/// @brief Wrapper class for the opus audio encoder.
+		struct opus_encoder_wrapper {
 			/// @brief Deleter for OpusEncoder instances.
-			struct OpusEncoderDeleter {
+			struct opus_encoder_deleter {
 				/// @brief Operator to destroy an OpusEncoder instance.
-				/// @param other The OpusEncoder pointer to be deleted.
+				/// @param other the OpusEncoder pointer to be deleted.
 				inline void operator()(OpusEncoder* other) {
 					if (other) {
 						opus_encoder_destroy(other);
@@ -62,29 +61,29 @@ namespace DiscordCoreAPI {
 				}
 			};
 
-			/// @brief Constructor for OpusEncoderWrapper. Initializes and configures the Opus encoder.
-			inline OpusEncoderWrapper() {
+			/// @brief Constructor for opus_encoder_wrapper. initializes and configures the opus encoder.
+			inline opus_encoder_wrapper() {
 				int32_t error{};
 				ptr.reset(opus_encoder_create(sampleRate, nChannels, OPUS_APPLICATION_AUDIO, &error));
 
-				// Set Opus signal type to music
+				// set opus signal type to music
 				auto result = opus_encoder_ctl(ptr.get(), OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
 				if (result != OPUS_OK) {
-					throw DCAException{ "Failed to set the Opus signal type, Reason: " + jsonifier::string{ opus_strerror(result) } };
+					throw dca_exception{ "Failed to set the opus signal type, reason: " + jsonifier::string{ opus_strerror(result) } };
 				}
 
-				// Set Opus bitrate to maximum
+				// set opus bitrate to maximum
 				result = opus_encoder_ctl(ptr.get(), OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
 				if (result != OPUS_OK) {
-					throw DCAException{ "Failed to set the Opus bitrate, Reason: " + jsonifier::string{ opus_strerror(result) } };
+					throw dca_exception{ "Failed to set the opus bitrate, reason: " + jsonifier::string{ opus_strerror(result) } };
 				}
 			}
 
-			/// @brief Encode Opus audio data.
-			/// @param inputFrame The audio data to encode.
-			/// @return Encoded data and sample count.
-			/// @throws DCAException if encoding fails.
-			inline EncoderReturnData encodeData(jsonifier::string_view_base<uint8_t> inputFrame) {
+			/// @brief Encode opus audio data.
+			/// @param inputFrame the audio data to encode.
+			/// @return encoded data and sample count.
+			/// @throws dca_exception if encoding fails.
+			inline encoder_return_data encodeData(jsonifier::string_view_base<uint8_t> inputFrame) {
 				if (inputFrame.size() == 0) {
 					return {};
 				}
@@ -99,22 +98,22 @@ namespace DiscordCoreAPI {
 				uint64_t sampleCount = inputFrame.size() / 2 / 2;
 				int32_t count		 = opus_encode(ptr.get(), resampleVector.data(), static_cast<int32_t>(inputFrame.size() / 2 / 2), encodedData.data(), maxBufferSize);
 				if (count <= 0) {
-					throw DCAException{ "Failed to encode the bitstream, Reason: " + jsonifier::string{ opus_strerror(count) } };
+					throw dca_exception{ "Failed to encode the bitstream, reason: " + jsonifier::string{ opus_strerror(count) } };
 				}
 
-				EncoderReturnData returnData{};
+				encoder_return_data returnData{};
 				returnData.sampleCount = sampleCount;
 				returnData.data		   = jsonifier::string_view_base<uint8_t>{ encodedData.data(), encodedData.size() };
 				return returnData;
 			}
 
 		  protected:
-			UniquePtr<OpusEncoder, OpusEncoderDeleter> ptr{};///< Unique pointer to OpusEncoder instance.
+			unique_ptr<OpusEncoder, opus_encoder_deleter> ptr{};///< Unique pointer to OpusEncoder instance.
 			jsonifier::vector<opus_int16> resampleVector{};///< For properly copying the values without type-punning.
 			jsonifier::string_base<uint8_t> encodedData{};///< Buffer for encoded audio data.
-			inline static constexpr uint64_t maxBufferSize{ 1276 };///< Maximum size of the encoded data buffer.
-			inline static constexpr int64_t sampleRate{ 48000 };///< Sample rate of the audio data.
-			inline static constexpr int64_t nChannels{ 2 };///< Number of audio channels.
+			static constexpr uint64_t maxBufferSize{ 1276 };///< Maximum size of the encoded data buffer.
+			static constexpr int64_t sampleRate{ 48000 };///< Sample rate of the audio data.
+			static constexpr int64_t nChannels{ 2 };///< Number of audio channels.
 		};
 
 		/**@}*/

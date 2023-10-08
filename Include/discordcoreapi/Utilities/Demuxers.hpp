@@ -27,16 +27,15 @@
 /// Jun 8, 2023
 /// https://discordcoreapi.com
 /// \file Demuxers.hpp
-
 #pragma once
 
 #include <discordcoreapi/Utilities.hpp>
 #include <opus/opus.h>
 #include <fstream>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	namespace discord_core_internal {
 
 		/**
 		* \addtogroup discord_core_internal
@@ -54,10 +53,10 @@ namespace DiscordCoreAPI {
 			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
 
 		/// @brief A class for demuxing Matroska-contained audio data.
-		class MatroskaDemuxer {
+		class matroska_demuxer {
 		  public:
-			/// @brief Constructor for MatroskaDemuxer.
-			inline MatroskaDemuxer() = default;
+			/// @brief Constructor for matroska_demuxer.
+			inline matroska_demuxer() = default;
 
 			/// @brief Writes data to the Matroska demuxer.
 			/// @param dataNew The data to be written.
@@ -68,7 +67,7 @@ namespace DiscordCoreAPI {
 			/// @brief Collects the next frame from the demuxer.
 			/// @param frameNew The reference to store the collected frame.
 			/// @return True if a frame was collected, false otherwise.
-			inline bool collectFrame(AudioFrameData& frameNew) {
+			inline bool collectFrame(audio_frame_data& frameNew) {
 				if (frames.size() > 0) {
 					frameNew = std::move(frames.at(0));
 					frames.erase(frames.begin());
@@ -82,7 +81,7 @@ namespace DiscordCoreAPI {
 			inline void proceedDemuxing() {
 				if (!doWeHaveTotalSize) {
 					if (reverseBytes<uint32_t>() != segmentId) {
-						MessagePrinter::printError<PrintMessageType::General>(
+						message_printer::printError<print_message_type::general>(
 							jsonifier::string{ "Missing a Segment, which was expected at index: " + jsonifier::toString(currentPosition) + jsonifier::string{ "..." } });
 						if (!findNextId(segmentId)) {
 							if ((totalSize > 0 && static_cast<int64_t>(currentPosition) >= totalSize)) {
@@ -90,7 +89,7 @@ namespace DiscordCoreAPI {
 							}
 							return;
 						}
-						MessagePrinter::printSuccess<PrintMessageType::General>(
+						message_printer::printSuccess<print_message_type::general>(
 							jsonifier::string{ "Missing Segment, found at index: " + jsonifier::toString(currentPosition) + "." });
 					} else {
 						currentPosition += sizeof(uint32_t);
@@ -142,7 +141,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			jsonifier::string_view_base<uint8_t> data{};///< Input data for demuxing.
-			std::deque<AudioFrameData> frames{};///< Queue to store collected frames.
+			std::deque<audio_frame_data> frames{};///< Queue to store collected frames.
 			bool doWeHaveTotalSize{ false };///< Flag indicating if total size has been determined.
 			bool areWeDoneVal{ false };///< Flag indicating if demuxing is complete.
 			uint64_t currentPosition{};///< Current position in the data.
@@ -150,16 +149,16 @@ namespace DiscordCoreAPI {
 			int64_t totalSize{};///< Total size of the segment.
 
 			/// @brief Finds the next occurrence of the specified value in the data.
-			/// @tparam ObjectType The type of value to search for.
+			/// @tparam object_type The type of value to search for.
 			/// @param value The value to search for.
 			/// @return True if the value was found, false otherwise.
-			template<typename ObjectType> inline bool findNextId(ObjectType value) {
-				if (currentPosition + sizeof(ObjectType) >= data.size()) {
+			template<typename object_type> inline bool findNextId(object_type value) {
+				if (currentPosition + sizeof(object_type) >= data.size()) {
 					return false;
 				}
-				while (currentPosition + sizeof(ObjectType) < data.size()) {
-					if (reverseBytes<ObjectType>() == value) {
-						currentPosition += sizeof(ObjectType);
+				while (currentPosition + sizeof(object_type) < data.size()) {
+					if (reverseBytes<object_type>() == value) {
+						currentPosition += sizeof(object_type);
 						return true;
 					}
 					++currentPosition;
@@ -168,14 +167,14 @@ namespace DiscordCoreAPI {
 			}
 
 			/// @brief Reverses the byte order of the current element being processed.
-			/// @tparam ObjectType The type of the current element.
+			/// @tparam object_type The type of the current element.
 			/// @return The current element with reversed byte order.
-			template<typename ObjectType> inline ObjectType reverseBytes() {
-				if (data.size() <= currentPosition + sizeof(ObjectType)) {
-					return static_cast<ObjectType>(-1);
+			template<typename object_type> inline object_type reverseBytes() {
+				if (data.size() <= currentPosition + sizeof(object_type)) {
+					return static_cast<object_type>(-1);
 				}
-				ObjectType newValue{};
-				std::memcpy(&newValue, &data.at(currentPosition), sizeof(ObjectType));
+				object_type newValue{};
+				std::memcpy(&newValue, &data.at(currentPosition), sizeof(object_type));
 				newValue = reverseByteOrder(newValue);
 				return newValue;
 			}
@@ -198,7 +197,7 @@ namespace DiscordCoreAPI {
 
 				read = 8 - ffLog2Tab[total];
 
-				total ^= 1ull << ffLog2Tab[total];
+				total ^= 1ULL << ffLog2Tab[total];
 				while (n++ < read) {
 					total = (total << 8) | static_cast<uint8_t>(data.at(currentPosition++));
 				}
@@ -207,10 +206,10 @@ namespace DiscordCoreAPI {
 
 			/// @brief Parses an Opus frame.
 			inline void parseOpusFrame() {
-				AudioFrameData frameNew{};
+				audio_frame_data frameNew{};
 				frameNew.currentSize = static_cast<int64_t>(currentSize - 4);
 				frameNew += jsonifier::string_view_base<uint8_t>{ data.data() + currentPosition + 4, static_cast<uint64_t>(frameNew.currentSize) };
-				frameNew.type = AudioFrameType::Encoded;
+				frameNew.type = audio_frame_type::encoded;
 				currentPosition += currentSize;
 				frames.emplace_back(std::move(frameNew));
 				currentSize = 0;
@@ -218,13 +217,13 @@ namespace DiscordCoreAPI {
 		};
 
 		/// @brief A class representing an Opus packet.
-		class OpusPacket {
+		class opus_packet {
 		  public:
-			inline OpusPacket() = default;
+			inline opus_packet() = default;
 
-			/// @brief Constructor for OpusPacket.
+			/// @brief Constructor for opus_packet.
 			/// @param newData The data for the Opus packet.
-			inline OpusPacket(jsonifier::vector<uint8_t> newData) {
+			inline opus_packet(jsonifier::vector<uint8_t> newData) {
 				dataVal = newData;
 			};
 
@@ -245,11 +244,11 @@ namespace DiscordCoreAPI {
 		};
 
 		/// @brief A class representing an Ogg page for demuxing.
-		class OggPage {
+		class ogg_page {
 		  public:
-			/// @brief Constructor for OggPage.
+			/// @brief Constructor for ogg_page.
 			/// @param newData The data for the Ogg page.
-			inline OggPage(jsonifier::vector<uint8_t>& newData) {
+			inline ogg_page(jsonifier::vector<uint8_t>& newData) {
 				data = std::move(newData);
 				verifyAsOggPage();
 				getSegmentData();
@@ -258,7 +257,7 @@ namespace DiscordCoreAPI {
 			/// @brief Retrieves the next Opus packet from the Ogg page.
 			/// @param newPacket Reference to store the retrieved Opus packet.
 			/// @return True if an Opus packet was retrieved, false otherwise.
-			inline bool getOpusPacket(OpusPacket& newPacket) {
+			inline bool getOpusPacket(opus_packet& newPacket) {
 				if (segmentTable.size() > 0) {
 					auto newSpace = static_cast<uint64_t>(segmentTable.front());
 					segmentTable.pop_front();
@@ -278,10 +277,10 @@ namespace DiscordCoreAPI {
 				segmentCount = data.at(26);
 				currentPosition += 27;
 				for (int32_t x{}; x < segmentCount; ++x) {
-					int32_t packetLength{ data.at(27ull + x) };
-					while (data.at(27ull + x) == 255) {
+					int32_t packetLength{ data.at(27ULL + x) };
+					while (data.at(27ULL + x) == 255) {
 						++x;
-						packetLength += data.at(27ull + x);
+						packetLength += data.at(27ULL + x);
 					}
 					segmentTable.emplace_back(packetLength);
 				}
@@ -314,14 +313,14 @@ namespace DiscordCoreAPI {
 		};
 
 		/// @brief A class for demuxing Ogg-contained audio data.
-		class OggDemuxer {
+		class ogg_demuxer {
 		  public:
-			inline OggDemuxer() = default;
+			inline ogg_demuxer() = default;
 
 			/// @brief Collects the next audio frame from the demuxer.
 			/// @param frameNew The reference to store the collected frame.
 			/// @return True if a frame was collected, false otherwise.
-			inline bool collectFrame(AudioFrameData& frameNew) {
+			inline bool collectFrame(audio_frame_data& frameNew) {
 				if (frames.size() > 0) {
 					frameNew = std::move(frames.front());
 					frames.pop_front();
@@ -381,10 +380,10 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			std::deque<AudioFrameData> frames{};///< Queue to store collected audio frames.
 			jsonifier::string_base<uint8_t> data{};///< Input data for demuxing.
-			std::deque<OpusPacket> packets{};///< Queue to store Opus packets.
-			std::deque<OggPage> pages{};///< Queue to store Ogg pages.
+			std::deque<audio_frame_data> frames{};///< Queue to store collected audio frames.
+			std::deque<opus_packet> packets{};///< Queue to store Opus packets.
+			std::deque<ogg_page> pages{};///< Queue to store Ogg pages.
 
 			/// @brief Processes an Ogg page for demuxing.
 			/// @return True if processing is successful, false if there are no more pages.
@@ -402,12 +401,12 @@ namespace DiscordCoreAPI {
 			/// @brief Processes Opus packets extracted from Ogg pages.
 			inline void processPackets() {
 				while (!packets.empty()) {
-					OpusPacket newPacket = packets.front();
+					opus_packet newPacket = packets.front();
 					packets.pop_front();
-					AudioFrameData newFrame{};
+					audio_frame_data newFrame{};
 					newFrame += jsonifier::string_view_base<uint8_t>{ newPacket.data(), newPacket.size() };
 					newFrame.currentSize = static_cast<int64_t>(newPacket.size());
-					newFrame.type		 = AudioFrameType::Encoded;
+					newFrame.type		 = audio_frame_type::encoded;
 					frames.emplace_back(std::move(newFrame));
 				}
 			}
@@ -415,9 +414,9 @@ namespace DiscordCoreAPI {
 			/// @brief Processes Ogg pages to extract Opus packets.
 			inline void processPages() {
 				while (!pages.empty()) {
-					OggPage page = pages.front();
+					ogg_page page = pages.front();
 					pages.pop_front();
-					OpusPacket newPacket{};
+					opus_packet newPacket{};
 					while (page.getOpusPacket(newPacket)) {
 						packets.emplace_back(newPacket);
 					}

@@ -36,55 +36,55 @@
 
 namespace jsonifier {
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::DataClass> {
-		using ValueType = DiscordCoreAPI::DiscordCoreInternal::DataClass;
+	template<> struct core<discord_core_api::discord_core_internal::data_class> {
+		using value_type = discord_core_api::discord_core_internal::data_class;
 		static constexpr auto parseValue =
-			createObject("artwork_url", &ValueType::artworkUrl, "description", &ValueType::description, "duration", &ValueType::duration, "media", &ValueType::media, "title",
-				&ValueType::title, "track_authorization", &ValueType::trackAuthorization, "avatar_url", &ValueType::avatarUrl, "permalink_url", &ValueType::viewUrl);
+			createObject("artwork_url", &value_type::artworkUrl, "description", &value_type::description, "duration", &value_type::duration, "media", &value_type::media, "title",
+				&value_type::title, "track_authorization", &value_type::trackAuthorization, "avatar_url", &value_type::avatarUrl, "permalink_url", &value_type::viewUrl);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::WelcomeElement> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::WelcomeElement;
-		static constexpr auto parseValue = createObject("data", &ValueType::data, "hydratable", &ValueType::hydratable);
+	template<> struct core<discord_core_api::discord_core_internal::welcome_element> {
+		using value_type					 = discord_core_api::discord_core_internal::welcome_element;
+		static constexpr auto parseValue = createObject("data", &value_type::data, "hydratable", &value_type::hydratable);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::FinalData> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::FinalData;
-		static constexpr auto parseValue = createObject("data", &ValueType::data);
+	template<> struct core<discord_core_api::discord_core_internal::final_data> {
+		using value_type					 = discord_core_api::discord_core_internal::final_data;
+		static constexpr auto parseValue = createObject("data", &value_type::data);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Media> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Media;
-		static constexpr auto parseValue = createObject("transcodings", &ValueType::transcodings);
+	template<> struct core<discord_core_api::discord_core_internal::media> {
+		using value_type					 = discord_core_api::discord_core_internal::media;
+		static constexpr auto parseValue = createObject("transcodings", &value_type::transcodings);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::SecondDownloadUrl> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::SecondDownloadUrl;
-		static constexpr auto parseValue = createObject("url", &ValueType::url);
+	template<> struct core<discord_core_api::discord_core_internal::second_download_url> {
+		using value_type					 = discord_core_api::discord_core_internal::second_download_url;
+		static constexpr auto parseValue = createObject("url", &value_type::url);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Transcoding> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Transcoding;
-		static constexpr auto parseValue = createObject("preset", &ValueType::preset, "url", &ValueType::url);
+	template<> struct core<discord_core_api::discord_core_internal::transcoding> {
+		using value_type					 = discord_core_api::discord_core_internal::transcoding;
+		static constexpr auto parseValue = createObject("preset", &value_type::preset, "url", &value_type::url);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::RawSoundCloudSong> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::RawSoundCloudSong;
-		static constexpr auto parseValue = createObject("artwork_url", &ValueType::artworkUrl, "description", &ValueType::description, "duration", &ValueType::duration, "media",
-			&ValueType::media, "title", &ValueType::title, "track_authorization", &ValueType::trackAuthorization, "permalink_url", &ValueType::viewUrl);
+	template<> struct core<discord_core_api::discord_core_internal::raw_sound_cloud_song> {
+		using value_type					 = discord_core_api::discord_core_internal::raw_sound_cloud_song;
+		static constexpr auto parseValue = createObject("artwork_url", &value_type::artworkUrl, "description", &value_type::description, "duration", &value_type::duration, "media",
+			&value_type::mediaVal, "title", &value_type::title, "track_authorization", &value_type::trackAuthorization, "permalink_url", &value_type::viewUrl);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::SoundCloudSearchResults> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::SoundCloudSearchResults;
-		static constexpr auto parseValue = createObject("collection", &ValueType::collection);
+	template<> struct core<discord_core_api::discord_core_internal::sound_cloud_search_results> {
+		using value_type					 = discord_core_api::discord_core_internal::sound_cloud_search_results;
+		static constexpr auto parseValue = createObject("collection", &value_type::collection);
 	};
 }
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	namespace discord_core_internal {
 
-		SoundCloudRequestBuilder::SoundCloudRequestBuilder(ConfigManager* configManagerNew) : HttpsClientCore{ jsonifier::string{ configManagerNew->getBotToken() } } {};
+		sound_cloud_request_builder::sound_cloud_request_builder(config_manager* configManagerNew) : https_client_core{ jsonifier::string{ configManagerNew->getBotToken() } } {};
 
 		inline bool collectSongIdFromSearchQuery(jsonifier::string_view string, jsonifier::string& stringNew) {
 			if (string.find("soundcloud.com") != jsonifier::string::npos) {
@@ -95,18 +95,18 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		Song SoundCloudRequestBuilder::collectSingleResult(jsonifier::string_view songQuery) {
+		song sound_cloud_request_builder::collectSingleResult(jsonifier::string_view songQuery) {
 			if (clientId == "") {
-				SoundCloudRequestBuilder::collectClientId();
+				sound_cloud_request_builder::collectClientId();
 			}
 			try {
-				HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
+				https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Search_Results };
 				dataPackage.baseUrl						  = "https://soundcloud.com/";
 				dataPackage.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36";
 				dataPackage.relativePath				  = songQuery;
-				dataPackage.workloadClass				  = HttpsWorkloadClass::Get;
-				HttpsResponseData returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));
-				Song results{};
+				dataPackage.workloadClass				  = https_workload_class::Get;
+				https_response_data returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));
+				song results{};
 				auto findValue = returnData.responseData.find("<script>window.__sc_hydration = ");
 				jsonifier::string addedString{ "{\"data\":" };
 				if (findValue != jsonifier::string::npos) {
@@ -115,8 +115,8 @@ namespace DiscordCoreAPI {
 							(returnData.responseData.find("<script>window.__sc_hydration = ") + jsonifier::string{ "<script>window.__sc_hydration = " }.size()));
 					addedString += returnData.responseData + "}";
 				}
-				FinalData resultsNew{};
-				parser.parseJson<false, true>(resultsNew, addedString);
+				final_data resultsNew{};
+				parser.parseJson<true, true>(resultsNew, addedString);
 				jsonifier::string avatarUrl{};
 				for (auto& value: resultsNew.data) {
 					if (value.hydratable == "user") {
@@ -157,8 +157,8 @@ namespace DiscordCoreAPI {
 								results.thumbnailUrl = newString;
 							}
 							results.viewUrl	 = value.data.viewUrl;
-							results.duration = TimeStamp::convertMsToDurationString(value.data.duration);
-							results.firstDownloadUrl += "?client_id=" + SoundCloudRequestBuilder::clientId + "&track_authorization=" + value.data.trackAuthorization;
+							results.duration = time_stamp::convertMsToDurationString(static_cast<uint64_t>(value.data.duration));
+							results.firstDownloadUrl += "?client_id=" + sound_cloud_request_builder::clientId + "&track_authorization=" + value.data.trackAuthorization;
 							if (value.data.artworkUrl.find("-") != jsonifier::string::npos) {
 								jsonifier::string newerString = value.data.artworkUrl.substr(0, value.data.artworkUrl.findLastOf("-") + 1);
 								newerString += "t500x500.jpg";
@@ -171,21 +171,21 @@ namespace DiscordCoreAPI {
 						}
 					}
 				}
-				results.type = SongType::SoundCloud;
+				results.type = song_type::SoundCloud;
 				return results;
-			} catch (const HttpsError& error) {
-				MessagePrinter::printError<PrintMessageType::Https>("SoundCloudRequestBuilder::collectSearchResults() Error: " + jsonifier::string{ error.what() });
+			} catch (const https_error& error) {
+				message_printer::printError<print_message_type::https>("sound_cloud_request_builder::collectSearchResults() Error: " + jsonifier::string{ error.what() });
 			}
 			return {};
 		}
 
-		jsonifier::vector<Song> SoundCloudRequestBuilder::collectSearchResults(jsonifier::string_view songQuery, int32_t limit) {
+		jsonifier::vector<song> sound_cloud_request_builder::collectSearchResults(jsonifier::string_view songQuery, uint64_t limit) {
 			if (clientId == "") {
-				SoundCloudRequestBuilder::collectClientId();
+				sound_cloud_request_builder::collectClientId();
 			}
 			try {
 				jsonifier::string newString{};
-				jsonifier::vector<Song> results{};
+				jsonifier::vector<song> results{};
 				if (collectSongIdFromSearchQuery(songQuery, newString)) {
 					auto result = collectSingleResult(newString);
 					if (result.songId != "") {
@@ -193,21 +193,21 @@ namespace DiscordCoreAPI {
 					}
 					return results;
 				}
-				HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
+				https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Search_Results };
 				dataPackage.baseUrl						  = baseUrl02;
 				dataPackage.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36";
-				dataPackage.relativePath				  = "/search?q=" + urlEncode(songQuery) + "&facet=model&client_id=" + SoundCloudRequestBuilder::clientId;
-				dataPackage.workloadClass				  = HttpsWorkloadClass::Get;
-				HttpsResponseData returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));
-				SoundCloudSearchResults resultsNew{};
+				dataPackage.relativePath				  = "/search?q=" + urlEncode(songQuery) + "&facet=model&client_id=" + sound_cloud_request_builder::clientId;
+				dataPackage.workloadClass				  = https_workload_class::Get;
+				https_response_data returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));
+				sound_cloud_search_results resultsNew{};
 				parser.parseJson<true, true>(resultsNew, returnData.responseData);
 				for (auto& value: resultsNew.collection) {
-					Song songNew{};
+					song songNew{};
 					if (value.title == "") {
 						continue;
 					}
 					bool isItFound{};
-					for (auto& valueNew: value.media.transcodings) {
+					for (auto& valueNew: value.mediaVal.transcodings) {
 						if (valueNew.preset == "opus_0_0") {
 							isItFound				 = true;
 							songNew.firstDownloadUrl = valueNew.url;
@@ -234,10 +234,10 @@ namespace DiscordCoreAPI {
 						if (newString.size() > 0) {
 							songNew.thumbnailUrl = newString;
 						}
-						songNew.type	 = SongType::SoundCloud;
+						songNew.type	 = song_type::SoundCloud;
 						songNew.viewUrl	 = value.viewUrl;
-						songNew.duration = TimeStamp::convertMsToDurationString(value.duration);
-						songNew.firstDownloadUrl += "?client_id=" + SoundCloudRequestBuilder::clientId + "&track_authorization=" + value.trackAuthorization;
+						songNew.duration = time_stamp::convertMsToDurationString(value.duration);
+						songNew.firstDownloadUrl += "?client_id=" + sound_cloud_request_builder::clientId + "&track_authorization=" + value.trackAuthorization;
 						if (songNew.thumbnailUrl.find("-") != jsonifier::string::npos) {
 							jsonifier::string newerString = songNew.thumbnailUrl.substr(0, songNew.thumbnailUrl.findLastOf("-") + 1);
 							newerString += "t500x500.jpg";
@@ -250,34 +250,34 @@ namespace DiscordCoreAPI {
 					}
 				}
 				return results;
-			} catch (const HttpsError& error) {
-				MessagePrinter::printError<PrintMessageType::Https>("SoundCloudRequestBuilder::collectSearchResults() Error: " + jsonifier::string{ error.what() });
+			} catch (const https_error& error) {
+				message_printer::printError<print_message_type::https>("sound_cloud_request_builder::collectSearchResults() Error: " + jsonifier::string{ error.what() });
 			}
 			return {};
 		}
 
-		Song SoundCloudRequestBuilder::constructDownloadInfo(const Song& songNew) {
+		song sound_cloud_request_builder::constructDownloadInfo(const song& songNew, uint64_t recursionDepth) {
 			try {
-				HttpsWorkloadData dataPackage01{ HttpsWorkloadType::SoundCloudGetDownloadLinks };
+				https_workload_data dataPackage01{ https_workload_type::SoundCloud_Get_Download_Links };
 				if (songNew.firstDownloadUrl.find(".com") != jsonifier::string::npos) {
 					dataPackage01.baseUrl	   = songNew.firstDownloadUrl.substr(0, songNew.firstDownloadUrl.find(".com") + 4);
 					dataPackage01.relativePath = songNew.firstDownloadUrl.substr(songNew.firstDownloadUrl.find(".com") + 4);
 				} else {
 					return {};
 				}
-				dataPackage01.workloadClass					= HttpsWorkloadClass::Get;
+				dataPackage01.workloadClass					= https_workload_class::Get;
 				dataPackage01.headersToInsert["Connection"] = "Keep-Alive";
 				dataPackage01.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36";
-				HttpsResponseData results					= submitWorkloadAndGetResult(std::move(dataPackage01));
-				SecondDownloadUrl downloadUrl{};
-				Song newerSong{ songNew };
+				https_response_data results					= submitWorkloadAndGetResult(std::move(dataPackage01));
+				second_download_url downloadUrl{};
+				song newerSong{ songNew };
 				parser.parseJson<true, true>(downloadUrl, results.responseData);
 				newerSong.secondDownloadUrl = downloadUrl.url;
 				if (newerSong.secondDownloadUrl.find("/playlist") != jsonifier::string::npos) {
-					HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetDownloadLinks };
+					https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Download_Links };
 					dataPackage.baseUrl			 = newerSong.secondDownloadUrl;
-					dataPackage.workloadClass	 = HttpsWorkloadClass::Get;
-					HttpsResponseData resultsNew = submitWorkloadAndGetResult(std::move(dataPackage));
+					dataPackage.workloadClass	 = https_workload_class::Get;
+					https_response_data resultsNew = submitWorkloadAndGetResult(std::move(dataPackage));
 					jsonifier::string newString{ resultsNew.responseData };
 					newerSong.finalDownloadUrls.clear();
 					while (newString.find("#EXTINF:") != jsonifier::string::npos) {
@@ -291,10 +291,10 @@ namespace DiscordCoreAPI {
 							newString03 = newString03.substr(0, newString03.find("#EXT-X-ENDLIST"));
 						}
 						jsonifier::string newString04 = newString03.substr(newString03.findFirstOf("1234567890"));
-						uint64_t firstNumber01		  = std::stoull(newString04.substr(0, newString04.find("/")).data());
+						uint64_t firstNumber01		  = jsonifier::strToUint64(newString04.substr(0, newString04.find("/")).data());
 						jsonifier::string newString05 = newString04.substr(newString04.find("/") + 1);
-						uint64_t secondNumber		  = std::stoull(newString05.substr(0, newString05.find("/")).data());
-						DownloadUrl downloadUrlNew{};
+						uint64_t secondNumber		  = jsonifier::strToUint64(newString05.substr(0, newString05.find("/")).data());
+						download_url downloadUrlNew{};
 						downloadUrlNew.urlPath	   = newString03;
 						downloadUrlNew.contentSize = secondNumber - firstNumber01;
 						newerSong.finalDownloadUrls.emplace_back(downloadUrlNew);
@@ -308,45 +308,50 @@ namespace DiscordCoreAPI {
 						newerSong.contentLength += value.contentSize;
 					}
 				} else {
-					HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetSearchResults };
+					https_workload_data dataPackage02{ https_workload_type::SoundCloud_Get_Search_Results };
 					dataPackage02.baseUrl						= newerSong.secondDownloadUrl;
-					dataPackage02.workloadClass					= HttpsWorkloadClass::Get;
+					dataPackage02.workloadClass					= https_workload_class::Get;
 					dataPackage02.headersToInsert["Connection"] = "Keep-Alive";
 					dataPackage02.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36";
 					auto headersNew								= submitWorkloadAndGetResult(std::move(dataPackage02));
 					uint64_t valueBitRate{};
 					uint64_t valueLength{};
 					if (headersNew.responseHeaders.find("x-amz-meta-bitrate") != headersNew.responseHeaders.end()) {
-						valueBitRate = std::stoull(headersNew.responseHeaders.find("x-amz-meta-bitrate")->second.data());
+						valueBitRate = jsonifier::strToUint64(headersNew.responseHeaders.find("x-amz-meta-bitrate")->second.data());
 					}
 					if (headersNew.responseHeaders.find("x-amz-meta-duration") != headersNew.responseHeaders.end()) {
-						valueLength = std::stoull(headersNew.responseHeaders.find("x-amz-meta-duration")->second.data());
+						valueLength = jsonifier::strToUint64(headersNew.responseHeaders.find("x-amz-meta-duration")->second.data());
 					}
-					DownloadUrl downloadUrlNew{};
+					download_url downloadUrlNew{};
 					downloadUrlNew.contentSize = static_cast<uint64_t>(((valueBitRate * valueLength) / 8) - 193);
 					downloadUrlNew.urlPath	   = newerSong.secondDownloadUrl;
 					newerSong.finalDownloadUrls.emplace_back(downloadUrlNew);
 				}
 				return newerSong;
-			} catch (const HttpsError& error) {
-				MessagePrinter::printError<PrintMessageType::Https>("SoundCloudRequestBuilder::constructDownloadInfo() Error: " + jsonifier::string{ error.what() });
+			} catch (const https_error& error) {
+				if (recursionDepth <= 10) {
+					++recursionDepth;
+					return constructDownloadInfo(songNew, recursionDepth);
+				} else {
+					message_printer::printError<print_message_type::https>("YouTubeRequestBuilder::constructDownloadInfo() Error: " + jsonifier::string{ error.what() });
+					return {};
+				}
 			}
-			return {};
 		}
 
-		Song SoundCloudRequestBuilder::collectFinalSong(const Song& songNew) {
-			return constructDownloadInfo(songNew);
+		song sound_cloud_request_builder::collectFinalSong(const song& songNew) {
+			return constructDownloadInfo(songNew, 0);
 		}
 
-		jsonifier::string SoundCloudRequestBuilder::collectClientId() {
+		jsonifier::string sound_cloud_request_builder::collectClientId() {
 			jsonifier::string clientIdNew{};
 			try {
-				HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetClientId };
+				https_workload_data dataPackage02{ https_workload_type::SoundCloud_Get_Client_Id };
 				dataPackage02.baseUrl						= baseUrl;
 				dataPackage02.relativePath					= "/search?q=testValue";
 				dataPackage02.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36";
-				dataPackage02.workloadClass					= HttpsWorkloadClass::Get;
-				HttpsResponseData returnData				= submitWorkloadAndGetResult(std::move(dataPackage02));
+				dataPackage02.workloadClass					= https_workload_class::Get;
+				https_response_data returnData				= submitWorkloadAndGetResult(std::move(dataPackage02));
 				jsonifier::vector<jsonifier::string> assetPaths{};
 				jsonifier::string newString01 = "crossorigin src=";
 				jsonifier::string newerString{};
@@ -360,10 +365,10 @@ namespace DiscordCoreAPI {
 						newString					  = newString.substr(newString.find("crossorigin src=") + newString01.size());
 						assetPaths.emplace_back(newString03);
 					}
-					HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetClientId };
+					https_workload_data dataPackage03{ https_workload_type::SoundCloud_Get_Client_Id };
 					dataPackage03.baseUrl		   = assetPaths[5];
-					dataPackage03.workloadClass	   = HttpsWorkloadClass::Get;
-					HttpsResponseData returnData02 = submitWorkloadAndGetResult(std::move(dataPackage03));
+					dataPackage03.workloadClass	   = https_workload_class::Get;
+					https_response_data returnData02 = submitWorkloadAndGetResult(std::move(dataPackage03));
 					jsonifier::string newerString02{};
 					newerString02.insert(newerString02.begin(), returnData02.responseData.begin(), returnData02.responseData.end());
 
@@ -374,45 +379,49 @@ namespace DiscordCoreAPI {
 						clientIdNew = newString03.substr(0, newString03.find("\",nonce:e.nonce}))))"));
 					}
 					if (returnData02.responseCode != 200) {
-						MessagePrinter::printError<PrintMessageType::Https>("SoundCloudAPI::collectClientID() Error: " +
+						message_printer::printError<print_message_type::https>("sound_cloud_api::collectClientID() Error: " +
 							jsonifier::toString(returnData.responseCode.operator uint64_t()) + jsonifier::string{ newerString02.data() });
 					}
 				}
-			} catch (const HttpsError& error) {
-				MessagePrinter::printError<PrintMessageType::Https>("SoundCloudRequestBuilder::collectClientId() Error" + jsonifier::string{ error.what() });
+			} catch (const https_error& error) {
+				message_printer::printError<print_message_type::https>("sound_cloud_request_builder::collectClientId() Error" + jsonifier::string{ error.what() });
 			}
 			return clientIdNew;
 		}
 
-		SoundCloudAPI::SoundCloudAPI(ConfigManager* configManagerNew, const Snowflake guildIdNew) : SoundCloudRequestBuilder{ configManagerNew } {
-			guildId = static_cast<Snowflake>(guildIdNew);
-			if (SoundCloudRequestBuilder::clientId == "") {
-				SoundCloudRequestBuilder::clientId = collectClientId();
+		sound_cloud_api::sound_cloud_api(config_manager* configManagerNew, const snowflake guildIdNew) : sound_cloud_request_builder{ configManagerNew } {
+			guildId = static_cast<snowflake>(guildIdNew);
+			if (sound_cloud_request_builder::clientId == "") {
+				sound_cloud_request_builder::clientId = collectClientId();
 			}
 		}
 
-		void SoundCloudAPI::weFailedToDownloadOrDecode(const Song& songNew) {
+		void sound_cloud_api::weFailedToDownloadOrDecode(const song& songNew, std::coroutine_handle<co_routine<void, false>::promise_type> threadHandle, uint64_t recursionDepth) {
 			std::this_thread::sleep_for(1s);
-			GuildMemberData guildMember{ GuildMembers::getCachedGuildMember({ .guildMemberId = songNew.addedByUserId, .guildId = guildId }) };
-			DiscordCoreClient::getSongAPI(guildId).play(songNew, guildMember);
+			if (recursionDepth < 10) {
+				++recursionDepth;
+				song songNewer = constructDownloadInfo(songNew, 0);
+				downloadAndStreamAudio(songNewer, threadHandle, recursionDepth);
+			} else {
+				discord_core_client::getVoiceConnection(guildId).skip(true);
+			}
 		}
 
-		bool SoundCloudAPI::areWeWorking() {
+		bool sound_cloud_api::areWeWorking() {
 			return areWeWorkingBool.load(std::memory_order_acquire);
 		}
 
-		CoRoutine<void, false> SoundCloudAPI::downloadAndStreamAudio(const Song songNew, NewThreadAwaiter<void, false> threadHandle, uint64_t currentReconnectTries) {
+		co_routine<void, false> sound_cloud_api::downloadAndStreamAudio(const song songNew, std::coroutine_handle<co_routine<void, false>::promise_type> threadHandle,
+			uint64_t currentReconnectTries) {
 			try {
 				areWeWorkingBool.store(true, std::memory_order_release);
-				std::coroutine_handle<CoRoutine<void, false>::promise_type> coroHandle{};
 				if (currentReconnectTries == 0) {
-					threadHandle = NewThreadAwaitable<void, false>();
+					threadHandle = co_await newThreadAwaitable<void, false>();
 				}
-				coroHandle = co_await threadHandle;
 				uint64_t counter{};
-				jsonifier::vector<HttpsWorkloadData> workloadVector{};
+				jsonifier::vector<https_workload_data> workloadVector{};
 				for (uint64_t x = 0; x < songNew.finalDownloadUrls.size(); ++x) {
-					HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
+					https_workload_data dataPackage03{ https_workload_type::SoundCloud_Get_Search_Results };
 					if (counter < songNew.finalDownloadUrls.size()) {
 						jsonifier::string baseUrlNew =
 							songNew.finalDownloadUrls.at(x).urlPath.substr(0, jsonifier::string_view{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
@@ -421,16 +430,16 @@ namespace DiscordCoreAPI {
 						dataPackage03.baseUrl	   = baseUrlNew;
 						dataPackage03.relativePath = relativeUrl;
 					}
-					dataPackage03.workloadClass = HttpsWorkloadClass::Get;
+					dataPackage03.workloadClass = https_workload_class::Get;
 					workloadVector.emplace_back(std::move(dataPackage03));
 				}
 				jsonifier::vector<jsonifier::string> buffer{};
-				OggDemuxer demuxer{};
+				ogg_demuxer demuxer{};
 				for (uint64_t x = 0; x < songNew.finalDownloadUrls.size(); ++x) {
-					HttpsResponseData result{ submitWorkloadAndGetResult(std::move(workloadVector.at(x))) };
+					https_response_data result{ submitWorkloadAndGetResult(std::move(workloadVector.at(x))) };
 					if (result.responseCode != 200) {
+						weFailedToDownloadOrDecode(songNew, threadHandle, currentReconnectTries);
 						areWeWorkingBool.store(false, std::memory_order_release);
-						weFailedToDownloadOrDecode(songNew);
 						co_return;
 					}
 
@@ -439,55 +448,45 @@ namespace DiscordCoreAPI {
 						demuxer.writeData({ buffer.back().data(), buffer.back().size() });
 						demuxer.proceedDemuxing();
 					}
-					if (coroHandle.promise().stopRequested()) {
+					if (threadHandle.promise().stopRequested()) {
 						areWeWorkingBool.store(false, std::memory_order_release);
 						co_return;
 					}
 					bool didWeReceive{ true };
 					do {
-						AudioFrameData frameData{};
+						audio_frame_data frameData{};
 						didWeReceive = demuxer.collectFrame(frameData);
-						if (coroHandle.promise().stopRequested()) {
+						if (threadHandle.promise().stopRequested()) {
 							areWeWorkingBool.store(false, std::memory_order_release);
 							co_return;
 						}
 						if (frameData.currentSize != 0) {
-							frameData.guildMemberId = songNew.addedByUserId.operator const uint64_t&();
-							DiscordCoreClient::getSongAPI(guildId).audioDataBuffer.send(std::move(frameData));
+							discord_core_client::getSongAPI(guildId).audioDataBuffer.send(std::move(frameData));
 						}
-					} while (didWeReceive);
-					if (coroHandle.promise().stopRequested()) {
+					} while (didWeReceive && !threadHandle.promise().stopRequested());
+					if (threadHandle.promise().stopRequested()) {
 						areWeWorkingBool.store(false, std::memory_order_release);
 						co_return;
 					}
 					std::this_thread::sleep_for(1ms);
 				}
 				areWeWorkingBool.store(false, std::memory_order_release);
-				DiscordCoreClient::getVoiceConnection(guildId).skip(false);
-				AudioFrameData frameData{};
-				frameData.guildMemberId = songNew.addedByUserId.operator const uint64_t&();
-				DiscordCoreClient::getSongAPI(guildId).audioDataBuffer.send(std::move(frameData));
+				discord_core_client::getVoiceConnection(guildId).skip(false);
+				audio_frame_data frameData{};
+				discord_core_client::getSongAPI(guildId).audioDataBuffer.send(std::move(frameData));
 				co_return;
-			} catch (const HttpsError& error) {
-				MessagePrinter::printError<PrintMessageType::Https>("SoundCloudRequestBuilder::downloadAndStreamAudio() Error: " + jsonifier::string{ error.what() });
+			} catch (const https_error& error) {
+				message_printer::printError<print_message_type::https>("sound_cloud_request_builder::downloadAndStreamAudio() Error: " + jsonifier::string{ error.what() });
+				weFailedToDownloadOrDecode(songNew, threadHandle, currentReconnectTries);
 				areWeWorkingBool.store(false, std::memory_order_release);
-				weFailedToDownloadOrDecode(songNew);
 			}
 			co_return;
 		}
 
-		Song SoundCloudAPI::collectSingleResult(jsonifier::string_view searchQuery) {
-			return SoundCloudRequestBuilder::collectSingleResult(searchQuery);
-		}
-
-		jsonifier::vector<Song> SoundCloudAPI::searchForSong(jsonifier::string_view searchQuery, int32_t limit) {
+		jsonifier::vector<song> sound_cloud_api::searchForSong(jsonifier::string_view searchQuery, uint64_t limit) {
 			return collectSearchResults(searchQuery, limit);
 		}
 
-		Song SoundCloudAPI::collectFinalSong(const Song& songNew) {
-			return SoundCloudRequestBuilder::collectFinalSong(songNew);
-		}
-
-		jsonifier::string SoundCloudRequestBuilder::clientId{};
+		jsonifier::string sound_cloud_request_builder::clientId{};
 	};
 }
