@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 
 			Song constructDownloadInfo(const Song& songNew);
 
-			jsonifier::vector<Song> collectSearchResults(jsonifier::string_view string);
+			jsonifier::vector<Song> collectSearchResults(jsonifier::string_view string, int32_t limit = 20);
 
 			virtual Song collectFinalSong(const Song& songNew);
 
@@ -67,8 +67,8 @@ namespace DiscordCoreAPI {
 
 			CoRoutine<void, false> downloadAndStreamAudio(const Song songNew, NewThreadAwaiter<void, false> threadHandle = NewThreadAwaiter<void, false>{},
 				uint64_t currentReconnectTries = 0);
-
-			jsonifier::vector<Song> searchForSong(jsonifier::string_view searchQuery);
+						
+			jsonifier::vector<Song> searchForSong(jsonifier::string_view searchQuery, int32_t limit);
 
 			void weFailedToDownloadOrDecode(const Song& songNew);
 

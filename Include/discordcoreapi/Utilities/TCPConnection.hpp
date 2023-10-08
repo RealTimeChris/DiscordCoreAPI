@@ -36,8 +36,8 @@
 #ifndef OPENSSL_NO_DEPRECATED
 	#define OPENSSL_NO_DEPRECATED
 #endif
-
 #include <openssl/err.h>
+
 #include <openssl/ssl.h>
 
 #ifdef _WIN32

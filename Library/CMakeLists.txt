@@ -72,7 +72,7 @@ set_target_properties(
 	OUTPUT_NAME "discordcoreapi"
 )
 
-if("${DEV}")
+if(DEV)
 	include(FetchContent)
 	FetchContent_Declare(
 	   Jsonifier

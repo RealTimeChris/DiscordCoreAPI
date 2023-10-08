@@ -67,12 +67,6 @@ namespace jsonifier {
 			"context", &ValueType::context, "playlistId", &ValueType::playlistId, "params", &ValueType::params);
 	};
 
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::YouTubeSearchResult> {
-		using ValueType = DiscordCoreAPI::DiscordCoreInternal::YouTubeSearchResult;
-		static constexpr auto parseValue =
-			createObject("type", &ValueType::type, "videoId", &ValueType::songId, "url", &ValueType::viewUrl, "descriptionSnippet", &ValueType::description);
-	};
-
 	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::ThumbnailElement> {
 		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::ThumbnailElement;
 		static constexpr auto parseValue = createObject("url", &ValueType::url, "width", &ValueType::width);
@@ -85,7 +79,24 @@ namespace jsonifier {
 
 	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VideoDetails> {
 		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::VideoDetails;
-		static constexpr auto parseValue = createObject("title", &ValueType::title, "video_id", &ValueType::videoId, "thumbnail", &ValueType::thumbnail);
+		static constexpr auto parseValue = createObject("title", &ValueType::title, "videoId", &ValueType::videoId, "thumbnail", &ValueType::thumbnail, "shortDescription",
+			&ValueType::shortDescription, "lengthSeconds", &ValueType::lengthSeconds);
+	};
+
+	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Format> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::Format;
+		static constexpr auto parseValue =
+			createObject("url", &ValueType::url, "mimeType", &ValueType::mimeType, "bitrate", &ValueType::bitrate, "contentLength", &ValueType::contentLength);
+	};
+
+	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::StreamingData> {
+		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::StreamingData;
+		static constexpr auto parseValue = createObject("adaptiveFormats", &ValueType::adaptiveFormats);
+	};
+
+	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Data> {
+		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Data;
+		static constexpr auto parseValue = createObject("streamingData", &ValueType::streamingData, "videoDetails", &ValueType::videoDetails);
 	};
 
 	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::VideoRenderer> {
@@ -132,22 +143,6 @@ namespace jsonifier {
 		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::YouTubeSearchResults;
 		static constexpr auto parseValue = createObject("contents", &ValueType::contents);
 	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Format> {
-		using ValueType = DiscordCoreAPI::DiscordCoreInternal::Format;
-		static constexpr auto parseValue =
-			createObject("url", &ValueType::url, "mimeType", &ValueType::mimeType, "bitrate", &ValueType::bitrate, "contentLength", &ValueType::contentLength);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::StreamingData> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::StreamingData;
-		static constexpr auto parseValue = createObject("adaptiveFormats", &ValueType::adaptiveFormats);
-	};
-
-	template<> struct core<DiscordCoreAPI::DiscordCoreInternal::Data> {
-		using ValueType					 = DiscordCoreAPI::DiscordCoreInternal::Data;
-		static constexpr auto parseValue = createObject("streamingData", &ValueType::streamingData, "videoDetails", &ValueType::videoDetails);
-	};
 }
 
 namespace DiscordCoreAPI {
@@ -156,54 +151,59 @@ namespace DiscordCoreAPI {
 
 		YouTubeRequestBuilder::YouTubeRequestBuilder(ConfigManager* configManagerNew) : HttpsClientCore{ jsonifier::string{ configManagerNew->getBotToken() } } {};
 
-		jsonifier::string collectVideoIdFromSearchQuery(jsonifier::string_view string) {
-			if (string.find("youtube") != jsonifier::string::npos) {
-				jsonifier::string returnString{};
+		bool collectVideoIdFromSearchQuery(jsonifier::string_view string, jsonifier::string& stringNew) {
+			if (string.find("youtube") != jsonifier::string::npos && string.find("v=") != jsonifier::string::npos) {
 				auto findValue = string.find("v=") + 2;
-				returnString   = string.substr(findValue, string.size() - findValue);
-				return returnString;
+				stringNew	   = string.substr(findValue);
+				return true;
 			} else {
-				return static_cast<jsonifier::string>(string);
+				return false;
 			}
-		}
-
-		Song YouTubeAPI::collectSingleResult(jsonifier::string_view searchQuery) {
-			return YouTubeRequestBuilder::collectSingleResult(searchQuery);
 		}
 
 		Song YouTubeRequestBuilder::collectSingleResult(jsonifier::string_view searchQuery) {
 			Song songNew{};
-			songNew.type	= SongType::YouTube;
-			songNew.songId = collectVideoIdFromSearchQuery(searchQuery);
-			songNew			= constructDownloadInfo(songNew, 0);
+			songNew.type   = SongType::YouTube;
+			songNew.songId = searchQuery;
+			songNew		   = constructDownloadInfo(songNew, 0);
 			return songNew;
 		}
 
-		jsonifier::vector<Song> YouTubeRequestBuilder::collectSearchResults(jsonifier::string_view searchQuery) {
+		jsonifier::vector<Song> YouTubeRequestBuilder::collectSearchResults(jsonifier::string_view searchQuery, int32_t limit) {
 			HttpsWorkloadData dataPackage{ HttpsWorkloadType::YouTubeGetSearchResults };
+			jsonifier::vector<Song> searchResults{};
+			jsonifier::string theId{};
+			if (collectVideoIdFromSearchQuery(searchQuery, theId)) {
+				searchResults.emplace_back(collectSingleResult(theId));
+				return searchResults;
+			}
 			dataPackage.baseUrl			 = baseUrl;
-			dataPackage.relativePath	 = "/results?search_query=" + urlEncode(collectVideoIdFromSearchQuery(searchQuery));
+			dataPackage.relativePath	 = "/results?search_query=" + urlEncode(searchQuery);
 			dataPackage.workloadClass	 = HttpsWorkloadClass::Get;
 			HttpsResponseData returnData = submitWorkloadAndGetResult(std::move(dataPackage));
 			if (returnData.responseCode != 200) {
 				MessagePrinter::printError<PrintMessageType::Https>(
 					"YouTubeRequestBuilder::collectSearchResults() Error: " + jsonifier::toString(returnData.responseCode.operator uint64_t()) + returnData.responseData);
 			}
-			jsonifier::vector<Song> searchResults{};
 			auto varInitFind = returnData.responseData.find("var ytInitialData = ");
 			if (varInitFind != jsonifier::string::npos) {
-				jsonifier::string newString00	   = "var ytInitialData = ";
-				jsonifier::string newString	   = returnData.responseData.substr(varInitFind + newString00.size());
+				jsonifier::string newString00	 = "var ytInitialData = ";
+				jsonifier::string newString		 = returnData.responseData.substr(varInitFind + newString00.size());
 				jsonifier::string stringSequence = ";</script><script nonce=";
-				newString				   = newString.substr(0, newString.find(stringSequence));
+				newString						 = newString.substr(0, newString.find(stringSequence));
 				YouTubeSearchResults youtubeSearchResults{};
 				parser.parseJson<true, true>(youtubeSearchResults, newString);
 				for (auto& value: youtubeSearchResults.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents) {
 					for (auto& value02: value.itemSectionRendererContents.contents) {
-						Song songNew{};
-						songNew.type   = SongType::YouTube;
-						songNew.songId = value02.videoRenderer.videoId;
-						searchResults.emplace_back(constructDownloadInfo(songNew, 0));
+						if (value02.videoRenderer.videoId != "") {
+							Song songNew{};
+							songNew.type   = SongType::YouTube;
+							songNew.songId = value02.videoRenderer.videoId;
+							searchResults.emplace_back(constructDownloadInfo(songNew, 0));
+						}
+						if (searchResults.size() >= limit) {
+							break;
+						}
 					}
 				}
 			}
@@ -236,38 +236,42 @@ namespace DiscordCoreAPI {
 						potentialFormats.emplace_back(value);
 					}
 				}
-				uint64_t currentMax{};
+				int64_t currentMax{};
 				int64_t maxIndex{ -1 };
 				for (uint64_t x = 0; x < potentialFormats.size(); ++x) {
 					if (potentialFormats.at(x).bitrate > currentMax) {
 						maxIndex = static_cast<int64_t>(x);
 					}
 				}
-				jsonifier::string songTitle{};
-				if (dataNew.videoDetails.title != "") {
-					songTitle = dataNew.videoDetails.title;
-				}
 
-				jsonifier::string thumbnailUrl{};
-				if (dataNew.videoDetails.thumbnail.thumbnails.size() > 0) {
-					int32_t currentLargestThumbnailWidth{};
-					int32_t currentThumbnailIndex{};
-					for (int32_t x = 0; x < dataNew.videoDetails.thumbnail.thumbnails.size(); ++x) {
-						if (dataNew.videoDetails.thumbnail.thumbnails[x].width > currentLargestThumbnailWidth) {
-							currentThumbnailIndex = x;
-						}
-					}
-					thumbnailUrl = dataNew.videoDetails.thumbnail.thumbnails[currentThumbnailIndex].url;
-				}
 				Song newerSong{ songNew };
 				jsonifier::string downloadBaseUrl{};
 				newerSong.type = SongType::YouTube;
 				if (maxIndex > -1) {
+					jsonifier::string thumbnailUrl{};
+					if (dataNew.videoDetails.thumbnail.thumbnails.size() > 0) {
+						int32_t currentLargestThumbnailWidth{};
+						int32_t currentThumbnailIndex{};
+						for (int32_t x = 0; x < dataNew.videoDetails.thumbnail.thumbnails.size(); ++x) {
+							if (dataNew.videoDetails.thumbnail.thumbnails[x].width > currentLargestThumbnailWidth) {
+								currentThumbnailIndex = x;
+							}
+						}
+						thumbnailUrl = dataNew.videoDetails.thumbnail.thumbnails[currentThumbnailIndex].url;
+					}
 					auto httpsFind		   = potentialFormats[maxIndex].url.find("https://");
 					auto videoPlaybackFind = potentialFormats[maxIndex].url.find("/videoplayback?");
 					if (httpsFind != jsonifier::string::npos && videoPlaybackFind != jsonifier::string::npos) {
 						jsonifier::string newString00 = "https://";
 						downloadBaseUrl				  = potentialFormats[maxIndex].url.substr(httpsFind + newString00.size(), videoPlaybackFind - newString00.size());
+					}
+					auto newString = dataNew.videoDetails.shortDescription;
+					if (newString.size() > 0) {
+						if (newString.size() > 256) {
+							newString = newString.substr(0, 256);
+						}
+						newerSong.description = utf8MakeValid(newString);
+						newerSong.description += "...";
 					}
 					jsonifier::string requestNew = potentialFormats[maxIndex].url.substr(potentialFormats[maxIndex].url.find(".com") + 4);
 					newerSong.finalDownloadUrls.resize(3);
@@ -280,10 +284,11 @@ namespace DiscordCoreAPI {
 					newerSong.finalDownloadUrls.at(0) = downloadUrl01;
 					newerSong.finalDownloadUrls.at(1) = downloadUrl02;
 					newerSong.viewUrl				  = newerSong.firstDownloadUrl;
+					newerSong.duration				  = TimeStamp::convertMsToDurationString(std::stoull(static_cast<std::string>(dataNew.videoDetails.lengthSeconds)) * 1000);
 					newerSong.viewUrl				  = "https://www.youtube.com/watch?v=" + songNew.songId;
 					newerSong.contentLength			  = downloadUrl02.contentSize;
 					newerSong.thumbnailUrl			  = thumbnailUrl;
-					newerSong.songTitle				  = songTitle;
+					newerSong.songTitle				  = dataNew.videoDetails.title;
 					newerSong.type					  = SongType::YouTube;
 				}
 				return newerSong;
@@ -402,8 +407,8 @@ namespace DiscordCoreAPI {
 			return areWeWorkingBool.load(std::memory_order_acquire);
 		}
 
-		jsonifier::vector<Song> YouTubeAPI::searchForSong(jsonifier::string_view searchQuery) {
-			return collectSearchResults(searchQuery);
+		jsonifier::vector<Song> YouTubeAPI::searchForSong(jsonifier::string_view searchQuery, int32_t limit) {
+			return collectSearchResults(searchQuery, limit);
 		}
 
 		Song YouTubeAPI::collectFinalSong(const Song& songNew) {

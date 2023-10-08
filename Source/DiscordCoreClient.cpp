@@ -157,16 +157,20 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
-		if (!instantiateWebSockets()) {
-			doWeQuit.store(true, std::memory_order_release);
-			return;
-		}
-		while (getBotUser().id == 0) {
-			std::this_thread::sleep_for(1ms);
-		}
-		registerFunctionsInternal();
-		while (!doWeQuit.load(std::memory_order_acquire)) {
-			std::this_thread::sleep_for(1ms);
+		try {
+			if (!instantiateWebSockets()) {
+				doWeQuit.store(true, std::memory_order_release);
+				return;
+			}
+			while (getBotUser().id == 0) {
+				std::this_thread::sleep_for(1ms);
+			}
+			registerFunctionsInternal();
+			while (!doWeQuit.load(std::memory_order_acquire)) {
+				std::this_thread::sleep_for(1ms);
+			}
+		} catch (const DCAException& error) {
+			MessagePrinter::printError<PrintMessageType::General>(error.what());
 		}
 	}
 

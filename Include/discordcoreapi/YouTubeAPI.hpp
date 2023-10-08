@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 
 			Song constructDownloadInfo(const Song& songNew, uint64_t currentRecursionDepth);
 
-			jsonifier::vector<Song> collectSearchResults(jsonifier::string_view string);
+			jsonifier::vector<Song> collectSearchResults(jsonifier::string_view string, int32_t limit = 20);
 
 			virtual Song collectFinalSong(const Song& songNew);
 
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 			CoRoutine<void, false> downloadAndStreamAudio(const Song songNew, NewThreadAwaiter<void, false> threadHandle = NewThreadAwaiter<void, false>{},
 				uint64_t currentReconnectTries = 0);
 
-			jsonifier::vector<Song> searchForSong(jsonifier::string_view searchQuery);
+			jsonifier::vector<Song> searchForSong(jsonifier::string_view searchQuery, int32_t limit);
 
 			void weFailedToDownloadOrDecode(const Song& songNew);
 
@@ -129,6 +129,7 @@ namespace DiscordCoreAPI {
 		};
 
 		struct VideoDetails {
+			jsonifier::string shortDescription;
 			VideoDetailsThumbnail thumbnail;
 			jsonifier::string lengthSeconds;
 			jsonifier::string videoId;
@@ -147,13 +148,6 @@ namespace DiscordCoreAPI {
 			YouTubeRequestContext context{};
 			const bool racyCheckOk{ true };
 			jsonifier::string videoId{};
-		};
-
-		struct YouTubeSearchResult {
-			jsonifier::string description{};
-			jsonifier::string viewUrl{};
-			jsonifier::string songId{};
-			SongType type{};
 		};
 
 		struct VideoRenderer {
