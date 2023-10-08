@@ -81,12 +81,12 @@ project(
 	DESCRIPTION "${DESCRIPTION}"
 )
 
-set(DISCORDCOREAPI-POPCNT_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
-set(DISCORDCOREAPI-LZCNT_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
-set(DISCORDCOREAPI-BMI_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
-set(DISCORDCOREAPI-AVX_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
-set(DISCORDCOREAPI-AVX2_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
-set(DISCORDCOREAPI-AVX512_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DiscordCoreAPI-POPCNT_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DiscordCoreAPI-LZCNT_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DiscordCoreAPI-BMI_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DiscordCoreAPI-AVX_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DiscordCoreAPI-AVX2_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DiscordCoreAPI-AVX512_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
