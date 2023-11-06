@@ -23,11 +23,10 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// RingBuffer.hpp - Header file for the RingBuffer class.
+/// RingBuffer.hpp - Header file for the ring_buffer class.
 /// Jun 28, 2022
 /// https://discordcoreapi.com
 /// \file RingBuffer.hpp
-
 #pragma once
 
 #include <jsonifier/Index.hpp>
@@ -38,9 +37,9 @@
 #include <vector>
 #include <array>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	namespace discord_core_internal {
 
 		/**
 		* \addtogroup discord_core_internal
@@ -48,64 +47,69 @@ namespace DiscordCoreAPI {
 		*/
 
 		/// @brief Enum representing different access types for a ring buffer.
-		enum class RingBufferAccessType { Read = 0, Write = 1 };
+		enum class ring_buffer_access_type { read = 0, write = 1 };
 
 		/// @brief A template interface for a ring buffer.
-		/// @tparam ValueType The type of data stored in the buffer.
-		/// @tparam Size The size of the buffer.
-		template<typename ValueType, uint64_t Size> class RingBufferInterface {
+		/// @tparam value_type the type of data stored in the buffer.
+		/// @tparam size the size of the buffer.
+		template<typename value_type_new, uint64_t size> class ring_buffer_interface {
 		  public:
-			using value_type = ValueType;
+			using value_type = value_type_new;
 			using pointer	 = value_type*;
 			using size_type	 = uint64_t;
 
-			/// @brief Constructor. Initializes the buffer size.
-			RingBufferInterface() {
-				arrayValue.resize(Size);
+			/// @brief Constructor. initializes the buffer size.
+			ring_buffer_interface() {
+				arrayValue.resize(size);
 			}
 
-			// Forward declaration to grant friendship to the RingBuffer class.
-			template<typename ValueType2, size_type SliceCount> friend class RingBuffer;
+			ring_buffer_interface& operator=(ring_buffer_interface&&) noexcept		= default;
+			ring_buffer_interface(ring_buffer_interface&&) noexcept					= default;
+			ring_buffer_interface& operator=(const ring_buffer_interface&) noexcept = default;
+			ring_buffer_interface(const ring_buffer_interface&) noexcept			= default;
+
+			// forward declaration to grant friendship to the ring_buffer class.
+			template<typename value_type2, size_type slice_count> friend class ring_buffer;
 
 			/// @brief Modify the read or write position of the buffer.
-			/// @param type The access type (Read or Write).
-			/// @param size The size by which to modify the position.
-			void modifyReadOrWritePosition(RingBufferAccessType type, size_type size) {
-				if (type == RingBufferAccessType::Read) {
-					tail += size;
+			/// @param type the access type (read or write).
+			/// @param sizeNew the size by which to modify the position.
+			void modifyReadOrWritePosition(ring_buffer_access_type type, size_type sizeNew) {
+				if (type == ring_buffer_access_type::read) {
+					tail += sizeNew;
 				} else {
-					head += size;
+					head += sizeNew;
 				}
 			}
 
 			/// @brief Get the used space in the buffer.
-			/// @return The used space in the buffer.
+			/// @return the used space in the buffer.
 			size_type getUsedSpace() {
 				return head - tail;
 			}
 
 			/// @brief Get a pointer to the current tail position.
-			/// @return A pointer to the current tail position.
+			/// @return a pointer to the current tail position.
 			pointer getCurrentTail() {
-				return arrayValue.data() + (tail % Size);
+				return arrayValue.data() + (tail % size);
 			}
 
 			/// @brief Get a pointer to the current head position.
-			/// @return A pointer to the current head position.
+			/// @return a pointer to the current head position.
 			pointer getCurrentHead() {
-				return arrayValue.data() + (head % Size);
+				return arrayValue.data() + (head % size);
 			}
 
 			/// @brief Check if the buffer is empty.
-			/// @return True if the buffer is empty, otherwise false.
+			/// @return true if the buffer is empty, otherwise false.
 			bool isItEmpty() {
 				return tail == head;
 			}
 
 			/// @brief Check if the buffer is full.
-			/// @return True if the buffer is full, otherwise false.
+			/// @return true if the buffer is full, otherwise false.
 			bool isItFull() {
-				return getUsedSpace() == Size;
+				return getUsedSpace() == size;
 			}
 
 			/// @brief Clear the buffer by resetting positions.
@@ -115,49 +119,54 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			jsonifier::vector<std::decay_t<value_type>> arrayValue{};///< The underlying data array.
+			jsonifier::vector<std::unwrap_ref_decay_t<value_type>> arrayValue{};///< The underlying data array.
 			size_type tail{};///< The tail position in the buffer.
 			size_type head{};///< The head position in the buffer.
 		};
 
-		/// @brief A template implementation of a ring buffer using RingBufferInterface.
-		/// @tparam ValueType The type of data stored in the buffer.
-		/// @tparam SliceCount The number of slices.
-		template<typename ValueType, uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount> {
+		/// @brief A template implementation of a ring buffer using ring_buffer_interface.
+		/// @tparam value_type the type of data stored in the buffer.
+		/// @tparam slice_count the number of slices.
+		template<typename value_type_new, uint64_t slice_count> class ring_buffer
+			: public ring_buffer_interface<ring_buffer_interface<std::unwrap_ref_decay_t<value_type_new>, 1024 * 16>, slice_count> {
 		  public:
-			using base_type		= RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>;
-			using value_type	= RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>::value_type;
+			using base_type		= ring_buffer_interface<ring_buffer_interface<std::unwrap_ref_decay_t<value_type_new>, 1024 * 16>, slice_count>;
+			using value_type	= ring_buffer_interface<std::unwrap_ref_decay_t<value_type_new>, 1024 * 16>::value_type;
 			using const_pointer = const value_type*;
 			using pointer		= value_type*;
 			using size_type		= uint64_t;
 
-			/// @brief Default constructor. Initializes the buffer size.
-			RingBuffer() : base_type{} {};
+			/// @brief Default constructor. initializes the buffer size.
+			ring_buffer() noexcept								= default;
+			ring_buffer& operator=(ring_buffer&&) noexcept		= default;
+			ring_buffer(ring_buffer&&) noexcept					= default;
+			ring_buffer& operator=(const ring_buffer&) noexcept = default;
+			ring_buffer(const ring_buffer&) noexcept			= default;
 
 			/// @brief Write data into the buffer.
-			/// @tparam ValueTypeNew The type of data to be written.
-			/// @param data Pointer to the data.
-			/// @param size Size of the data.
-			template<typename ValueTypeNew> void writeData(ValueTypeNew* data, size_type size) {
-				if (base_type::isItFull() || base_type::getCurrentHead()->getUsedSpace() + size >= 16384) {
+			/// @tparam value_type_new the type of data to be written.
+			/// @param data pointer to the data.
+			/// @param sizeNew size of the data.
+			template<typename value_type_newer> void writeData(value_type_newer* data, size_type sizeNew) {
+				if (base_type::isItFull() || base_type::getCurrentHead()->getUsedSpace() + sizeNew >= 16384) {
 					base_type::getCurrentTail()->clear();
-					base_type::modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+					base_type::modifyReadOrWritePosition(ring_buffer_access_type::read, 1);
 				}
-				size_type writeSize{ size };
-				std::memcpy(base_type::getCurrentHead()->getCurrentHead(), data, size);
-				base_type::getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, writeSize);
-				base_type::modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+				size_type writeSize{ sizeNew };
+				std::memcpy(base_type::getCurrentHead()->getCurrentHead(), data, sizeNew);
+				base_type::getCurrentHead()->modifyReadOrWritePosition(ring_buffer_access_type::write, writeSize);
+				base_type::modifyReadOrWritePosition(ring_buffer_access_type::write, 1);
 			}
 
 			/// @brief Read data from the buffer.
-			/// @return A string view containing the read data.
-			jsonifier::string_view_base<std::decay_t<value_type>> readData() {
-				jsonifier::string_view_base<std::decay_t<value_type>> returnData{};
+			/// @return a string view containing the read data.
+			jsonifier::string_view_base<std::unwrap_ref_decay_t<value_type>> readData() {
+				jsonifier::string_view_base<std::unwrap_ref_decay_t<value_type>> returnData{};
 				if (base_type::getCurrentTail()->getUsedSpace() > 0) {
-					returnData =
-						jsonifier::string_view_base<std::decay_t<value_type>>{ base_type::getCurrentTail()->getCurrentTail(), base_type::getCurrentTail()->getUsedSpace() };
+					returnData = jsonifier::string_view_base<std::unwrap_ref_decay_t<value_type>>{ base_type::getCurrentTail()->getCurrentTail(),
+						base_type::getCurrentTail()->getUsedSpace() };
 					base_type::getCurrentTail()->clear();
-					base_type::modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+					base_type::modifyReadOrWritePosition(ring_buffer_access_type::read, 1);
 				}
 				return returnData;
 			}

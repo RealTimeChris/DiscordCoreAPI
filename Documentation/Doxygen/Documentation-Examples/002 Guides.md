@@ -1,3 +1,0 @@
-Guides {#Guides}
-============
-- \subpage MusicBotGuide

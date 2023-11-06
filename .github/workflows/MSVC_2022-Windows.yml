@@ -27,7 +27,7 @@ jobs:
             git stash
             git pull
             vcpkg update
-
+           
     - name: Install the dependencies.
       run: |
            vcpkg install opus:x64-windows
@@ -44,9 +44,13 @@ jobs:
       run: |
            cmake --build . --config=${{matrix.build_type}}
 
+    - name: Install the Test
+      working-directory: ./Build/Tests
+      run: |
+           cmake --install ./ --config=${{matrix.build_type}}
+
     - name: Run the Test
-      working-directory: ./Install/${{matrix.build_type}}
+      working-directory: ./Tests/Install/${{matrix.build_type}}
       run: |
             ./DiscordCoreAPITest.exe
       continue-on-error: true
-  

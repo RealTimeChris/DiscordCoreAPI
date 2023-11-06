@@ -28,10 +28,6 @@ add_executable(
     "main.cpp" "./Commands/BotInfo.hpp"
 )
 
-target_link_options(
-	"DiscordCoreAPITest" INTERFACE	
-)
-
 target_link_libraries(
 	"DiscordCoreAPITest" PRIVATE
     DiscordCoreAPI::DiscordCoreAPI

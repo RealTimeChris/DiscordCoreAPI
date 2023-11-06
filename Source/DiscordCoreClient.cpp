@@ -1,8 +1,7 @@
 /*
 	MIT License
 
-	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++
-   CoRoutines.
+	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
 	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
@@ -24,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// DiscordCoreClient01.cpp - Source file for the main/exposed DiscordCoreClient class.
+/// DiscordCoreClient.cpp - Source file for the main/exposed discord_core_client class.
 /// May 12, 2021
 /// https://discordcoreapi.com
 /// \file DiscordCoreClient.cpp
@@ -34,85 +33,85 @@
 #include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	VoiceConnectionsMap voiceConnectionMap{};
-	SoundCloudAPIMap soundCloudAPIMap{};
-	YouTubeAPIMap youtubeAPIMap{};
-	SongAPIMap songAPIMap{};
+	voice_connections_map voiceConnectionMap{};
+	sound_cloud_apimap soundCloudAPIMap{};
+	you_tube_apimap youtubeAPIMap{};
+	song_apimap songAPIMap{};
 	std::atomic_bool doWeQuit{};
 
-	DiscordCoreInternal::SoundCloudAPI& DiscordCoreClient::getSoundCloudAPI(Snowflake guildId) {
+	discord_core_internal::sound_cloud_api& discord_core_client::getSoundCloudAPI(snowflake guildId) {
 		if (!soundCloudAPIMap.contains(guildId.operator const uint64_t&())) {
-			soundCloudAPIMap[guildId.operator const uint64_t&()] = makeUnique<DiscordCoreInternal::SoundCloudAPI>(&getInstance()->configManager, guildId);
+			soundCloudAPIMap[guildId.operator const uint64_t&()] = makeUnique<discord_core_internal::sound_cloud_api>(&getInstance()->configManager, guildId);
 		}
 		return *soundCloudAPIMap[guildId.operator const uint64_t&()].get();
 	}
 
-	DiscordCoreInternal::YouTubeAPI& DiscordCoreClient::getYouTubeAPI(Snowflake guildId) {
+	discord_core_internal::you_tube_api& discord_core_client::getYouTubeAPI(snowflake guildId) {
 		if (!youtubeAPIMap.contains(guildId.operator const uint64_t&())) {
-			youtubeAPIMap[guildId.operator const uint64_t&()] = makeUnique<DiscordCoreInternal::YouTubeAPI>(&getInstance()->configManager, guildId);
+			youtubeAPIMap[guildId.operator const uint64_t&()] = makeUnique<discord_core_internal::you_tube_api>(&getInstance()->configManager, guildId);
 		}
 		return *youtubeAPIMap[guildId.operator const uint64_t&()].get();
 	}
 
-	VoiceConnection& DiscordCoreClient::getVoiceConnection(Snowflake guildId) {
+	voice_connection& discord_core_client::getVoiceConnection(snowflake guildId) {
 		if (!voiceConnectionMap.contains(guildId.operator const uint64_t&())) {
 			uint64_t theShardId{ (guildId.operator const uint64_t&() >> 22) % getInstance()->configManager.getTotalShardCount() };
 			uint64_t baseSocketIndex{ theShardId % getInstance()->baseSocketAgentsMap.size() };
-			auto baseSocketAgent								   = getInstance()->baseSocketAgentsMap[baseSocketIndex].get();
-			voiceConnectionMap[guildId.operator const uint64_t&()] = makeUnique<VoiceConnection>(&baseSocketAgent->shardMap[theShardId], &doWeQuit);
+			voiceConnectionMap[guildId.operator const uint64_t&()] =
+				makeUnique<voice_connection>(&getInstance()->baseSocketAgentsMap[baseSocketIndex]->shardMap[theShardId], &doWeQuit);
 		}
 		return *voiceConnectionMap[guildId.operator const uint64_t&()].get();
 	}
 
-	SongAPI& DiscordCoreClient::getSongAPI(Snowflake guildId) {
+	song_api& discord_core_client::getSongAPI(snowflake guildId) {
 		if (!songAPIMap.contains(guildId.operator const uint64_t&())) {
-			songAPIMap[guildId.operator const uint64_t&()] = makeUnique<SongAPI>(guildId);
+			songAPIMap[guildId.operator const uint64_t&()] = makeUnique<song_api>(guildId);
 		}
 		return *songAPIMap[guildId.operator const uint64_t&()].get();
 	}
 
-	DiscordCoreClient* DiscordCoreClient::getInstance() {
+	discord_core_client* discord_core_client::getInstance() {
 		return instancePtr.get();
 		;
 	}
 
-	void atexitHandler() {
+	void atexitHandler() noexcept {
 		doWeQuit.store(true, std::memory_order_release);
+		exit(EXIT_FAILURE);
 	}
 
-	void signalHandler(int32_t value) {
-		try {
-			switch (value) {
-				case SIGTERM: {
-					throw SIGTERMError{ "Exiting for: SIGTERM." };
-				}
-				case SIGSEGV: {
-					throw SIGSEGVError{ "Exiting for: SIGSEGV." };
-				}
-				case SIGINT: {
-					throw SIGINTError{ "Exiting for: SIGINT." };
-				}
-				case SIGILL: {
-					throw SIGILLError{ "Exiting for: SIGILL." };
-				}
-				case SIGABRT: {
-					throw SIGABRTError{ "Exiting for: SIGABRT." };
-				}
-				case SIGFPE: {
-					throw SIGFPEError{ "Exiting for: SIGFPE." };
-				}
+	void signalHandler(int32_t value) noexcept {
+		switch (value) {
+			case SIGTERM: {
+				message_printer::printError<print_message_type::general>("SIGTERM ERROR.");
+				exit(EXIT_FAILURE);
 			}
-		} catch (const SIGINTError& error) {
-			MessagePrinter::printError<PrintMessageType::General>(error.what());
-			exit(EXIT_SUCCESS);
-		} catch (...) {
-			exit(EXIT_FAILURE);
+			case SIGSEGV: {
+				message_printer::printError<print_message_type::general>("SIGSEGV ERROR.");
+				exit(EXIT_FAILURE);
+			}
+			case SIGINT: {
+				message_printer::printError<print_message_type::general>("SIGINT ERROR.");
+				exit(EXIT_FAILURE);
+			}
+			case SIGILL: {
+				message_printer::printError<print_message_type::general>("SIGILL ERROR.");
+				exit(EXIT_FAILURE);
+			}
+			case SIGABRT: {
+				message_printer::printError<print_message_type::general>("SIGABRT ERROR.");
+				exit(EXIT_FAILURE);
+			}
+			case SIGFPE: {
+				message_printer::printError<print_message_type::general>("SIGFPE ERROR.");
+				exit(EXIT_FAILURE);
+			}
 		}
 	}
 
-	DiscordCoreClient::DiscordCoreClient(const DiscordCoreClientConfig& configData) : configManager{ configData } {
+	discord_core_client::discord_core_client(const discord_core_client_config& configData) : configManager{ configData } {
 		instancePtr.reset(this);
 		std::atexit(&atexitHandler);
 		std::signal(SIGTERM, &signalHandler);
@@ -121,42 +120,42 @@ namespace DiscordCoreAPI {
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
-		MessagePrinter::initialize(configManager);
-		if (!DiscordCoreInternal::SSLContextHolder::initialize()) {
-			MessagePrinter::printError<PrintMessageType::General>("Failed to initialize the SSL_CTX structure!");
+		message_printer::initialize(configManager);
+		if (!discord_core_internal::sslcontext_holder::initialize()) {
+			message_printer::printError<print_message_type::general>("Failed to initialize the SSL_CTX structure!");
 			return;
 		}
 		if (sodium_init() == -1) {
-			MessagePrinter::printError<PrintMessageType::General>("LibSodium failed to initialize!");
+			message_printer::printError<print_message_type::general>("Lib_sodium failed to initialize!");
 			return;
 		}
-		httpsClient = makeUnique<DiscordCoreInternal::HttpsClient>(jsonifier::string{ configManager.getBotToken() });
-		ApplicationCommands::initialize(httpsClient.get());
-		AutoModerationRules::initialize(httpsClient.get());
-		Channels::initialize(httpsClient.get(), &configManager);
-		Guilds::initialize(httpsClient.get(), &configManager);
-		GuildMembers::initialize(httpsClient.get(), &configManager);
-		GuildScheduledEvents::initialize(httpsClient.get());
-		Interactions::initialize(httpsClient.get());
-		Messages::initialize(httpsClient.get());
-		Reactions::initialize(httpsClient.get());
-		Roles::initialize(httpsClient.get(), &configManager);
-		Stickers::initialize(httpsClient.get());
-		StageInstances::initialize(httpsClient.get());
-		Threads::initialize(httpsClient.get());
-		WebHooks::initialize(httpsClient.get());
-		Users::initialize(httpsClient.get(), &configManager);
+		httpsClient = makeUnique<discord_core_internal::https_client>(jsonifier::string{ configManager.getBotToken() });
+		application_commands::initialize(httpsClient.get());
+		auto_moderation_rules::initialize(httpsClient.get());
+		channels::initialize(httpsClient.get(), &configManager);
+		guilds::initialize(httpsClient.get(), &configManager);
+		guild_members::initialize(httpsClient.get(), &configManager);
+		guild_scheduled_events::initialize(httpsClient.get());
+		interactions::initialize(httpsClient.get());
+		messages::initialize(httpsClient.get());
+		reactions::initialize(httpsClient.get());
+		roles::initialize(httpsClient.get(), &configManager);
+		stickers::initialize(httpsClient.get());
+		stage_instances::initialize(httpsClient.get());
+		threads::initialize(httpsClient.get());
+		web_hooks::initialize(httpsClient.get());
+		users::initialize(httpsClient.get(), &configManager);
 	}
 
-	const ConfigManager& DiscordCoreClient::getConfigManager() const {
+	const config_manager& discord_core_client::getConfigManager() const {
 		return configManager;
 	}
 
-	BotUser DiscordCoreClient::getBotUser() {
-		return DiscordCoreClient::currentUser;
+	bot_user discord_core_client::getBotUser() {
+		return discord_core_client::currentUser;
 	}
 
-	void DiscordCoreClient::runBot() {
+	void discord_core_client::runBot() {
 		try {
 			if (!instantiateWebSockets()) {
 				doWeQuit.store(true, std::memory_order_release);
@@ -169,51 +168,50 @@ namespace DiscordCoreAPI {
 			while (!doWeQuit.load(std::memory_order_acquire)) {
 				std::this_thread::sleep_for(1ms);
 			}
-		} catch (const DCAException& error) {
-			MessagePrinter::printError<PrintMessageType::General>(error.what());
+		} catch (const dca_exception& error) {
+			message_printer::printError<print_message_type::general>(error.what());
 		}
 	}
 
-	void DiscordCoreClient::registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
-		bool alwaysRegister) {
+	void discord_core_client::registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, unique_ptr<base_function> baseFunction,
+		create_application_command_data commandData, bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		commandController.registerFunction(functionNames, std::move(baseFunction));
 		commandsToRegister.emplace_back(commandData);
 	}
 
-	CommandController& DiscordCoreClient::getCommandController() {
+	command_controller& discord_core_client::getCommandController() {
 		return commandController;
 	}
 
-	EventManager& DiscordCoreClient::getEventManager() {
+	event_manager& discord_core_client::getEventManager() {
 		return eventManager;
 	}
 
-	Milliseconds DiscordCoreClient::getTotalUpTime() {
-		return std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) - startupTimeSinceEpoch;
+	milliseconds discord_core_client::getTotalUpTime() {
+		return std::chrono::duration_cast<milliseconds>(hrclock::now().time_since_epoch()) - startupTimeSinceEpoch;
 	}
 
-	void DiscordCoreClient::registerFunctionsInternal() {
-
+	void discord_core_client::registerFunctionsInternal() {
 		if (getBotUser().id != 0) {
-			jsonifier::vector<ApplicationCommandData> theCommands{
-				ApplicationCommands::getGlobalApplicationCommandsAsync({ .applicationId = getBotUser().id, .withLocalizations = false }).get()
+			jsonifier::vector<application_command_data> theCommands{
+				application_commands::getGlobalApplicationCommandsAsync({ .applicationId = getBotUser().id, .withLocalizations = false }).get()
 			};
 			while (commandsToRegister.size() > 0) {
-				CreateApplicationCommandData data = commandsToRegister.front();
+				create_application_command_data data = commandsToRegister.front();
 				commandsToRegister.pop_front();
 				data.applicationId = getBotUser().id;
 				if (data.alwaysRegister) {
 					if (data.guildId != 0) {
-						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data)).get();
+						application_commands::createGuildApplicationCommandAsync(*static_cast<create_guild_application_command_data*>(&data)).get();
 					} else {
-						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
+						application_commands::createGlobalApplicationCommandAsync(*static_cast<create_global_application_command_data*>(&data)).get();
 					}
 				} else {
-					jsonifier::vector<ApplicationCommandData> guildCommands{};
+					jsonifier::vector<application_command_data> guildCommands{};
 					if (data.guildId != 0) {
 						guildCommands =
-							ApplicationCommands::getGuildApplicationCommandsAsync({ .applicationId = getBotUser().id, .withLocalizations = false, .guildId = data.guildId }).get();
+							application_commands::getGuildApplicationCommandsAsync({ .applicationId = getBotUser().id, .withLocalizations = false, .guildId = data.guildId }).get();
 					}
 					bool doesItExist{};
 					for (auto& value: theCommands) {
@@ -231,51 +229,53 @@ namespace DiscordCoreAPI {
 					try {
 						if (!doesItExist) {
 							if (data.guildId != 0) {
-								ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data)).get();
+								application_commands::createGuildApplicationCommandAsync(*static_cast<create_guild_application_command_data*>(&data)).get();
 
 							} else {
-								ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
+								application_commands::createGlobalApplicationCommandAsync(*static_cast<create_global_application_command_data*>(&data)).get();
 							}
 						}
-					} catch (DCAException& error) {
-						MessagePrinter::printError<PrintMessageType::Https>(error.what());
+					} catch (dca_exception& error) {
+						message_printer::printError<print_message_type::https>(error.what());
 					}
 				}
 			}
 		}
 	}
 
-	GatewayBotData DiscordCoreClient::getGateWayBot() {
-		try {
-			DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot };
-			workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-			workload.relativePath  = "/gateway/bot";
-			workload.callStack	   = "DiscordCoreClient::getGateWayBot()";
-			GatewayBotData data{};
-			httpsClient->submitWorkloadAndGetResult(workload, data);
-			return data;
-		} catch (const DiscordCoreInternal::HttpsError& error) {
-			MessagePrinter::printError<PrintMessageType::Https>(error.what());
-		}
-		return {};
+	gateway_bot_data discord_core_client::getGateWayBot() {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Gateway_Bot };
+		workload.workloadClass = discord_core_internal::https_workload_class::Get;
+		workload.relativePath  = "/gateway/bot";
+		workload.callStack	   = "discord_core_client::getGateWayBot()";
+		gateway_bot_data data{};
+		httpsClient->submitWorkloadAndGetResult(workload, data);
+		return data;
 	}
 
-	bool DiscordCoreClient::instantiateWebSockets() {
-		GatewayBotData gatewayData{ getGateWayBot() };
+	bool discord_core_client::instantiateWebSockets() {
+		gateway_bot_data gatewayData{};
+		try {
+			gatewayData = getGateWayBot();
+		} catch (const dca_exception& error) {
+			message_printer::printError<print_message_type::general>(error.what());
+			return false;
+		}
+
 		if (gatewayData.url == "") {
-			MessagePrinter::printError<PrintMessageType::General>("Failed to collect the connection URL! Closing! Did you remember to "
-																  "properly set your bot token?");
+			message_printer::printError<print_message_type::general>("Failed to collect the connection url! closing! did you remember to "
+																	 "properly set your bot token?");
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
 		if (configManager.getStartingShard() + configManager.getShardCountForThisProcess() > configManager.getTotalShardCount()) {
-			MessagePrinter::printError<PrintMessageType::General>("Your sharding options are incorrect! Please fix it!");
+			message_printer::printError<print_message_type::general>("your sharding options are incorrect! please fix it!");
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		uint64_t workerCount = configManager.getTotalShardCount() <= DiscordCoreInternal::ThreadWrapper::hardware_concurrency()
+		uint64_t workerCount = configManager.getTotalShardCount() <= discord_core_internal::thread_wrapper::hardware_concurrency()
 			? configManager.getTotalShardCount()
-			: static_cast<uint64_t>(DiscordCoreInternal::ThreadWrapper::hardware_concurrency());
+			: static_cast<uint64_t>(discord_core_internal::thread_wrapper::hardware_concurrency());
 
 		if (configManager.getConnectionAddress() == "") {
 			configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + jsonifier::string{ "wss://" }.size()));
@@ -287,10 +287,10 @@ namespace DiscordCoreAPI {
 		baseSocketAgentsMap.reserve(workerCount);
 		for (uint64_t x = 0; x < configManager.getTotalShardCount(); ++x) {
 			if (baseSocketAgentsMap.size() < workerCount) {
-				baseSocketAgentsMap[x] = makeUnique<DiscordCoreInternal::BaseSocketAgent>(&doWeQuit);
+				baseSocketAgentsMap[x] = makeUnique<discord_core_internal::base_socket_agent>(&doWeQuit);
 				baseSocketAgentsMap[x]->shardMap.reserve(configManager.getTotalShardCount() / workerCount);
 			}
-			baseSocketAgentsMap[x % workerCount]->shardMap[x] = DiscordCoreInternal::WebSocketClient{ x, &doWeQuit };
+			baseSocketAgentsMap[x % workerCount]->shardMap[x] = discord_core_internal::websocket_client{ x, &doWeQuit };
 		}
 		areWeReadyToConnect.store(true, std::memory_order_release);
 		while (!areWeFullyConnected()) {
@@ -299,11 +299,11 @@ namespace DiscordCoreAPI {
 		for (auto& value: configManager.getFunctionsToExecute()) {
 			executeFunctionAfterTimePeriod(value.function, value.intervalInMs, value.repeated, false, this);
 		}
-		startupTimeSinceEpoch = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch());
+		startupTimeSinceEpoch = std::chrono::duration_cast<milliseconds>(hrclock::now().time_since_epoch());
 		return true;
 	}
 
-	bool DiscordCoreClient::areWeFullyConnected() {
+	bool discord_core_client::areWeFullyConnected() {
 		for (auto& [key, value]: baseSocketAgentsMap) {
 			for (auto& [keyNew, valueNew]: value->shardMap) {
 				if (!valueNew.areWeConnected()) {
@@ -314,21 +314,9 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
-	DiscordCoreClient::~DiscordCoreClient() {
-		auto guildVector = Guilds::getAllGuildsAsync();
-		for (auto& value: guildVector) {
-			if (value.areWeConnected()) {
-				value.disconnect();
-			}
-		}
-		for (auto& [key, value]: NewThreadAwaiterBase::threadPool) {
-			if (value->thread->joinable()) {
-				value->thread->requestStop();
-				value->thread->detach();
-			}
-		}
+	discord_core_client::~discord_core_client() {
 		instancePtr.release();
 	}
 
-	BotUser DiscordCoreClient::currentUser{};
-}// namespace DiscordCoreAPI
+	bot_user discord_core_client::currentUser{};
+}// namespace discord_core_api

@@ -34,107 +34,106 @@
 #include <discordcoreapi/SoundCloudAPI.hpp>
 #include <discordcoreapi/YouTubeAPI.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	SongAPI::SongAPI(const Snowflake guildIdNew) {
+	song_api::song_api(const snowflake guildIdNew) {
 		guildId = guildIdNew;
 	}
 
-	void SongAPI::onSongCompletion(std::function<CoRoutine<void, false>(SongCompletionEventData)> handler) {
+	void song_api::onSongCompletion(std::function<co_routine<void, false>(song_completion_event_data)> handler) {
 		onSongCompletionEvent.functions.clear();
 		eventToken = onSongCompletionEvent.add(handler);
 	}
 
-	bool SongAPI::skip(const GuildMemberData& guildMember, bool wasItAFail) {
-		AudioFrameData dataFrame{};
+	bool song_api::skip(bool wasItAFail) {
+		audio_frame_data dataFrame{};
 		audioDataBuffer.clearContents();
-		auto returnValue		= DiscordCoreClient::getVoiceConnection(guildId).skip(wasItAFail);
-		dataFrame.guildMemberId = guildMember.user.id.operator const uint64_t&();
+		auto returnValue = discord_core_client::getVoiceConnection(guildId).skip(wasItAFail);
 		audioDataBuffer.send(std::move(dataFrame));
 		return returnValue;
 	}
 
-	jsonifier::vector<Song> SongAPI::searchForSong(jsonifier::string_view searchQuery, int32_t limit) {
+	jsonifier::vector<song> song_api::searchForSong(jsonifier::string_view searchQuery, uint64_t limit) {
 		std::unique_lock lock{ accessMutex };
-		jsonifier::vector<Song> vector01{};
-		jsonifier::vector<Song> vector02{};
+		jsonifier::vector<song> vector01{};
+		jsonifier::vector<song> vector02{};
 		if (searchQuery.find("soundcloud") == jsonifier::string::npos && searchQuery.find("youtube") == jsonifier::string::npos) {
-			vector01 = DiscordCoreClient::getSoundCloudAPI(guildId).searchForSong(searchQuery, limit);
-			vector02 = DiscordCoreClient::getYouTubeAPI(guildId).searchForSong(searchQuery, limit);
+			vector01 = discord_core_client::getSoundCloudAPI(guildId).searchForSong(searchQuery, limit);
+			vector02 = discord_core_client::getYouTubeAPI(guildId).searchForSong(searchQuery, limit);
 		} else if (searchQuery.find("youtube") != jsonifier::string::npos) {
-			vector02 = DiscordCoreClient::getYouTubeAPI(guildId).searchForSong(searchQuery, limit);
+			vector02 = discord_core_client::getYouTubeAPI(guildId).searchForSong(searchQuery, limit);
 		} else if (searchQuery.find("soundcloud") != jsonifier::string::npos) {
-			vector01 = DiscordCoreClient::getSoundCloudAPI(guildId).searchForSong(searchQuery, limit);
+			vector01 = discord_core_client::getSoundCloudAPI(guildId).searchForSong(searchQuery, limit);
 		}
 		uint64_t totalLength = vector01.size() + vector02.size();
-		jsonifier::vector<Song> newVector{};
+		jsonifier::vector<song> newVector{};
 		uint64_t vector01Used{};
 		uint64_t vector02Used{};
 		for (uint64_t x = 0; x < totalLength; ++x) {
 			if ((vector01Used < vector01.size()) && (x % 2 == 0) && vector01.size() > 0) {
 				newVector.emplace_back(vector01[vector01Used]);
-				newVector[newVector.size() - 1].type = SongType::SoundCloud;
+				newVector[newVector.size() - 1].type = song_type::SoundCloud;
 				++vector01Used;
 			} else if (vector02Used < vector02.size() && vector02.size() > 0) {
 				newVector.emplace_back(vector02[vector02Used]);
-				newVector[newVector.size() - 1].type = SongType::YouTube;
+				newVector[newVector.size() - 1].type = song_type::YouTube;
 				++vector02Used;
 			}
 		}
 		return newVector;
 	}
 
-	bool SongAPI::play(Song songNew, const GuildMemberData& guildMember) {
-		songNew.addedByUserId = guildMember.user.id;
+	bool song_api::play(song songNew) {
 		std::unique_lock lock{ accessMutex };
-		if (taskThread.getStatus() == CoRoutineStatus::Running) {
-			taskThread.cancel();
+		if (taskThread.getStatus() == co_routine_status::running) {
+			taskThread.cancelAndWait();
 		}
-		if (songNew.type == SongType::SoundCloud) {
-			Song newerSong{ DiscordCoreClient::getSoundCloudAPI(guildMember.guildId).collectFinalSong(songNew) };
-			taskThread = DiscordCoreClient::getSoundCloudAPI(guildMember.guildId).downloadAndStreamAudio(newerSong);
+		discord_core_client::getVoiceConnection(guildId).currentUserId = songNew.addedByUserId;
+		if (songNew.type == song_type::SoundCloud) {
+			song newerSong{ discord_core_client::getSoundCloudAPI(guildId).collectFinalSong(songNew) };
+			taskThread = discord_core_client::getSoundCloudAPI(guildId).downloadAndStreamAudio(newerSong);
 
-		} else if (songNew.type == SongType::YouTube) {
-			Song newerSong{ DiscordCoreClient::getYouTubeAPI(guildMember.guildId).collectFinalSong(songNew) };
-			taskThread = DiscordCoreClient::getYouTubeAPI(guildMember.guildId).downloadAndStreamAudio(newerSong);
+		} else if (songNew.type == song_type::YouTube) {
+			song newerSong{ discord_core_client::getYouTubeAPI(guildId).collectFinalSong(songNew) };
+			taskThread = discord_core_client::getYouTubeAPI(guildId).downloadAndStreamAudio(newerSong);
 		};
-		return DiscordCoreClient::getVoiceConnection(guildMember.guildId).play();
+		return discord_core_client::getVoiceConnection(guildId).play();
 	}
 
-	bool SongAPI::areWeCurrentlyPlaying() const {
-		return DiscordCoreClient::getVoiceConnection(guildId).areWeCurrentlyPlaying();
+	bool song_api::areWeCurrentlyPlaying() const {
+		return discord_core_client::getVoiceConnection(guildId).areWeCurrentlyPlaying();
 	}
 
-	bool SongAPI::play() {
-		return DiscordCoreClient::getVoiceConnection(guildId).play();
+	bool song_api::play() {
+		return discord_core_client::getVoiceConnection(guildId).play();
 	}
 
-	bool SongAPI::pauseToggle() {
-		return DiscordCoreClient::getVoiceConnection(guildId).pauseToggle();
+	bool song_api::pauseToggle() {
+		return discord_core_client::getVoiceConnection(guildId).pauseToggle();
 	}
 
-	bool SongAPI::stop() {
-		bool returnValue = DiscordCoreClient::getVoiceConnection(guildId).stop();
+	bool song_api::stop() {
+		bool returnValue = discord_core_client::getVoiceConnection(guildId).stop();
+		if (taskThread.getStatus() == co_routine_status::running) {
+			taskThread.cancelAndWait();
+		}
 		audioDataBuffer.clearContents();
 		return returnValue;
 	}
 
-	void SongAPI::disconnect() {
-		if (taskThread.getStatus() == CoRoutineStatus::Running) {
+	void song_api::disconnect() {
+		if (taskThread.getStatus() == co_routine_status::running) {
 			taskThread.cancelAndWait();
 		}
 		onSongCompletionEvent.erase(eventToken);
 		audioDataBuffer.clearContents();
-		StopWatch<Milliseconds> stopWatch{ 10000ms };
+		stop_watch<milliseconds> stopWatch{ 10000ms };
 		stopWatch.reset();
-		while (DiscordCoreClient::getSoundCloudAPI(guildId).areWeWorking() || DiscordCoreClient::getYouTubeAPI(guildId).areWeWorking()) {
+		while (discord_core_client::getSoundCloudAPI(guildId).areWeWorking() || discord_core_client::getYouTubeAPI(guildId).areWeWorking()) {
 			if (stopWatch.hasTimeElapsed()) {
 				break;
 			}
 			std::this_thread::sleep_for(1ms);
 		}
-	}
-
-	SongAPI::~SongAPI() {
 	}
 };

@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// RoleEntities.cpp - Source file for the RoleData related classes and structs.
+/// RoleEntities.cpp - Source file for the role_data related classes and structs.
 /// May 13, 2021
 /// https://discordcoreapi.com
 /// \file RoleEntities.cpp
@@ -34,44 +34,44 @@
 
 namespace jsonifier {
 
-	template<> struct core<DiscordCoreAPI::ModifyGuildRolePositionsData> {
-		using ValueType					 = DiscordCoreAPI::ModifyGuildRolePositionsData;
-		static constexpr auto parseValue = createObject("guild_id", &ValueType::guildId, "id", &ValueType::roleId, "positions", &ValueType::rolePositions, "reason",
-			&ValueType::reason, "position", &ValueType::newPosition);
+	template<> struct core<discord_core_api::modify_guild_role_positions_data> {
+		using value_type				 = discord_core_api::modify_guild_role_positions_data;
+		static constexpr auto parseValue = createObject("guild_id", &value_type::guildId, "id", &value_type::roleId, "positions", &value_type::rolePositions, "reason",
+			&value_type::reason, "position", &value_type::newPosition);
 	};
 
-	template<> struct core<DiscordCoreAPI::ModifyGuildRoleData> {
-		using ValueType					 = DiscordCoreAPI::ModifyGuildRoleData;
-		static constexpr auto parseValue = createObject("color", &ValueType::hexColorValue, "hoist", &ValueType::hoist, "id", &ValueType::roleId, "mentionable",
-			&ValueType::mentionable, "name", &ValueType::name, "permissions", &ValueType::permissions, "reason", &ValueType::reason, "unicode_emoji", &ValueType::unicodeEmoji,
-			"guild_id", &ValueType::guildId, "icon", &ValueType::icon);
+	template<> struct core<discord_core_api::modify_guild_role_data> {
+		using value_type				 = discord_core_api::modify_guild_role_data;
+		static constexpr auto parseValue = createObject("color", &value_type::hexColorValue, "hoist", &value_type::hoist, "id", &value_type::roleId, "mentionable",
+			&value_type::mentionable, "name", &value_type::name, "permissions", &value_type::permissions, "reason", &value_type::reason, "unicode_emoji", &value_type::unicodeEmoji,
+			"guild_id", &value_type::guildId, "icon", &value_type::icon);
 	};
 
-	template<> struct core<DiscordCoreAPI::CreateGuildRoleData> {
-		using ValueType					 = DiscordCoreAPI::CreateGuildRoleData;
-		static constexpr auto parseValue = createObject("color", &ValueType::hexColorValue, "hoist", &ValueType::hoist, "id", &ValueType::guildId, "mentionable",
-			&ValueType::mentionable, "name", &ValueType::name, "permissions", &ValueType::permissions, "position", &ValueType::position, "reason", &ValueType::reason,
-			"unicode_emoji", &ValueType::unicodeEmoji, "icon", &ValueType::icon);
+	template<> struct core<discord_core_api::create_guild_role_data> {
+		using value_type				 = discord_core_api::create_guild_role_data;
+		static constexpr auto parseValue = createObject("color", &value_type::hexColorValue, "hoist", &value_type::hoist, "id", &value_type::guildId, "mentionable",
+			&value_type::mentionable, "name", &value_type::name, "permissions", &value_type::permissions, "position", &value_type::position, "reason", &value_type::reason,
+			"unicode_emoji", &value_type::unicodeEmoji, "icon", &value_type::icon);
 	};
 
-	template<> struct core<DiscordCoreAPI::RolePositionData> {
-		using ValueType					 = DiscordCoreAPI::RolePositionData;
-		static constexpr auto parseValue = createObject("position", &ValueType::rolePosition, "id", &ValueType::roleId);
+	template<> struct core<discord_core_api::role_position_data> {
+		using value_type				 = discord_core_api::role_position_data;
+		static constexpr auto parseValue = createObject("position", &value_type::rolePosition, "id", &value_type::roleId);
 	};
 }
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	RoleCacheData& RoleCacheData::operator=(const RoleData& other) {
+	role_cache_data& role_cache_data::operator=(const role_data& other) {
 		flags = other.flags;
-		setFlagValue<RoleFlags>(RoleFlags::Mentionable, other.mentionable);
-		setFlagValue<RoleFlags>(RoleFlags::Managed, other.managed);
-		setFlagValue<RoleFlags>(RoleFlags::Hoist, other.hoist);
+		setFlagValue<role_flags>(role_flags::mentionable, other.mentionable);
+		setFlagValue<role_flags>(role_flags::managed, other.managed);
+		setFlagValue<role_flags>(role_flags::hoist, other.hoist);
 		if (other.unicodeEmoji != "") {
 			unicodeEmoji = other.unicodeEmoji;
 		}
 		if (other.permissions.operator std::string_view() != "") {
-			permissions = other.permissions;
+			permissionsVal = other.permissions;
 		}
 		if (other.position != 0) {
 			position = other.position;
@@ -88,20 +88,20 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RoleCacheData::RoleCacheData(const RoleData& other) {
+	role_cache_data::role_cache_data(const role_data& other) {
 		*this = other;
 	}
 
-	RoleCacheData& RoleCacheData::operator=(RoleData&& other) noexcept {
+	role_cache_data& role_cache_data::operator=(role_data&& other) noexcept {
 		flags = other.flags;
-		setFlagValue<RoleFlags>(RoleFlags::Mentionable, other.mentionable);
-		setFlagValue<RoleFlags>(RoleFlags::Managed, other.managed);
-		setFlagValue<RoleFlags>(RoleFlags::Hoist, other.hoist);
+		setFlagValue<role_flags>(role_flags::mentionable, other.mentionable);
+		setFlagValue<role_flags>(role_flags::managed, other.managed);
+		setFlagValue<role_flags>(role_flags::hoist, other.hoist);
 		if (other.unicodeEmoji != "") {
 			unicodeEmoji = std::move(other.unicodeEmoji);
 		}
 		if (other.permissions.operator std::string_view() != "") {
-			permissions = std::move(other.permissions);
+			permissionsVal = std::move(other.permissions);
 		}
 		if (other.name != "") {
 			name = std::move(other.name);
@@ -118,12 +118,12 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RoleCacheData::operator RoleData() {
-		RoleData returnData{};
-		returnData.mentionable	= getFlagValue<RoleFlags>(RoleFlags::Mentionable);
-		returnData.managed		= getFlagValue<RoleFlags>(RoleFlags::Managed);
-		returnData.hoist		= getFlagValue<RoleFlags>(RoleFlags::Hoist);
-		returnData.permissions	= permissions.operator jsonifier::string();
+	role_cache_data::operator role_data() {
+		role_data returnData{};
+		returnData.mentionable	= getFlagValue<role_flags>(role_flags::mentionable);
+		returnData.managed		= getFlagValue<role_flags>(role_flags::managed);
+		returnData.hoist		= getFlagValue<role_flags>(role_flags::hoist);
+		returnData.permissions	= permissionsVal.operator jsonifier::string();
 		returnData.unicodeEmoji = unicodeEmoji;
 		returnData.position		= position;
 		returnData.flags		= flags;
@@ -133,72 +133,72 @@ namespace DiscordCoreAPI {
 		return returnData;
 	}
 
-	RoleCacheData::RoleCacheData(RoleData&& other) noexcept {
+	role_cache_data::role_cache_data(role_data&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	RoleData::RoleData(Snowflake newId) {
+	role_data::role_data(snowflake newId) {
 		id = newId;
 	}
 
-	void Roles::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
-		Roles::doWeCacheRolesBool = configManagerNew->doWeCacheRoles();
-		Roles::httpsClient		  = client;
+	void roles::initialize(discord_core_internal::https_client* client, config_manager* configManagerNew) {
+		roles::doWeCacheRolesBool = configManagerNew->doWeCacheRoles();
+		roles::httpsClient		  = client;
 	}
 
-	CoRoutine<void> Roles::addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Member_Role };
-		co_await NewThreadAwaitable<void>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
+	co_routine<void> roles::addGuildMemberRoleAsync(add_guild_member_role_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Guild_Member_Role };
+		co_await newThreadAwaitable<void>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Put;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId + "/roles/" + dataPackage.roleId;
-		workload.callStack	   = "Roles::addGuildMemberRoleAsync()";
+		workload.callStack	   = "roles::addGuildMemberRoleAsync()";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
+			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
 		}
-		Roles::httpsClient->submitWorkloadAndGetResult(std::move(workload));
+		roles::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
-	CoRoutine<void> Roles::removeGuildMemberRoleAsync(RemoveGuildMemberRoleData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Member_Role };
-		co_await NewThreadAwaitable<void>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
+	co_routine<void> roles::removeGuildMemberRoleAsync(remove_guild_member_role_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild_Member_Role };
+		co_await newThreadAwaitable<void>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId + "/roles/" + dataPackage.roleId;
-		workload.callStack	   = "Roles::removeGuildMemberRoleAsync()";
+		workload.callStack	   = "roles::removeGuildMemberRoleAsync()";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
+			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
 		}
-		Roles::httpsClient->submitWorkloadAndGetResult(std::move(workload));
+		roles::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
-	CoRoutine<jsonifier::vector<RoleData>> Roles::getGuildRolesAsync(GetGuildRolesData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Roles };
-		co_await NewThreadAwaitable<jsonifier::vector<RoleData>>();
+	co_routine<jsonifier::vector<role_data>> roles::getGuildRolesAsync(get_guild_roles_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Roles };
+		co_await newThreadAwaitable<jsonifier::vector<role_data>>();
 		if (dataPackage.guildId == 0) {
-			throw DCAException{ "Roles::getGuildRolesAsync() Error: Sorry, but you forgot to set the guildId!" };
+			throw dca_exception{ "roles::getGuildRolesAsync() error: sorry, but you forgot to set the guildId!" };
 		}
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
+		workload.workloadClass = discord_core_internal::https_workload_class::Get;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/roles";
-		workload.callStack	   = "Roles::getGuildRolesAsync()";
-		jsonifier::vector<RoleData> returnData{};
-		Roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		workload.callStack	   = "roles::getGuildRolesAsync()";
+		jsonifier::vector<role_data> returnData{};
+		roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<RoleData> Roles::createGuildRoleAsync(CreateGuildRoleData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Role };
-		co_await NewThreadAwaitable<RoleData>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
+	co_routine<role_data> roles::createGuildRoleAsync(create_guild_role_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Guild_Role };
+		co_await newThreadAwaitable<role_data>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/roles";
-		parser.serializeJson(dataPackage, workload.content);
-		workload.callStack = "Roles::createGuildRoleAsync()";
+		parser.serializeJson<true>(dataPackage, workload.content);
+		workload.callStack = "roles::createGuildRoleAsync()";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
+			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
 		}
-		RoleData returnData{};
-		Roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
-		ModifyGuildRolePositionsData newDataPackage{};
+		role_data returnData{};
+		roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		modify_guild_role_positions_data newDataPackage{};
 		newDataPackage.guildId	   = dataPackage.guildId;
 		newDataPackage.newPosition = dataPackage.position;
 		newDataPackage.roleId	   = returnData.id;
@@ -211,16 +211,16 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	CoRoutine<jsonifier::vector<RoleData>> Roles::modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Role_Positions };
-		co_await NewThreadAwaitable<jsonifier::vector<RoleData>>();
-		jsonifier::vector<RoleData> currentRoles = Roles::getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
-		RoleData newRole						 = Roles::getCachedRole({ .roleId = dataPackage.roleId });
+	co_routine<jsonifier::vector<role_data>> roles::modifyGuildRolePositionsAsync(modify_guild_role_positions_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Role_Positions };
+		co_await newThreadAwaitable<jsonifier::vector<role_data>>();
+		jsonifier::vector<role_data> currentRoles = roles::getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
+		role_data newRole						  = roles::getCachedRole({ .roleId = dataPackage.roleId });
 		for (auto& value: currentRoles) {
 			if (value.id == newRole.id) {
 				continue;
 			}
-			RolePositionData newData;
+			role_position_data newData;
 			if (newRole.position < dataPackage.newPosition) {
 				if (value.position <= dataPackage.newPosition && value.position > newRole.position) {
 					newData.roleId		 = value.id;
@@ -235,60 +235,60 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-		RolePositionData newDataPos;
+		role_position_data newDataPos;
 		newDataPos.roleId		= dataPackage.roleId;
 		newDataPos.rolePosition = dataPackage.newPosition;
 		dataPackage.rolePositions.emplace_back(newDataPos);
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
+		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/roles";
-		parser.serializeJson(dataPackage, workload.content);
-		workload.callStack = "Roles::modifyGuildRolePositionsAsync()";
+		parser.serializeJson<true>(dataPackage, workload.content);
+		workload.callStack = "roles::modifyGuildRolePositionsAsync()";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
+			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
 		}
-		jsonifier::vector<RoleData> returnData{};
-		Roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		jsonifier::vector<role_data> returnData{};
+		roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<RoleData> Roles::modifyGuildRoleAsync(ModifyGuildRoleData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Role };
-		co_await NewThreadAwaitable<RoleData>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
+	co_routine<role_data> roles::modifyGuildRoleAsync(modify_guild_role_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Role };
+		co_await newThreadAwaitable<role_data>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/roles/" + dataPackage.roleId;
-		parser.serializeJson(dataPackage, workload.content);
-		workload.callStack = "Roles::modifyGuildRoleAsync()";
+		parser.serializeJson<true>(dataPackage, workload.content);
+		workload.callStack = "roles::modifyGuildRoleAsync()";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
+			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
 		}
-		RoleData data{ dataPackage.roleId };
+		role_data data{ dataPackage.roleId };
 		if (cache.contains(data.id)) {
 			data = cache[data.id];
 		}
-		Roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
+		roles::httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
 		if (doWeCacheRolesBool) {
-			insertRole(static_cast<RoleCacheData>(data));
+			insertRole(static_cast<role_cache_data>(data));
 		}
 		co_return data;
 	}
 
-	CoRoutine<void> Roles::removeGuildRoleAsync(RemoveGuildRoleData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Role };
-		co_await NewThreadAwaitable<void>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
+	co_routine<void> roles::removeGuildRoleAsync(remove_guild_role_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild_Role };
+		co_await newThreadAwaitable<void>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
 		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/roles/" + dataPackage.roleId;
-		workload.callStack	   = "Roles::removeGuildRoleAsync()";
+		workload.callStack	   = "roles::removeGuildRoleAsync()";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
+			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
 		}
-		Roles::httpsClient->submitWorkloadAndGetResult(std::move(workload));
+		roles::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
-	CoRoutine<jsonifier::vector<RoleData>> Roles::getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage) {
-		co_await NewThreadAwaitable<jsonifier::vector<RoleData>>();
-		jsonifier::vector<RoleData> rolesVector = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
-		jsonifier::vector<RoleData> rolesVectorNew{};
+	co_routine<jsonifier::vector<role_data>> roles::getGuildMemberRolesAsync(get_guild_member_roles_data dataPackage) {
+		co_await newThreadAwaitable<jsonifier::vector<role_data>>();
+		jsonifier::vector<role_data> rolesVector = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
+		jsonifier::vector<role_data> rolesVectorNew{};
 		for (auto& value: rolesVector) {
 			for (auto& value2: dataPackage.guildMember.roles) {
 				if (value2 == value.id) {
@@ -299,13 +299,13 @@ namespace DiscordCoreAPI {
 		co_return std::move(rolesVectorNew);
 	}
 
-	CoRoutine<RoleData> Roles::getRoleAsync(GetRoleData dataPackage) {
-		co_await NewThreadAwaitable<RoleData>();
+	co_routine<role_data> roles::getRoleAsync(get_role_data dataPackage) {
+		co_await newThreadAwaitable<role_data>();
 		auto roles = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		if (dataPackage.guildId == 0) {
-			throw DCAException{ "Roles::getRoleAsync() Error: Sorry, but you forgot to set the guildId!" };
+			throw dca_exception{ "roles::getRoleAsync() error: sorry, but you forgot to set the guildId!" };
 		}
-		RoleData data{ dataPackage.roleId };
+		role_data data{ dataPackage.roleId };
 		if (cache.contains(data.id)) {
 			data = cache[data.id];
 		}
@@ -315,12 +315,12 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (doWeCacheRolesBool) {
-			insertRole(static_cast<RoleCacheData>(data));
+			insertRole(static_cast<role_cache_data>(data));
 		}
 		co_return data;
 	}
 
-	RoleCacheData Roles::getCachedRole(GetRoleData dataPackage) {
+	role_cache_data roles::getCachedRole(get_role_data dataPackage) {
 		if (cache.contains(dataPackage.roleId)) {
 			return cache[dataPackage.roleId];
 		} else {
@@ -328,15 +328,15 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Roles::removeRole(const RoleCacheData& roleId) {
+	void roles::removeRole(const role_cache_data& roleId) {
 		cache.erase(roleId);
 	};
 
-	bool Roles::doWeCacheRoles() {
-		return Roles::doWeCacheRolesBool;
+	bool roles::doWeCacheRoles() {
+		return roles::doWeCacheRolesBool;
 	}
 
-	DiscordCoreInternal::HttpsClient* Roles::httpsClient{};
-	ObjectCache<RoleCacheData> Roles::cache{};
-	bool Roles::doWeCacheRolesBool{};
+	discord_core_internal::https_client* roles::httpsClient{};
+	object_cache<role_cache_data> roles::cache{};
+	bool roles::doWeCacheRolesBool{};
 };

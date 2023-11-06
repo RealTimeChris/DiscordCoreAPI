@@ -23,167 +23,162 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// YouTubeAPI.hpp - Header for the YouTube API related stuff.
+/// YouTubeAPI.hpp - Header for the you_tube api related stuff.
 /// Jun 30, 2021
 /// https://discordcoreapi.com
 /// \file YouTubeAPI.hpp
-
 #pragma once
 
 #include <discordcoreapi/Utilities/AudioDecoder.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	namespace discord_core_internal {
 
-		class DiscordCoreAPI_Dll YouTubeRequestBuilder : public HttpsClientCore {
+		class DiscordCoreAPI_Dll you_tube_request_builder : public https_client_core {
 		  public:
-			YouTubeRequestBuilder(ConfigManager* configManagerNew);
+			you_tube_request_builder(config_manager* configManagerNew);
+
+			song collectFinalSong(const song& songNew);
 
 		  protected:
-			inline static constexpr jsonifier::string_view baseUrl{ "https://www.youtube.com" };
+			static constexpr jsonifier::string_view baseUrl{ "https://www.youtube.com" };
 
-			Song constructDownloadInfo(const Song& songNew, uint64_t currentRecursionDepth);
+			song constructDownloadInfo(const song& songNew, uint64_t currentRecursionDepth);
 
-			jsonifier::vector<Song> collectSearchResults(jsonifier::string_view string, int32_t limit = 20);
+			jsonifier::vector<song> collectSearchResults(jsonifier::string_view string, uint64_t limit = 20);
 
-			virtual Song collectFinalSong(const Song& songNew);
+			song collectSingleResult(jsonifier::string_view string);
 
-			Song collectSingleResult(jsonifier::string_view string);
-
-			virtual ~YouTubeRequestBuilder() = default;
+			virtual ~you_tube_request_builder() = default;
 		};
 
-		class DiscordCoreAPI_Dll YouTubeAPI : public YouTubeRequestBuilder {
+		class DiscordCoreAPI_Dll you_tube_api : public you_tube_request_builder {
 		  public:
-			YouTubeAPI(ConfigManager* configManagerNew, const Snowflake guildId);
+			you_tube_api(config_manager* configManagerNew, const snowflake guildId);
 
-			CoRoutine<void, false> downloadAndStreamAudio(const Song songNew, NewThreadAwaiter<void, false> threadHandle = NewThreadAwaiter<void, false>{},
-				uint64_t currentReconnectTries = 0);
+			co_routine<void, false> downloadAndStreamAudio(const song songNew,
+				std::coroutine_handle<co_routine<void, false>::promise_type> threadHandle = std::coroutine_handle<co_routine<void, false>::promise_type>{},
+				uint64_t currentReconnectTries											  = 0);
 
-			jsonifier::vector<Song> searchForSong(jsonifier::string_view searchQuery, int32_t limit);
+			void weFailedToDownloadOrDecode(const song& songNew, std::coroutine_handle<co_routine<void, false>::promise_type> threadHandle, uint64_t recursionDepth);
 
-			void weFailedToDownloadOrDecode(const Song& songNew);
-
-			Song collectFinalSong(const Song& songNew) override;
-
-			Song collectSingleResult(jsonifier::string_view string);
+			jsonifier::vector<song> searchForSong(jsonifier::string_view searchQuery, uint64_t limit);
 
 			bool areWeWorking();
 
 		  protected:
 			std::atomic_bool areWeWorkingBool{ false };
-			Snowflake guildId{};
+			snowflake guildId{};
 		};
 
-		struct YouTubeRequestClient {
-			inline static constexpr jsonifier::string_view clientVersion{ "17.10.35" };
-			inline static constexpr jsonifier::string_view androidSdkVersion{ "31" };
-			inline static constexpr jsonifier::string_view clientName{ "ANDROID" };
-			inline static constexpr jsonifier::string_view platform{ "MOBILE" };
-			inline static constexpr jsonifier::string_view osName{ "Android" };
-			inline static constexpr jsonifier::string_view osVersion{ "12" };
-			inline static constexpr jsonifier::string_view hl{ "en-GB" };
-			inline static constexpr jsonifier::string_view gl{ "US" };
+		struct you_tube_request_client {
+			static constexpr jsonifier::string_view clientVersion{ "17.10.35" };
+			static constexpr jsonifier::string_view androidSdkVersion{ "31" };
+			static constexpr jsonifier::string_view clientName{ "android" };
+			static constexpr jsonifier::string_view platform{ "mobile" };
+			static constexpr jsonifier::string_view osName{ "android" };
+			static constexpr jsonifier::string_view osVersion{ "12" };
+			static constexpr jsonifier::string_view hl{ "en-gb" };
+			static constexpr jsonifier::string_view gl{ "us" };
 		};
 
-		struct Request {
+		struct request {
 			const bool useSsl{ true };
 		};
 
-		struct User {
+		struct user {
 			const bool lockedSafetyMode{};
 		};
 
-		struct YouTubeRequestContext {
-			UnorderedMap<jsonifier::string, jsonifier::string> captionParams{};
-			YouTubeRequestClient client{};
-			Request request{};
-			User user{};
+		struct you_tube_request_context {
+			unordered_map<jsonifier::string, jsonifier::string> captionParams{};
+			you_tube_request_client client{};
+			request requestVal{};
+			user userVal{};
 		};
 
-		struct Format {
-			int64_t itag;
-			jsonifier::string url;
-			jsonifier::string mimeType;
-			int64_t bitrate;
-			jsonifier::string contentLength;
-			int64_t averageBitrate;
-			jsonifier::string audioQuality;
+		struct format {
+			jsonifier::string contentLength{};
+			jsonifier::string audioQuality{};
+			jsonifier::string mimeType{};
+			int64_t averageBitrate{};
+			jsonifier::string url{};
+			int64_t bitrate{};
+			int64_t itag{};
 		};
 
-		struct StreamingData {
-			std::vector<Format> adaptiveFormats;
+		struct streaming_data {
+			std::vector<format> adaptiveFormats{};
 		};
 
-		struct ThumbnailElement {
-			jsonifier::string url;
-			int64_t width;
-			int64_t height;
+		struct thumbnail_element {
+			jsonifier::string url{};
+			int64_t width{};
 		};
 
-		struct VideoDetailsThumbnail {
-			std::vector<ThumbnailElement> thumbnails;
+		struct video_details_thumbnail {
+			std::vector<thumbnail_element> thumbnails{};
 		};
 
-		struct VideoDetails {
-			jsonifier::string shortDescription;
-			VideoDetailsThumbnail thumbnail;
-			jsonifier::string lengthSeconds;
-			jsonifier::string videoId;
-			jsonifier::string title;
+		struct video_details {
+			jsonifier::string shortDescription{};
+			video_details_thumbnail thumbnail{};
+			jsonifier::string lengthSeconds{};
+			jsonifier::string videoId{};
+			jsonifier::string title{};
 		};
 
-		struct Data {
-			StreamingData streamingData;
-			VideoDetails videoDetails;
+		struct data {
+			streaming_data streamingData{};
+			video_details videoDetails{};
 		};
 
-		struct YouTubeRequest {
+		struct you_tube_request {
 			const jsonifier::string playlistId{};
+			you_tube_request_context context{};
 			const bool contentCheckOk{ true };
 			const jsonifier::string params{};
-			YouTubeRequestContext context{};
 			const bool racyCheckOk{ true };
 			jsonifier::string videoId{};
 		};
 
-		struct VideoRenderer {
+		struct video_renderer {
 			jsonifier::string videoId{};
 		};
 
-		struct VideoRendererType {
-			VideoRenderer videoRenderer{};
+		struct video_renderer_type {
+			video_renderer videoRenderer{};
 		};
 
-		struct ItemSectionRendererContents {
-			jsonifier::vector<DiscordCoreInternal::VideoRendererType> contents{};
+		struct item_section_renderer_contents {
+			jsonifier::vector<discord_core_internal::video_renderer_type> contents{};
 		};
 
-		struct ItemSectionRenderer {
-			ItemSectionRendererContents itemSectionRendererContents{};
+		struct item_section_renderer {
+			item_section_renderer_contents itemSectionRendererContents{};
 		};
 
-		struct SectionListRenderer {
-			jsonifier::vector<ItemSectionRenderer> contents{};
+		struct section_list_renderer {
+			jsonifier::vector<item_section_renderer> contents{};
 		};
 
-		struct PrimaryContents {
-			SectionListRenderer sectionListRenderer{};
+		struct primary_contents {
+			section_list_renderer sectionListRenderer{};
 		};
 
-		struct TwoColumnSearchResultsRenderer {
-			PrimaryContents primaryContents{};
+		struct two_column_search_results_renderer {
+			primary_contents primaryContents{};
 		};
 
-		struct Contents01 {
-			TwoColumnSearchResultsRenderer twoColumnSearchResultsRenderer{};
+		struct contents01 {
+			two_column_search_results_renderer twoColumnSearchResultsRenderer{};
 		};
 
-		struct YouTubeSearchResults {
-			Contents01 contents{};
+		struct you_tube_search_results {
+			contents01 contents{};
 		};
 	}
 }

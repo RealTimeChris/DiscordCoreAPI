@@ -1,0 +1,49 @@
+Editing a Guild Application Command {#editguildcommand}
+============
+- Execute the `application_commands::editGuildApplicationCommandAsync()` function, while passing in a data structure of type `edit_guild_application_command_data`, with a return value of type `auto` or `application_command`.
+- call the function with `.get()` added to the end in order to wait for the results now.
+
+```cpp
+/// Test.hpp -header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
+
+#pragma once
+
+#include "index.hpp"
+
+namespace discord_core_api {
+
+	class test : public base_function {
+	  public:
+		test() {
+			commandName = "test";
+			helpDescription = "testing purposes!";
+			embed_data msgEmbed;
+			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
+			msgEmbed.setTitle("__**test usage:**__");
+			msgEmbed.setTimeStamp(getTimeAndDate());
+			msgEmbed.setColor("fe_fe_fe");
+			helpEmbed = msgEmbed;
+		}
+
+		unique_ptr<base_function> create() {
+			return makeUnique<test>();
+		}
+
+		virtual void execute(base_function_arguments& args) {
+			input_events::deleteInputEventResponseAsync(const args.eventData);
+
+			auto returnVector = application_commands::getGuildApplicationCommandsAsync(const {.guildId = args.eventData.getGuildId()}).get();
+
+			edit_guild_application_command_data dataPackage;
+			dataPackage.guildId = args.eventData.getGuildId();
+			dataPackage.name = returnVector.at(0).name;
+			dataPackage.description = "a test description";
+
+			auto returnValue = application_commands::editGuildApplicationCommandAsync(const& dataPackage).get();
+
+			std::cout << returnValue.description << std::endl;
+		}
+	};
+}
+```

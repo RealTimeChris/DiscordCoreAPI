@@ -23,36 +23,35 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// CommandController.hpp - Wrangler header for the command controller.
+/// CommandController.hpp - wrangler header for the command controller.
 /// May 20, 2021
 /// https://discordcoreapi.com
 /// \file CommandController.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/// @brief A class for handling commands from user input.
-	class DiscordCoreAPI_Dll CommandController {
+	class DiscordCoreAPI_Dll command_controller {
 	  public:
 		/// @brief Registers a function to be called.
-		/// @param functionNames A vector of strings to be accepted as function names.
-		/// @param baseFunction A unique_ptr to the function to be called.
-		void registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, UniquePtr<BaseFunction> baseFunction);
+		/// @param functionNames a vector of strings to be accepted as function names.
+		/// @param baseFunction a unique_ptr to the function to be called.
+		void registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, unique_ptr<base_function> baseFunction);
 
 		/// @brief For returning the contained map of functions.
-		/// @return A map containing the function names as well as unique_ptrs to the functions.
-		UnorderedMap<jsonifier::vector<jsonifier::string>, UniquePtr<BaseFunction>>& getFunctions();
+		/// @return a map containing the function names as well as unique_ptrs to the functions.
+		unordered_map<jsonifier::vector<jsonifier::string>, unique_ptr<base_function>>& getFunctions();
 
-		CoRoutine<void> checkForAndRunCommand(CommandData&& commandData);
+		co_routine<void> checkForAndRunCommand(command_data&& commandData);
 
 	  protected:
-		UniquePtr<BaseFunction> createFunction(jsonifier::string_view functionName);
+		unique_ptr<base_function> createFunction(jsonifier::string_view functionName);
 
-		UniquePtr<BaseFunction> getCommand(jsonifier::string_view commandName);
+		unique_ptr<base_function> getCommand(jsonifier::string_view commandName);
 	};
 
 };

@@ -36,57 +36,57 @@
 
 namespace jsonifier {
 
-	template<> struct core<DiscordCoreAPI::InteractionCallbackData> {
-		using ValueType					 = DiscordCoreAPI::InteractionCallbackData;
-		static constexpr auto parseValue = createObject("attachments", &ValueType::attachments, "choices", &ValueType::choices, "components", &ValueType::components, "content",
-			&ValueType::content, "custom_id", &ValueType::customId, "embeds", &ValueType::embeds, "files", &ValueType::files, "flags", &ValueType::flags, "tts", &ValueType::tts,
-			"allowed_mentions", &ValueType::allowedMentions, "title", &ValueType::title);
+	template<> struct core<discord_core_api::interaction_callback_data> {
+		using value_type				 = discord_core_api::interaction_callback_data;
+		static constexpr auto parseValue = createObject("attachments", &value_type::attachments, "choices", &value_type::choices, "components", &value_type::components, "content",
+			&value_type::content, "custom_id", &value_type::customId, "embeds", &value_type::embeds, "files", &value_type::files, "flags", &value_type::flags, "tts",
+			&value_type::tts, "allowed_mentions", &value_type::allowedMentions, "title", &value_type::title);
 	};
 
-	template<> struct core<DiscordCoreAPI::InteractionResponseBase> {
-		using ValueType					 = DiscordCoreAPI::InteractionResponseBase;
-		static constexpr auto parseValue = createObject("type", &ValueType::type, "data", &ValueType::data);
+	template<> struct core<discord_core_api::interaction_response_base> {
+		using value_type				 = discord_core_api::interaction_response_base;
+		static constexpr auto parseValue = createObject("type", &value_type::type, "data", &value_type::data);
 	};
 
-	template<> struct core<DiscordCoreAPI::CreateInteractionResponseData> {
-		using ValueType					 = DiscordCoreAPI::CreateInteractionResponseData;
-		static constexpr auto parseValue = createObject("type", &ValueType::type, "data", &ValueType::data);
+	template<> struct core<discord_core_api::create_interaction_response_data> {
+		using value_type				 = discord_core_api::create_interaction_response_data;
+		static constexpr auto parseValue = createObject("type", &value_type::type, "data", &value_type::data);
 	};
 
-	template<> struct core<DiscordCoreAPI::EditInteractionResponseData> {
-		using ValueType					 = DiscordCoreAPI::EditInteractionResponseData;
-		static constexpr auto parseValue = createObject("content", &ValueType::content, "embeds", &ValueType::embeds, "allowed_mentions", &ValueType::allowedMentions, "components",
-			&ValueType::components, "files", &ValueType::files, "attachments", &ValueType::attachments);
+	template<> struct core<discord_core_api::edit_interaction_response_data> {
+		using value_type				 = discord_core_api::edit_interaction_response_data;
+		static constexpr auto parseValue = createObject("content", &value_type::content, "embeds", &value_type::embeds, "allowed_mentions", &value_type::allowedMentions,
+			"components", &value_type::components, "files", &value_type::files, "attachments", &value_type::attachments);
 	};
 
-	template<> struct core<DiscordCoreAPI::CreateFollowUpMessageData> {
-		using ValueType					 = DiscordCoreAPI::CreateFollowUpMessageData;
-		static constexpr auto parseValue = createObject("content", &ValueType::content, "username", &ValueType::userName, "avatar_url", &ValueType::avatarUrl, "tts",
-			&ValueType::tts, "embeds", &ValueType::embeds, "allowed_mentions", &ValueType::allowedMentions, "components", &ValueType::components, "files", &ValueType::files,
-			"attachments", &ValueType::attachments, "flags", &ValueType::flags);
+	template<> struct core<discord_core_api::create_follow_up_message_data> {
+		using value_type				 = discord_core_api::create_follow_up_message_data;
+		static constexpr auto parseValue = createObject("content", &value_type::content, "username", &value_type::userName, "avatar_url", &value_type::avatarUrl, "tts",
+			&value_type::tts, "embeds", &value_type::embeds, "allowed_mentions", &value_type::allowedMentions, "components", &value_type::components, "files", &value_type::files,
+			"attachments", &value_type::attachments, "flags", &value_type::flags);
 	};
 
-	template<> struct core<DiscordCoreAPI::EditFollowUpMessageData> {
-		using ValueType					 = DiscordCoreAPI::EditFollowUpMessageData;
-		static constexpr auto parseValue = createObject("content", &ValueType::content, "username", &ValueType::userName, "avatar_url", &ValueType::avatarUrl, "tts",
-			&ValueType::tts, "embeds", &ValueType::embeds, "allowed_mentions", &ValueType::allowedMentions, "components", &ValueType::components, "files", &ValueType::files,
-			"attachments", &ValueType::attachments, "flags", &ValueType::flags);
+	template<> struct core<discord_core_api::edit_follow_up_message_data> {
+		using value_type				 = discord_core_api::edit_follow_up_message_data;
+		static constexpr auto parseValue = createObject("content", &value_type::content, "username", &value_type::userName, "avatar_url", &value_type::avatarUrl, "tts",
+			&value_type::tts, "embeds", &value_type::embeds, "allowed_mentions", &value_type::allowedMentions, "components", &value_type::components, "files", &value_type::files,
+			"attachments", &value_type::attachments, "flags", &value_type::flags);
 	};
 
 }
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	InteractionResponseBase& InteractionResponseBase::addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, ButtonStyle buttonStyle,
-		jsonifier::string_view emojiName, Snowflake emojiId, jsonifier::string_view url) {
+	interaction_response_base& interaction_response_base::addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, button_style buttonStyle,
+		jsonifier::string_view emojiName, snowflake emojiId, jsonifier::string_view url) {
 		if (data.components.size() == 0) {
-			ActionRowData actionRowData;
+			action_row_data actionRowData;
 			data.components.emplace_back(actionRowData);
 		}
 		if (data.components.size() < 5) {
 			if (data.components[data.components.size() - 1].components.size() < 5) {
-				ComponentData component;
-				component.type		 = ComponentType::Button;
+				component_data component;
+				component.type		 = component_type::Button;
 				component.emoji.name = emojiName;
 				component.label		 = buttonLabel;
 				component.style		 = static_cast<uint64_t>(buttonStyle);
@@ -96,23 +96,23 @@ namespace DiscordCoreAPI {
 				component.url		 = url;
 				data.components[data.components.size() - 1].components.emplace_back(component);
 			} else if (data.components[data.components.size() - 1].components.size() == 5) {
-				ActionRowData actionRowData;
+				action_row_data actionRowData;
 				data.components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<SelectOptionData> options,
-		jsonifier::string_view placeholder, uint64_t maxValues, uint64_t minValues, SelectMenuType typeNew, jsonifier::vector<ChannelType> channelTypes) {
+	interaction_response_base& interaction_response_base::addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<select_option_data> options,
+		jsonifier::string_view placeholder, uint64_t maxValues, uint64_t minValues, select_menu_type typeNew, jsonifier::vector<channel_type> channelTypes) {
 		if (data.components.size() == 0) {
-			ActionRowData actionRowData;
+			action_row_data actionRowData;
 			data.components.emplace_back(actionRowData);
 		}
 		if (data.components.size() < 5) {
 			if (data.components[data.components.size() - 1].components.size() < 5) {
-				ComponentData componentData;
-				componentData.type		   = static_cast<ComponentType>(typeNew);
+				component_data componentData;
+				componentData.type		   = static_cast<component_type>(typeNew);
 				componentData.channelTypes = channelTypes;
 				componentData.placeholder  = placeholder;
 				componentData.customId	   = customIdNew;
@@ -122,26 +122,26 @@ namespace DiscordCoreAPI {
 				componentData.options	   = options;
 				data.components[data.components.size() - 1].components.emplace_back(componentData);
 			} else if (data.components[data.components.size() - 1].components.size() == 5) {
-				ActionRowData actionRowData;
+				action_row_data actionRowData;
 				data.components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
-		jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, TextInputStyle inputStyle, jsonifier::string_view label,
+	interaction_response_base& interaction_response_base::addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
+		jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, text_input_style inputStyle, jsonifier::string_view label,
 		jsonifier::string_view placeholder) {
 		data.title	  = topTitleNew;
 		data.customId = topCustomIdNew;
 		if (data.components.size() == 0) {
-			ActionRowData actionRowData;
+			action_row_data actionRowData;
 			data.components.emplace_back(actionRowData);
 		}
 		if (data.components.size() < 5) {
 			if (data.components[data.components.size() - 1].components.size() < 5) {
-				ComponentData component{};
-				component.type		  = ComponentType::Text_Input;
+				component_data component{};
+				component.type		  = component_type::Text_Input;
 				component.customId	  = customIdNew;
 				component.style		  = static_cast<uint64_t>(inputStyle);
 				component.title		  = titleNew;
@@ -152,40 +152,40 @@ namespace DiscordCoreAPI {
 				component.placeholder = placeholder;
 				data.components[data.components.size() - 1].components.emplace_back(component);
 			} else if (data.components[data.components.size() - 1].components.size() == 5) {
-				ActionRowData actionRowData;
+				action_row_data actionRowData;
 				data.components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addFile(const File& theFile) {
+	interaction_response_base& interaction_response_base::addFile(const file& theFile) {
 		data.files.emplace_back(theFile);
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addAllowedMentions(const AllowedMentionsData& dataPackage) {
+	interaction_response_base& interaction_response_base::addAllowedMentions(const allowed_mentions_data& dataPackage) {
 		data.allowedMentions = dataPackage;
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addComponentRow(const ActionRowData& dataPackage) {
+	interaction_response_base& interaction_response_base::addComponentRow(const action_row_data& dataPackage) {
 		data.components.emplace_back(dataPackage);
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::setResponseType(InteractionCallbackType typeNew) {
+	interaction_response_base& interaction_response_base::setResponseType(interaction_callback_type typeNew) {
 		type = typeNew;
 		return *this;
 	}
 
-	void InteractionResponseBase::generateExcludedKeys() {
+	void interaction_response_base::generateExcludedKeys() {
 		data.excludedKeys.clear();
 		data.generateExcludedKeys();
 		return;
 	}
 
-	void EditInteractionResponseData::generateExcludedKeys() {
+	void edit_interaction_response_data::generateExcludedKeys() {
 		if (attachments.size() == 0) {
 			excludedKeys.emplace("attachments");
 		}
@@ -221,43 +221,43 @@ namespace DiscordCoreAPI {
 		return;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addMessageEmbed(const EmbedData& dataPackage) {
+	interaction_response_base& interaction_response_base::addMessageEmbed(const embed_data& dataPackage) {
 		data.embeds.emplace_back(dataPackage);
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addContent(jsonifier::string_view dataPackage) {
+	interaction_response_base& interaction_response_base::addContent(jsonifier::string_view dataPackage) {
 		data.content = dataPackage;
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::setTTSStatus(bool enabledTTs) {
+	interaction_response_base& interaction_response_base::setTTSStatus(bool enabledTTs) {
 		data.tts = enabledTTs;
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::setFlags(uint64_t flagsNew) {
+	interaction_response_base& interaction_response_base::setFlags(uint64_t flagsNew) {
 		data.flags = flagsNew;
 		return *this;
 	}
 
-	InteractionResponseData InteractionResponseBase::getInteractionResponseData() {
-		InteractionResponseData returnData;
+	interaction_response_data interaction_response_base::getInteractionResponseData() {
+		interaction_response_data returnData;
 		returnData.data = data;
 		returnData.type = type;
 		return returnData;
 	}
 
-	void Interactions::initialize(DiscordCoreInternal::HttpsClient* client) {
-		Interactions::httpsClient = client;
+	void interactions::initialize(discord_core_internal::https_client* client) {
+		interactions::httpsClient = client;
 	}
 
-	CreateEphemeralInteractionResponseData::CreateEphemeralInteractionResponseData(const RespondToInputEventData& dataPackage) {
+	create_ephemeral_interaction_response_data::create_ephemeral_interaction_response_data(const respond_to_input_event_data& dataPackage) {
 		data = dataPackage;
-		if (dataPackage.eventType == InteractionType::Message_Component) {
-			type = InteractionCallbackType::Update_Message;
+		if (dataPackage.eventType == interaction_type::Message_Component) {
+			type = interaction_callback_type::Update_Message;
 		} else {
-			type = InteractionCallbackType::Channel_Message_With_Source;
+			type = interaction_callback_type::Channel_Message_With_Source;
 		}
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
@@ -265,19 +265,19 @@ namespace DiscordCoreAPI {
 		data.flags							= 64;
 	}
 
-	CreateDeferredInteractionResponseData::CreateDeferredInteractionResponseData(const RespondToInputEventData& dataPackage) {
+	create_deferred_interaction_response_data::create_deferred_interaction_response_data(const respond_to_input_event_data& dataPackage) {
 		data = dataPackage;
-		if (dataPackage.eventType == InteractionType::Message_Component) {
-			type = InteractionCallbackType::Deferred_Update_Message;
+		if (dataPackage.eventType == interaction_type::Message_Component) {
+			type = interaction_callback_type::Deferred_Update_Message;
 		} else {
-			type = InteractionCallbackType::Deferred_Channel_Message_With_Source;
+			type = interaction_callback_type::Deferred_Channel_Message_With_Source;
 		}
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
 	}
 
-	CreateInteractionResponseData::CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage) {
+	create_interaction_response_data::create_interaction_response_data(const create_deferred_interaction_response_data& dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.interactionPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionPackage.interactionId;
@@ -286,7 +286,7 @@ namespace DiscordCoreAPI {
 		data								= dataPackage.data;
 	}
 
-	CreateInteractionResponseData::CreateInteractionResponseData(const CreateEphemeralInteractionResponseData& dataPackage) {
+	create_interaction_response_data::create_interaction_response_data(const create_ephemeral_interaction_response_data& dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.interactionPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionPackage.interactionId;
@@ -296,20 +296,20 @@ namespace DiscordCoreAPI {
 		data.flags							= 64;
 	}
 
-	CreateInteractionResponseData::CreateInteractionResponseData(const RespondToInputEventData& dataPackage) {
+	create_interaction_response_data::create_interaction_response_data(const respond_to_input_event_data& dataPackage) {
 		data = dataPackage;
-		if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {
-			type = InteractionCallbackType::Deferred_Update_Message;
-		} else if (dataPackage.eventType == InteractionType::Message_Component) {
-			type = InteractionCallbackType::Update_Message;
-		} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete ||
-			dataPackage.type == InputEventResponseType::Application_Command_AutoComplete_Result) {
-			type = InteractionCallbackType::Application_Command_Autocomplete_Result;
+		if (dataPackage.eventType == interaction_type::Message_Component && dataPackage.type == input_event_response_type::Deferred_Response) {
+			type = interaction_callback_type::Deferred_Update_Message;
+		} else if (dataPackage.eventType == interaction_type::Message_Component) {
+			type = interaction_callback_type::Update_Message;
+		} else if (dataPackage.eventType == interaction_type::Application_Command_Autocomplete ||
+			dataPackage.type == input_event_response_type::Application_Command_AutoComplete_Result) {
+			type = interaction_callback_type::Application_Command_Autocomplete_Result;
 		} else {
-			type = InteractionCallbackType::Channel_Message_With_Source;
+			type = interaction_callback_type::Channel_Message_With_Source;
 		}
-		if (dataPackage.type == InputEventResponseType::Modal_Interaction_Response || dataPackage.title != "") {
-			type = InteractionCallbackType::Modal;
+		if (dataPackage.type == input_event_response_type::Modal_Interaction_Response || dataPackage.title != "") {
+			type = interaction_callback_type::Modal;
 		}
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
@@ -317,18 +317,18 @@ namespace DiscordCoreAPI {
 		data.files							= dataPackage.files;
 	}
 
-	CreateInteractionResponseData::CreateInteractionResponseData(const InteractionData& dataPackage) {
-		if (dataPackage.type == InteractionType::Message_Component) {
-			type = InteractionCallbackType::Update_Message;
+	create_interaction_response_data::create_interaction_response_data(const interaction_data& dataPackage) {
+		if (dataPackage.type == interaction_type::Message_Component) {
+			type = interaction_callback_type::Update_Message;
 		} else {
-			type = InteractionCallbackType::Channel_Message_With_Source;
+			type = interaction_callback_type::Channel_Message_With_Source;
 		}
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionToken = dataPackage.token;
 		interactionPackage.interactionId	= dataPackage.id;
 	}
 
-	EditInteractionResponseData::EditInteractionResponseData(const RespondToInputEventData& dataPackage) {
+	edit_interaction_response_data::edit_interaction_response_data(const respond_to_input_event_data& dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
@@ -342,7 +342,7 @@ namespace DiscordCoreAPI {
 		tts									= dataPackage.tts;
 	}
 
-	CreateEphemeralFollowUpMessageData::CreateEphemeralFollowUpMessageData(const RespondToInputEventData& dataPackage) {
+	create_ephemeral_follow_up_message_data::create_ephemeral_follow_up_message_data(const respond_to_input_event_data& dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
@@ -355,7 +355,7 @@ namespace DiscordCoreAPI {
 		flags								= 64;
 	}
 
-	CreateFollowUpMessageData::CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage) {
+	create_follow_up_message_data::create_follow_up_message_data(const create_ephemeral_follow_up_message_data& dataPackage) {
 		interactionPackage = dataPackage.interactionPackage;
 		allowedMentions	   = dataPackage.allowedMentions;
 		components		   = dataPackage.components;
@@ -367,7 +367,7 @@ namespace DiscordCoreAPI {
 		flags			   = 64;
 	}
 
-	CreateFollowUpMessageData::CreateFollowUpMessageData(const RespondToInputEventData& dataPackage) {
+	create_follow_up_message_data::create_follow_up_message_data(const respond_to_input_event_data& dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
@@ -380,7 +380,7 @@ namespace DiscordCoreAPI {
 		tts									= dataPackage.tts;
 	}
 
-	void CreateFollowUpMessageData::generateExcludedKeys() {
+	void create_follow_up_message_data::generateExcludedKeys() {
 		if (attachments.size() == 0) {
 			excludedKeys.emplace("attachments");
 		}
@@ -423,11 +423,11 @@ namespace DiscordCoreAPI {
 		return;
 	}
 
-	EditFollowUpMessageData::EditFollowUpMessageData(const RespondToInputEventData& dataPackage) {
+	edit_follow_up_message_data::edit_follow_up_message_data(const respond_to_input_event_data& dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
+		allowedMentions						= dataPackage.allowedMentions;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
-		allowedMentions						= dataPackage.allowedMentions;
 		messagePackage.channelId			= dataPackage.channelId;
 		messagePackage.messageId			= dataPackage.messageId;
 		components							= dataPackage.components;
@@ -436,7 +436,7 @@ namespace DiscordCoreAPI {
 		files								= dataPackage.files;
 	}
 
-	DeleteFollowUpMessageData::DeleteFollowUpMessageData(const RespondToInputEventData& dataPackage) {
+	delete_follow_up_message_data::delete_follow_up_message_data(const respond_to_input_event_data& dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
@@ -444,231 +444,231 @@ namespace DiscordCoreAPI {
 		messagePackage.messageId			= dataPackage.messageId;
 	}
 
-	DeleteInteractionResponseData::DeleteInteractionResponseData(const RespondToInputEventData& dataPackage) {
+	delete_interaction_response_data::delete_interaction_response_data(const respond_to_input_event_data& dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
 	}
 
-	CoRoutine<MessageData> Interactions::createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Interaction_Response };
-		co_await NewThreadAwaitable<MessageData>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
+	co_routine<message_data> interactions::createInteractionResponseAsync(create_interaction_response_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Interaction_Response };
+		co_await newThreadAwaitable<message_data>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.data.files.size() > 0) {
-			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.payloadType = discord_core_internal::payload_type::Multipart_Form;
 			parser.serializeJson<true>(dataPackage, workload.content);
 		} else {
 			parser.serializeJson<true>(dataPackage, workload.content);
 		}
-		workload.callStack = "Interactions::createInteractionResponseAsync()";
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
-		GetInteractionResponseData dataPackage01{};
+		workload.callStack = "interactions::createInteractionResponseAsync()";
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
+		get_interaction_response_data dataPackage01{};
 		dataPackage01.applicationId	   = dataPackage.interactionPackage.applicationId;
 		dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
-		if (dataPackage.type != InteractionCallbackType::Application_Command_Autocomplete_Result) {
-			co_return Interactions::getInteractionResponseAsync(dataPackage01).get();
+		if (dataPackage.type != interaction_callback_type::Application_Command_Autocomplete_Result) {
+			co_return interactions::getInteractionResponseAsync(dataPackage01).get();
 		} else {
-			co_return MessageData{};
+			co_return message_data{};
 		}
 	}
 
-	MessageData Interactions::getInteractionResponse(GetInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Interaction_Response };
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
+	message_data interactions::getInteractionResponse(get_interaction_response_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Interaction_Response };
+		workload.workloadClass = discord_core_internal::https_workload_class::Get;
 		workload.relativePath  = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
-		workload.callStack	   = "Interactions::getInteractionResponseAsync()";
-		MessageData returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		workload.callStack	   = "interactions::getInteractionResponseAsync()";
+		message_data returnData{};
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		return returnData;
 	}
 
 
-	CoRoutine<MessageData> Interactions::getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Interaction_Response };
-		co_await NewThreadAwaitable<MessageData>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
+	co_routine<message_data> interactions::getInteractionResponseAsync(get_interaction_response_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Interaction_Response };
+		co_await newThreadAwaitable<message_data>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Get;
 		workload.relativePath  = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
-		workload.callStack	   = "Interactions::getInteractionResponseAsync()";
-		MessageData returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		workload.callStack	   = "interactions::getInteractionResponseAsync()";
+		message_data returnData{};
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<MessageData> Interactions::editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Interaction_Response };
-		co_await NewThreadAwaitable<MessageData>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
+	co_routine<message_data> interactions::editInteractionResponseAsync(edit_interaction_response_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Interaction_Response };
+		co_await newThreadAwaitable<message_data>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.files.size() > 0) {
-			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.payloadType = discord_core_internal::payload_type::Multipart_Form;
 			parser.serializeJson<true>(dataPackage, workload.content);
 		} else {
 			parser.serializeJson<true>(dataPackage, workload.content);
 		}
-		workload.callStack = "Interactions::editInteractionResponseAsync()";
-		MessageData returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		workload.callStack = "interactions::editInteractionResponseAsync()";
+		message_data returnData{};
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Interaction_Response };
-		co_await NewThreadAwaitable<void>();
-		std::this_thread::sleep_for(Milliseconds{ dataPackage.timeDelay });
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
+	co_routine<void> interactions::deleteInteractionResponseAsync(delete_interaction_response_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Interaction_Response };
+		co_await newThreadAwaitable<void>();
+		std::this_thread::sleep_for(milliseconds{ dataPackage.timeDelay });
+		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
-		workload.callStack	   = "Interactions::deleteInteractionResponseAsync()";
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
+		workload.callStack	   = "interactions::deleteInteractionResponseAsync()";
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
-	CoRoutine<MessageData> Interactions::createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Followup_Message };
-		co_await NewThreadAwaitable<MessageData>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
+	co_routine<message_data> interactions::createFollowUpMessageAsync(create_follow_up_message_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Followup_Message };
+		co_await newThreadAwaitable<message_data>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.files.size() > 0) {
-			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.payloadType = discord_core_internal::payload_type::Multipart_Form;
 			parser.serializeJson<true>(dataPackage, workload.content);
 		} else {
 			parser.serializeJson<true>(dataPackage, workload.content);
 		}
-		workload.callStack = "Interactions::createFollowUpMessageAsync()";
-		MessageData returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		workload.callStack = "interactions::createFollowUpMessageAsync()";
+		message_data returnData{};
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<MessageData> Interactions::getFollowUpMessageAsync(GetFollowUpMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Followup_Message };
-		co_await NewThreadAwaitable<MessageData>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
+	co_routine<message_data> interactions::getFollowUpMessageAsync(get_follow_up_message_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Followup_Message };
+		co_await newThreadAwaitable<message_data>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Get;
 		workload.relativePath  = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
-		workload.callStack	   = "Interactions::getFollowUpMessageAsync()";
-		MessageData returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		workload.callStack	   = "interactions::getFollowUpMessageAsync()";
+		message_data returnData{};
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<MessageData> Interactions::editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Followup_Message };
-		co_await NewThreadAwaitable<MessageData>();
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
+	co_routine<message_data> interactions::editFollowUpMessageAsync(edit_follow_up_message_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Followup_Message };
+		co_await newThreadAwaitable<message_data>();
+		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
 			dataPackage.messagePackage.messageId;
 		if (dataPackage.files.size() > 0) {
-			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.payloadType = discord_core_internal::payload_type::Multipart_Form;
 			parser.serializeJson<true>(dataPackage, workload.content);
 		} else {
 			parser.serializeJson<true>(dataPackage, workload.content);
 		}
-		workload.callStack = "Interactions::editFollowUpMessageAsync()";
-		MessageData returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		workload.callStack = "interactions::editFollowUpMessageAsync()";
+		message_data returnData{};
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Followup_Message };
-		co_await NewThreadAwaitable<void>();
-		std::this_thread::sleep_for(Milliseconds{ dataPackage.timeDelay });
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
+	co_routine<void> interactions::deleteFollowUpMessageAsync(delete_follow_up_message_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Followup_Message };
+		co_await newThreadAwaitable<void>();
+		std::this_thread::sleep_for(milliseconds{ dataPackage.timeDelay });
+		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
 			dataPackage.messagePackage.messageId;
-		workload.callStack = "Interactions::deleteFollowUpMessageToBeWrappe()";
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
+		workload.callStack = "interactions::deleteFollowUpMessageToBeWrappe()";
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
-	MessageData Interactions::createInteractionResponse(CreateInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Interaction_Response };
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
+	message_data interactions::createInteractionResponse(create_interaction_response_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Interaction_Response };
+		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.data.files.size() > 0) {
-			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.payloadType = discord_core_internal::payload_type::Multipart_Form;
 			parser.serializeJson<true>(dataPackage, workload.content);
 		} else {
 			parser.serializeJson<true>(dataPackage, workload.content);
 		}
-		workload.callStack = "Interactions::createInteractionResponseAsync()";
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
-		GetInteractionResponseData dataPackage01{};
+		workload.callStack = "interactions::createInteractionResponseAsync()";
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload));
+		get_interaction_response_data dataPackage01{};
 		dataPackage01.applicationId	   = dataPackage.interactionPackage.applicationId;
 		dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
-		if (dataPackage.type != InteractionCallbackType::Application_Command_Autocomplete_Result) {
-			return Interactions::getInteractionResponse(dataPackage01);
+		if (dataPackage.type != interaction_callback_type::Application_Command_Autocomplete_Result) {
+			return interactions::getInteractionResponse(dataPackage01);
 		} else {
 			return {};
 		}
 	}
 
-	MessageData Interactions::editInteractionResponse(EditInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Interaction_Response };
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
+	message_data interactions::editInteractionResponse(edit_interaction_response_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Interaction_Response };
+		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.files.size() > 0) {
-			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.payloadType = discord_core_internal::payload_type::Multipart_Form;
 			parser.serializeJson<true>(dataPackage, workload.content);
 		} else {
 			parser.serializeJson<true>(dataPackage, workload.content);
 		}
-		workload.callStack = "Interactions::editInteractionResponseAsync()";
-		MessageData returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		workload.callStack = "interactions::editInteractionResponseAsync()";
+		message_data returnData{};
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		return returnData;
 	}
 
-	MessageData Interactions::createFollowUpMessage(CreateFollowUpMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Followup_Message };
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
+	message_data interactions::createFollowUpMessage(create_follow_up_message_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Followup_Message };
+		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
 		dataPackage.generateExcludedKeys();
 		if (dataPackage.files.size() > 0) {
-			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.payloadType = discord_core_internal::payload_type::Multipart_Form;
 			parser.serializeJson<true>(dataPackage, workload.content);
 		} else {
 			parser.serializeJson<true>(dataPackage, workload.content);
 		}
-		workload.callStack = "Interactions::createFollowUpMessageAsync()";
-		MessageData returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		workload.callStack = "interactions::createFollowUpMessageAsync()";
+		message_data returnData{};
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		return returnData;
 	}
 
-	MessageData Interactions::editFollowUpMessage(EditFollowUpMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Followup_Message };
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
+	message_data interactions::editFollowUpMessage(edit_follow_up_message_data dataPackage) {
+		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Followup_Message };
+		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
 			dataPackage.messagePackage.messageId;
 		if (dataPackage.files.size() > 0) {
-			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.payloadType = discord_core_internal::payload_type::Multipart_Form;
 			parser.serializeJson<true>(dataPackage, workload.content);
 		} else {
 			parser.serializeJson<true>(dataPackage, workload.content);
 		}
-		workload.callStack = "Interactions::editFollowUpMessageAsync()";
-		MessageData returnData{};
-		Interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		workload.callStack = "interactions::editFollowUpMessageAsync()";
+		message_data returnData{};
+		interactions::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		return returnData;
 	}
 
-	SelectMenuCollector::SelectMenuCollector(InputEventData& dataPackage) {
+	select_menu_collector::select_menu_collector(input_event_data& dataPackage) {
 		channelId		 = dataPackage.getInteractionData().channelId;
 		messageId		 = dataPackage.getMessageData().id;
 		*interactionData = dataPackage.getInteractionData();
 		buffersMapKey	 = channelId.operator jsonifier::string() + messageId.operator jsonifier::string();
 	}
 
-	CoRoutine<jsonifier::vector<SelectMenuResponseData>, false> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, uint32_t maxWaitTimeInMsNew,
-		uint32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
-		co_await NewThreadAwaitable<jsonifier::vector<SelectMenuResponseData>, false>();
-		SelectMenuCollector::selectMenuInteractionBuffersMap[buffersMapKey] = &selectMenuIncomingInteractionBuffer;
+	co_routine<jsonifier::vector<select_menu_response_data>, false> select_menu_collector::collectSelectMenuData(bool getSelectMenuDataForAllNew, uint32_t maxWaitTimeInMsNew,
+		uint32_t maxCollectedSelectMenuCountNew, create_interaction_response_data errorMessageDataNew, snowflake targetUser) {
+		co_await newThreadAwaitable<jsonifier::vector<select_menu_response_data>, false>();
+		select_menu_collector::selectMenuInteractionBuffersMap[buffersMapKey] = &selectMenuIncomingInteractionBuffer;
 		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
 			getSelectMenuDataForAll = true;
 		} else {
@@ -685,27 +685,27 @@ namespace DiscordCoreAPI {
 		co_return std::move(responseVector);
 	}
 
-	void SelectMenuCollector::collectSelectMenuData(std::function<bool(InteractionData)> triggerFunctionNew,
-		DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew) {
+	void select_menu_collector::collectSelectMenuData(std::function<bool(interaction_data)> triggerFunctionNew,
+		discord_core_internal::trigger_event_delegate<void, interaction_data> functionNew) {
 		functionNew.setTestFunction(triggerFunctionNew);
-		SelectMenuCollector::selectMenuInteractionEventsMap.add(std::move(functionNew));
+		select_menu_collector::selectMenuInteractionEventsMap.add(std::move(functionNew));
 	}
 
-	SelectMenuCollector::~SelectMenuCollector() {
-		if (SelectMenuCollector::selectMenuInteractionBuffersMap.contains(buffersMapKey)) {
-			SelectMenuCollector::selectMenuInteractionBuffersMap.erase(buffersMapKey);
+	select_menu_collector::~select_menu_collector() {
+		if (select_menu_collector::selectMenuInteractionBuffersMap.contains(buffersMapKey)) {
+			select_menu_collector::selectMenuInteractionBuffersMap.erase(buffersMapKey);
 		}
 	}
 
-	void SelectMenuCollector::run() {
-		StopWatch<Milliseconds> stopWatch{ Milliseconds{ maxTimeInMs } };
+	void select_menu_collector::run() {
+		stop_watch<milliseconds> stopWatch{ milliseconds{ maxTimeInMs } };
 		stopWatch.reset();
 		while (!doWeQuit && !stopWatch.hasTimeElapsed()) {
 			if (!getSelectMenuDataForAll) {
-				auto selectMenuInteractionData = makeUnique<InteractionData>();
+				auto selectMenuInteractionData = makeUnique<interaction_data>();
 				if (waitForTimeToPass(selectMenuIncomingInteractionBuffer, *selectMenuInteractionData.get(), maxTimeInMs)) {
 					selectMenuId			   = "empty";
-					auto response			   = makeUnique<SelectMenuResponseData>();
+					auto response			   = makeUnique<select_menu_response_data>();
 					response->selectionId	   = selectMenuId;
 					response->channelId		   = channelId;
 					response->messageId		   = messageId;
@@ -721,12 +721,12 @@ namespace DiscordCoreAPI {
 					errorMessageData.interactionPackage.interactionToken = selectMenuInteractionData->token;
 					errorMessageData.messagePackage.messageId			 = selectMenuInteractionData->message.id;
 					errorMessageData.messagePackage.channelId			 = selectMenuInteractionData->message.channelId;
-					errorMessageData.type								 = InteractionCallbackType::Channel_Message_With_Source;
-					Interactions::createInteractionResponseAsync(errorMessageData).get();
+					errorMessageData.type								 = interaction_callback_type::Channel_Message_With_Source;
+					interactions::createInteractionResponseAsync(errorMessageData).get();
 				} else {
 					*interactionData		   = *selectMenuInteractionData;
 					selectMenuId			   = selectMenuInteractionData->data.customId;
-					auto response			   = makeUnique<SelectMenuResponseData>();
+					auto response			   = makeUnique<select_menu_response_data>();
 					response->selectionId	   = selectMenuId;
 					response->channelId		   = channelId;
 					response->messageId		   = messageId;
@@ -737,9 +737,9 @@ namespace DiscordCoreAPI {
 					++currentCollectedSelectMenuCount;
 					stopWatch.reset();
 					if (maxCollectedSelectMenuCount > 1 && currentCollectedSelectMenuCount < maxCollectedSelectMenuCount - 1) {
-						auto createResponseData	 = makeUnique<CreateInteractionResponseData>(*selectMenuInteractionData);
-						createResponseData->type = InteractionCallbackType::Deferred_Update_Message;
-						Interactions::createInteractionResponseAsync(*createResponseData).get();
+						auto createResponseData	 = makeUnique<create_interaction_response_data>(*selectMenuInteractionData);
+						createResponseData->type = interaction_callback_type::Deferred_Update_Message;
+						interactions::createInteractionResponseAsync(*createResponseData).get();
 					}
 					if (currentCollectedSelectMenuCount >= maxCollectedSelectMenuCount) {
 						for (auto& value: responseVector) {
@@ -749,10 +749,10 @@ namespace DiscordCoreAPI {
 					}
 				}
 			} else {
-				auto selectMenuInteractionData = makeUnique<InteractionData>();
+				auto selectMenuInteractionData = makeUnique<interaction_data>();
 				if (waitForTimeToPass(selectMenuIncomingInteractionBuffer, *selectMenuInteractionData.get(), maxTimeInMs)) {
 					selectMenuId			   = "empty";
-					auto response			   = makeUnique<SelectMenuResponseData>();
+					auto response			   = makeUnique<select_menu_response_data>();
 					response->selectionId	   = selectMenuId;
 					response->channelId		   = channelId;
 					response->messageId		   = messageId;
@@ -764,7 +764,7 @@ namespace DiscordCoreAPI {
 				}
 				*interactionData		   = *selectMenuInteractionData;
 				selectMenuId			   = selectMenuInteractionData->data.customId;
-				auto response			   = makeUnique<SelectMenuResponseData>();
+				auto response			   = makeUnique<select_menu_response_data>();
 				response->selectionId	   = selectMenuId;
 				response->channelId		   = channelId;
 				response->messageId		   = messageId;
@@ -775,9 +775,9 @@ namespace DiscordCoreAPI {
 				++currentCollectedSelectMenuCount;
 				stopWatch.reset();
 				if (maxCollectedSelectMenuCount > 1 && currentCollectedSelectMenuCount < maxCollectedSelectMenuCount - 1) {
-					auto createResponseData	 = makeUnique<CreateInteractionResponseData>(*selectMenuInteractionData);
-					createResponseData->type = InteractionCallbackType::Deferred_Update_Message;
-					Interactions::createInteractionResponseAsync(*createResponseData).get();
+					auto createResponseData	 = makeUnique<create_interaction_response_data>(*selectMenuInteractionData);
+					createResponseData->type = interaction_callback_type::Deferred_Update_Message;
+					interactions::createInteractionResponseAsync(*createResponseData).get();
 				}
 				if (currentCollectedSelectMenuCount >= maxCollectedSelectMenuCount) {
 					doWeQuit = true;
@@ -788,23 +788,23 @@ namespace DiscordCoreAPI {
 			}
 			std::this_thread::sleep_for(1ms);
 		}
-		SelectMenuCollector::selectMenuInteractionBuffersMap.erase(buffersMapKey);
+		select_menu_collector::selectMenuInteractionBuffersMap.erase(buffersMapKey);
 	}
 
-	ButtonCollector::ButtonCollector(InputEventData& dataPackage) {
-		channelId													= dataPackage.getInteractionData().channelId;
-		messageId													= dataPackage.getMessageData().id;
-		*interactionData											= dataPackage.getInteractionData();
-		buffersMapKey												= channelId.operator jsonifier::string() + messageId.operator jsonifier::string();
-		ButtonCollector::buttonInteractionBuffersMap[buffersMapKey] = &buttonIncomingInteractionBuffer;
+	button_collector::button_collector(input_event_data& dataPackage) {
+		channelId													 = dataPackage.getInteractionData().channelId;
+		messageId													 = dataPackage.getMessageData().id;
+		*interactionData											 = dataPackage.getInteractionData();
+		buffersMapKey												 = channelId.operator jsonifier::string() + messageId.operator jsonifier::string();
+		button_collector::buttonInteractionBuffersMap[buffersMapKey] = &buttonIncomingInteractionBuffer;
 	}
 
-	CoRoutine<jsonifier::vector<ButtonResponseData>, false> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, uint32_t maxWaitTimeInMsNew,
-		uint32_t maxNumberOfPressesNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
-		co_await NewThreadAwaitable<jsonifier::vector<ButtonResponseData>, false>();
+	co_routine<jsonifier::vector<button_response_data>, false> button_collector::collectButtonData(bool getButtonDataForAllNew, uint32_t maxWaitTimeInMsNew,
+		uint32_t maxNumberOfPressesNew, create_interaction_response_data errorMessageDataNew, snowflake targetUser) {
+		co_await newThreadAwaitable<jsonifier::vector<button_response_data>, false>();
 		if (targetUser == 0 && !getButtonDataForAllNew) {
-			throw DCAException{ "ButtonCollector::collectButtonData(), You've failed to "
-								"properly set the collectButtonData() parameters!" };
+			throw dca_exception{ "button_collector::collectButtonData(), you've failed to "
+								 "properly set the collectButtonData() parameters!" };
 		}
 		if (targetUser != 0) {
 			userId = targetUser;
@@ -817,26 +817,27 @@ namespace DiscordCoreAPI {
 		co_return std::move(responseVector);
 	}
 
-	void ButtonCollector::collectButtonData(std::function<bool(InteractionData)> triggerFunctionNew, DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew) {
+	void button_collector::collectButtonData(std::function<bool(interaction_data)> triggerFunctionNew,
+		discord_core_internal::trigger_event_delegate<void, interaction_data> functionNew) {
 		functionNew.setTestFunction(triggerFunctionNew);
-		ButtonCollector::buttonInteractionEventsMap.add(std::move(functionNew));
+		button_collector::buttonInteractionEventsMap.add(std::move(functionNew));
 	}
 
-	ButtonCollector::~ButtonCollector() {
-		if (ButtonCollector::buttonInteractionBuffersMap.contains(buffersMapKey)) {
-			ButtonCollector::buttonInteractionBuffersMap.erase(buffersMapKey);
+	button_collector::~button_collector() {
+		if (button_collector::buttonInteractionBuffersMap.contains(buffersMapKey)) {
+			button_collector::buttonInteractionBuffersMap.erase(buffersMapKey);
 		}
 	}
 
-	void ButtonCollector::run() {
-		StopWatch<Milliseconds> stopWatch{ Milliseconds{ maxTimeInMs } };
+	void button_collector::run() {
+		stop_watch<milliseconds> stopWatch{ milliseconds{ maxTimeInMs } };
 		stopWatch.reset();
 		while (!doWeQuit && !stopWatch.hasTimeElapsed()) {
 			if (!getButtonDataForAll) {
-				auto buttonInteractionData = makeUnique<InteractionData>();
+				auto buttonInteractionData = makeUnique<interaction_data>();
 				if (waitForTimeToPass(buttonIncomingInteractionBuffer, *buttonInteractionData.get(), maxTimeInMs)) {
 					buttonId				   = "empty";
-					auto response			   = makeUnique<ButtonResponseData>();
+					auto response			   = makeUnique<button_response_data>();
 					response->buttonId		   = buttonId;
 					response->channelId		   = channelId;
 					response->messageId		   = messageId;
@@ -851,12 +852,12 @@ namespace DiscordCoreAPI {
 					errorMessageData.interactionPackage.interactionToken = buttonInteractionData->token;
 					errorMessageData.messagePackage.messageId			 = buttonInteractionData->message.id;
 					errorMessageData.messagePackage.channelId			 = buttonInteractionData->message.channelId;
-					errorMessageData.type								 = InteractionCallbackType::Channel_Message_With_Source;
-					Interactions::createInteractionResponseAsync(errorMessageData).get();
+					errorMessageData.type								 = interaction_callback_type::Channel_Message_With_Source;
+					interactions::createInteractionResponseAsync(errorMessageData).get();
 				} else {
 					*interactionData		   = *buttonInteractionData;
 					buttonId				   = buttonInteractionData->data.customId;
-					auto response			   = makeUnique<ButtonResponseData>();
+					auto response			   = makeUnique<button_response_data>();
 					response->buttonId		   = buttonId;
 					response->channelId		   = channelId;
 					response->messageId		   = messageId;
@@ -866,9 +867,9 @@ namespace DiscordCoreAPI {
 					++currentCollectedButtonCount;
 					stopWatch.reset();
 					if (maxCollectedButtonCount > 1 && currentCollectedButtonCount < maxCollectedButtonCount) {
-						auto createResponseData	 = makeUnique<CreateInteractionResponseData>(*buttonInteractionData);
-						createResponseData->type = InteractionCallbackType::Deferred_Update_Message;
-						Interactions::createInteractionResponseAsync(*createResponseData).get();
+						auto createResponseData	 = makeUnique<create_interaction_response_data>(*buttonInteractionData);
+						createResponseData->type = interaction_callback_type::Deferred_Update_Message;
+						interactions::createInteractionResponseAsync(*createResponseData).get();
 					}
 					if (currentCollectedButtonCount >= maxCollectedButtonCount) {
 						for (auto& value: responseVector) {
@@ -878,10 +879,10 @@ namespace DiscordCoreAPI {
 					}
 				}
 			} else {
-				auto buttonInteractionData = makeUnique<InteractionData>();
+				auto buttonInteractionData = makeUnique<interaction_data>();
 				if (waitForTimeToPass(buttonIncomingInteractionBuffer, *buttonInteractionData.get(), maxTimeInMs)) {
 					buttonId				   = "empty";
-					auto response			   = makeUnique<ButtonResponseData>();
+					auto response			   = makeUnique<button_response_data>();
 					response->buttonId		   = buttonId;
 					response->channelId		   = channelId;
 					response->messageId		   = messageId;
@@ -892,7 +893,7 @@ namespace DiscordCoreAPI {
 				}
 				*interactionData		   = *buttonInteractionData;
 				buttonId				   = buttonInteractionData->data.customId;
-				auto response			   = makeUnique<ButtonResponseData>();
+				auto response			   = makeUnique<button_response_data>();
 				response->buttonId		   = buttonId;
 				response->channelId		   = channelId;
 				response->messageId		   = messageId;
@@ -902,9 +903,9 @@ namespace DiscordCoreAPI {
 				++currentCollectedButtonCount;
 				stopWatch.reset();
 				if (maxCollectedButtonCount > 1 && currentCollectedButtonCount < maxCollectedButtonCount) {
-					auto createResponseData	 = makeUnique<CreateInteractionResponseData>(*buttonInteractionData);
-					createResponseData->type = InteractionCallbackType::Deferred_Update_Message;
-					Interactions::createInteractionResponseAsync(*createResponseData).get();
+					auto createResponseData	 = makeUnique<create_interaction_response_data>(*buttonInteractionData);
+					createResponseData->type = interaction_callback_type::Deferred_Update_Message;
+					interactions::createInteractionResponseAsync(*createResponseData).get();
 				}
 				if (currentCollectedButtonCount >= maxCollectedButtonCount) {
 					for (auto& value: responseVector) {
@@ -915,37 +916,38 @@ namespace DiscordCoreAPI {
 			}
 			std::this_thread::sleep_for(1ms);
 		}
-		ButtonCollector::buttonInteractionBuffersMap.erase(buffersMapKey);
+		button_collector::buttonInteractionBuffersMap.erase(buffersMapKey);
 	}
 
-	ModalCollector::ModalCollector(InputEventData& dataPackage) {
-		channelId											  = dataPackage.getInteractionData().channelId;
-		ModalCollector::modalInteractionBuffersMap[channelId] = &modalIncomingInteractionBuffer;
+	modal_collector::modal_collector(input_event_data& dataPackage) {
+		channelId											   = dataPackage.getInteractionData().channelId;
+		modal_collector::modalInteractionBuffersMap[channelId.operator jsonifier::string()] = &modalIncomingInteractionBuffer;
 	}
 
-	CoRoutine<ModalResponseData, false> ModalCollector::collectModalData(uint32_t maxWaitTimeInMsNew) {
-		co_await NewThreadAwaitable<ModalResponseData, false>();
+	co_routine<modal_response_data, false> modal_collector::collectModalData(uint32_t maxWaitTimeInMsNew) {
+		co_await newThreadAwaitable<modal_response_data, false>();
 		maxTimeInMs = maxWaitTimeInMsNew;
 		run();
 		co_return std::move(responseData);
 	}
 
-	void ModalCollector::collectModalData(std::function<bool(InteractionData)> triggerFunctionNew, DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew) {
+	void modal_collector::collectModalData(std::function<bool(interaction_data)> triggerFunctionNew,
+		discord_core_internal::trigger_event_delegate<void, interaction_data> functionNew) {
 		functionNew.setTestFunction(triggerFunctionNew);
-		ModalCollector::modalInteractionEventsMap.add(std::move(functionNew));
+		modal_collector::modalInteractionEventsMap.add(std::move(functionNew));
 	}
 
-	ModalCollector::~ModalCollector() {
-		if (ModalCollector::modalInteractionBuffersMap.contains(channelId)) {
-			ModalCollector::modalInteractionBuffersMap.erase(channelId);
+	modal_collector::~modal_collector() {
+		if (modal_collector::modalInteractionBuffersMap.contains(channelId.operator jsonifier::string())) {
+			modal_collector::modalInteractionBuffersMap.erase(channelId.operator jsonifier::string());
 		}
 	}
 
-	void ModalCollector::run() {
-		StopWatch<Milliseconds> stopWatch{ Milliseconds{ maxTimeInMs } };
+	void modal_collector::run() {
+		stop_watch<milliseconds> stopWatch{ milliseconds{ maxTimeInMs } };
 		stopWatch.reset();
 		while (!doWeQuit && !stopWatch.hasTimeElapsed()) {
-			auto buttonInteractionData = makeUnique<InteractionData>();
+			auto buttonInteractionData = makeUnique<interaction_data>();
 			if (waitForTimeToPass(modalIncomingInteractionBuffer, *buttonInteractionData.get(), maxTimeInMs)) {
 				*responseData.interactionData = *buttonInteractionData;
 				responseData.channelId		  = buttonInteractionData->channelId;
@@ -965,14 +967,14 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		ModalCollector::modalInteractionBuffersMap.erase(channelId);
+		modal_collector::modalInteractionBuffersMap.erase(channelId.operator jsonifier::string());
 	}
 
-	UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBuffersMap{};
-	UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBuffersMap{};
-	UnorderedMap<jsonifier::string, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBuffersMap{};
-	DiscordCoreInternal::TriggerEvent<void, InteractionData> SelectMenuCollector::selectMenuInteractionEventsMap{};
-	DiscordCoreInternal::TriggerEvent<void, InteractionData> ButtonCollector::buttonInteractionEventsMap{};
-	DiscordCoreInternal::TriggerEvent<void, InteractionData> ModalCollector::modalInteractionEventsMap{};
-	DiscordCoreInternal::HttpsClient* Interactions::httpsClient{};
+	unordered_map<jsonifier::string, unbounded_message_block<interaction_data>*> select_menu_collector::selectMenuInteractionBuffersMap{};
+	unordered_map<jsonifier::string, unbounded_message_block<interaction_data>*> button_collector::buttonInteractionBuffersMap{};
+	unordered_map<jsonifier::string, unbounded_message_block<interaction_data>*> modal_collector::modalInteractionBuffersMap{};
+	discord_core_internal::trigger_event<void, interaction_data> select_menu_collector::selectMenuInteractionEventsMap{};
+	discord_core_internal::trigger_event<void, interaction_data> button_collector::buttonInteractionEventsMap{};
+	discord_core_internal::trigger_event<void, interaction_data> modal_collector::modalInteractionEventsMap{};
+	discord_core_internal::https_client* interactions::httpsClient{};
 };

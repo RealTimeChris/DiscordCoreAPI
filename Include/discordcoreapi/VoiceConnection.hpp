@@ -27,77 +27,76 @@
 /// Jul 15, 2021
 /// https://discordcoreapi.com
 /// \file VoiceConnection.hpp
-
 #pragma once
 
 #include <discordcoreapi/Utilities/UDPConnection.hpp>
 #include <discordcoreapi/Utilities/AudioEncoder.hpp>
 #include <discordcoreapi/Utilities/AudioDecoder.hpp>
 #include <discordcoreapi/Utilities/RingBuffer.hpp>
-#include <discordcoreapi/Utilities/ISADetection.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/WebSocketClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <sodium.h>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	/// @brief Voice Websocket close codes.
-	class VoiceWebSocketClose {
+	/// @brief Voice websocket close codes.
+	class voice_websocket_close {
 	  public:
-		/// @brief Voice Websocket close codes.
-		enum class VoiceWebSocketCloseCode : uint16_t {
-			Unset					= 1 << 0,///< Unset.
+		/// @brief Voice websocket close codes.
+		enum class voice_websocket_close_code : uint16_t {
+			unset					= 1 << 0,///< Unset.
 			Normal_Close			= 1 << 1,///< Normal close.
 			Unknown_Opcode			= 1 << 2,///< You sent an invalid opcode.
-			Failed_To_Decode		= 1 << 3,///< You sent an invalid payload in your identifying to the Gateway.
-			Not_Authenticated		= 1 << 4,///< You sent a payload before identifying with the Gateway.
-			Authentication_Failed	= 1 << 5,///<	The token you sent in your identify payload is incorrect.
-			Already_Authenticated	= 1 << 6,///<	You sent more than one identify payload. Stahp.
+			Failed_To_Decode		= 1 << 3,///< You sent an invalid payload in your identifying to the gateway.
+			Not_Authenticated		= 1 << 4,///< You sent a payload before identifying with the gateway.
+			Authentication_Failed	= 1 << 5,///<	the token you sent in your identify payload is incorrect.
+			Already_Authenticated	= 1 << 6,///<	you sent more than one identify payload. stahp.
 			Session_No_Longer_Valid = 1 << 7,///< Your session is no longer valid.
 			Session_Timeout			= 1 << 8,///< Your session has timed out.
 			Server_Not_Found		= 1 << 9,///< We can't find the server you're trying to connect to.
 			Unknown_Protocol		= 1 << 10,///< We didn't recognize the protocol you sent.
-			Disconnected			= 1 << 11,///< ChannelData was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not reconnect.
-			Voice_Server_Crashed	= 1 << 12,///< The server crashed. Our bad! Try resuming.
+			disconnected			= 1 << 11,///< channel_data was deleted, you were kicked, voice server changed, or the main gateway session was dropped. should not reconnect.
+			Voice_Server_Crashed	= 1 << 12,///< The server crashed. our bad! try resuming.
 			Unknown_Encryption_Mode = 1 << 13///< We didn't recognize your encryption.
 		};
 
-		inline static UnorderedMap<int32_t, VoiceWebSocketCloseCode> mappingValues{ { 0, VoiceWebSocketCloseCode::Unset }, { 1000, VoiceWebSocketCloseCode::Normal_Close },
-			{ 4001, VoiceWebSocketCloseCode::Unknown_Opcode }, { 4002, VoiceWebSocketCloseCode::Failed_To_Decode }, { 4003, VoiceWebSocketCloseCode::Not_Authenticated },
-			{ 4004, VoiceWebSocketCloseCode::Authentication_Failed }, { 4005, VoiceWebSocketCloseCode::Already_Authenticated },
-			{ 4006, VoiceWebSocketCloseCode::Session_No_Longer_Valid }, { 4009, VoiceWebSocketCloseCode::Session_Timeout }, { 4011, VoiceWebSocketCloseCode::Server_Not_Found },
-			{ 4012, VoiceWebSocketCloseCode::Unknown_Protocol }, { 4014, VoiceWebSocketCloseCode::Disconnected }, { 4015, VoiceWebSocketCloseCode::Voice_Server_Crashed },
-			{ 4016, VoiceWebSocketCloseCode::Unknown_Encryption_Mode } };
+		inline static unordered_map<int32_t, voice_websocket_close_code> mappingValues{ { 0, voice_websocket_close_code::unset },
+			{ 1000, voice_websocket_close_code::Normal_Close }, { 4001, voice_websocket_close_code::Unknown_Opcode }, { 4002, voice_websocket_close_code::Failed_To_Decode },
+			{ 4003, voice_websocket_close_code::Not_Authenticated }, { 4004, voice_websocket_close_code::Authentication_Failed },
+			{ 4005, voice_websocket_close_code::Already_Authenticated }, { 4006, voice_websocket_close_code::Session_No_Longer_Valid },
+			{ 4009, voice_websocket_close_code::Session_Timeout }, { 4011, voice_websocket_close_code::Server_Not_Found }, { 4012, voice_websocket_close_code::Unknown_Protocol },
+			{ 4014, voice_websocket_close_code::disconnected }, { 4015, voice_websocket_close_code::Voice_Server_Crashed },
+			{ 4016, voice_websocket_close_code::Unknown_Encryption_Mode } };
 
-		inline static UnorderedMap<VoiceWebSocketCloseCode, jsonifier::string_view> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." },
-			{ VoiceWebSocketCloseCode::Normal_Close, "Normal close." }, { VoiceWebSocketCloseCode::Unknown_Opcode, "You sent an invalid opcode." },
-			{ VoiceWebSocketCloseCode::Failed_To_Decode, "You sent an invalid payload in your identifying to the Gateway." },
-			{ VoiceWebSocketCloseCode::Not_Authenticated, "You sent a payload before identifying with the Gateway." },
-			{ VoiceWebSocketCloseCode::Authentication_Failed, "The token you sent in your identify payload is incorrect." },
-			{ VoiceWebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Stahp." },
-			{ VoiceWebSocketCloseCode::Session_No_Longer_Valid, "Your session is no longer valid." }, { VoiceWebSocketCloseCode::Session_Timeout, "Your session has timed out." },
-			{ VoiceWebSocketCloseCode::Server_Not_Found, "We can't find the server you're trying to connect to." },
-			{ VoiceWebSocketCloseCode::Unknown_Protocol, "We didn't recognize the protocol you sent." },
-			{ VoiceWebSocketCloseCode::Disconnected,
-				"ChannelData was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not "
+		inline static unordered_map<voice_websocket_close_code, jsonifier::string_view> outputErrorValues{ { voice_websocket_close_code::unset, "unset." },
+			{ voice_websocket_close_code::Normal_Close, "normal close." }, { voice_websocket_close_code::Unknown_Opcode, "you sent an invalid opcode." },
+			{ voice_websocket_close_code::Failed_To_Decode, "you sent an invalid payload in your identifying to the gateway." },
+			{ voice_websocket_close_code::Not_Authenticated, "you sent a payload before identifying with the gateway." },
+			{ voice_websocket_close_code::Authentication_Failed, "the token you sent in your identify payload is incorrect." },
+			{ voice_websocket_close_code::Already_Authenticated, "you sent more than one identify payload. stahp." },
+			{ voice_websocket_close_code::Session_No_Longer_Valid, "your session is no longer valid." },
+			{ voice_websocket_close_code::Session_Timeout, "your session has timed out." },
+			{ voice_websocket_close_code::Server_Not_Found, "we can't find the server you're trying to connect to." },
+			{ voice_websocket_close_code::Unknown_Protocol, "we didn't recognize the protocol you sent." },
+			{ voice_websocket_close_code::disconnected,
+				"channel_data was deleted, you were kicked, voice server changed, or the main gateway session was dropped. should not "
 				"reconnect." },
-			{ VoiceWebSocketCloseCode::Voice_Server_Crashed, "The server crashed. Our bad! Try resuming." },
-			{ VoiceWebSocketCloseCode::Unknown_Encryption_Mode, "We didn't recognize your encryption." } };
+			{ voice_websocket_close_code::Voice_Server_Crashed, "the server crashed. our bad! try resuming." },
+			{ voice_websocket_close_code::Unknown_Encryption_Mode, "we didn't recognize your encryption." } };
+		voice_websocket_close_code value{};
 
-		VoiceWebSocketCloseCode value{};
-
-		inline VoiceWebSocketClose& operator=(uint16_t valueNew) {
-			value = static_cast<VoiceWebSocketCloseCode>(valueNew);
+		inline voice_websocket_close& operator=(uint16_t valueNew) {
+			value = static_cast<voice_websocket_close_code>(valueNew);
 			return *this;
 		};
 
-		inline VoiceWebSocketClose(uint16_t value) {
+		inline voice_websocket_close(uint16_t value) {
 			*this = value;
 		};
 
 		inline operator jsonifier::string_view() {
-			return VoiceWebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(value)]];
+			return voice_websocket_close::outputErrorValues[mappingValues[static_cast<uint16_t>(value)]];
 		}
 
 		inline operator bool() {
@@ -105,61 +104,61 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	struct VoiceSocketReadyData {
+	struct voice_socket_ready_data {
 		jsonifier::vector<jsonifier::string> modes{};
 		jsonifier::string ip{};
 		uint16_t port{};
 		uint32_t ssrc{};
 	};
 
-	struct VoiceSessionDescriptionData {
+	struct voice_session_description_data {
 		jsonifier::vector<uint8_t> secretKey{};
 	};
 
-	struct SpeakingData {
-		Snowflake userId{};
+	struct speaking_data {
+		snowflake userId{};
 		uint32_t ssrc{};
 	};
 
-	struct VoiceConnectionHelloData {
+	struct voice_connection_hello_data {
 		uint32_t heartBeatInterval{};
 	};
 
-	struct VoiceUserDisconnectData {
-		Snowflake userId{};
+	struct voice_user_disconnect_data {
+		snowflake userId{};
 	};
 
-	struct DiscordCoreAPI_Dll VoiceUser {
-		VoiceUser() = default;
+	struct DiscordCoreAPI_Dll voice_user {
+		voice_user() = default;
 
-		VoiceUser(Snowflake userId);
+		voice_user(snowflake userId);
 
-		VoiceUser& operator=(VoiceUser&& data) noexcept;
+		voice_user& operator=(voice_user&& data) noexcept;
 
-		VoiceUser& operator=(const VoiceUser&) = delete;
+		voice_user& operator=(const voice_user&) = delete;
 
-		VoiceUser(const VoiceUser&) = delete;
+		voice_user(const voice_user&) = delete;
 
-		DiscordCoreInternal::OpusDecoderWrapper& getDecoder();
+		discord_core_internal::opus_decoder_wrapper& getDecoder();
 
 		jsonifier::string_view_base<uint8_t> extractPayload();
 
 		void insertPayload(jsonifier::string_view_base<uint8_t>);
 
-		Snowflake getUserId();
+		snowflake getUserId();
 
 	  protected:
-		DiscordCoreInternal::RingBuffer<uint8_t, 10> payloads{};
-		DiscordCoreInternal::OpusDecoderWrapper decoder{};
-		Snowflake userId{};
+		discord_core_internal::ring_buffer<uint8_t, 10> payloads{};
+		discord_core_internal::opus_decoder_wrapper decoder{};
+		snowflake userId{};
 	};
 
-	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
-		RTPPacketEncrypter() = default;
+	struct DiscordCoreAPI_Dll rtppacket_encrypter {
+		rtppacket_encrypter() = default;
 
-		RTPPacketEncrypter(uint32_t ssrcNew, const jsonifier::string_base<uint8_t>& keysNew);
+		rtppacket_encrypter(uint32_t ssrcNew, const jsonifier::string_base<uint8_t>& keysNew);
 
-		jsonifier::string_view_base<uint8_t> encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData);
+		jsonifier::string_view_base<uint8_t> encryptPacket(discord_core_internal::encoder_return_data& audioData);
 
 	  protected:
 		jsonifier::string_base<uint8_t> data{};
@@ -169,10 +168,10 @@ namespace DiscordCoreAPI {
 		uint32_t ssrc{};
 	};
 
-	struct DiscordCoreAPI_Dll MovingAverager {
-		MovingAverager(uint64_t collectionCountNew);
+	struct DiscordCoreAPI_Dll moving_averager {
+		moving_averager(uint64_t collectionCountNew);
 
-		MovingAverager operator+=(int64_t value);
+		moving_averager operator+=(int64_t value);
 
 		operator float();
 
@@ -182,48 +181,48 @@ namespace DiscordCoreAPI {
 	};
 
 	/// @brief The various opcodes that could be sent/received by the voice-websocket.
-	enum class VoiceSocketOpCodes {
-		Identify			= 0,///< Begin a voice websocket connection.
+	enum class voice_socket_op_codes {
+		identify			= 0,///< Begin a voice websocket connection.
 		Select_Protocol		= 1,///< Select the voice protocol.
-		Ready_Server		= 2,///< Complete the websocket handshake.
-		Heartbeat			= 3,///< Keep the websocket connection alive.
+		Ready_Server		= 2,///< complete the websocket handshake.
+		heartbeat			= 3,///< Keep the websocket connection alive.
 		Session_Description = 4,///< Describe the session.
-		Speaking			= 5,///< Indicate which users are speaking.
+		speaking			= 5,///< Indicate which users are speaking.
 		Heartbeat_ACK		= 6,///< Sent to acknowledge a received client heartbeat.
-		Resume				= 7,///< Resume a connection.
-		Hello				= 8,///< Time to wait between sending heartbeats in milliseconds.
-		Resumed				= 9,///< Acknowledge a successful session resume.
+		resume				= 7,///< Resume a connection.
+		hello				= 8,///< Time to wait between sending heartbeats in milliseconds.
+		resumed				= 9,///< Acknowledge a successful session resume.
 		Client_Disconnect	= 13,///< A client has disconnected from the voice channel.
 	};
 
-	/// @brief For the various connection states of the VoiceConnection class.
-	enum class VoiceConnectionState : uint8_t {
-		Collecting_Init_Data		   = 0,///< Collecting initialization data.
-		Initializing_WebSocket		   = 1,///< Initializing the WebSocket.
-		Collecting_Hello			   = 2,///< Collecting the client hello.
+	/// @brief For the various connection states of the voice_connection class.
+	enum class voice_connection_state : uint8_t {
+		Collecting_Init_Data		   = 0,///< collecting initialization data.
+		Initializing_WebSocket		   = 1,///< Initializing the websocket.
+		Collecting_Hello			   = 2,///< collecting the client hello.
 		Sending_Identify			   = 3,///< Sending the identify payload.
-		Collecting_Ready			   = 4,///< Collecting the client ready.
-		Initializing_DatagramSocket	   = 5,///< Initializing the datagram udp socket.
+		Collecting_Ready			   = 4,///< collecting the client ready.
+		Initializing_DatagramSocket	   = 5,///< Initializing the datagram udp SOCKET.
 		Sending_Select_Protocol		   = 6,///< Sending the select-protocol payload.
-		Collecting_Session_Description = 7///< Collecting the session-description payload.
+		Collecting_Session_Description = 7///< collecting the session-description payload.
 	};
 
-	/// @brief For the various active states of the VoiceConnection class.
-	enum class VoiceActiveState : int8_t {
-		Connecting = 0,///< Connecting.
-		Playing	   = 1,///< Playing.
-		Stopped	   = 2,///< Stopped.
-		Paused	   = 3,///< Paused.
-		Exiting	   = 4//< Exiting.
+	/// @brief For the various active states of the voice_connection class.
+	enum class voice_active_state : int8_t {
+		connecting = 0,///< connecting.
+		playing	   = 1,///< Playing.
+		stopped	   = 2,///< Stopped.
+		paused	   = 3,///< Paused.
+		exiting	   = 4//< exiting.
 	};
 
-	class DiscordCoreAPI_Dll VoiceConnectionBridge : public DiscordCoreInternal::UDPConnection {
+	class DiscordCoreAPI_Dll voice_connection_bridge : public discord_core_internal::udp_connection {
 	  public:
-		friend class VoiceConnection;
+		friend class voice_connection;
 
-		VoiceConnectionBridge(UnorderedMap<uint64_t, UniquePtr<VoiceUser>>* voiceUsersPtrNew, jsonifier::string_base<uint8_t>& encryptionKeyNew, StreamType streamType,
-			jsonifier::string_view baseUrlNew, const uint16_t portNew, Snowflake guildIdNew,
-			std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* tokenNew);
+		voice_connection_bridge(unordered_map<uint64_t, unique_ptr<voice_user>>* voiceUsersPtrNew, jsonifier::string_base<uint8_t>& encryptionKeyNew, stream_type streamType,
+			jsonifier::string_view baseUrlNew, const uint16_t portNew, snowflake guildIdNew,
+			std::coroutine_handle<discord_core_api::co_routine<void, false>::promise_type>* tokenNew);
 
 		inline void applyGainRamp(int64_t sampleCount);
 
@@ -236,100 +235,98 @@ namespace DiscordCoreAPI {
 		void disconnect() override;
 
 	  protected:
-		std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* token{};
-		UnorderedMap<uint64_t, UniquePtr<VoiceUser>>* voiceUsersPtr{};
+		std::coroutine_handle<discord_core_api::co_routine<void, false>::promise_type>* token{};
+		unordered_map<uint64_t, unique_ptr<voice_user>>* voiceUsersPtr{};
 		jsonifier::string_base<uint8_t> decryptedDataString{};
 		std::array<opus_int16, 23040> downSampledVector{};
 		jsonifier::string_base<uint8_t> encryptionKey{};
 		std::array<opus_int32, 23040> upSampledVector{};
-		DiscordCoreInternal::AudioMixer audioMixer{};
 		jsonifier::vector<uint8_t> resampleVector{};
-		MovingAverager voiceUserCountAverage{ 25 };
-		Snowflake guildId{};
+		moving_averager voiceUserCountAverage{ 25 };
+		snowflake guildId{};
 		float currentGain{};
 		float increment{};
 		float endGain{};
 	};
 
-	class DiscordCoreAPI_Dll VoiceUDPConnection : public DiscordCoreInternal::UDPConnection {
+	class DiscordCoreAPI_Dll voice_udpconnection : public discord_core_internal::udp_connection {
 	  public:
-		VoiceUDPConnection() = default;
+		voice_udpconnection() = default;
 
-		VoiceUDPConnection(jsonifier::string_view baseUrlNew, uint16_t portNew, StreamType streamType, VoiceConnection* ptrNew,
-			std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type>* stopToken);
+		voice_udpconnection(jsonifier::string_view baseUrlNew, uint16_t portNew, stream_type streamType, voice_connection* ptrNew,
+			std::coroutine_handle<discord_core_api::co_routine<void, false>::promise_type>* stopToken);
 
 		void handleAudioBuffer() override;
 
 		void disconnect() override;
 
 	  protected:
-		VoiceConnection* voiceConnection{};
+		voice_connection* voiceConnection{};
 	};
 
 	/**
 	 * \addtogroup voice_connection
 	 * @{
 	 */
-	/// @brief VoiceConnection class - represents the connection to a given voice ChannelData.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketCore {
+	/// @brief Voice_connection class - represents the connection to a given voice channel_data.
+	class DiscordCoreAPI_Dll voice_connection : public discord_core_internal::websocket_core {
 	  public:
-		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreInternal::SoundCloudAPI;
-		friend class DiscordCoreInternal::YouTubeAPI;
-		friend class VoiceConnectionBridge;
-		friend class VoiceUDPConnection;
-		friend class DiscordCoreClient;
-		friend class GuildCacheData;
-		friend class GuildData;
-		friend class SongAPI;
+		friend class discord_core_internal::base_socket_agent;
+		friend class discord_core_internal::sound_cloud_api;
+		friend class discord_core_internal::you_tube_api;
+		friend class voice_connection_bridge;
+		friend class voice_udpconnection;
+		friend class discord_core_client;
+		friend class guild_cache_data;
+		friend class guild_data;
+		friend class song_api;
 
-		/// The constructor.
-		/// @param discordCoreClientNew A pointer to the main isntance of DiscordCoreClient.
-		/// @param baseShardNew A pointer to the base shard that this voice connection belongs to.
-		/// @param doWeQuitNew A pointer to the global signalling boolean for exiting the application.
-		VoiceConnection(DiscordCoreInternal::WebSocketClient* baseShardNew, std::atomic_bool* doWeQuitNew);
+		/// the constructor.
+		/// @param baseShardNew a pointer to the base shard that this voice connection belongs to.
+		/// @param doWeQuitNew a pointer to the global signalling boolean for exiting the application.
+		voice_connection(discord_core_internal::websocket_client* baseShardNew, std::atomic_bool* doWeQuitNew);
 
 		bool areWeConnected();
 
-		/// @brief Collects the currently connected-to voice ChannelData's id.
-		/// @returns Snowflake A Snowflake containing the ChannelData's id.
-		Snowflake getChannelId();
+		/// @brief Collects the currently connected-to voice channel_data's id.
+		/// @return snowflake a snowflake containing the channel_data's id.
+		snowflake getChannelId();
 
 		/// @brief Connects to a currently held voice channel.
-		/// @param initData A DiscordCoerAPI::VoiceConnectInitDat structure.
-		void connect(const VoiceConnectInitData& initData);
+		/// @param initData a discord_coer_api::voice_connect_init_dat structure.
+		void connect(const voice_connect_init_data& initData);
 
-		~VoiceConnection() = default;
+		~voice_connection() = default;
 
 	  protected:
-		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
-		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
-		Nanoseconds intervalCount{ static_cast<int64_t>(960.0l / 48000.0l * 1000000000.0l) };
-		std::coroutine_handle<DiscordCoreAPI::CoRoutine<void, false>::promise_type> token{};
-		std::atomic<VoiceActiveState> prevActiveState{ VoiceActiveState::Stopped };
-		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
-		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		UnorderedMap<uint64_t, UniquePtr<VoiceUser>> voiceUsers{};
-		DiscordCoreInternal::OpusEncoderWrapper encoder{};
-		DiscordCoreInternal::WebSocketClient* baseShard{};
+		std::atomic<voice_connection_state> connectionState{ voice_connection_state::Collecting_Init_Data };
+		unbounded_message_block<discord_core_internal::voice_connection_data> voiceConnectionDataBuffer{};
+		std::coroutine_handle<discord_core_api::co_routine<void, false>::promise_type> token{};
+		nanoseconds intervalCount{ static_cast<int64_t>(960.0l / 48000.0l * 1000000000.0l) };
+		std::atomic<voice_active_state> prevActiveState{ voice_active_state::stopped };
+		std::atomic<voice_active_state> activeState{ voice_active_state::connecting };
+		discord_core_internal::voice_connection_data voiceConnectionData{};
+		unordered_map<uint64_t, unique_ptr<voice_user>> voiceUsers{};
+		discord_core_internal::opus_encoder_wrapper encoder{};
+		discord_core_internal::websocket_client* baseShard{};
+		unique_ptr<voice_connection_bridge> streamSocket{};
 		jsonifier::string_base<uint8_t> encryptionKey{};
-		UniquePtr<VoiceConnectionBridge> streamSocket{};
-		VoiceConnectInitData voiceConnectInitData{};
+		voice_connect_init_data voiceConnectInitData{};
 		jsonifier::string audioEncryptionMode{};
+		rtppacket_encrypter packetEncrypter{};
 		int64_t sampleRatePerSecond{ 48000 };
-		RTPPacketEncrypter packetEncrypter{};
-		CoRoutine<void, false> taskThread{};
-		VoiceUDPConnection udpConnection{};
+		co_routine<void, false> taskThread{};
+		voice_udpconnection udpConnection{};
 		int64_t nsPerSecond{ 1000000000 };
+		audio_frame_data xferAudioData{};
 		jsonifier::string externalIp{};
-		AudioFrameData xferAudioData{};
 		std::atomic_bool wasItAFail{};
 		std::atomic_bool* doWeQuit{};
 		std::atomic_bool doWeSkip{};
 		jsonifier::string voiceIp{};
 		jsonifier::string baseUrl{};
 		int64_t samplesPerPacket{};
-		Snowflake currentUserId{};
+		snowflake currentUserId{};
 		int64_t msPerPacket{};
 		uint32_t audioSSRC{};
 		uint16_t port{};
@@ -338,7 +335,7 @@ namespace DiscordCoreAPI {
 
 		bool onMessageReceived(jsonifier::string_view_base<uint8_t> data);
 
-		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
+		unbounded_message_block<audio_frame_data>& getAudioBuffer();
 
 		void skipInternal(uint32_t currentRecursionDepth = 0);
 
@@ -346,7 +343,7 @@ namespace DiscordCoreAPI {
 
 		void sendSpeakingMessage(const bool isSpeaking);
 
-		CoRoutine<void, false> runVoice();
+		co_routine<void, false> runVoice();
 
 		void sendVoiceConnectionData();
 

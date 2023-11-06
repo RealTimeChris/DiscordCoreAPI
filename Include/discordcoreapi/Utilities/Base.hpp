@@ -1,4 +1,4 @@
-/*	
+/*
 	MIT License
 
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
@@ -29,6 +29,23 @@
 /// \file Base.hpp
 #pragma once
 
+#if !defined(__GNUC__)
+	#pragma warning(disable : 4710)
+	#pragma warning(disable : 4711)
+	#pragma warning(disable : 4251)
+	#pragma warning(disable : 4371)
+	#pragma warning(disable : 4514)
+	#pragma warning(disable : 4623)
+	#pragma warning(disable : 4625)
+	#pragma warning(disable : 4626)
+	#pragma warning(disable : 4820)
+	#pragma warning(disable : 5267)
+	#pragma warning(disable : 5026)
+	#pragma warning(disable : 5027)
+	#pragma warning(disable : 5045)
+	#pragma warning(disable : 5246)
+#endif
+
 #if defined _WIN32
 	#if !defined DiscordCoreAPI_EXPORTS_NOPE
 		#if defined DiscordCoreAPI_EXPORTS
@@ -49,7 +66,7 @@
 	#if !defined WINRT_LEAN_AND_MEAN
 		#define WINRT_LEAN_AND_MEAN
 	#endif
-	#ifndef NOMINMAX
+	#if !defined(NOMINMAX)
 		#define NOMINMAX
 	#endif
 	#include <chrono>
@@ -100,7 +117,7 @@ using namespace std::literals;
 
 /**
  * \defgroup main_endpoints Main Endpoints
-/// @brief For all of the Discord API's endpoints.
+/// @brief For all of the discord api's endpoints.
  */
 
 /**
@@ -110,7 +127,7 @@ using namespace std::literals;
 
 /**
  * \defgroup discord_events Discord Events
-/// @brief For all of the events that could be sent by the Discord API.
+/// @brief For all of the events that could be sent by the discord api.
  */
 
 /**
@@ -125,30 +142,36 @@ using namespace std::literals;
 
 /**
  * \defgroup discord_events Discord Events
-/// @brief For all of events that could be sent by Discord's Websockets.
+/// @brief For all of events that could be sent by discord's websockets.
  */
 
 /**
- * \defgroup discord_core_internal DiscordCore Internal
+ * \defgroup discord_core_internal DiscordCoreInternal
 /// @brief For all of the internal api stuff.
  */
 
-namespace DiscordCoreAPI {
+/**
+ * @brief The main namespace for the forward-facing interfaces.
+ *
+ * \ingroup discord_core_api
+ */
 
-	inline thread_local jsonifier::jsonifier_core parser{};
+namespace discord_core_api {
 
-	template<typename ValueType> using StopWatch = jsonifier_internal::stop_watch<ValueType>;
-	using SysClock								 = std::chrono::system_clock;
-	using HRClock								 = std::chrono::high_resolution_clock;
-	using Milliseconds							 = std::chrono::milliseconds;
-	using Microseconds							 = std::chrono::microseconds;
-	using Nanoseconds							 = std::chrono::nanoseconds;
-	using Seconds								 = std::chrono::seconds;
+	extern thread_local jsonifier::jsonifier_core parser;
 
-	enum class PrintMessageType {
-		General	  = 0,
-		Https	  = 1,
-		WebSocket = 2,
+	template<typename value_type> using stop_watch = jsonifier_internal::stop_watch<value_type>;
+	using sys_clock								   = std::chrono::system_clock;
+	using hrclock								   = std::chrono::high_resolution_clock;
+	using milliseconds							   = std::chrono::duration<int64_t, std::milli>;
+	using microseconds							   = std::chrono::duration<int64_t, std::micro>;
+	using nanoseconds							   = std::chrono::duration<int64_t, std::nano>;
+	using seconds								   = std::chrono::duration<int64_t, std::ratio<1, 1>>;
+
+	enum class print_message_type {
+		general	  = 0,
+		https	  = 1,
+		websocket = 2,
 	};
 
 	inline constexpr jsonifier::string_view shiftToBrightGreen() {
@@ -173,55 +196,53 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// @brief Class for printing different types of messages to output and error streams.
-	class MessagePrinter {
+	class message_printer {
 	  public:
-		inline MessagePrinter() = default;
+		inline message_printer() = default;
 
-		/// @brief Initialize the MessagePrinter with configuration settings and output/error streams.
-		/// @tparam ValueType The type containing configuration settings.
-		/// @param other An instance of ValueType with configuration settings.
-		/// @param outputStreamNew The output stream to print messages to (default: std::cout).
-		/// @param errorStreamNew The error stream to print messages to (default: std::cerr).
-		template<typename ValueType> inline static void initialize(const ValueType& other, std::ostream& outputStreamNew = std::cout, std::ostream& errorStreamNew = std::cerr) {
+		/// @brief Initialize the message_printer with configuration settings and output/error streams.
+		/// @tparam value_type the type containing configuration settings.
+		/// @param other an instance of value_type with configuration settings.
+		template<typename value_type> inline static void initialize(const value_type& other) {
 			doWePrintGeneralErrors.store(other.doWePrintGeneralErrorMessages(), std::memory_order_release);
 			doWePrintGeneralSuccesses.store(other.doWePrintGeneralSuccessMessages(), std::memory_order_release);
 			doWePrintHttpsErrors.store(other.doWePrintHttpsErrorMessages(), std::memory_order_release);
 			doWePrintHttpsSuccesses.store(other.doWePrintHttpsSuccessMessages(), std::memory_order_release);
 			doWePrintWebSocketErrors.store(other.doWePrintWebSocketErrorMessages(), std::memory_order_release);
 			doWePrintWebSocketSuccesses.store(other.doWePrintWebSocketSuccessMessages(), std::memory_order_release);
-			outputStream = &outputStreamNew;
-			errorStream	 = &errorStreamNew;
+			outputStream = other.getOutputStream();
+			errorStream	 = other.getErrorStream();
 		}
 
 		/// @brief Print an error message of the specified type.
-		/// @tparam messageType The type of message to print.
-		/// @param what The error message.
-		/// @param where The source location where the error occurred (default: current source location).
-		template<PrintMessageType messageType, typename StringType>
-		inline static void printError(const StringType& what, std::source_location where = std::source_location::current()) {
+		/// @tparam messageType the type of message to print.
+		/// @param what the error message.
+		/// @param where the source location where the error occurred (default: current source location).
+		template<print_message_type messageType, typename string_type>
+		inline static void printError(const string_type& what, std::source_location where = std::source_location::current()) {
 			switch (messageType) {
-				case PrintMessageType::General: {
+				case print_message_type::general: {
 					if (doWePrintGeneralErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*errorStream << shiftToBrightRed() << "General Error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+						*errorStream << shiftToBrightRed() << "General error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
 									 << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									 << reset() << std::endl;
 					}
 					break;
 				}
-				case PrintMessageType::WebSocket: {
+				case print_message_type::websocket: {
 					if (doWePrintWebSocketErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*errorStream << shiftToBrightRed() << "WebSocket Error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+						*errorStream << shiftToBrightRed() << "WebSocket error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
 									 << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									 << reset() << std::endl;
 					}
 					break;
 				}
-				case PrintMessageType::Https: {
+				case print_message_type::https: {
 					if (doWePrintHttpsErrors.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*errorStream << shiftToBrightRed() << "Https Error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+						*errorStream << shiftToBrightRed() << "Https error, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
 									 << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									 << reset() << std::endl;
 					}
@@ -231,34 +252,34 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Print a success message of the specified type.
-		/// @tparam messageType The type of message to print.
-		/// @param what The success message.
-		/// @param where The source location where the success occurred (default: current source location).
-		template<PrintMessageType messageType, typename StringType>
-		inline static void printSuccess(const StringType& what, std::source_location where = std::source_location::current()) {
+		/// @tparam messageType the type of message to print.
+		/// @param what the success message.
+		/// @param where the source location where the success occurred (default: current source location).
+		template<print_message_type messageType, typename string_type>
+		inline static void printSuccess(const string_type& what, std::source_location where = std::source_location::current()) {
 			switch (messageType) {
-				case PrintMessageType::General: {
+				case print_message_type::general: {
 					if (doWePrintGeneralSuccesses.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*outputStream << shiftToBrightBlue() << "General Success, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+						*outputStream << shiftToBrightBlue() << "General success, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
 									  << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									  << reset() << std::endl;
 					}
 					break;
 				}
-				case PrintMessageType::WebSocket: {
+				case print_message_type::websocket: {
 					if (doWePrintWebSocketSuccesses.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*outputStream << shiftToBrightGreen() << "WebSocket Success, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+						*outputStream << shiftToBrightGreen() << "WebSocket success, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
 									  << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									  << reset() << std::endl;
 					}
 					break;
 				}
-				case PrintMessageType::Https: {
+				case print_message_type::https: {
 					if (doWePrintHttpsSuccesses.load(std::memory_order_acquire)) {
 						std::unique_lock lock{ accessMutex };
-						*outputStream << shiftToBrightGreen() << "Https Success, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
+						*outputStream << shiftToBrightGreen() << "Https success, caught at: " << where.file_name() << ", " << where.line() << ":" << where.column()
 									  << ", in: " << where.function_name() << ", it is: " << what << std::endl
 									  << reset() << std::endl;
 					}
@@ -268,10 +289,10 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		inline static std::atomic_bool doWePrintHttpsSuccesses{};///< Flag to control printing of HTTPS success messages.
-		inline static std::atomic_bool doWePrintHttpsErrors{};///< Flag to control printing of HTTPS error messages.
-		inline static std::atomic_bool doWePrintWebSocketSuccesses{};///< Flag to control printing of WebSocket success messages.
-		inline static std::atomic_bool doWePrintWebSocketErrors{};///< Flag to control printing of WebSocket error messages.
+		inline static std::atomic_bool doWePrintHttpsSuccesses{};///< Flag to control printing of https success messages.
+		inline static std::atomic_bool doWePrintHttpsErrors{};///< Flag to control printing of https error messages.
+		inline static std::atomic_bool doWePrintWebSocketSuccesses{};///< Flag to control printing of websocket success messages.
+		inline static std::atomic_bool doWePrintWebSocketErrors{};///< Flag to control printing of websocket error messages.
 		inline static std::atomic_bool doWePrintGeneralSuccesses{};///< Flag to control printing of general success messages.
 		inline static std::atomic_bool doWePrintGeneralErrors{};///< Flag to control printing of general error messages.
 		inline static std::ostream* outputStream{};///< Pointer to the output stream for message printing.
@@ -280,55 +301,55 @@ namespace DiscordCoreAPI {
 	};
 
 	/// @brief Time formatting methods.
-	enum class TimeFormat : char {
-		LongDate	  = 'D',///< "20 April 2021" - Long Date
-		LongDateTime  = 'F',///< "Tuesday, 20 April 2021 16:20" - Long Date/Time
-		LongTime	  = 'T',///< "16:20:30" - Long Time
-		ShortDate	  = 'd',///< "20/04/2021" - Short Date
-		ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
-		ShortTime	  = 't',///< "16:20" - Short Time
+	enum class time_format : char {
+		long_date		= 'D',///< "20 April 2021" - Long Date
+		long_date_time	= 'F',///< "Tuesday, 20 April 2021 16:20" - Long Date/Time
+		long_time		= 'T',///< "16:20:30" - Long Time
+		short_date		= 'd',///< "20/04/2021" - Short Date
+		short_date_time = 'f',///< "20 April 2021 16:20" - Short Date/Time
+		short_time		= 't',///< "16:20" - Short Time
 	};
 
-	class TimeStampParse;
+	class time_stamp;
 
 	/// @brief A base class for handling time stamps and conversions.
-	/// @tparam ValueType The value type to be used with the time stamp.
-	template<typename ValueType> class TimeStampBase {
+	/// @tparam value_type the value type to be used with the time stamp.
+	template<typename value_type> class time_stamp_base {
 	  public:
 		/// @brief Checks if the time stamp is equal to a string representation.
-		/// @param other The string to compare with.
-		/// @return True if equal, false otherwise.
+		/// @param other the string to compare with.
+		/// @return true if equal, false otherwise.
 		inline bool operator==(jsonifier::string_view other) const {
-			return *static_cast<const ValueType*>(this) == other;
+			return static_cast<jsonifier::string>(*static_cast<const value_type*>(this)) == other;
 		}
 
-		/// @brief Converts given time values into a future ISO8601 time stamp.
-		/// @param minutesToAdd Number of minutes to add.
-		/// @param hoursToAdd Number of hours to add.
-		/// @param daysToAdd Number of days to add.
-		/// @param monthsToAdd Number of months to add.
-		/// @param yearsToAdd Number of years to add.
-		/// @param timeFormat Format for the resulting time stamp.
-		/// @return ISO8601 time stamp string.
-		inline static jsonifier::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
-			TimeFormat timeFormat) {
+		/// @brief Converts given time values into a future iso8601 time stamp.
+		/// @param minutesToAdd number of minutes to add.
+		/// @param hoursToAdd number of hours to add.
+		/// @param daysToAdd number of days to add.
+		/// @param monthsToAdd number of months to add.
+		/// @param yearsToAdd number of years to add.
+		/// @param timeFormat format for the resulting time stamp.
+		/// @return iso8601 time stamp string.
+		inline static jsonifier::string convertToFutureISO8601TimeStamp(uint64_t minutesToAdd, uint64_t hoursToAdd, uint64_t daysToAdd, uint64_t monthsToAdd, uint64_t yearsToAdd,
+			time_format timeFormat) {
 			std::time_t result = std::time(nullptr);
-			static constexpr int32_t secondsPerMinute{ 60 };
-			static constexpr int32_t minutesPerHour{ 60 };
-			static constexpr int32_t secondsPerHour{ minutesPerHour * secondsPerMinute };
-			static constexpr int32_t hoursPerDay{ 24 };
-			static constexpr int32_t secondsPerDay{ secondsPerHour * hoursPerDay };
-			static constexpr int32_t daysPerMonth{ 30 };
-			static constexpr int32_t secondsPerMonth{ secondsPerDay * daysPerMonth };
-			static constexpr int32_t daysPerYear{ 365 };
-			static constexpr int32_t secondsPerYear{ secondsPerDay * daysPerYear };
-			int32_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + ((hoursToAdd + 8) * secondsPerHour) +
+			static constexpr uint64_t secondsPerMinute{ 60ULL };
+			static constexpr uint64_t minutesPerHour{ 60ULL };
+			static constexpr uint64_t secondsPerHour{ minutesPerHour * secondsPerMinute };
+			static constexpr uint64_t hoursPerDay{ 24ULL };
+			static constexpr uint64_t secondsPerDay{ secondsPerHour * hoursPerDay };
+			static constexpr uint64_t daysPerMonth{ 30ULL };
+			static constexpr uint64_t secondsPerMonth{ secondsPerDay * daysPerMonth };
+			static constexpr uint64_t daysPerYear{ 365ULL };
+			static constexpr uint64_t secondsPerYear{ secondsPerDay * daysPerYear };
+			uint64_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + ((hoursToAdd + 8) * secondsPerHour) +
 				(minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
 			std::tm resultTwo{ getCurrentTimeVal(result) };
 			jsonifier::string returnString{};
 			if (resultTwo.tm_isdst) {
-				if (resultTwo.tm_hour + 4 >= 24) {
+				if (resultTwo.tm_hour + 4ULL >= 24) {
 					resultTwo.tm_hour = resultTwo.tm_hour - 24;
 					++resultTwo.tm_mday;
 				}
@@ -337,7 +358,7 @@ namespace DiscordCoreAPI {
 						static_cast<uint64_t>(resultTwo.tm_hour) + 4ULL, static_cast<uint64_t>(resultTwo.tm_min), static_cast<uint64_t>(resultTwo.tm_sec));
 				returnString = getISO8601TimeStamp(timeFormat, newValue);
 			} else {
-				if (resultTwo.tm_hour + 5 >= 24) {
+				if (resultTwo.tm_hour + 5ULL >= 24) {
 					resultTwo.tm_hour = resultTwo.tm_hour - 24;
 					++resultTwo.tm_mday;
 				}
@@ -349,15 +370,15 @@ namespace DiscordCoreAPI {
 			return returnString;
 		}
 
-		/// @brief Converts the current time into an ISO8601 time stamp.
-		/// @param timeFormat Format for the resulting time stamp.
-		/// @return ISO8601 time stamp string.
-		inline static jsonifier::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
+		/// @brief Converts the current time into an iso8601 time stamp.
+		/// @param timeFormat format for the resulting time stamp.
+		/// @return iso8601 time stamp string.
+		inline static jsonifier::string convertToCurrentISO8601TimeStamp(time_format timeFormat) {
 			std::time_t result = std::time(nullptr);
 			std::tm resultTwo{ getCurrentTimeVal(result) };
 			jsonifier::string returnString{};
 			if (resultTwo.tm_isdst) {
-				if (resultTwo.tm_hour + 4 >= 24) {
+				if (resultTwo.tm_hour + 4ULL >= 24) {
 					resultTwo.tm_hour = resultTwo.tm_hour - 24;
 					++resultTwo.tm_mday;
 				}
@@ -366,31 +387,31 @@ namespace DiscordCoreAPI {
 						static_cast<uint64_t>(resultTwo.tm_hour) + 4ULL, static_cast<uint64_t>(resultTwo.tm_min), static_cast<uint64_t>(resultTwo.tm_sec));
 				returnString = getISO8601TimeStamp(timeFormat, newValue);
 			} else {
-				if (resultTwo.tm_hour + 5 >= 24) {
+				if (resultTwo.tm_hour + 5ULL >= 24) {
 					resultTwo.tm_hour = resultTwo.tm_hour - 24;
 					++resultTwo.tm_mday;
 				}
 				auto newValue =
-					getTimeSinceEpoch(static_cast<uint64_t>(resultTwo.tm_year) + 1900, static_cast<uint64_t>(resultTwo.tm_mon) + 1, static_cast<uint64_t>(resultTwo.tm_mday),
-						static_cast<uint64_t>(resultTwo.tm_hour) + 5, static_cast<uint64_t>(resultTwo.tm_min), static_cast<uint64_t>(resultTwo.tm_sec));
+					getTimeSinceEpoch(static_cast<uint64_t>(resultTwo.tm_year) + 1900ULL, static_cast<uint64_t>(resultTwo.tm_mon) + 1ULL, static_cast<uint64_t>(resultTwo.tm_mday),
+						static_cast<uint64_t>(resultTwo.tm_hour) + 5ULL, static_cast<uint64_t>(resultTwo.tm_min), static_cast<uint64_t>(resultTwo.tm_sec));
 				returnString = getISO8601TimeStamp(timeFormat, newValue);
 			}
 			return returnString;
 		}
 
 		/// @brief Checks if a certain time duration has elapsed.
-		/// @param days Number of days for elapsed time.
-		/// @param hours Number of hours for elapsed time.
-		/// @param minutes Number of minutes for elapsed time.
-		/// @return True if the specified time has elapsed, otherwise false.
+		/// @param days number of days for elapsed time.
+		/// @param hours number of hours for elapsed time.
+		/// @param minutes number of minutes for elapsed time.
+		/// @return true if the specified time has elapsed, otherwise false.
 		inline bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) const {
-			uint64_t startTimeRaw{ convertTimeStampToTimeUnits(*static_cast<const ValueType*>(this)) };
-			auto currentTime						   = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
-			static constexpr uint64_t secondsPerMinute = 60;
-			static constexpr uint64_t secondsPerHour   = secondsPerMinute * 60;
-			static constexpr uint64_t secondsPerDay	   = secondsPerHour * 24;
+			uint64_t startTimeRaw{ convertTimeStampToTimeUnits(static_cast<jsonifier::string>(*static_cast<const value_type*>(this))) };
+			auto currentTime						   = std::chrono::duration_cast<milliseconds>(sys_clock::now().time_since_epoch()).count();
+			static constexpr uint64_t secondsPerMinute = 60ULL;
+			static constexpr uint64_t secondsPerHour   = secondsPerMinute * 60ULL;
+			static constexpr uint64_t secondsPerDay	   = secondsPerHour * 24ULL;
 			auto targetElapsedTime =
-				((static_cast<uint64_t>(days) * secondsPerDay) + (static_cast<uint64_t>(hours) * secondsPerHour) + (static_cast<uint64_t>(minutes) * secondsPerMinute)) * 1000;
+				((static_cast<uint64_t>(days) * secondsPerDay) + (static_cast<uint64_t>(hours) * secondsPerHour) + (static_cast<uint64_t>(minutes) * secondsPerMinute)) * 1000ULL;
 			auto actualElapsedTime = currentTime - startTimeRaw;
 			if (actualElapsedTime <= 0) {
 				return false;
@@ -403,68 +424,68 @@ namespace DiscordCoreAPI {
 		}
 
 		/// @brief Converts milliseconds into a human-readable duration string.
-		/// @param durationInMs Duration in milliseconds to convert.
-		/// @return Human-readable duration string.
+		/// @param durationInMs duration in milliseconds to convert.
+		/// @return human-readable duration string.
 		inline static jsonifier::string convertMsToDurationString(uint64_t durationInMs) {
 			jsonifier::string newString{};
-			static constexpr uint64_t msPerSecond{ 1000 };
-			static constexpr uint64_t secondsPerMinute{ 60 };
-			static constexpr uint64_t minutesPerHour{ 60 };
+			static constexpr uint64_t msPerSecond{ 1000ULL };
+			static constexpr uint64_t secondsPerMinute{ 60ULL };
+			static constexpr uint64_t minutesPerHour{ 60ULL };
 			static constexpr uint64_t msPerMinute{ msPerSecond * secondsPerMinute };
 			static constexpr uint64_t msPerHour{ msPerMinute * minutesPerHour };
 			uint64_t hoursLeft	 = static_cast<uint64_t>(trunc(durationInMs / msPerHour));
 			uint64_t minutesLeft = static_cast<uint64_t>(trunc((durationInMs % msPerHour) / msPerMinute));
 			uint64_t secondsLeft = static_cast<uint64_t>(trunc(((durationInMs % msPerHour) % msPerMinute) / msPerSecond));
 			if (hoursLeft >= 1) {
-				newString += jsonifier::toString(hoursLeft) + " Hours, ";
-				newString += jsonifier::toString(minutesLeft) + " Minutes, ";
-				newString += jsonifier::toString(secondsLeft) + " Seconds.";
+				newString += jsonifier::toString(hoursLeft) + " hours, ";
+				newString += jsonifier::toString(minutesLeft) + " minutes, ";
+				newString += jsonifier::toString(secondsLeft) + " seconds.";
 			} else if (minutesLeft >= 1) {
-				newString += jsonifier::toString(minutesLeft) + " Minutes, ";
-				newString += jsonifier::toString(secondsLeft) + " Seconds.";
+				newString += jsonifier::toString(minutesLeft) + " minutes, ";
+				newString += jsonifier::toString(secondsLeft) + " seconds.";
 			} else {
-				newString += jsonifier::toString(secondsLeft) + " Seconds.";
+				newString += jsonifier::toString(secondsLeft) + " seconds.";
 			}
 			return newString;
 		}
 
-		/// @brief Gets an ISO8601 time stamp string based on the provided time format.
-		/// @param timeFormat Format for the resulting time stamp.
-		/// @param inputTime Input time value.
-		/// @return ISO8601 time stamp string.
-		inline static jsonifier::string getISO8601TimeStamp(TimeFormat timeFormat, uint64_t inputTime) {
-			uint64_t timeValue = static_cast<uint64_t>(inputTime) / 1000;
+		/// @brief Gets an iso8601 time stamp string based on the provided time format.
+		/// @param timeFormat format for the resulting time stamp.
+		/// @param inputTime input time value.
+		/// @return iso8601 time stamp string.
+		inline static jsonifier::string getISO8601TimeStamp(time_format timeFormat, uint64_t inputTime) {
+			uint64_t timeValue = static_cast<uint64_t>(inputTime) / 1000ULL;
 			time_t rawTime(static_cast<time_t>(timeValue));
 			std::tm resultTwo{ getCurrentTimeVal(rawTime) };
 			jsonifier::string timeStamp{};
 			timeStamp.resize(48);
 			switch (timeFormat) {
-				case TimeFormat::LongDate: {
+				case time_format::long_date: {
 					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
-				case TimeFormat::LongDateTime: {
+				case time_format::long_date_time: {
 					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%T", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
-				case TimeFormat::LongTime: {
+				case time_format::long_time: {
 					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
-				case TimeFormat::ShortDate: {
+				case time_format::short_date: {
 					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d/%m/%g", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
-				case TimeFormat::ShortDateTime: {
+				case time_format::short_date_time: {
 					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G %R", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
-				case TimeFormat::ShortTime: {
+				case time_format::short_time: {
 					uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%R", &resultTwo);
 					timeStamp.resize(sizeResponse);
 					break;
@@ -476,435 +497,321 @@ namespace DiscordCoreAPI {
 			return timeStamp;
 		}
 
-		/// @brief Gets the time since the Unix epoch for the specified date and time.
-		/// @param year Year.
-		/// @param month Month.
-		/// @param day Day.
-		/// @param hour Hour.
-		/// @param minute Minute.
-		/// @param second Second.
-		/// @return Time since Unix epoch in milliseconds.
+		/// @brief Gets the time since the unix epoch for the specified date and time.
+		/// @param year year.
+		/// @param month month.
+		/// @param day day.
+		/// @param hour hour.
+		/// @param minute minute.
+		/// @param second second.
+		/// @return time since unix epoch in milliseconds.
 		inline static uint64_t getTimeSinceEpoch(uint64_t year, uint64_t month, uint64_t day, uint64_t hour, uint64_t minute, uint64_t second) {
-			static constexpr uint64_t secondsInJan{ 31 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInFeb{ 28 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInMar{ 31 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInApr{ 30 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInMay{ 31 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInJun{ 30 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInJul{ 31 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInAug{ 31 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInSep{ 30 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInOct{ 31 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInNov{ 30 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsInDec{ 31 * 24 * 60 * 60 };
-			static constexpr uint64_t secondsPerMinute{ 60 };
-			static constexpr uint64_t secondsPerHour{ 60 * 60 };
-			static constexpr uint64_t secondsPerDay{ 60 * 60 * 24 };
-			Seconds value{};
-			for (uint64_t x = 1970; x < year; ++x) {
-				value += Seconds{ secondsInJan };
-				value += Seconds{ secondsInFeb };
-				value += Seconds{ secondsInMar };
-				value += Seconds{ secondsInApr };
-				value += Seconds{ secondsInMay };
-				value += Seconds{ secondsInJun };
-				value += Seconds{ secondsInJul };
-				value += Seconds{ secondsInAug };
-				value += Seconds{ secondsInSep };
-				value += Seconds{ secondsInOct };
-				value += Seconds{ secondsInNov };
-				value += Seconds{ secondsInDec };
-				if (x % 4 == 0) {
-					value += Seconds{ secondsPerDay };
+			static constexpr uint64_t secondsInJan{ 31ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInFeb{ 28 * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInMar{ 31ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInApr{ 30ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInMay{ 31ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInJun{ 30ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInJul{ 31ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInAug{ 31ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInSep{ 30ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInOct{ 31ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInNov{ 30ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsInDec{ 31ULL * 24ULL * 60ULL * 60ULL };
+			static constexpr uint64_t secondsPerMinute{ 60ULL };
+			static constexpr uint64_t secondsPerHour{ 60ULL * 60ULL };
+			static constexpr uint64_t secondsPerDay{ 60ULL * 60ULL * 24ULL };
+			seconds value{};
+			for (uint64_t x = 1970ULL; x < year; ++x) {
+				value += seconds{ secondsInJan };
+				value += seconds{ secondsInFeb };
+				value += seconds{ secondsInMar };
+				value += seconds{ secondsInApr };
+				value += seconds{ secondsInMay };
+				value += seconds{ secondsInJun };
+				value += seconds{ secondsInJul };
+				value += seconds{ secondsInAug };
+				value += seconds{ secondsInSep };
+				value += seconds{ secondsInOct };
+				value += seconds{ secondsInNov };
+				value += seconds{ secondsInDec };
+				if (x % 4ULL == 0ULL) {
+					value += seconds{ secondsPerDay };
 				}
 			}
 			if (month > 0) {
-				value += Seconds{ static_cast<uint64_t>((day - 1) * secondsPerDay) };
-				value += Seconds{ static_cast<uint64_t>(hour * secondsPerHour) };
-				value += Seconds{ static_cast<uint64_t>(minute * secondsPerMinute) };
-				value += Seconds{ second };
+				value += seconds{ static_cast<uint64_t>((day - 1ULL) * secondsPerDay) };
+				value += seconds{ static_cast<uint64_t>(hour * secondsPerHour) };
+				value += seconds{ static_cast<uint64_t>(minute * secondsPerMinute) };
+				value += seconds{ second };
 			}
-			if (month > 1) {
-				value += Seconds{ secondsInJan };
+			if (month > 1ULL) {
+				value += seconds{ secondsInJan };
 			}
-			if (month > 2) {
-				value += Seconds{ secondsInFeb };
+			if (month > 2ULL) {
+				value += seconds{ secondsInFeb };
 			}
-			if (month > 3) {
-				value += Seconds{ secondsInMar };
+			if (month > 3ULL) {
+				value += seconds{ secondsInMar };
 			}
-			if (month > 4) {
-				value += Seconds{ secondsInApr };
+			if (month > 4ULL) {
+				value += seconds{ secondsInApr };
 			}
-			if (month > 5) {
-				value += Seconds{ secondsInMay };
+			if (month > 5ULL) {
+				value += seconds{ secondsInMay };
 			}
-			if (month > 6) {
-				value += Seconds{ secondsInJun };
+			if (month > 6ULL) {
+				value += seconds{ secondsInJun };
 			}
-			if (month > 7) {
-				value += Seconds{ secondsInJul };
+			if (month > 7ULL) {
+				value += seconds{ secondsInJul };
 			}
-			if (month > 8) {
-				value += Seconds{ secondsInAug };
+			if (month > 8ULL) {
+				value += seconds{ secondsInAug };
 			}
-			if (month > 9) {
-				value += Seconds{ secondsInSep };
+			if (month > 9ULL) {
+				value += seconds{ secondsInSep };
 			}
-			if (month > 10) {
-				value += Seconds{ secondsInOct };
+			if (month > 10ULL) {
+				value += seconds{ secondsInOct };
 			}
-			if (month > 11) {
-				value += Seconds{ secondsInNov };
+			if (month > 11ULL) {
+				value += seconds{ secondsInNov };
 			}
-			return static_cast<uint64_t>(std::chrono::duration_cast<Milliseconds>(value).count());
+			return static_cast<uint64_t>(std::chrono::duration_cast<milliseconds>(value).count());
 		}
 
 	  protected:
 		/// @brief Converts a string time stamp into a uint64_t time value.
-		/// @param originalTimeStamp Original time stamp string.
-		/// @return Converted time value in milliseconds.
+		/// @param originalTimeStamp original time stamp string.
+		/// @return converted time value in milliseconds.
 		inline static uint64_t convertTimeStampToTimeUnits(jsonifier::string_view originalTimeStamp) {
-			if (originalTimeStamp != "" && originalTimeStamp != "0") {
-				auto newValue = getTimeSinceEpoch(std::stoull(originalTimeStamp.substr(0ull, 4ull).data()), std::stoull(originalTimeStamp.substr(5ull, 6ull).data()),
-					std::stoull(originalTimeStamp.substr(8ull, 9ull).data()), std::stoull(originalTimeStamp.substr(11ull, 12ull).data()),
-					std::stoull(originalTimeStamp.substr(14ull, 15ull).data()), std::stoull(originalTimeStamp.substr(17ull, 18ull).data()));
+			if (originalTimeStamp != "" && originalTimeStamp.size() >= 19) {
+				auto newValue =
+					getTimeSinceEpoch(jsonifier::strToUint64(originalTimeStamp.substr(0ULL, 4ULL).data()), jsonifier::strToUint64(originalTimeStamp.substr(5ULL, 6ULL).data()),
+						jsonifier::strToUint64(originalTimeStamp.substr(8ULL, 9ULL).data()), jsonifier::strToUint64(originalTimeStamp.substr(11ULL, 12ULL).data()),
+						jsonifier::strToUint64(originalTimeStamp.substr(14ULL, 15ULL).data()), jsonifier::strToUint64(originalTimeStamp.substr(17ULL, 18ULL).data()));
 				return newValue;
 			} else {
-				return static_cast<uint64_t>(std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count());
+				return static_cast<uint64_t>(std::chrono::duration_cast<milliseconds>(sys_clock::now().time_since_epoch()).count());
 			}
 		}
 
 		/// @brief Converts a string time stamp into a uint64_t time value.
-		/// @param stringTimeStamp String time stamp to convert.
-		/// @return Converted time value in milliseconds.
-		inline uint64_t convertstring_toUintTimeStamp(jsonifier::string_view stringTimeStamp) const {
+		/// @param stringTimeStamp string time stamp to convert.
+		/// @return converted time value in milliseconds.
+		inline uint64_t convertStringToUintTimeStamp(jsonifier::string_view stringTimeStamp) const {
 			return convertTimeStampToTimeUnits(stringTimeStamp);
 		}
 
 		/// @brief Converts a uint64_t time value into a string time stamp.
-		/// @param uintTimeStamp Time value to convert.
-		/// @return String time stamp.
-		inline jsonifier::string convertUintTostring_timeStamp(uint64_t uintTimeStamp) const {
-			return getISO8601TimeStamp(TimeFormat::LongDateTime, uintTimeStamp);
+		/// @param uintTimeStamp time value to convert.
+		/// @return string time stamp.
+		inline jsonifier::string convertUintToStringTimeStamp(uint64_t uintTimeStamp) const {
+			return getISO8601TimeStamp(time_format::long_date_time, uintTimeStamp);
 		}
 	};
 
-	/// @brief A class that extends TimeStampBase and jsonifier::string to provide additional functionality.
-	class TimeStampParse : public TimeStampBase<TimeStampParse>, public jsonifier::string {
+	/// @brief A class that extends time_stamp_base to provide additional functionality.
+	class time_stamp : public time_stamp_base<time_stamp> {
 	  public:
-		template<typename ValueType> friend class TimeStampBase;
+		template<typename value_type> friend class time_stamp_base;
 
-		template<uint64_t size, typename value_type> bool operator==(value_type* lhs) {
-			return jsonifier::string::operator==(lhs);
-		}
+		/// @brief Default constructor for time_stamp.
+		inline time_stamp() = default;
 
-		/// @brief Default constructor for TimeStampParse.
-		inline TimeStampParse() = default;
-
-		/// @brief Assignment operator to assign a string value to TimeStampParse.
-		/// @param valueNew The new string value to assign.
-		/// @return Reference to the modified TimeStampParse instance.
-		inline TimeStampParse& operator=(jsonifier::string_view valueNew) {
-			resize(valueNew.size());
-			std::memcpy(data(), valueNew.data(), size());
+		/// @brief Move assignment operator to move a string value into time_stamp.
+		/// @param valueNew the string value to move.
+		/// @return reference to the modified time_stamp instance.
+		inline time_stamp& operator=(jsonifier::string_view valueNew) {
+			value = convertStringToUintTimeStamp(valueNew);
 			return *this;
 		}
 
-		/// @brief Constructor to create a TimeStampParse instance from a string value.
-		/// @param valueNew The string value to create the instance from.
-		inline TimeStampParse(jsonifier::string_view valueNew) {
+		/// @brief Move constructor to create a time_stamp instance by moving a string value.
+		/// @param valueNew the string value to move.
+		inline time_stamp(jsonifier::string_view valueNew) {
 			*this = valueNew;
 		}
 
-		/// @brief Move assignment operator to move a string value into TimeStampParse.
-		/// @param valueNew The string value to move.
-		/// @return Reference to the modified TimeStampParse instance.
-		inline TimeStampParse& operator=(jsonifier::string&& valueNew) {
-			resize(valueNew.size());
-			std::memcpy(data(), valueNew.data(), size());
-			return *this;
-		}
-
-		/// @brief Move constructor to create a TimeStampParse instance by moving a string value.
-		/// @param valueNew The string value to move.
-		inline TimeStampParse(jsonifier::string&& valueNew) {
-			*this = std::move(valueNew);
-		}
-
-		/// @brief Assignment operator to assign a uint64_t value to TimeStampParse.
-		/// @param valueNew The new uint64_t value to assign.
-		/// @return Reference to the modified TimeStampParse instance.
-		inline TimeStampParse& operator=(uint64_t valueNew) {
-			*this = jsonifier::toString(valueNew);
-			return *this;
-		}
-
-		/// @brief Constructor to create a TimeStampParse instance from a uint64_t value.
-		/// @param valueNew The uint64_t value to create the instance from.
-		inline TimeStampParse(uint64_t valueNew) {
-			*this = valueNew;
-		}
-
-		/// @brief Returns a substring of the TimeStampParse instance.
-		/// @param offset The starting position of the substring.
-		/// @param count The length of the substring.
-		/// @return A new TimeStampParse instance representing the substring.
-		inline TimeStampParse substr(uint64_t offset, uint64_t count) const {
-			return substr(offset, count);
-		}
-
-		/// @brief Returns the size of the TimeStampParse instance.
-		/// @return The size of the TimeStampParse instance.
-		inline uint64_t size() const {
-			return jsonifier::string::size();
-		}
-
-		/// @brief Returns a pointer to the character data of the TimeStampParse instance.
-		/// @return Pointer to the character data.
-		inline char* data() const {
-			return jsonifier::string::data();
-		}
-
-		/// @brief Conversion operator to convert TimeStampParse to uint64_t.
-		/// @return The uint64_t value represented by the TimeStampParse instance.
-		inline operator uint64_t() const {
-			if (empty()) {
-				return 0;
-			} else {
-				return convertstring_toUintTimeStamp(*this);
-			}
-		}
-	};
-
-	/// @brief A class that extends TimeStampBase to provide additional functionality.
-	class TimeStamp : public TimeStampBase<TimeStamp> {
-	  public:
-		template<typename ValueType> friend class TimeStampBase;
-
-		/// @brief Default constructor for TimeStamp.
-		inline TimeStamp() = default;
-
-		/// @brief Assignment operator to assign a TimeStampParse value to TimeStamp.
-		/// @param other The TimeStampParse instance to assign.
-		/// @return Reference to the modified TimeStamp instance.
-		inline TimeStamp& operator=(const TimeStampParse& other) {
-			value = other.operator uint64_t();
-			return *this;
-		}
-
-		/// @brief Constructor to create a TimeStamp instance from a TimeStampParse value.
-		/// @param other The TimeStampParse instance to create the instance from.
-		inline TimeStamp(const TimeStampParse& other) {
-			*this = other;
-		}
-
-		/// @brief Assignment operator to assign a string value to TimeStamp.
-		/// @param valueNew The new string value to assign.
-		/// @return Reference to the modified TimeStamp instance.
-		inline TimeStamp& operator=(jsonifier::string_view valueNew) {
-			value = std::stoull(valueNew.data());
-			return *this;
-		}
-
-		/// @brief Constructor to create a TimeStamp instance from a string value.
-		/// @param valueNew The string value to create the instance from.
-		inline TimeStamp(jsonifier::string_view valueNew) {
-			*this = valueNew;
-		}
-
-		/// @brief Move assignment operator to move a string value into TimeStamp.
-		/// @param valueNew The string value to move.
-		/// @return Reference to the modified TimeStamp instance.
-		inline TimeStamp& operator=(jsonifier::string&& valueNew) {
-			value = std::stoull(valueNew.data());
-			return *this;
-		}
-
-		/// @brief Move constructor to create a TimeStamp instance by moving a string value.
-		/// @param valueNew The string value to move.
-		inline TimeStamp(jsonifier::string&& valueNew) {
-			*this = std::move(valueNew);
-		}
-
-		/// @brief Assignment operator to assign a uint64_t value to TimeStamp.
-		/// @param valueNew The new uint64_t value to assign.
-		/// @return Reference to the modified TimeStamp instance.
-		inline TimeStamp& operator=(uint64_t valueNew) {
+		/// @brief Assignment operator to assign a uint64_t value to time_stamp.
+		/// @param valueNew the new uint64_t value to assign.
+		/// @return reference to the modified time_stamp instance.
+		inline time_stamp& operator=(uint64_t valueNew) {
 			value = valueNew;
 			return *this;
 		}
 
-		/// @brief Constructor to create a TimeStamp instance from a uint64_t value.
-		/// @param valueNew The uint64_t value to create the instance from.
-		inline TimeStamp(uint64_t valueNew) {
+		/// @brief Constructor to create a time_stamp instance from a uint64_t value.
+		/// @param valueNew the uint64_t value to create the instance from.
+		inline time_stamp(uint64_t valueNew) {
 			*this = valueNew;
 		}
 
-		/// @brief Conversion operator to convert TimeStamp to int64_t.
-		/// @return The int64_t value represented by the TimeStamp instance.
+		/// @brief Conversion operator to convert time_stamp to int64_t.
+		/// @return the int64_t value represented by the time_stamp instance.
 		inline operator uint64_t() const {
 			return value;
 		}
 
-		/// @brief Conversion operator to convert TimeStamp to jsonifier::string.
-		/// @return The jsonifier::string value represented by the TimeStamp instance.
+		/// @brief Conversion operator to convert time_stamp to jsonifier::string.
+		/// @return the jsonifier::string value represented by the time_stamp instance.
 		inline operator jsonifier::string() const {
-			return convertUintTostring_timeStamp(value);
+			return convertUintToStringTimeStamp(value);
 		}
 
 	  protected:
-		uint64_t value{};///< The value stored in the TimeStamp instance.
+		uint64_t value{};///< The value stored in the time_stamp instance.
 	};
 
-	class Snowflake;
+	class snowflake;
 
-	template<typename ValueType = void> class ToEntity {
-		inline ValueType toEntity(Snowflake initialId, Snowflake additionalId);
+	template<typename value_type = void> class to_entity {
+		inline static value_type toEntity(snowflake initialId, snowflake additionalId);
 
-		inline ValueType toEntity(Snowflake initialId);
+		inline static value_type toEntity(snowflake initialId);
 	};
 
-	/// @brief A class representing a Snowflake identifier with various operations.
-	class Snowflake {
+	/// @brief A class representing a snowflake identifier with various operations.
+	class snowflake {
 	  public:
-		/// @brief Default constructor for Snowflake.
-		inline Snowflake() = default;
+		/// @brief Default constructor for snowflake.
+		inline snowflake() = default;
 
-		template<typename ValueType> inline ValueType toEntity() {
-			return ToEntity<ValueType>{}.toEntity(*this);
+		template<typename value_type> inline value_type toEntity() {
+			return to_entity<value_type>{}.toEntity(*this);
 		}
 
-		template<typename ValueType> inline ValueType toEntity(Snowflake additionalId) {
-			return ToEntity<ValueType>{}.toEntity(*this, additionalId);
+		template<typename value_type> inline value_type toEntity(snowflake additionalId) {
+			return to_entity<value_type>{}.toEntity(*this, additionalId);
 		}
 
-		/// @brief Assignment operator to assign a string value to Snowflake.
-		/// @param other The string value to assign.
-		/// @return Reference to the modified Snowflake instance.
-		inline Snowflake& operator=(jsonifier::string_view other) {
+		/// @brief Assignment operator to assign a string value to snowflake.
+		/// @param other the string value to assign.
+		/// @return reference to the modified snowflake instance.
+		inline snowflake& operator=(const jsonifier::string& other) {
 			if (other.size() > 0) {
 				for (auto& value: other) {
 					if (!std::isdigit(static_cast<uint8_t>(value))) {
 						return *this;
 					}
 				}
-				id = std::stoull(other.data());
+				id = jsonifier::strToUint64(other.data());
 			}
 			return *this;
 		}
 
-		/// @brief Constructor to create a Snowflake instance from a string value.
-		/// @param other The string value to create the instance from.
-		inline Snowflake(jsonifier::string_view other) {
+		/// @brief Constructor to create a snowflake instance from a string value.
+		/// @param other the string value to create the instance from.
+		inline snowflake(const jsonifier::string& other) {
 			*this = other;
 		}
 
-		/// @brief Assignment operator to assign a uint64_t value to Snowflake.
-		/// @param other The uint64_t value to assign.
-		/// @return Reference to the modified Snowflake instance.
-		inline Snowflake& operator=(uint64_t other) {
+		/// @brief Assignment operator to assign a uint64_t value to snowflake.
+		/// @param other the uint64_t value to assign.
+		/// @return reference to the modified snowflake instance.
+		inline snowflake& operator=(uint64_t other) {
 			id = other;
 			return *this;
 		}
 
-		/// @brief Constructor to create a Snowflake instance from a uint64_t value.
-		/// @param other The uint64_t value to create the instance from.
-		inline Snowflake(uint64_t other) {
+		/// @brief Constructor to create a snowflake instance from a uint64_t value.
+		/// @param other the uint64_t value to create the instance from.
+		inline snowflake(uint64_t other) {
 			*this = other;
 		}
 
-		/// @brief Conversion operator to convert Snowflake to jsonifier::string.
-		/// @return The jsonifier::string value represented by the Snowflake instance.
+		/// @brief Conversion operator to convert snowflake to jsonifier::string.
+		/// @return the jsonifier::string value represented by the snowflake instance.
 		inline explicit operator jsonifier::string() const {
 			return jsonifier::toString(id);
 		}
 
-		/// @brief Explicit conversion operator to convert Snowflake to uint64_t.
-		/// @return The uint64_t value represented by the Snowflake instance.
+		/// @brief Explicit conversion operator to convert snowflake to uint64_t.
+		/// @return the uint64_t value represented by the snowflake instance.
 		inline explicit operator const uint64_t&() const {
 			return id;
 		}
 
-		inline bool operator==(const Snowflake& other) const {
-			return this->id == other.id;
+		inline bool operator==(const snowflake& other) const {
+			return id == other.id;
 		}
 
 		inline bool operator==(jsonifier::string_view other) const {
-			return this->operator jsonifier::string() == other;
+			return operator jsonifier::string() == other;
 		}
 
 		inline bool operator==(uint64_t other) const {
-			return this->id == other;
+			return id == other;
 		}
 
-		/// @brief Concatenation operator to concatenate Snowflake and a string value.
-		/// @tparam ValueType The type of the string value.
-		/// @param rhs The string value to concatenate.
-		/// @return The concatenated string.
-		template<jsonifier_internal::string_t ValueType> inline jsonifier::string operator+(jsonifier::string_view rhs) const {
+		/// @brief Concatenation operator to concatenate snowflake and a string value.
+		/// @tparam value_type the type of the string value.
+		/// @param rhs the string value to concatenate.
+		/// @return the concatenated string.
+		template<jsonifier::concepts::string_t value_type> inline jsonifier::string operator+(jsonifier::string_view rhs) const {
 			jsonifier::string newString{ operator jsonifier::string() };
 			newString += rhs;
 			return newString;
 		}
 
-		/// @brief Friend function to concatenate Snowflake and a string value.
-		/// @param lhs The Snowflake instance.
-		/// @param other The string value to concatenate.
-		/// @return The concatenated string.
-		inline friend jsonifier::string operator+(const Snowflake& lhs, jsonifier::string_view other) {
+		/// @brief Friend function to concatenate snowflake and a string value.
+		/// @param lhs the snowflake instance.
+		/// @param other the string value to concatenate.
+		/// @return the concatenated string.
+		inline friend jsonifier::string operator+(const snowflake& lhs, jsonifier::string_view other) {
 			jsonifier::string lhsNew{ static_cast<jsonifier::string>(lhs) };
 			lhsNew += other;
 			return lhsNew;
 		}
 
 		/// @brief Friend function to concatenate two values.
-		/// @tparam ValueType01 The type of the first value.
-		/// @tparam ValueType02 The type of the second value.
-		/// @param lhs The first value.
-		/// @param rhs The second value.
-		/// @return The concatenated string.
-		template<jsonifier_internal::string_t ValueType01, typename ValueType02> friend inline jsonifier::string operator+(const ValueType01& lhs, const ValueType02& rhs) {
+		/// @tparam value_type01 the type of the first value.
+		/// @tparam value_type02 the type of the second value.
+		/// @param lhs the first value.
+		/// @param rhs the second value.
+		/// @return the concatenated string.
+		template<jsonifier::concepts::string_t value_type01, typename value_type02> friend inline jsonifier::string operator+(const value_type01& lhs, const value_type02& rhs) {
 			jsonifier::string newString{ lhs };
 			newString += rhs.operator jsonifier::string();
 			return newString;
 		}
 
 		/// @brief Friend function to concatenate two values.
-		/// @tparam ValueType01 The type of the first value.
-		/// @tparam ValueType02 The type of the second value.
-		/// @param lhs The first value.
-		/// @param rhs The second value.
-		/// @return The concatenated string.
-		template<uint64_t size> friend inline jsonifier::string operator+(const char (&lhs)[size], const Snowflake& rhs) {
+		/// @tparam value_type01 the type of the first value.
+		/// @tparam value_type02 the type of the second value.
+		/// @param lhs the first value.
+		/// @param rhs the second value.
+		/// @return the concatenated string.
+		template<uint64_t size> friend inline jsonifier::string operator+(const char (&lhs)[size], const snowflake& rhs) {
 			jsonifier::string newString{ lhs };
 			newString += rhs.operator jsonifier::string();
 			return newString;
 		}
 
-		/// @brief Converts the Snowflake ID into a time and date stamp.
-		/// @return A jsonifier::string containing the timestamp.
+		/// @brief Converts the snowflake id into a time and date stamp.
+		/// @return a jsonifier::string containing the timestamp.
 		inline jsonifier::string getCreatedAtTimeStamp() {
 			uint64_t timeStamp{ static_cast<uint64_t>((id >> 22) + 1420070400000) };
-			return TimeStamp::getISO8601TimeStamp(TimeFormat::LongDateTime, timeStamp);
+			return time_stamp::getISO8601TimeStamp(time_format::long_date_time, timeStamp);
 		}
 
 	  protected:
-		uint64_t id{};///< The Snowflake ID.
+		uint64_t id{};///< The snowflake id.
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, Snowflake sf) {
+	inline std::ostream& operator<<(std::ostream& os, snowflake sf) {
 		os << sf.operator jsonifier::string();
 		return os;
 	}
 
-	/// @brief An exception class derived from std::runtime_error for DCA-related exceptions.
-	struct DCAException : public std::runtime_error {
-		/// @brief Constructor to create a DCAException with an error message and optional source location.
-		/// @param error The error message.
-		/// @param location The source location of the exception (default: current location).
-		inline DCAException(jsonifier::string_view error, std::source_location location = std::source_location::current())
-			: std::runtime_error(std::string{ "Thrown From: " + jsonifier::string{ location.file_name() } + jsonifier::string{ " (" } + jsonifier::toString(location.line()) + ":" +
+	/// @brief An exception class derived from std::runtime_error for dca-related exceptions.
+	struct dca_exception : public std::runtime_error {
+		/// @brief Constructor to create a dca_exception with an error message and optional source location.
+		/// @param error the error message.
+		/// @param location the source location of the exception (default: current location).
+		inline dca_exception(jsonifier::string_view error, std::source_location location = std::source_location::current())
+			: std::runtime_error(std::string{ "thrown from: " + jsonifier::string{ location.file_name() } + jsonifier::string{ " (" } + jsonifier::toString(location.line()) + ":" +
 				  jsonifier::toString(location.column()) + ")\n" + error }){};
 	};
 
@@ -916,7 +823,7 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// @brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
-	enum class StreamType { None = 0, Client = 1, Server = 2 };
+	enum class stream_type { none = 0, client = 1, server = 2 };
 
 	/**@}*/
 }

@@ -27,7 +27,6 @@
 /// Oct 6, 2021
 /// https://discordcoreapi.com
 /// \file Index.hpp
-
 #pragma once
 
 #include <discordcoreapi/ToEntity.hpp>

@@ -23,218 +23,217 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// WebHookEntities.hpp - The header file for WebHookData relate stuff.
+/// WebHookEntities.hpp - the header file for web_hook_data relate stuff.
 /// Dec 1, 2021
 /// https://discordcoreapi.com
 /// \file WebHookEntities.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/MessageEntities.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
 
-	/// @brief For creating a new WebHookData.
-	struct CreateWebHookData {
-		Snowflake channelId{};///< The ChannelData within which to create the WebHookData.
+	/// @brief For creating a new web_hook_data.
+	struct create_web_hook_data {
+		snowflake channelId{};///< The channel_data within which to create the web_hook_data.
 		jsonifier::string avatar{};///< Image for the default webhook avatar.
 		jsonifier::string name{};///< Name of the webhook(1 - 80 characters).
 	};
 
-	/// @brief For executing a WebHook.
-	class DiscordCoreAPI_Dll ExecuteWebHookData {
+	/// @brief For executing a web_hook.
+	class DiscordCoreAPI_Dll execute_web_hook_data {
 	  public:
-		template<typename ValueType> friend struct jsonifier::core;
-		friend class CreateEphemeralFollowUpMessageData;
-		friend class CreateFollowUpMessageData;
-		friend class EditFollowUpMessageData;
-		friend class Interactions;
-		friend class WebHooks;
+		template<typename value_type> friend struct jsonifier::core;
+		friend class create_ephemeral_follow_up_message_data;
+		friend class create_follow_up_message_data;
+		friend class edit_follow_up_message_data;
+		friend class interactions;
+		friend class web_hooks;
 
-		Snowflake threadId{};///< Send a message to the specified thread within a webhook's ChannelData. The thread will automatically be unarchived.
+		snowflake threadId{};///< Send a message to the specified thread within a webhook's channel_data. the thread will automatically be unarchived.
 		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
 
-		ExecuteWebHookData() = default;
+		execute_web_hook_data() = default;
 
-		ExecuteWebHookData(WebHookData dataNew);
+		execute_web_hook_data(web_hook_data dataNew);
 
-		/// @brief Adds a button to the response MessageData.
-		/// @param disabled Whether the button is active or not.
-		/// @param customIdNew A custom id to give for identifying the button.
-		/// @param buttonLabel A visible label for the button.
-		/// @param buttonStyle The style of the button.
-		/// @param emojiName An emoji name, if desired.
-		/// @param emojiId An emoji id, if desired.
-		/// @param url A url, if applicable.
-		/// @return RespondToInputEventData& A reference to this data structure.
-		ExecuteWebHookData& addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, ButtonStyle buttonStyle,
-			jsonifier::string_view emojiName = "", Snowflake emojiId = Snowflake{}, jsonifier::string_view url = "");
+		/// @brief Adds a button to the response message_data.
+		/// @param disabled whether the button is active or not.
+		/// @param customIdNew a custom id to give for identifying the button.
+		/// @param buttonLabel a visible label for the button.
+		/// @param buttonStyle the style of the button.
+		/// @param emojiName an emoji name, if desired.
+		/// @param emojiId an emoji id, if desired.
+		/// @param url a url, if applicable.
+		/// @return respond_to_input_event_data& a reference to this data structure.
+		execute_web_hook_data& addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, button_style buttonStyle,
+			jsonifier::string_view emojiName = "", snowflake emojiId = snowflake{}, jsonifier::string_view url = "");
 
-		/// @brief Adds a select-menu to the response MessageData.
-		/// @param disabled Whether the select-menu is active or not.
-		/// @param customIdNew A custom id to give for identifying the select-menu.
-		/// @param options A vector of select-menu-options to offer.
-		/// @param placeholder Custom placeholder text if nothing is selected, max 100 characters.
-		/// @param maxValues Maximum number of selections that are possible.
-		/// @param minValues Minimum required number of selections that are required.
-		/// @param type The type of select-menu that this is.
-		/// @param channelTypes Types of channels that can be accepted if this is of the type ChannelType.
-		/// @return RespondToInputEventData& A reference to this data structure.
-		ExecuteWebHookData& addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<SelectOptionData> options, jsonifier::string_view placeholder,
-			int32_t maxValues, int32_t minValues, SelectMenuType type, jsonifier::vector<ChannelType> channelTypes = jsonifier::vector<ChannelType>{});
+		/// @brief Adds a select-menu to the response message_data.
+		/// @param disabled whether the select-menu is active or not.
+		/// @param customIdNew a custom id to give for identifying the select-menu.
+		/// @param options a vector of select-menu-options to offer.
+		/// @param placeholder custom placeholder text if nothing is selected, max 100 characters.
+		/// @param maxValues maximum number of selections that are possible.
+		/// @param minValues minimum required number of selections that are required.
+		/// @param type the type of select-menu that this is.
+		/// @param channelTypes types of channels that can be accepted if this is of the type channel_type.
+		/// @return respond_to_input_event_data& a reference to this data structure.
+		execute_web_hook_data& addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<select_option_data> options, jsonifier::string_view placeholder,
+			int32_t maxValues, int32_t minValues, select_menu_type type, jsonifier::vector<channel_type> channelTypes = jsonifier::vector<channel_type>{});
 
-		/// @brief Adds a modal to the response MessageData.
-		/// @param topTitleNew A title for the modal.
-		/// @param topCustomIdNew A custom id to give for the modal.
-		/// @param titleNew A title for the modal's individual input.
-		/// @param customIdNew A custom id to give for the modal's individual input.
-		/// @param required Is it a required response?
-		/// @param minLength Minimum length.
-		/// @param maxLength Maximum length.
-		/// @param inputStyle The input style.
-		/// @param label A label for the modal.
-		/// @param placeholder A placeholder for the modal.
-		/// @return RespondToInputEventData& A reference to this data structure.
-		ExecuteWebHookData& addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
-			jsonifier::string_view customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, jsonifier::string_view label = "",
+		/// @brief Adds a modal to the response message_data.
+		/// @param topTitleNew a title for the modal.
+		/// @param topCustomIdNew a custom id to give for the modal.
+		/// @param titleNew a title for the modal's individual input.
+		/// @param customIdNew a custom id to give for the modal's individual input.
+		/// @param required is it a required response?
+		/// @param minLength minimum length.
+		/// @param maxLength maximum length.
+		/// @param inputStyle the input style.
+		/// @param label a label for the modal.
+		/// @param placeholder a placeholder for the modal.
+		/// @return respond_to_input_event_data& a reference to this data structure.
+		execute_web_hook_data& addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
+			jsonifier::string_view customIdNew, bool required, int32_t minLength, int32_t maxLength, text_input_style inputStyle, jsonifier::string_view label = "",
 			jsonifier::string_view placeholder = "");
 
 		/// @brief Adds a file to the current collection of files for this message response.
-		/// @param theFile The file to be added.
-		/// @return MessageResponseBase& A reference to this data structure.
-		ExecuteWebHookData& addFile(File theFile);
+		/// @param theFile the file to be added.
+		/// @return message_response_base& a reference to this data structure.
+		execute_web_hook_data& addFile(file theFile);
 
 		/// @brief For setting the allowable mentions in a response.
-		/// @param dataPackage An AllowedMentionsData structure.
-		/// @return MessageResponseBase& A reference to this data structure.
-		ExecuteWebHookData& addAllowedMentions(AllowedMentionsData dataPackage);
+		/// @param dataPackage an allowed_mentions_data structure.
+		/// @return message_response_base& a reference to this data structure.
+		execute_web_hook_data& addAllowedMentions(allowed_mentions_data dataPackage);
 
 		/// @brief For setting the components in a response.
-		/// @param dataPackage An ActionRowData structure.
-		/// @return MessageResponseBase& A reference to this data structure.
-		ExecuteWebHookData& addComponentRow(ActionRowData dataPackage);
+		/// @param dataPackage an action_row_data structure.
+		/// @return message_response_base& a reference to this data structure.
+		execute_web_hook_data& addComponentRow(action_row_data dataPackage);
 
 		/// @brief For setting the embeds in a response.
-		/// @param dataPackage An EmbedData structure.
-		/// @return MessageResponseBase& A reference to this data structure.
-		ExecuteWebHookData& addMessageEmbed(EmbedData dataPackage);
+		/// @param dataPackage an embed_data structure.
+		/// @return message_response_base& a reference to this data structure.
+		execute_web_hook_data& addMessageEmbed(embed_data dataPackage);
 
 		/// @brief For setting the content in a response.
-		/// @param dataPackage A string, containing the content.
-		/// @return MessageResponseBase& A reference to this data structure.
-		ExecuteWebHookData& addContent(jsonifier::string_view dataPackage);
+		/// @param dataPackage a string, containing the content.
+		/// @return message_response_base& a reference to this data structure.
+		execute_web_hook_data& addContent(jsonifier::string_view dataPackage);
 
 		/// @brief For setting the tts status of a response.
-		/// @param enabledTTs A bool.
-		/// @return MessageResponseBase& A reference to this data structure.
-		ExecuteWebHookData& setTTSStatus(bool enabledTTs);
+		/// @param enabledTTs a bool.
+		/// @return message_response_base& a reference to this data structure.
+		execute_web_hook_data& setTTSStatus(bool enabledTTs);
 
 	  protected:
-		jsonifier::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
-		jsonifier::vector<ActionRowData> components{};///< Array of message component the components to include with the message.
-		AllowedMentionsData allowedMentions{};///< Allowed mention object.
-		jsonifier::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
-		jsonifier::vector<File> files{};///< File contents the contents of the file being sent.
-		jsonifier::string webhookToken{};///< The WebHookData token you would like to execute.
+		jsonifier::vector<attachment_data> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
+		jsonifier::vector<action_row_data> components{};///< Array of message component the components to include with the message.
+		allowed_mentions_data allowedMentions{};///< Allowed mention object.
+		jsonifier::vector<embed_data> embeds{};///< Array of up to 10 embed objects.
+		jsonifier::vector<file> files{};///< File contents the contents of the file being sent.
+		jsonifier::string webhookToken{};///< The web_hook_data token you would like to execute.
 		jsonifier::string avatarUrl{};///< Override the default avatar of the webhook.
 		jsonifier::string userName{};///< Override the default username of the webhook.
-		jsonifier::string customId{};///< Custom id for the modal.
-		Snowflake webHookId{};///< The WebHookData you would like to execute.
+		jsonifier::string customId{};///< custom id for the modal.
+		snowflake webHookId{};///< The web_hook_data you would like to execute.
 		jsonifier::string content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
 		jsonifier::string title{};///< Title for the modal.
 		uint64_t flags{};///< Flags combined as a bitfield.
-		bool tts{};///< True if this is a TTS message.
+		bool tts{};///< True if this is a tts message.
 	};
 
-	/// @brief For editing a WebHook MessageData.
-	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
+	/// @brief For editing a web_hook message_data.
+	class DiscordCoreAPI_Dll edit_web_hook_data : public execute_web_hook_data {
 	  public:
-		template<typename ValueType> friend struct jsonifier::core;
-		friend class EditInteractionResponseData;
-		friend class EditFollowUpMessageData;
-		friend class Interactions;
-		friend class WebHooks;
+		template<typename value_type> friend struct jsonifier::core;
+		friend class edit_interaction_response_data;
+		friend class edit_follow_up_message_data;
+		friend class interactions;
+		friend class web_hooks;
 
-		Snowflake messageId{};///< The Message Snowflake to collect.
-		Snowflake threadId{};///< Send a message to the specified thread within a webhook's ChannelData. The thread will automatically be unarchived.
+		snowflake messageId{};///< The message snowflake to collect.
+		snowflake threadId{};///< Send a message to the specified thread within a webhook's channel_data. the thread will automatically be unarchived.
 		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
 
-		ExecuteWebHookData& setTTSStatus(bool) = delete;
+		execute_web_hook_data& setTTSStatus(bool) = delete;
 
-		EditWebHookData() = default;
+		edit_web_hook_data() = default;
 
-		EditWebHookData(WebHookData dataNew);
+		edit_web_hook_data(web_hook_data dataNew);
 	};
 
-	/// @brief For collecting a list of WebHooks from a chosen ChannelData.
-	struct GetChannelWebHooksData {
-		Snowflake channelId{};///< The ChannelData from which to collect the WebHooks.
+	/// @brief For collecting a list of web_hooks from a chosen channel_data.
+	struct get_channel_web_hooks_data {
+		snowflake channelId{};///< The channel_data from which to collect the web_hooks.
 	};
 
-	/// @brief For collecting a list of WebHooks from a chosen Guild.
-	struct GetGuildWebHooksData {
-		Snowflake guildId{};///< The Guild from which to collect the WebHooks.
+	/// @brief For collecting a list of web_hooks from a chosen guild.
+	struct get_guild_web_hooks_data {
+		snowflake guildId{};///< The guild from which to collect the web_hooks.
 	};
 
-	/// @brief Collects a single WebHookData.
-	struct GetWebHookData {
-		Snowflake webHookId{};///< Snowflake of the desired WebHookData to collect.
+	/// @brief Collects a single web_hook_data.
+	struct get_web_hook_data {
+		snowflake webHookId{};///< Snowflake of the desired web_hook_data to collect.
 	};
 
-	/// @brief Collects a single WebHookData, using the Token and Snowflake.
-	struct GetWebHookDataWithTokenData {
-		jsonifier::string webhookToken{};///< Token of the desired WebHookData.
-		Snowflake webHookId{};///< Snowflake of the desired WebHookData.
+	/// @brief Collects a single web_hook_data, using the token and snowflake.
+	struct get_web_hook_data_with_token_data {
+		jsonifier::string webhookToken{};///< Token of the desired web_hook_data.
+		snowflake webHookId{};///< Snowflake of the desired web_hook_data.
 	};
 
-	/// @brief For modifying a WebHook.
-	struct ModifyWebHookData {
-		Snowflake channelId{};///< The new ChannelData id this webhook should be moved to.
-		Snowflake webHookId{};///< The WebHookData to be modified.
+	/// @brief For modifying a web_hook.
+	struct modify_web_hook_data {
+		snowflake channelId{};///< The new channel_data id this webhook should be moved to.
+		snowflake webHookId{};///< The web_hook_data to be modified.
 		jsonifier::string avatar{};///< Image responseData for the default webhook avatar.
 		jsonifier::string name{};///< The default name of the webhook.
 	};
 
-	/// @brief For modifying a WebHook.
-	struct ModifyWebHookDataWithTokenData {
-		jsonifier::string webhookToken{};///< Token of the desired WebHookData.
-		Snowflake channelId{};///< The new ChannelData id this webhook should be moved to.
-		Snowflake webHookId{};///< The WebHookData to be modified.
+	/// @brief For modifying a web_hook.
+	struct modify_web_hook_data_with_token_data {
+		jsonifier::string webhookToken{};///< Token of the desired web_hook_data.
+		snowflake channelId{};///< The new channel_data id this webhook should be moved to.
+		snowflake webHookId{};///< The web_hook_data to be modified.
 		jsonifier::string avatar{};///< Image responseData for the default webhook avatar.
 		jsonifier::string name{};///< The default name of the webhook.
 	};
 
-	/// @brief For deleting a WebHook.
-	struct DeleteWebHookData {
-		Snowflake webHookId{};///< The desired WebHookData to delete.
+	/// @brief For deleting a web_hook.
+	struct delete_web_hook_data {
+		snowflake webHookId{};///< The desired web_hook_data to delete.
 	};
 
-	/// @brief For deleting a WebHook, using its Token.
-	struct DeleteWebHookDataWithTokenData {
-		jsonifier::string webhookToken{};///< Token of the desired WebHookData.
-		Snowflake webHookId{};///< The desired WebHookData to delete.
+	/// @brief For deleting a web_hook, using its token.
+	struct delete_web_hook_data_with_token_data {
+		jsonifier::string webhookToken{};///< Token of the desired web_hook_data.
+		snowflake webHookId{};///< The desired web_hook_data to delete.
 	};
 
-	/// @brief For getting a WebHook MessageData.
-	struct GetWebHookDataMessageData {
-		jsonifier::string webhookToken{};///< The WebHookData token you would like to collect.
-		Snowflake webHookId{};///< The WebHookData you would like to collect.
-		Snowflake messageId{};///< The Message Snowflake to collect.
-		Snowflake threadId{};///< The thread that the Message is in.
+	/// @brief For getting a web_hook message_data.
+	struct get_web_hook_data_message_data {
+		jsonifier::string webhookToken{};///< The web_hook_data token you would like to collect.
+		snowflake webHookId{};///< The web_hook_data you would like to collect.
+		snowflake messageId{};///< The message snowflake to collect.
+		snowflake threadId{};///< The thread that the message is in.
 	};
 
-	/// @brief For deleting a WebHook MessageData.
-	struct DeleteWebHookDataMessageData {
-		jsonifier::string webhookToken{};///< The WebHookData token you would like to collect.
-		Snowflake webHookId{};///< The WebHookData you would like to collect.
-		Snowflake messageId{};///< The Message Snowflake to collect.
-		Snowflake threadId{};///< Send a message to the specified thread within a webhook's ChannelData. The thread will automatically be unarchived.
+	/// @brief For deleting a web_hook message_data.
+	struct delete_web_hook_data_message_data {
+		jsonifier::string webhookToken{};///< The web_hook_data token you would like to collect.
+		snowflake webHookId{};///< The web_hook_data you would like to collect.
+		snowflake messageId{};///< The message snowflake to collect.
+		snowflake threadId{};///< Send a message to the specified thread within a webhook's channel_data. the thread will automatically be unarchived.
 	};
 
 	/**@}*/
@@ -243,78 +242,78 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// @brief An interface class for the WebHookData related Discord endpoints;
-	class DiscordCoreAPI_Dll WebHooks {
+	/// @brief An interface class for the web_hook_data related discord endpoints;
+	class DiscordCoreAPI_Dll web_hooks {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(discord_core_internal::https_client*);
 
-		/// @brief Creates a new WebHookData.
-		/// @param dataPackage A GetMessageData structure.
-		/// @return A CoRoutine containing a WebHook.
-		static CoRoutine<WebHookData> createWebHookDataAsync(CreateWebHookData dataPackage);
+		/// @brief Creates a new web_hook_data.
+		/// @param dataPackage a get_message_data structure.
+		/// @return a co_routine containing a web_hook.
+		static co_routine<web_hook_data> createWebHookAsync(create_web_hook_data dataPackage);
 
-		/// @brief Collects a list of WebHooks from a chosen ChannelData.
-		/// @param dataPackage A GetChannelWebHooksData structure.
-		/// @return A CoRoutine containing a jsonifier::vector<WebHookData>.
-		static CoRoutine<jsonifier::vector<WebHookData>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
+		/// @brief Collects a list of web_hooks from a chosen channel_data.
+		/// @param dataPackage a get_channel_web_hooks_data structure.
+		/// @return a co_routine containing a jsonifier::vector<web_hook_data>.
+		static co_routine<jsonifier::vector<web_hook_data>> getChannelWebHooksAsync(get_channel_web_hooks_data dataPackage);
 
-		/// @brief Collects a list of WebHooks from a chosen Guild.
-		/// @param dataPackage A GetGuildWebHooksData structure.
-		/// @return A CoRoutine containing a jsonifier::vector<WebHookData>.
-		static CoRoutine<jsonifier::vector<WebHookData>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
+		/// @brief Collects a list of web_hooks from a chosen guild.
+		/// @param dataPackage a get_guild_web_hooks_data structure.
+		/// @return a co_routine containing a jsonifier::vector<web_hook_data>.
+		static co_routine<jsonifier::vector<web_hook_data>> getGuildWebHooksAsync(get_guild_web_hooks_data dataPackage);
 
-		/// @brief Collects a single WebHookData.
-		/// @param dataPackage A GetWebHookData structure.
-		/// @return A CoRoutine containing a WebHook.
-		static CoRoutine<WebHookData> getWebHookDataAsync(GetWebHookData dataPackage);
+		/// @brief Collects a single web_hook_data.
+		/// @param dataPackage a get_web_hook_data structure.
+		/// @return a co_routine containing a web_hook.
+		static co_routine<web_hook_data> getWebHookAsync(get_web_hook_data dataPackage);
 
-		/// @brief Collects a single WebHookData, using the Token.
-		/// @param dataPackage A GetWebHookDataWithTokenData structure.
-		/// @return A CoRoutine containing a WebHook.
-		static CoRoutine<WebHookData> getWebHookDataWithTokenAsync(GetWebHookDataWithTokenData dataPackage);
+		/// @brief Collects a single web_hook_data, using the token.
+		/// @param dataPackage a get_web_hook_data_with_token_data structure.
+		/// @return a co_routine containing a web_hook.
+		static co_routine<web_hook_data> getWebHookWithTokenAsync(get_web_hook_data_with_token_data dataPackage);
 
-		/// @brief Modifies a single WebHookData.
-		/// @param dataPackage A ModifyWebHookData structure.
-		/// @return A CoRoutine containing a WebHook.
-		static CoRoutine<WebHookData> modifyWebHookDataAsync(ModifyWebHookData dataPackage);
+		/// @brief Modifies a single web_hook_data.
+		/// @param dataPackage a modify_web_hook_data structure.
+		/// @return a co_routine containing a web_hook.
+		static co_routine<web_hook_data> modifyWebHookAsync(modify_web_hook_data dataPackage);
 
-		/// @brief Modifies a single WebHookData, using its Token.
-		/// @param dataPackage A ModifyWebHookDataWithTokenData structure.
-		/// @return A CoRoutine containing a WebHook.
-		static CoRoutine<WebHookData> modifyWebHookDataWithTokenAsync(ModifyWebHookDataWithTokenData dataPackage);
+		/// @brief Modifies a single web_hook_data, using its token.
+		/// @param dataPackage a modify_web_hook_data_with_token_data structure.
+		/// @return a co_routine containing a web_hook.
+		static co_routine<web_hook_data> modifyWebHookWithTokenAsync(modify_web_hook_data_with_token_data dataPackage);
 
-		/// @brief Deletes a single WebHookData.
-		/// @param dataPackage A DeleteWebHookData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteWebHookDataAsync(DeleteWebHookData dataPackage);
+		/// @brief Deletes a single web_hook_data.
+		/// @param dataPackage a delete_web_hook_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteWebHookAsync(delete_web_hook_data dataPackage);
 
-		/// @brief Deletes a single WebHookData, using its Token.
-		/// @param dataPackage A DeleteWebHookDataWithTokenData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteWebHookDataWithTokenAsync(DeleteWebHookDataWithTokenData dataPackage);
+		/// @brief Deletes a single web_hook_data, using its token.
+		/// @param dataPackage a delete_web_hook_data_with_token_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteWebHookWithTokenAsync(delete_web_hook_data_with_token_data dataPackage);
 
-		/// @brief Executes a single WebHookData.
-		/// @param dataPackage An ExecuteWebHookData structure.
-		/// @return A CoRoutine containing a Message.
-		static CoRoutine<MessageData> executeWebHookDataAsync(ExecuteWebHookData dataPackage);
+		/// @brief Executes a single web_hook_data.
+		/// @param dataPackage an execute_web_hook_data structure.
+		/// @return a co_routine containing a message.
+		static co_routine<message_data> executeWebHookAsync(execute_web_hook_data dataPackage);
 
-		/// @brief Collects a WebHook MessageData.
-		/// @param dataPackage An GetWebHookDataMessageData structure.
-		/// @return A CoRoutine containing a Message.
-		static CoRoutine<MessageData> getWebHookDataMessageAsync(GetWebHookDataMessageData dataPackage);
+		/// @brief Collects a web_hook message_data.
+		/// @param dataPackage an get_web_hook_data_message_data structure.
+		/// @return a co_routine containing a message.
+		static co_routine<message_data> getWebHookMessageAsync(get_web_hook_data_message_data dataPackage);
 
-		/// @brief Edits a WebHook MessageData.
-		/// @param dataPackage An EditWebHookDataMessageData structure.
-		/// @return A CoRoutine containing a Message.
-		static CoRoutine<MessageData> editWebHookDataMessageAsync(EditWebHookData dataPackage);
+		/// @brief Edits a web_hook message_data.
+		/// @param dataPackage an edit_web_hook_data_message_data structure.
+		/// @return a co_routine containing a message.
+		static co_routine<message_data> editWebHookMessageAsync(edit_web_hook_data dataPackage);
 
-		/// @brief Deletes a WebHook MessageData.
-		/// @param dataPackage An DeleteWebHookDataMessageData structure.
-		/// @return A CoRoutine containing a Message.
-		static CoRoutine<void> deleteWebHookDataMessageAsync(DeleteWebHookDataMessageData dataPackage);
+		/// @brief Deletes a web_hook message_data.
+		/// @param dataPackage an delete_web_hook_data_message_data structure.
+		/// @return a co_routine containing a message.
+		static co_routine<void> deleteWebHookMessageAsync(delete_web_hook_data_message_data dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static discord_core_internal::https_client* httpsClient;
 	};
 	/**@}*/
 
