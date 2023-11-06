@@ -23,11 +23,10 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// RateLimitQueue.hpp - Header file for the "RateLimitQueue Stuff".
+/// RateLimitQueue.hpp - Header file for the "rate_limit_queue stuff".
 /// May 12, 2021
 /// https://discordcoreapi.com
 /// \file RateLimitQueue.hpp
-
 #pragma once
 
 #include <discordcoreapi/Utilities/TCPConnection.hpp>
@@ -35,56 +34,81 @@
 #include <discordcoreapi/JsonSpecializations.hpp>
 #include <mutex>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	namespace discord_core_internal {
 
-		struct RateLimitData {
-			friend class HttpsConnectionStackHolder;
-			friend class HttpsConnectionManager;
-			friend class RateLimitStackHolder;
-			friend class HttpsRnRBuilder;
-			friend class RateLimitQueue;
-			friend class HttpsClient;
+		struct rate_limit_data {
+			friend class https_connection_stack_holder;
+			friend class https_connection_manager;
+			friend class rate_limit_stack_holder;
+			friend class https_rnr_builder;
+			friend class rate_limit_queue;
+			friend class https_client;
 
 		  protected:
 			std::unique_lock<std::mutex> lock{ accessMutex, std::defer_lock };
-			std::atomic<Milliseconds> sampledTimeInMs{ Milliseconds{} };
-			std::atomic<Seconds> sRemain{ Seconds{} };
+			std::atomic<milliseconds> sampledTimeInMs{ milliseconds{} };
+			std::atomic<seconds> sRemain{ seconds{} };
 			std::atomic_int64_t getsRemaining{ 1 };
 			std::atomic_bool areWeASpecialBucket{};
 			std::atomic_bool didWeHitRateLimit{};
-			std::atomic_bool haveWeGoneYet{};
 			std::atomic_bool doWeWait{};
 			jsonifier::string bucket{};
 			std::mutex accessMutex{};
 		};
 
-		class RateLimitQueue {
+		class rate_limit_queue {
 		  public:
-			friend class HttpsClient;
+			friend class https_client;
 
-			inline RateLimitQueue() = default;
+			inline rate_limit_queue() = default;
 
 			inline void initialize() {
-				for (int64_t enumOne = static_cast<int64_t>(HttpsWorkloadType::Unset); enumOne != static_cast<int64_t>(HttpsWorkloadType::LAST); enumOne++) {
-					auto tempBucket = jsonifier::toString(std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count());
-					buckets.emplace(static_cast<HttpsWorkloadType>(enumOne), tempBucket);
-					rateLimits.emplace(tempBucket, makeUnique<RateLimitData>());
+				for (int64_t enumOne = static_cast<int64_t>(https_workload_type::Unset); enumOne != static_cast<int64_t>(https_workload_type::Last); enumOne++) {
+					auto tempBucket = jsonifier::toString(std::chrono::duration_cast<nanoseconds>(hrclock::now().time_since_epoch()).count());
+					buckets.emplace(static_cast<https_workload_type>(enumOne), tempBucket);
+					rateLimits.emplace(tempBucket, makeUnique<rate_limit_data>());
 					std::this_thread::sleep_for(1ms);
 				}
 			}
 
-			inline RateLimitData* getEndpointAccess(HttpsWorkloadType workloadType) {
+			inline rate_limit_data* getEndpointAccess(https_workload_type workloadType) {
+				stop_watch<milliseconds> stopWatch{ milliseconds{ 25000 } };
+				stopWatch.reset();
 				if (rateLimits[buckets[workloadType]]->getsRemaining.load(std::memory_order_acquire) <= 0) {
+					auto newNow = std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(sys_clock::now().time_since_epoch());
+					while ((newNow -
+							   std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(
+								   rateLimits[buckets[workloadType]]->sampledTimeInMs.load(std::memory_order_acquire)))
+							   .count() >=
+						std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(rateLimits[buckets[workloadType]]->sRemain.load(std::memory_order_acquire))
+							.count()) {
+						if (stopWatch.hasTimeElapsed()) {
+							return nullptr;
+						}
+						newNow = std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(sys_clock::now().time_since_epoch());
+						std::this_thread::sleep_for(1us);
+					}
+				}
+				stopWatch.reset();
+				while (!rateLimits[buckets[workloadType]]->accessMutex.try_lock()) {
+					std::this_thread::sleep_for(1us);
+					if (stopWatch.hasTimeElapsed()) {
+						return nullptr;
+					}
 				}
 				return rateLimits[buckets[workloadType]].get();
 			}
 
+			inline void releaseEndPointAccess(https_workload_type type) {
+				rateLimits[buckets[type]]->accessMutex.unlock();
+			}
+
 		  protected:
-			UnorderedMap<jsonifier::string, UniquePtr<RateLimitData>> rateLimits{};
-			UnorderedMap<HttpsWorkloadType, jsonifier::string> buckets{};
+			unordered_map<jsonifier::string, unique_ptr<rate_limit_data>> rateLimits{};
+			unordered_map<https_workload_type, jsonifier::string> buckets{};
 		};
 
-	}// namespace DiscordCoreInternal
+	}// namespace discord_core_internal
 }

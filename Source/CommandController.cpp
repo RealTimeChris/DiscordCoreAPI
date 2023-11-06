@@ -31,22 +31,23 @@
 #include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	UnorderedMap<jsonifier::vector<jsonifier::string>, UniquePtr<BaseFunction>> functions{};
+	unordered_map<jsonifier::vector<jsonifier::string>, unique_ptr<base_function>> functions{};
 
-	void CommandController::registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, UniquePtr<BaseFunction> baseFunction) {
+	void command_controller::registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, unique_ptr<base_function> baseFunction) {
 		functions[functionNames] = std::move(baseFunction);
 	}
 
-	UnorderedMap<jsonifier::vector<jsonifier::string>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
+	unordered_map<jsonifier::vector<jsonifier::string>, unique_ptr<base_function>>& command_controller::getFunctions() {
 		return functions;
 	};
 
-	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData&& commandData) {
-		BaseFunctionArguments theArgsNew{ commandData };
-		co_await NewThreadAwaitable<void>();
-		UniquePtr<BaseFunction> functionPointer{ getCommand(theArgsNew.getCommandName()) };
+	co_routine<void> command_controller::checkForAndRunCommand(command_data&& commandData) {
+		base_function_arguments theArgsNew{ commandData };
+		co_await newThreadAwaitable<void>();
+		base_function_arguments theArgsNewer{ theArgsNew };
+		unique_ptr<base_function> functionPointer{ getCommand(theArgsNewer.getCommandName()) };
 		if (!functionPointer.get()) {
 			co_return;
 		}
@@ -55,7 +56,7 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	UniquePtr<BaseFunction> CommandController::getCommand(jsonifier::string_view commandName) {
+	unique_ptr<base_function> command_controller::getCommand(jsonifier::string_view commandName) {
 		jsonifier::string functionName{};
 		bool isItFound{};
 		if (commandName.size() > 0) {
@@ -70,13 +71,13 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (isItFound) {
-			UniquePtr<BaseFunction> newValue = createFunction(functionName);
+			unique_ptr<base_function> newValue = createFunction(functionName);
 			return newValue;
 		}
 		return nullptr;
 	}
 
-	UniquePtr<BaseFunction> CommandController::createFunction(jsonifier::string_view functionName) {
+	unique_ptr<base_function> command_controller::createFunction(jsonifier::string_view functionName) {
 		for (auto& [key01, value01]: functions) {
 			for (auto& value02: key01) {
 				if (functionName == value02) {

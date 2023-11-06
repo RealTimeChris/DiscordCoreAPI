@@ -27,51 +27,50 @@
 /// Aug 18, 2021
 /// https://discordcoreapi.com
 /// \file InputEvents.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/InteractionEntities.hpp>
 #include <discordcoreapi/MessageEntities.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// @brief For handling UserData input - Messages or Interactions.
-	class DiscordCoreAPI_Dll InputEvents {
+	/// @brief For handling user_data input - messages or interactions.
+	class DiscordCoreAPI_Dll input_events {
 	  public:
-		/// @brief Responds to one of a number of types of "InputEvents".
-		/// @param dataPackage A RespondToInputEventData structure.
-		/// @return An UniquePtr containing an InputEventData structure.
-		static CoRoutine<InputEventData> respondToInputEventAsync(RespondToInputEventData dataPackage);
+		/// @brief Responds to one of a number of types of "input_events".
+		/// @param dataPackage a respond_to_input_event_data structure.
+		/// @return an unique_ptr containing an input_event_data structure.
+		static co_routine<input_event_data> respondToInputEventAsync(respond_to_input_event_data dataPackage);
 
 		/// @brief Deletes a previously sent "input-event-response".
-		/// @param dataPackage A UniquePtr containing an InputEventData structure.
-		/// @param timeDelayNew An int32_t representing the desired delay until the message is deleted, in Milliseconds.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteInputEventResponseAsync(InputEventData& dataPackage, uint32_t timeDelayNew = 0);
+		/// @param dataPackage a unique_ptr containing an input_event_data structure.
+		/// @param timeDelayNew an int32_t representing the desired delay until the message is deleted, in milliseconds.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteInputEventResponseAsync(input_event_data& dataPackage, uint32_t timeDelayNew = 0);
 
 	  protected:
-		static InputEventData respondToInputEvent(CreateEphemeralInteractionResponseData& dataPackage);
+		static input_event_data respondToInputEvent(create_ephemeral_interaction_response_data& dataPackage);
 
-		static InputEventData respondToInputEvent(CreateDeferredInteractionResponseData& dataPackage);
+		static input_event_data respondToInputEvent(create_deferred_interaction_response_data& dataPackage);
 
-		static InputEventData respondToInputEvent(CreateEphemeralFollowUpMessageData& dataPackage);
+		static input_event_data respondToInputEvent(create_ephemeral_follow_up_message_data& dataPackage);
 
-		static InputEventData respondToInputEvent(CreateInteractionResponseData& dataPackage);
+		static input_event_data respondToInputEvent(create_interaction_response_data& dataPackage);
 
-		static InputEventData respondToInputEvent(EditInteractionResponseData& dataPackage);
+		static input_event_data respondToInputEvent(edit_interaction_response_data& dataPackage);
 
-		static InputEventData respondToInputEvent(CreateFollowUpMessageData& dataPackage);
+		static input_event_data respondToInputEvent(create_follow_up_message_data& dataPackage);
 
-		static InputEventData respondToInputEvent(EditFollowUpMessageData& dataPackage);
+		static input_event_data respondToInputEvent(edit_follow_up_message_data& dataPackage);
 
-		static InputEventData respondToInputEvent(CreateMessageData& dataPackage);
+		static input_event_data respondToInputEvent(create_message_data& dataPackage);
 
-		static InputEventData respondToInputEvent(EditMessageData& dataPackage);
+		static input_event_data respondToInputEvent(edit_message_data& dataPackage);
 	};
 	/**@}*/
 }

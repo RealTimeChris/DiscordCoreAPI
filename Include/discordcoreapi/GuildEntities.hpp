@@ -23,11 +23,10 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// GuildEntities.hpp - Header for the Guild classes and structs.
+/// GuildEntities.hpp - Header for the guild classes and structs.
 /// May 12, 2021
 /// https://discordcoreapi.com
 /// \file GuildEntities.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
@@ -38,473 +37,473 @@
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>
 #include <discordcoreapi/StageInstanceEntities.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
 
-	/// @brief For geting a Guild's audit logs.
-	struct GetGuildAuditLogsData {
-		AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
-		Snowflake guildId{};///< The guiild id for the Guild which you wish to query the log of.
-		Snowflake before{};///< Entries that preceded a specific audit log entry ID.
-		Snowflake userId{};///< The UserData for whom to look for the actions of.
+	/// @brief For geting a guild's audit logs.
+	struct get_guild_audit_logs_data {
+		audit_log_event actionType{};///< The action type to acquire audit-logs for.
+		snowflake guildId{};///< The guiild id for the guild which you wish to query the log of.
+		snowflake before{};///< Entries that preceded a specific audit log entry id.
+		snowflake userId{};///< The user_data for whom to look for the actions of.
 		int32_t limit{};///< The maximum number of actions to acquire from the log.
 	};
 
-	/// @brief For creating a Guild.
-	struct CreateGuildData {
-		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::Shortest };///< Afk timeout in seconds.
-		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
-		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		jsonifier::vector<ChannelData> channels{};///< Array of partial ChannelData objects.
-		int32_t systemChannelFlags{};///< System ChannelData flags.
-		Snowflake systemChannelId{};///< The id of the ChannelData where Guild notices such as welcome messages and boost events are posted.
+	/// @brief For creating a guild.
+	struct create_guild_data {
+		afk_time_out_durations afkTimeout{ afk_time_out_durations::Shortest };///< Afk timeout in seconds.
+		default_message_notification_level defaultMessageNotifications{};///< Default message notification level.
+		explicit_content_filter_level explicitContentFilter{};///< Explicit content filter level.
+		jsonifier::vector<channel_data> channels{};///< Array of partial channel_data objects.
+		int32_t systemChannelFlags{};///< System channel_data flags.
+		snowflake systemChannelId{};///< The id of the channel_data where guild notices such as welcome messages and boost events are posted.
 		int32_t verificationLevel{};///< Verification level.
-		Snowflake afkChannelId{};///< Snowflake for afk ChannelData.
+		snowflake afkChannelId{};///< Snowflake for afk channel_data.
 		jsonifier::string region{};///< The region that the servers are in.
-		jsonifier::string icon{};///< base64 128x128 image for the Guild icon.
-		jsonifier::string name{};///< The name of the new Guild.
-		jsonifier::vector<RoleData> roles{};///< Array of RoleData objects.
+		jsonifier::string icon{};///< Base64 128x128 image for the guild icon.
+		jsonifier::string name{};///< The name of the new guild.
+		jsonifier::vector<role_data> roles{};///< Array of role_data objects.
 	};
 
-	/// @brief For getting a Guild from the library's cache or a Discord server.
-	struct GetGuildData {
-		Snowflake guildId{};///< The id of the Guild to acquire.
+	/// @brief For getting a guild from the library's cache or a discord server.
+	struct get_guild_data {
+		snowflake guildId{};///< The id of the guild to acquire.
 	};
 
-	/// @brief For acquiring a Guild preview of a chosen Guild.
-	struct GetGuildPreviewData {
-		Snowflake guildId{};///< The id of the Guild's preview to acquire.
+	/// @brief For acquiring a guild preview of a chosen guild.
+	struct get_guild_preview_data {
+		snowflake guildId{};///< The id of the guild's preview to acquire.
 	};
 
-	/// @brief For deleting a Guild.
-	struct DeleteGuildData {
-		Snowflake guildId{};///< The Guild you would like to delete.
+	/// @brief For deleting a guild.
+	struct delete_guild_data {
+		snowflake guildId{};///< The guild you would like to delete.
 	};
 
-	/// @brief For getting a list of Guild bans.
-	struct GetGuildBansData {
-		Snowflake guildId{};///< The Guild from which to collect the list of bans.
-		Snowflake before{};///< Consider only users before given user id.
-		Snowflake after{};///< Consider only users after given user id null.
+	/// @brief For getting a list of guild bans.
+	struct get_guild_bans_data {
+		snowflake guildId{};///< The guild from which to collect the list of bans.
+		snowflake before{};///< consider only users before given user id.
+		snowflake after{};///< consider only users after given user id null.
 		uint64_t limit{};///< Number of users to return ( up to maximum 1000 ).
 	};
 
-	/// @brief For getting a single Guild Ban.
-	struct GetGuildBanData {
-		Snowflake guildId{};///< The Guild from which to collect the Ban from.
-		Snowflake userId{};///< The UserData for whom to collect the Ban of.
+	/// @brief For getting a single guild ban.
+	struct get_guild_ban_data {
+		snowflake guildId{};///< The guild from which to collect the ban from.
+		snowflake userId{};///< The user_data for whom to collect the ban of.
 	};
 
-	/// @brief For banning a current GuildMemberData.
-	struct CreateGuildBanData {
-		int32_t deleteMessageDays{};///< The number of days of their Messages to delete.
-		Snowflake guildMemberId{};///< The id of the member to be banned.
+	/// @brief For banning a current guild_member_data.
+	struct create_guild_ban_data {
+		int32_t deleteMessageDays{};///< The number of days of their messages to delete.
+		snowflake guildMemberId{};///< The id of the member to be banned.
 		jsonifier::string reason{};///< The reason for the ban.
-		Snowflake guildId{};///< The id of the Guild from which to ban the member.
+		snowflake guildId{};///< The id of the guild from which to ban the member.
 	};
 
-	/// @brief For removing a previous created Ban.
-	struct RemoveGuildBanData {
-		jsonifier::string reason{};///< The reason for removing this Ban.
-		Snowflake guildId{};///< The Guild from which to erase the Ban.
-		Snowflake userId{};///< The user Snowflake of the user who's ban to erase.
+	/// @brief For removing a previous created ban.
+	struct remove_guild_ban_data {
+		jsonifier::string reason{};///< The reason for removing this ban.
+		snowflake guildId{};///< The guild from which to erase the ban.
+		snowflake userId{};///< The user snowflake of the user who's ban to erase.
 	};
 
-	/// @brief For collecting the Guild prune count.
-	struct GetGuildPruneCountData {
-		jsonifier::vector<Snowflake> includeRoles{};///< Roles to be included in the prune.
-		Snowflake guildId{};///< The Guild to be pruned.
+	/// @brief For collecting the guild prune count.
+	struct get_guild_prune_count_data {
+		jsonifier::vector<snowflake> includeRoles{};///< Roles to be included in the prune.
+		snowflake guildId{};///< The guild to be pruned.
 		int32_t days{};///< The number of days beyond which to prune the user's for inactivity.
 	};
 
-	/// @brief For pruning a number of GuildMembers from the Guild.
-	struct BeginGuildPruneData {
-		jsonifier::vector<Snowflake> includeRoles{};/// Roles to be included in the prune.
-		bool computePruneCount{};/// Whether 'pruned' is returned, discouraged for large guilds.
-		jsonifier::string reason{};///< Reason for pruning the GuildMembers.
-		Snowflake guildId{};///< Guild within which to perform the prune.
-		int32_t days{};/// Number of days after which to prune a  given GuildMember.
+	/// @brief For pruning a number of guild_members from the guild.
+	struct begin_guild_prune_data {
+		jsonifier::vector<snowflake> includeRoles{};/// roles to be included in the prune.
+		bool computePruneCount{};/// whether 'pruned' is returned, discouraged for large guilds.
+		jsonifier::string reason{};///< Reason for pruning the guild_members.
+		snowflake guildId{};///< Guild within which to perform the prune.
+		int32_t days{};/// number of days after which to prune a  given guild_member.
 	};
 
-	/// @brief For collecting a list of Guild voice regions.
-	struct GetGuildVoiceRegionsData {
-		Snowflake guildId{};///< The Guild for which to collect the voice regions from.
+	/// @brief For collecting a list of guild voice regions.
+	struct get_guild_voice_regions_data {
+		snowflake guildId{};///< The guild for which to collect the voice regions from.
 	};
 
-	/// @brief For geting all of the current invites from a Guild.
-	struct GetGuildInvitesData {
-		Snowflake guildId{};///< The id of the Guild you wish to acquire.
+	/// @brief For geting all of the current invites from a guild.
+	struct get_guild_invites_data {
+		snowflake guildId{};///< The id of the guild you wish to acquire.
 	};
 
 	/// @brief
-	struct GetGuildIntegrationsData {
-		Snowflake guildId{};///< The Guild for which to collect the integrations from.
+	struct get_guild_integrations_data {
+		snowflake guildId{};///< The guild for which to collect the integrations from.
 	};
 
-	/// @brief For deleting a Guild integration.
-	struct DeleteGuildIntegrationData {
-		Snowflake integrationId{};///< The integration's id which we are going to delete.
+	/// @brief For deleting a guild integration.
+	struct delete_guild_integration_data {
+		snowflake integrationId{};///< The integration's id which we are going to delete.
 		jsonifier::string reason{};///< Reason for deleting the integration.
-		Snowflake guildId{};///< The Guild from which to delete the integration from.
+		snowflake guildId{};///< The guild from which to delete the integration from.
 	};
 
-	/// @brief For collecting a Guild's widget settings.
-	struct GetGuildWidgetSettingsData {
-		Snowflake guildId{};///< The Guild from which to collect the widget from.
+	/// @brief For collecting a guild's widget settings.
+	struct get_guild_widget_settings_data {
+		snowflake guildId{};///< The guild from which to collect the widget from.
 	};
 
-	/// @brief For modifying a Guild's widget.
-	struct ModifyGuildWidgetData {
-		GuildWidgetData widgetData{};///< The new Guild widget responseData.
+	/// @brief For modifying a guild's widget.
+	struct modify_guild_widget_data {
+		guild_widget_data widgetData{};///< The new guild widget responseData.
 		jsonifier::string reason{};///< Reason for modifying the widget.
-		Snowflake guildId{};///< The Guild for which to modify the widget of.
+		snowflake guildId{};///< The guild for which to modify the widget of.
 	};
 
-	/// @brief For collecting a Guild's widget.
-	struct GetGuildWidgetData {
-		Snowflake guildId{};///< The Guild from which to collect the widget from.
+	/// @brief For collecting a guild's widget.
+	struct get_guild_widget_data {
+		snowflake guildId{};///< The guild from which to collect the widget from.
 	};
 
-	/// @brief For geting the vanity invite responseData of a Guild.
-	struct GetGuildVanityInviteData {
-		Snowflake guildId{};///< The id of the Guild to acquire the vanity invite from.
+	/// @brief For geting the vanity invite responseData of a guild.
+	struct get_guild_vanity_invite_data {
+		snowflake guildId{};///< The id of the guild to acquire the vanity invite from.
 	};
 
-	/// @brief For collecting a Guild's widget image.
-	struct GetGuildWidgetImageData {
-		WidgetStyleOptions widgetStlye{};///< The style of widget image to collect.
-		Snowflake guildId{};///< The Guild for which to collect the widget image from.
+	/// @brief For collecting a guild's widget image.
+	struct get_guild_widget_image_data {
+		widget_style_options widgetStlye{};///< The style of widget image to collect.
+		snowflake guildId{};///< The guild for which to collect the widget image from.
 	};
 
-	/// @brief For collecting a Guild's welcome screen.
-	struct GetGuildWelcomeScreenData {
-		Snowflake guildId{};///< The Guild for which to collect the widget image from.
+	/// @brief For collecting a guild's welcome screen.
+	struct get_guild_welcome_screen_data {
+		snowflake guildId{};///< The guild for which to collect the widget image from.
 	};
 
-	/// @brief For modifying a Guild's welcome screen.
-	struct ModifyGuildWelcomeScreenData {
-		jsonifier::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
+	/// @brief For modifying a guild's welcome screen.
+	struct modify_guild_welcome_screen_data {
+		jsonifier::vector<welcome_screen_channel_data> welcomeChannels{};///< Welcome channels for the welcome screen.
 		jsonifier::string description{};///< The description of the welcome screen.
 		jsonifier::string reason{};///< The reason for modifying the welcome screen.
-		Snowflake guildId{};///< The Guild for which to modify the welcome screen of.
+		snowflake guildId{};///< The guild for which to modify the welcome screen of.
 		bool enabled{};///< Is it enabled?
 	};
 
-	/// @brief For collecting a Guild's template.
-	struct GetGuildTemplateData {
-		jsonifier::string templateCode{};///< Code for the desired Template.
+	/// @brief For collecting a guild's template.
+	struct get_guild_template_data {
+		jsonifier::string templateCode{};///< code for the desired template.
 	};
 
-	/// @brief For creating a Guild from a Guild template.
-	struct CreateGuildFromGuildTemplateData {
-		jsonifier::string templateCode{};///< Code for the desired Template to use.
-		jsonifier::string imageData{};///< base64 128x128 image for the Guild icon.
-		jsonifier::string name{};///< Desired name of the Guild.
+	/// @brief For creating a guild from a guild template.
+	struct create_guild_from_guild_template_data {
+		jsonifier::string templateCode{};///< code for the desired template to use.
+		jsonifier::string imageData{};///< Base64 128x128 image for the guild icon.
+		jsonifier::string name{};///< Desired name of the guild.
 	};
 
-	/// @brief For collecting a list of Guild Templates from a chosen Guild.
-	struct GetGuildTemplatesData {
-		Snowflake guildId{};///< Guild from which you would like to collect the Templates from.
+	/// @brief For collecting a list of guild templates from a chosen guild.
+	struct get_guild_templates_data {
+		snowflake guildId{};///< Guild from which you would like to collect the templates from.
 	};
 
-	/// @brief For creating a Guild Template.
-	struct CreateGuildTemplateData {
+	/// @brief For creating a guild template.
+	struct create_guild_template_data {
 		jsonifier::string description{};///< Description for the template (0 - 120 characters).
-		Snowflake guildId{};///< Guild within which you wuold like to create the template.
+		snowflake guildId{};///< Guild within which you wuold like to create the template.
 		jsonifier::string name{};///< Name of the template (1 - 100 characters).
 	};
 
-	/// @brief For syncing a Guild Template.
-	struct SyncGuildTemplateData {
+	/// @brief For syncing a guild template.
+	struct sync_guild_template_data {
 		jsonifier::string templateCode{};///< Template code for which template you would like to sync.
-		Snowflake guildId{};///< Guild for which you would like to sync the template of.
+		snowflake guildId{};///< Guild for which you would like to sync the template of.
 	};
 
-	/// @brief For modifying a Guild Template.
-	struct ModifyGuildTemplateData {
-		jsonifier::string templateCode{};/// Template which you would like to modify.
+	/// @brief For modifying a guild template.
+	struct modify_guild_template_data {
+		jsonifier::string templateCode{};/// template which you would like to modify.
 		jsonifier::string description{};///< Description for the template (0 - 120 characters).
-		Snowflake guildId{};///< Guild within which you would like to modify the Template.
+		snowflake guildId{};///< Guild within which you would like to modify the template.
 		jsonifier::string name{};///< Name of the template (1 - 100 characters).
 	};
 
-	/// @brief For deleting a Guild Template.
-	struct DeleteGuildTemplateData {
+	/// @brief For deleting a guild template.
+	struct delete_guild_template_data {
 		jsonifier::string templateCode{};///< The template which you would like to delete.
-		Snowflake guildId{};///< The Guild within which you would like to delete the Template.
+		snowflake guildId{};///< The guild within which you would like to delete the template.
 	};
 
-	/// @brief For geting a single invite's responseData from a Guild.
-	struct GetInviteData {
-		Snowflake guildScheduledEventId{};///< The Guild scheduled event to include with the invite.
-		bool withExpiration{};///< Collect expiration time/date?
-		Snowflake inviteId{};///< The id of the invite you wish to acquire.
-		bool withCount{};///< Collect usage etc counts?
+	/// @brief For geting a single invite's responseData from a guild.
+	struct get_invite_data {
+		snowflake guildScheduledEventId{};///< The guild scheduled event to include with the invite.
+		bool withExpiration{};///< collect expiration time/date?
+		snowflake inviteId{};///< The id of the invite you wish to acquire.
+		bool withCount{};///< collect usage etc counts?
 	};
 
-	/// @brief For deleting a single Guild Invite.
-	struct DeleteInviteData {
-		jsonifier::string reason{};///< Reason for deleting the Invite.
-		Snowflake inviteId{};///< The Invite which you would like to delete.
+	/// @brief For deleting a single guild invite.
+	struct delete_invite_data {
+		jsonifier::string reason{};///< Reason for deleting the invite.
+		snowflake inviteId{};///< The invite which you would like to delete.
 	};
 
-	/// @brief For collecting a list of Guild's that the Bot is in.
-	struct GetCurrentUserGuildsData {
-		Snowflake before{};///< Get guilds before this Guild ID.
-		Snowflake after{};///< Get guilds after this Guild ID.
+	/// @brief For collecting a list of guild's that the bot is in.
+	struct get_current_user_guilds_data {
+		snowflake before{};///< Get guilds before this guild id.
+		snowflake after{};///< Get guilds after this guild id.
 		uint32_t limit{};///< Max number of guilds to return (1 - 200).
 	};
 
-	/// @brief For leaving a particular Guild.
-	struct LeaveGuildData {
-		Snowflake guildId{};///< The id of the Guild you would like the bot to leave.
+	/// @brief For leaving a particular guild.
+	struct leave_guild_data {
+		snowflake guildId{};///< The id of the guild you would like the bot to leave.
 	};
 
-	/// @brief For modifying the properties of a chosen Guild.
-	struct DiscordCoreAPI_Dll ModifyGuildData {
-		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
-		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		SystemChannelFlags systemChannelFlags{};///< System ChannelData flags.
-		VerificationLevel verificationLevel{};///< Verification level.
-		jsonifier::vector<jsonifier::string> features{};///< Array of Guild feature strings enabled Guild features.
-		Snowflake publicUpdatesChannelId{};///< The id of the ChannelData where admins and moderators of Community guilds receive notices from Discord.
-		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
+	/// @brief For modifying the properties of a chosen guild.
+	struct DiscordCoreAPI_Dll modify_guild_data {
+		default_message_notification_level defaultMessageNotifications{};///< Default message notification level.
+		explicit_content_filter_level explicitContentFilter{};///< Explicit content filter level.
+		system_channel_flags systemChannelFlags{};///< System channel_data flags.
+		verification_level verificationLevel{};///< Verification level.
+		jsonifier::vector<jsonifier::string> features{};///< Array of guild feature strings enabled guild features.
+		snowflake publicUpdatesChannelId{};///< The id of the channel_data where admins and moderators of community guilds receive notices from discord.
+		afk_time_out_durations afkTimeout{};///< Afk timeout in seconds.
 		bool premiumProgressBarEnabled{};///< Whether or not the progress bar is enabled.
-		jsonifier::string preferredLocale{};///< The preferred locale of a Community Guild used in server discovery.
-		jsonifier::string discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
-		Snowflake systemChannelId{};///< The id of the ChannelData where Guild notices such as welcome messages and boost events are posted.
-		Snowflake rulesChannelId{};///< The id of the ChannelData where Community guilds display rules and /or guidelines.
-		jsonifier::string description{};///< The description for the Guild, if the Guild is discoverable.
-		Snowflake afkChannelId{};///< Snowflake for afk channels.
-		jsonifier::string banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
-		jsonifier::string splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
-		jsonifier::string reason{};///< Reason for modifying the Guild.
-		Snowflake ownerId{};///< UserData id to transfer Guild ownership to (must be owner).
-		Snowflake guildId{};///< Snowflake of the chosen Guild to modify.
-		jsonifier::string icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon.
-		jsonifier::string name{};///< Desired name of the Guild.
+		jsonifier::string preferredLocale{};///< The preferred locale of a community guild used in server discovery.
+		jsonifier::string discoverySplash{};/// base64 16 : 9 png / jpeg image for the guild discovery splash(when the server has the discoverable feature).
+		snowflake systemChannelId{};///< The id of the channel_data where guild notices such as welcome messages and boost events are posted.
+		snowflake rulesChannelId{};///< The id of the channel_data where community guilds display rules and /or guidelines.
+		jsonifier::string description{};///< The description for the guild, if the guild is discoverable.
+		snowflake afkChannelId{};///< Snowflake for afk channels.
+		jsonifier::string banner{};///< Base64 16 : 9 png / jpeg image for the guild banner (when the server has the banner feature).
+		jsonifier::string splash{};///< Base64 16 : 9 png / jpeg image for the guild splash (when the server has the INVITE_SPLASH feature).
+		jsonifier::string reason{};///< Reason for modifying the guild.
+		snowflake ownerId{};///< User_data id to transfer guild ownership to (must be owner).
+		snowflake guildId{};///< Snowflake of the chosen guild to modify.
+		jsonifier::string icon{};///< Base64 1024x1024 png / jpeg / gif image for the guild icon.
+		jsonifier::string name{};///< Desired name of the guild.
 
-		ModifyGuildData(const GuildData& dataPackage);
+		modify_guild_data(const guild_data& dataPackage);
 	};
 
 	/**@}*/
 
-	inline StopWatch<Milliseconds> stopWatchNew{ Milliseconds{ 100 } };
+	inline stop_watch<milliseconds> stopWatchNew{ milliseconds{ 100 } };
 
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
 
-	/// @brief An interface class for the Guild related Discord endpoints.
-	class DiscordCoreAPI_Dll Guilds {
+	/// @brief An interface class for the guild related discord endpoints.
+	class DiscordCoreAPI_Dll guilds {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManager);
+		static void initialize(discord_core_internal::https_client* client, config_manager* configManager);
 
-		/// @brief Gets an audit log from the Discord servers.
-		/// @param dataPackage A GetGuildAuditLogsData structure.
-		/// @returns A CoRoutine containing an AuditLogData.
-		static CoRoutine<AuditLogData> getGuildAuditLogsAsync(GetGuildAuditLogsData dataPackage);
+		/// @brief Gets an audit log from the discord servers.
+		/// @param dataPackage a get_guild_audit_logs_data structure.
+		/// @return A co_routine containing an audit_log_data.
+		static co_routine<audit_log_data> getGuildAuditLogsAsync(get_guild_audit_logs_data dataPackage);
 
-		/// @brief Creates a new Guild.
-		/// @param dataPackage A CreateGuildData structure.
-		/// @returns A CoRoutine containing a Guild.
-		static CoRoutine<GuildData> createGuildAsync(CreateGuildData dataPackage);
+		/// @brief Creates a new guild.
+		/// @param dataPackage a create_guild_data structure.
+		/// @return A co_routine containing a guild.
+		static co_routine<guild_data> createGuildAsync(create_guild_data dataPackage);
 
-		/// @brief Returns all of the Guilds that the current bot is in.
-		/// @returns A CoRoutine containing a jsonifier::vector<GuildData>.
-		static jsonifier::vector<GuildData> getAllGuildsAsync();
+		/// @brief Returns all of the guilds that the current bot is in.
+		/// @return A co_routine containing a jsonifier::vector<guild_data>.
+		static jsonifier::vector<guild_data> getAllGuildsAsync();
 
-		/// @brief Collects a Guild from the Discord servers.
-		/// @param dataPackage A GetGuildData structure.
-		/// @returns A CoRoutine containing a Guild.
-		static CoRoutine<GuildData> getGuildAsync(GetGuildData dataPackage);
+		/// @brief Collects a guild from the discord servers.
+		/// @param dataPackage a get_guild_data structure.
+		/// @return A co_routine containing a guild.
+		static co_routine<guild_data> getGuildAsync(get_guild_data dataPackage);
 
-		/// @brief Collects a Guild from the library's cache.
-		/// @param dataPackage A GetGuildData structure.
-		/// @returns A CoRoutine containing a Guild.
-		static GuildCacheData getCachedGuild(GetGuildData dataPackage);
+		/// @brief Collects a guild from the library's cache.
+		/// @param dataPackage a get_guild_data structure.
+		/// @return A co_routine containing a guild.
+		static guild_cache_data getCachedGuild(get_guild_data dataPackage);
 
-		/// @brief Acquires the preview Data of a chosen Guild.
-		/// @param dataPackage A GetGuildPreviewData structure.
-		/// @returns A CoRoutine containing a GuildPreviewData.
-		static CoRoutine<GuildPreviewData> getGuildPreviewAsync(GetGuildPreviewData dataPackage);
+		/// @brief Acquires the preview data of a chosen guild.
+		/// @param dataPackage a get_guild_preview_data structure.
+		/// @return A co_routine containing a guild_preview_data.
+		static co_routine<guild_preview_data> getGuildPreviewAsync(get_guild_preview_data dataPackage);
 
-		/// @brief Modifies a chosen Guild's properties.
-		/// @param dataPackage A ModifyGuildData structure.
-		/// @returns A CoRoutine containing a Guild.
-		static CoRoutine<GuildData> modifyGuildAsync(ModifyGuildData dataPackage);
+		/// @brief Modifies a chosen guild's properties.
+		/// @param dataPackage a modify_guild_data structure.
+		/// @return A co_routine containing a guild.
+		static co_routine<guild_data> modifyGuildAsync(modify_guild_data dataPackage);
 
-		/// @brief Deletes a chosen Guild.
-		/// @param dataPackage A DeleteGuildData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildAsync(DeleteGuildData dataPackage);
+		/// @brief Deletes a chosen guild.
+		/// @param dataPackage a delete_guild_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> deleteGuildAsync(delete_guild_data dataPackage);
 
-		/// @brief Collects a list of Bans from a chosen Guild.
-		/// @param dataPackage A GetGuildBansData structure.
-		/// @returns A CoRoutine containing a BanDataVector.
-		static CoRoutine<jsonifier::vector<BanData>> getGuildBansAsync(GetGuildBansData dataPackage);
+		/// @brief Collects a list of bans from a chosen guild.
+		/// @param dataPackage a get_guild_bans_data structure.
+		/// @return A co_routine containing a ban_data_vector.
+		static co_routine<jsonifier::vector<ban_data>> getGuildBansAsync(get_guild_bans_data dataPackage);
 
-		/// @brief Collects a single Ban from a chosen Guild.
-		/// @param dataPackage A GetGuildBanData structure.
-		/// @returns A CoRoutine containing a BanData.
-		static CoRoutine<BanData> getGuildBanAsync(GetGuildBanData dataPackage);
+		/// @brief Collects a single ban from a chosen guild.
+		/// @param dataPackage a get_guild_ban_data structure.
+		/// @return A co_routine containing a ban_data.
+		static co_routine<ban_data> getGuildBanAsync(get_guild_ban_data dataPackage);
 
-		/// @brief Bans a GuildMember.
-		/// @param dataPackage A CreateGuildBanData structure.
-		/// @returns A CoRoutine containing a BanData.
-		static CoRoutine<void> createGuildBanAsync(CreateGuildBanData dataPackage);
+		/// @brief Bans a guild_member.
+		/// @param dataPackage a create_guild_ban_data structure.
+		/// @return A co_routine containing a ban_data.
+		static co_routine<void> createGuildBanAsync(create_guild_ban_data dataPackage);
 
 		/// @brief Removes a previously created ban.
-		/// @param dataPackage A RemoveGuildBanData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> removeGuildBanAsync(RemoveGuildBanData dataPackage);
+		/// @param dataPackage a remove_guild_ban_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> removeGuildBanAsync(remove_guild_ban_data dataPackage);
 
-		/// @brief For collecting the Guild prune count.
-		/// @param dataPackage A GetGuildPruneCountData structure.
-		/// @returns A CoRoutine containing GuildPruneCountData.
-		static CoRoutine<GuildPruneCountData> getGuildPruneCountAsync(GetGuildPruneCountData dataPackage);
+		/// @brief For collecting the guild prune count.
+		/// @param dataPackage a get_guild_prune_count_data structure.
+		/// @return A co_routine containing guild_prune_count_data.
+		static co_routine<guild_prune_count_data> getGuildPruneCountAsync(get_guild_prune_count_data dataPackage);
 
-		/// @brief For performing a pruning of the GuildMembers of the Guild, based on days of inactivity.
-		/// @param dataPackage A BeginGuildPruneData structure.
-		/// @returns A CoRoutine containing a GuildPruneCountData.
-		static CoRoutine<GuildPruneCountData> beginGuildPruneAsync(BeginGuildPruneData dataPackage);
+		/// @brief For performing a pruning of the guild_members of the guild, based on days of inactivity.
+		/// @param dataPackage a begin_guild_prune_data structure.
+		/// @return A co_routine containing a guild_prune_count_data.
+		static co_routine<guild_prune_count_data> beginGuildPruneAsync(begin_guild_prune_data dataPackage);
 
 		/// @brief Gets the list of voice regions for a particular server.
-		/// @param dataPackage A GetGuildVoiceRegionsData structure.
-		/// @returns A CoRoutine containing a VoiceRegionDataVector.
-		static CoRoutine<jsonifier::vector<VoiceRegionData>> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);
+		/// @param dataPackage a get_guild_voice_regions_data structure.
+		/// @return A co_routine containing a voice_region_data_vector.
+		static co_routine<jsonifier::vector<voice_region_data>> getGuildVoiceRegionsAsync(get_guild_voice_regions_data dataPackage);
 
-		/// @brief Gets multiple invites from the Discord servers.
-		/// @param dataPackage A GetGuildInvitesData structure.
-		/// @returns A CoRoutine containing a jsonifier::vector<InviteData>.
-		static CoRoutine<jsonifier::vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
+		/// @brief Gets multiple invites from the discord servers.
+		/// @param dataPackage a get_guild_invites_data structure.
+		/// @return A co_routine containing a jsonifier::vector<invite_data>.
+		static co_routine<jsonifier::vector<invite_data>> getGuildInvitesAsync(get_guild_invites_data dataPackage);
 
-		/// @brief Gets the list of Guild integrations for a particular server.
-		/// @param dataPackage A GetGuildIntegrationsData structure.
-		/// @returns A CoRoutine containing a jsonifier::vector<IntegrationData>.
-		static CoRoutine<jsonifier::vector<IntegrationData>> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
+		/// @brief Gets the list of guild integrations for a particular server.
+		/// @param dataPackage a get_guild_integrations_data structure.
+		/// @return A co_routine containing a jsonifier::vector<integration_data>.
+		static co_routine<jsonifier::vector<integration_data>> getGuildIntegrationsAsync(get_guild_integrations_data dataPackage);
 
-		/// @brief Deletes an integration from a Guild.
-		/// @param dataPackage A DeleteGuildIntegrationData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildIntegrationAsync(DeleteGuildIntegrationData dataPackage);
+		/// @brief Deletes an integration from a guild.
+		/// @param dataPackage a delete_guild_integration_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> deleteGuildIntegrationAsync(delete_guild_integration_data dataPackage);
 
-		/// @brief Gets the Guild widget's settings for a particular server.
-		/// @param dataPackage A GetGuildWidgetSettingsData structure.
-		/// @returns A CoRoutine containing a GuildWidgetData.
-		static CoRoutine<GuildWidgetData> getGuildWidgetSettingsAsync(GetGuildWidgetSettingsData dataPackage);
+		/// @brief Gets the guild widget's settings for a particular server.
+		/// @param dataPackage a get_guild_widget_settings_data structure.
+		/// @return A co_routine containing a guild_widget_data.
+		static co_routine<guild_widget_data> getGuildWidgetSettingsAsync(get_guild_widget_settings_data dataPackage);
 
-		/// @brief Modifies the Guild widget for a particular server.
-		/// @param dataPackage A ModifyGuildWidgetData structure.
-		/// @returns A CoRoutine containing a GuildWidgetData.
-		static CoRoutine<GuildWidgetData> modifyGuildWidgetAsync(ModifyGuildWidgetData dataPackage);
+		/// @brief Modifies the guild widget for a particular server.
+		/// @param dataPackage a modify_guild_widget_data structure.
+		/// @return A co_routine containing a guild_widget_data.
+		static co_routine<guild_widget_data> modifyGuildWidgetAsync(modify_guild_widget_data dataPackage);
 
-		/// @brief Gets the Guild widget for a particular server.
-		/// @param dataPackage A GetGuildWidgetData structure.
-		/// @returns A CoRoutine containing a GuildWidgetData.
-		static CoRoutine<GuildWidgetData> getGuildWidgetAsync(GetGuildWidgetData dataPackage);
+		/// @brief Gets the guild widget for a particular server.
+		/// @param dataPackage a get_guild_widget_data structure.
+		/// @return A co_routine containing a guild_widget_data.
+		static co_routine<guild_widget_data> getGuildWidgetAsync(get_guild_widget_data dataPackage);
 
 		/// @brief Gets the vanity invite responseData from a particular server.
-		/// @param dataPackage A GetGuildVanityInviteData structure.
-		/// @returns A CoRoutine containing InviteData.
-		static CoRoutine<InviteData> getGuildVanityInviteAsync(GetGuildVanityInviteData dataPackage);
+		/// @param dataPackage a get_guild_vanity_invite_data structure.
+		/// @return A co_routine containing invite_data.
+		static co_routine<invite_data> getGuildVanityInviteAsync(get_guild_vanity_invite_data dataPackage);
 
-		/// @brief Gets the Guild widget image for a particular server.
-		/// @param dataPackage A GetGuildWidgetImageData structure.
-		/// @returns A CoRoutine containing a GuildWidgetImageData.
-		static CoRoutine<GuildWidgetImageData> getGuildWidgetImageAsync(GetGuildWidgetImageData dataPackage);
+		/// @brief Gets the guild widget image for a particular server.
+		/// @param dataPackage a get_guild_widget_image_data structure.
+		/// @return A co_routine containing a guild_widget_image_data.
+		static co_routine<guild_widget_image_data> getGuildWidgetImageAsync(get_guild_widget_image_data dataPackage);
 
-		/// @brief Gets the Guild welcome screen for a particular server.
-		/// @param dataPackage A GetGuildWelcomeScreenData structure.
-		/// @returns A CoRoutine containing a WelcomeScreenData.
-		static CoRoutine<WelcomeScreenData> getGuildWelcomeScreenAsync(GetGuildWelcomeScreenData dataPackage);
+		/// @brief Gets the guild welcome screen for a particular server.
+		/// @param dataPackage a get_guild_welcome_screen_data structure.
+		/// @return A co_routine containing a welcome_screen_data.
+		static co_routine<welcome_screen_data> getGuildWelcomeScreenAsync(get_guild_welcome_screen_data dataPackage);
 
-		/// @brief Modifies the Guild welcome screen.
-		/// @param dataPackage A ModifyGuildWelcomeScreenData structure.
-		/// @returns A CoRoutine containing a WelcomeScreenData.
-		static CoRoutine<WelcomeScreenData> modifyGuildWelcomeScreenAsync(ModifyGuildWelcomeScreenData dataPackage);
+		/// @brief Modifies the guild welcome screen.
+		/// @param dataPackage a modify_guild_welcome_screen_data structure.
+		/// @return A co_routine containing a welcome_screen_data.
+		static co_routine<welcome_screen_data> modifyGuildWelcomeScreenAsync(modify_guild_welcome_screen_data dataPackage);
 
-		/// @brief Gets the Guild Template from a particular server.
-		/// @param dataPackage A GetGuildTemplateData structure.
-		/// @returns A CoRoutine containing a GuildTemplateData.
-		static CoRoutine<GuildTemplateData> getGuildTemplateAsync(GetGuildTemplateData dataPackage);
+		/// @brief Gets the guild template from a particular server.
+		/// @param dataPackage a get_guild_template_data structure.
+		/// @return A co_routine containing a guild_template_data.
+		static co_routine<guild_template_data> getGuildTemplateAsync(get_guild_template_data dataPackage);
 
-		/// @brief Creates a Guild from the Guild Template.
-		/// @param dataPackage A CreateGuildFromGuildTemplateData structure.
-		/// @returns A CoRoutine containing a Guild.
-		static CoRoutine<GuildData> createGuildFromGuildTemplateAsync(CreateGuildFromGuildTemplateData dataPackage);
+		/// @brief Creates a guild from the guild template.
+		/// @param dataPackage a create_guild_from_guild_template_data structure.
+		/// @return A co_routine containing a guild.
+		static co_routine<guild_data> createGuildFromGuildTemplateAsync(create_guild_from_guild_template_data dataPackage);
 
-		/// @brief Collects a list of Guild Templates from a chosen Guild.
-		/// @param dataPackage A GetGuildTemplatesData structure.
-		/// @returns A CoRoutine containing a GuiildTemplateDataVector.
-		static CoRoutine<jsonifier::vector<GuildTemplateData>> getGuildTemplatesAsync(GetGuildTemplatesData dataPackage);
+		/// @brief Collects a list of guild templates from a chosen guild.
+		/// @param dataPackage a get_guild_templates_data structure.
+		/// @return A co_routine containing a guiild_template_data_vector.
+		static co_routine<jsonifier::vector<guild_template_data>> getGuildTemplatesAsync(get_guild_templates_data dataPackage);
 
-		/// @brief Creates a Guild Template.
-		/// @param dataPackage A CreateGuildTemplateData structure.
-		/// @returns A CoRoutine containing a GuiildTemplateData.
-		static CoRoutine<GuildTemplateData> createGuildTemplateAsync(CreateGuildTemplateData dataPackage);
+		/// @brief Creates a guild template.
+		/// @param dataPackage a create_guild_template_data structure.
+		/// @return A co_routine containing a guiild_template_data.
+		static co_routine<guild_template_data> createGuildTemplateAsync(create_guild_template_data dataPackage);
 
-		/// @brief Syncs a Guild Template.
-		/// @param dataPackage A SyncGuildTemplateData structure.
-		/// @returns A CoRoutine containing a GuiildTemplateData.
-		static CoRoutine<GuildTemplateData> syncGuildTemplateAsync(SyncGuildTemplateData dataPackage);
+		/// @brief Syncs a guild template.
+		/// @param dataPackage a sync_guild_template_data structure.
+		/// @return A co_routine containing a guiild_template_data.
+		static co_routine<guild_template_data> syncGuildTemplateAsync(sync_guild_template_data dataPackage);
 
-		/// @brief Modifies a Guild Template.
-		/// @param dataPackage A ModifyGuildTemplateData structure.
-		/// @returns A CoRoutine containing a GuiildTemplateData.
-		static CoRoutine<GuildTemplateData> modifyGuildTemplateAsync(ModifyGuildTemplateData dataPackage);
+		/// @brief Modifies a guild template.
+		/// @param dataPackage a modify_guild_template_data structure.
+		/// @return A co_routine containing a guiild_template_data.
+		static co_routine<guild_template_data> modifyGuildTemplateAsync(modify_guild_template_data dataPackage);
 
-		/// @brief Deletes a Guild Template.
-		/// @param dataPackage A DeleteGuildTemplateData structure.
-		/// @returns A CoRoutine containing a void.
-		static CoRoutine<void> deleteGuildTemplateAsync(DeleteGuildTemplateData dataPackage);
+		/// @brief Deletes a guild template.
+		/// @param dataPackage a delete_guild_template_data structure.
+		/// @return A co_routine containing a void.
+		static co_routine<void> deleteGuildTemplateAsync(delete_guild_template_data dataPackage);
 
-		/// @brief Gets an invite from the Discord servers.
-		/// @param dataPackage A GetInviteData structure.
-		/// @returns A CoRoutine containing an InviteData.
-		static CoRoutine<InviteData> getInviteAsync(GetInviteData dataPackage);
+		/// @brief Gets an invite from the discord servers.
+		/// @param dataPackage a get_invite_data structure.
+		/// @return A co_routine containing an invite_data.
+		static co_routine<invite_data> getInviteAsync(get_invite_data dataPackage);
 
-		/// @brief Deletes an invite from the Discord servers
-		/// @param dataPackage A DeleteInviteData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> deleteInviteAsync(DeleteInviteData dataPackage);
+		/// @brief Deletes an invite from the discord servers
+		/// @param dataPackage a delete_invite_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> deleteInviteAsync(delete_invite_data dataPackage);
 
-		/// @brief Collects a list of Guilds that the Bot is in.
-		/// @param dataPackage A GetCurrentUserGuildsData structure.
-		/// @returns A CoRoutine containing a GuildVector.
-		static CoRoutine<jsonifier::vector<GuildData>> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
+		/// @brief Collects a list of guilds that the bot is in.
+		/// @param dataPackage a get_current_user_guilds_data structure.
+		/// @return A co_routine containing a guild_vector.
+		static co_routine<jsonifier::vector<guild_data>> getCurrentUserGuildsAsync(get_current_user_guilds_data dataPackage);
 
-		/// @brief Removes the bot from a chosen Guild.
-		/// @param dataPackage A LeaveGuildData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
+		/// @brief Removes the bot from a chosen guild.
+		/// @param dataPackage a leave_guild_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> leaveGuildAsync(leave_guild_data dataPackage);
 
-		template<typename GuildType> inline static void insertGuild(GuildType&& guild) {
+		template<typename guild_type> inline static void insertGuild(guild_type&& guild) {
 			if (doWeCacheGuildsBool) {
 				if (guild.id == 0) {
-					throw DCAException{ "Sorry, but there was no id set for that guild." };
+					throw dca_exception{ "Sorry, but there was no id set for that guild." };
 				}
-				cache.emplace(std::forward<GuildType>(guild));
+				cache.emplace(std::forward<guild_type>(guild));
 				if (cache.count() % 1000 == 0) {
-					std::cout << "GUILD COUNT: " << cache.count() << ", AFTER: " << stopWatchNew.totalTimeElapsed().count() << std::endl;
+					std::cout << "guild count: " << cache.count() << ", after: " << stopWatchNew.totalTimeElapsed().count() << std::endl;
 				}
 			}
 		}
 
-		static ObjectCache<GuildCacheData>& getCache();
+		static object_cache<guild_cache_data>& getCache();
 
-		static void removeGuild(const GuildCacheData& GuildId);
+		static void removeGuild(const guild_cache_data& guild_id);
 
 		static bool doWeCacheGuilds();
 
 	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<GuildCacheData> cache;
+		static discord_core_internal::https_client* httpsClient;
+		static object_cache<guild_cache_data> cache;
 		static bool doWeCacheGuildsBool;
 	};
 	/**@}*/

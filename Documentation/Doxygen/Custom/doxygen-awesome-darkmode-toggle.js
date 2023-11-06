@@ -87,14 +87,14 @@ class DoxygenAwesomeDarkModeToggle extends HTMLElement {
     }
 
     /**
-     * @returns `true` for dark-mode, `false` for light-mode system preference
+     * @return `true` for dark-mode, `false` for light-mode system preference
      */
     static get systemPreference() {
         return window.matchMedia('(prefers-color-scheme: light)').matches
     }
 
     /**
-     * @returns `true` for dark-mode, `false` for light-mode user preference
+     * @return `true` for dark-mode, `false` for light-mode user preference
      */
     static get userPreference() {
         return (!DoxygenAwesomeDarkModeToggle.systemPreference && localStorage.getItem(DoxygenAwesomeDarkModeToggle.prefersDarkModeInLightModeKey)) || 

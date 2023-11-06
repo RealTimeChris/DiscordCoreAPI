@@ -34,6 +34,13 @@ generate_product_version(
 	VERSION_PATCH "${VERSION_PATCH}"
 )
 
+set(DISCORDCOREAPI-POPCNT_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DISCORDCOREAPI-LZCNT_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DISCORDCOREAPI-BMI_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DISCORDCOREAPI-AVX_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DISCORDCOREAPI-AVX2_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DISCORDCOREAPI-AVX512_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (NOT DEFINED BUILD_SHARED_LIBS)
@@ -115,7 +122,6 @@ target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:DiscordCoreAPI_EXPORTS_NOPE>"
 	"JSONIFIER_CPU_INSTRUCTIONS=${JSONIFIER_CPU_INSTRUCTIONS}"
-	"JSONIFIER_CPU_INSTRUCTIONS=${JSONIFIER_CPU_INSTRUCTIONS}"
 )
 
 include(ProcessorCount)
@@ -142,9 +148,7 @@ target_compile_options(
 target_link_options(
 	"${LIB_NAME}" PUBLIC
 	"$<$<CXX_COMPILER_ID:GNU>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:-fsanitize=address>>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/INCREMENTAL:NO>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/DEBUG>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/LTCG>"
 )
 
 set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")
@@ -188,8 +192,8 @@ install(
 install(
 	TARGETS "${LIB_NAME}"
 	EXPORT "${EXPORTED_TARGETS_NAME}"
-	RUNTIME DESTINATION "$<$<NOT:$<PLATFORM_ID:Linux>>:$<IF:$<CONFIG:Debug>,${DEBUG_PREFIX}bin,bin>>"
-	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,${DEBUG_PREFIX}lib,lib>"
+	RUNTIME DESTINATION "$<$<NOT:$<PLATFORM_ID:Linux>>:$<IF:$<CONFIG:Debug>,bin,bin>>"
+	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,lib,lib>"
 )
 
 install(
@@ -203,7 +207,7 @@ if (WIN32 AND "${BUILD_SHARED_LIBS}")
 	install(
 		FILES 
 		"$<TARGET_PDB_FILE:${LIB_NAME}>"
-		DESTINATION "$<IF:$<CONFIG:Debug>,${DEBUG_PREFIX}bin,bin>"
+		DESTINATION "$<IF:$<CONFIG:Debug>,bin,bin>"
 		OPTIONAL
 	)
 endif()

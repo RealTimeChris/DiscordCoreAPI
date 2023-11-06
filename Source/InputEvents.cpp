@@ -33,197 +33,201 @@
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	CoRoutine<InputEventData> InputEvents::respondToInputEventAsync(RespondToInputEventData dataPackage) {
-		co_await NewThreadAwaitable<InputEventData>();
-		if (dataPackage.type == InputEventResponseType::Unset) {
-			throw DCAException("InputEvents::respondToInputEventAsync() Error: Please set an "
-							   "input-event-response-type!");
+	co_routine<input_event_data> input_events::respondToInputEventAsync(respond_to_input_event_data dataPackage) {
+		co_await newThreadAwaitable<input_event_data>();
+		if (dataPackage.type == input_event_response_type::unset) {
+			throw dca_exception("input_events::respondToInputEventAsync() error: please set an "
+								"input-event-response-type!");
 		}
-		if (dataPackage.eventType == InteractionType::Message_Component) {
-			CreateInteractionResponseData dataPackage02{ dataPackage };
-			if (dataPackage.type == InputEventResponseType::Deferred_Response) {
-				dataPackage02.type = InteractionCallbackType::Deferred_Update_Message;
+		if (dataPackage.eventType == interaction_type::Message_Component) {
+			create_interaction_response_data dataPackage02{ dataPackage };
+			if (dataPackage.type == input_event_response_type::Deferred_Response) {
+				dataPackage02.type = interaction_callback_type::Deferred_Update_Message;
 			} else {
-				dataPackage02.type = InteractionCallbackType::Update_Message;
+				dataPackage02.type = interaction_callback_type::Update_Message;
 			}
-			InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
-			if (dataPackage.type == InputEventResponseType::Interaction_Response || dataPackage.type == InputEventResponseType::Ephemeral_Interaction_Response ||
-				dataPackage.type == InputEventResponseType::Edit_Interaction_Response) {
-				newEvent.responseType = InputEventResponseType::Edit_Interaction_Response;
-			} else if (dataPackage.type == InputEventResponseType::Follow_Up_Message || dataPackage.type == InputEventResponseType::Ephemeral_Follow_Up_Message ||
-				dataPackage.type == InputEventResponseType::Edit_Follow_Up_Message) {
-				newEvent.responseType = InputEventResponseType::Edit_Follow_Up_Message;
+			input_event_data newEvent = input_events::respondToInputEvent(dataPackage02);
+			if (dataPackage.type == input_event_response_type::Interaction_Response || dataPackage.type == input_event_response_type::Ephemeral_Interaction_Response ||
+				dataPackage.type == input_event_response_type::Edit_Interaction_Response) {
+				newEvent.responseType = input_event_response_type::Edit_Interaction_Response;
+			} else if (dataPackage.type == input_event_response_type::Follow_Up_Message || dataPackage.type == input_event_response_type::Ephemeral_Follow_Up_Message ||
+				dataPackage.type == input_event_response_type::Edit_Follow_Up_Message) {
+				newEvent.responseType = input_event_response_type::Edit_Follow_Up_Message;
 			}
 			co_return std::move(newEvent);
-		} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete) {
-			CreateInteractionResponseData dataPackage02{ dataPackage };
-			dataPackage02.type		= InteractionCallbackType::Application_Command_Autocomplete_Result;
-			InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
-			newEvent.responseType	= InputEventResponseType::Application_Command_AutoComplete_Result;
+		} else if (dataPackage.eventType == interaction_type::Application_Command_Autocomplete) {
+			create_interaction_response_data dataPackage02{ dataPackage };
+			dataPackage02.type		  = interaction_callback_type::Application_Command_Autocomplete_Result;
+			input_event_data newEvent = input_events::respondToInputEvent(dataPackage02);
+			newEvent.responseType	  = input_event_response_type::Application_Command_AutoComplete_Result;
 			co_return std::move(newEvent);
 		}
 		switch (dataPackage.type) {
-			case InputEventResponseType::Ephemeral_Deferred_Response: {
-				CreateDeferredInteractionResponseData dataPackage02{ dataPackage };
+			case input_event_response_type::Ephemeral_Deferred_Response: {
+				create_deferred_interaction_response_data dataPackage02{ dataPackage };
 				dataPackage02.data.flags = 64;
-				co_return InputEvents::respondToInputEvent(dataPackage02);
+				co_return input_events::respondToInputEvent(dataPackage02);
 			}
-			case InputEventResponseType::Deferred_Response: {
-				CreateDeferredInteractionResponseData dataPackage02{ dataPackage };
-				co_return InputEvents::respondToInputEvent(dataPackage02);
+			case input_event_response_type::Deferred_Response: {
+				create_deferred_interaction_response_data dataPackage02{ dataPackage };
+				co_return input_events::respondToInputEvent(dataPackage02);
 			}
-			case InputEventResponseType::Interaction_Response: {
-				CreateInteractionResponseData dataPackage02{ dataPackage };
-				co_return InputEvents::respondToInputEvent(dataPackage02);
+			case input_event_response_type::Interaction_Response: {
+				create_interaction_response_data dataPackage02{ dataPackage };
+				co_return input_events::respondToInputEvent(dataPackage02);
 			}
-			case InputEventResponseType::Edit_Interaction_Response: {
-				EditInteractionResponseData dataPackage02{ dataPackage };
-				co_return InputEvents::respondToInputEvent(dataPackage02);
+			case input_event_response_type::Edit_Interaction_Response: {
+				edit_interaction_response_data dataPackage02{ dataPackage };
+				co_return input_events::respondToInputEvent(dataPackage02);
 			}
-			case InputEventResponseType::Ephemeral_Interaction_Response: {
-				CreateEphemeralInteractionResponseData dataPackage02{ dataPackage };
-				co_return InputEvents::respondToInputEvent(dataPackage02);
+			case input_event_response_type::Ephemeral_Interaction_Response: {
+				create_ephemeral_interaction_response_data dataPackage02{ dataPackage };
+				co_return input_events::respondToInputEvent(dataPackage02);
 			}
-			case InputEventResponseType::Follow_Up_Message: {
-				CreateFollowUpMessageData dataPackage02{ dataPackage };
-				co_return InputEvents::respondToInputEvent(dataPackage02);
+			case input_event_response_type::Follow_Up_Message: {
+				create_follow_up_message_data dataPackage02{ dataPackage };
+				co_return input_events::respondToInputEvent(dataPackage02);
 			}
-			case InputEventResponseType::Edit_Follow_Up_Message: {
-				EditFollowUpMessageData dataPackage02{ dataPackage };
-				co_return InputEvents::respondToInputEvent(dataPackage02);
+			case input_event_response_type::Edit_Follow_Up_Message: {
+				edit_follow_up_message_data dataPackage02{ dataPackage };
+				co_return input_events::respondToInputEvent(dataPackage02);
 			}
-			case InputEventResponseType::Ephemeral_Follow_Up_Message: {
-				CreateEphemeralFollowUpMessageData dataPackage02{ dataPackage };
-				co_return InputEvents::respondToInputEvent(dataPackage02);
+			case input_event_response_type::Ephemeral_Follow_Up_Message: {
+				create_ephemeral_follow_up_message_data dataPackage02{ dataPackage };
+				co_return input_events::respondToInputEvent(dataPackage02);
 			}
-			case InputEventResponseType::Unset: {
+			case input_event_response_type::Modal_Interaction_Response:
+				[[fallthrough]];
+			case input_event_response_type::Application_Command_AutoComplete_Result:
+				[[fallthrough]];
+			case input_event_response_type::unset: {
 				break;
 			}
 			default: {
-				co_return InputEventData();
+				co_return input_event_data();
 			}
 		}
-		co_return InputEventData();
+		co_return input_event_data();
 	}
 
-	CoRoutine<void> InputEvents::deleteInputEventResponseAsync(InputEventData& dataPackage, uint32_t timeDelayNew) {
-		InputEventData newPackage = dataPackage;
-		co_await NewThreadAwaitable<void>();
-		if (newPackage.responseType == InputEventResponseType::Follow_Up_Message || newPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message ||
-			newPackage.responseType == InputEventResponseType::Ephemeral_Follow_Up_Message) {
-			RespondToInputEventData dataPackageNew{ newPackage };
-			DeleteFollowUpMessageData dataPackageNewer{ dataPackageNew };
+	co_routine<void> input_events::deleteInputEventResponseAsync(input_event_data& dataPackage, uint32_t timeDelayNew) {
+		input_event_data newPackage = dataPackage;
+		co_await newThreadAwaitable<void>();
+		if (newPackage.responseType == input_event_response_type::Follow_Up_Message || newPackage.responseType == input_event_response_type::Edit_Follow_Up_Message ||
+			newPackage.responseType == input_event_response_type::Ephemeral_Follow_Up_Message) {
+			respond_to_input_event_data dataPackageNew{ newPackage };
+			delete_follow_up_message_data dataPackageNewer{ dataPackageNew };
 			dataPackageNewer.timeDelay = timeDelayNew;
-			Interactions::deleteFollowUpMessageAsync(dataPackageNewer).get();
-		} else if (newPackage.responseType == InputEventResponseType::Interaction_Response || newPackage.responseType == InputEventResponseType::Edit_Interaction_Response ||
-			newPackage.responseType == InputEventResponseType::Ephemeral_Interaction_Response || newPackage.responseType == InputEventResponseType::Ephemeral_Deferred_Response ||
-			newPackage.responseType == InputEventResponseType::Deferred_Response) {
-			RespondToInputEventData dataPackageNew{ newPackage };
-			DeleteInteractionResponseData dataPackageNewer{ dataPackageNew };
+			interactions::deleteFollowUpMessageAsync(dataPackageNewer).get();
+		} else if (newPackage.responseType == input_event_response_type::Interaction_Response || newPackage.responseType == input_event_response_type::Edit_Interaction_Response ||
+			newPackage.responseType == input_event_response_type::Ephemeral_Interaction_Response ||
+			newPackage.responseType == input_event_response_type::Ephemeral_Deferred_Response || newPackage.responseType == input_event_response_type::Deferred_Response) {
+			respond_to_input_event_data dataPackageNew{ newPackage };
+			delete_interaction_response_data dataPackageNewer{ dataPackageNew };
 			dataPackageNewer.timeDelay = timeDelayNew;
-			Interactions::deleteInteractionResponseAsync(dataPackageNewer).get();
+			interactions::deleteInteractionResponseAsync(dataPackageNewer).get();
 		}
 		co_return;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(CreateDeferredInteractionResponseData& dataPackage) {
+	input_event_data input_events::respondToInputEvent(create_deferred_interaction_response_data& dataPackage) {
 		dataPackage.generateExcludedKeys();
-		CreateInteractionResponseData dataPackageNew{ dataPackage };
-		auto result = Interactions::createInteractionResponse(dataPackageNew);
-		InputEventData dataPackageNewer{};
-		dataPackageNewer.responseType					= InputEventResponseType::Deferred_Response;
-		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer.interactionData->token			= dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer.interactionData->channelId		= result.channelId;
-		dataPackageNewer.interactionData->message.id	= result.referencedMessage.id;
-		dataPackageNewer.interactionData->id			= dataPackage.interactionPackage.interactionId;
-		dataPackageNewer.interactionData->user			= result.author;
+		create_interaction_response_data dataPackageNew{ dataPackage };
+		auto result = interactions::createInteractionResponse(dataPackageNew);
+		input_event_data dataPackageNewer{};
+		dataPackageNewer.responseType					= input_event_response_type::Deferred_Response;
+		dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData.token			= dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData.channelId		= result.channelId;
+		dataPackageNewer.interactionData.message.id	= result.referencedMessage.id;
+		dataPackageNewer.interactionData.id			= dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.interactionData.user			= result.author;
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(CreateInteractionResponseData& dataPackage) {
+	input_event_data input_events::respondToInputEvent(create_interaction_response_data& dataPackage) {
 		dataPackage.generateExcludedKeys();
-		MessageData messageData = Interactions::createInteractionResponse(dataPackage);
-		InputEventData dataPackageNewer{};
-		dataPackageNewer.responseType					= InputEventResponseType::Interaction_Response;
-		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer.interactionData->token			= dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer.interactionData->id			= dataPackage.interactionPackage.interactionId;
-		dataPackageNewer.interactionData->channelId		= messageData.channelId;
-		dataPackageNewer.interactionData->user			= messageData.author;
-		dataPackageNewer.interactionData->message		= messageData;
+		message_data messageData = interactions::createInteractionResponse(dataPackage);
+		input_event_data dataPackageNewer{};
+		dataPackageNewer.responseType					= input_event_response_type::Interaction_Response;
+		dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData.token			= dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData.id			= dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.interactionData.channelId		= messageData.channelId;
+		dataPackageNewer.interactionData.user			= messageData.author;
+		dataPackageNewer.interactionData.message		= messageData;
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(EditInteractionResponseData& dataPackage) {
+	input_event_data input_events::respondToInputEvent(edit_interaction_response_data& dataPackage) {
 		dataPackage.generateExcludedKeys();
-		MessageData messageData = Interactions::editInteractionResponse(dataPackage);
-		InputEventData dataPackageNewer{};
-		dataPackageNewer.responseType					= InputEventResponseType::Edit_Interaction_Response;
-		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer.interactionData->token			= dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer.interactionData->id			= dataPackage.interactionPackage.interactionId;
-		dataPackageNewer.interactionData->channelId		= messageData.channelId;
-		dataPackageNewer.interactionData->user			= messageData.author;
-		dataPackageNewer.interactionData->message		= messageData;
+		message_data messageData = interactions::editInteractionResponse(dataPackage);
+		input_event_data dataPackageNewer{};
+		dataPackageNewer.responseType					= input_event_response_type::Edit_Interaction_Response;
+		dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData.token			= dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData.id			= dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.interactionData.channelId		= messageData.channelId;
+		dataPackageNewer.interactionData.user			= messageData.author;
+		dataPackageNewer.interactionData.message		= messageData;
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(CreateFollowUpMessageData& dataPackage) {
+	input_event_data input_events::respondToInputEvent(create_follow_up_message_data& dataPackage) {
 		dataPackage.generateExcludedKeys();
-		MessageData messageData = Interactions::createFollowUpMessage(dataPackage);
-		InputEventData dataPackageNewer{};
-		dataPackageNewer.responseType					= InputEventResponseType::Follow_Up_Message;
-		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer.interactionData->token			= dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer.interactionData->id			= dataPackage.interactionPackage.interactionId;
-		dataPackageNewer.interactionData->channelId		= messageData.channelId;
-		dataPackageNewer.interactionData->user			= messageData.author;
-		dataPackageNewer.interactionData->message		= messageData;
+		message_data messageData = interactions::createFollowUpMessage(dataPackage);
+		input_event_data dataPackageNewer{};
+		dataPackageNewer.responseType					= input_event_response_type::Follow_Up_Message;
+		dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData.token			= dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData.id			= dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.interactionData.channelId		= messageData.channelId;
+		dataPackageNewer.interactionData.user			= messageData.author;
+		dataPackageNewer.interactionData.message		= messageData;
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(EditFollowUpMessageData& dataPackage) {
-		MessageData messageData = Interactions::editFollowUpMessage(dataPackage);
-		InputEventData dataPackageNewer{};
-		dataPackageNewer.responseType					= InputEventResponseType::Edit_Follow_Up_Message;
-		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer.interactionData->token			= dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer.interactionData->id			= dataPackage.interactionPackage.interactionId;
-		dataPackageNewer.interactionData->channelId		= messageData.channelId;
-		dataPackageNewer.interactionData->user			= messageData.author;
-		dataPackageNewer.interactionData->message		= messageData;
+	input_event_data input_events::respondToInputEvent(edit_follow_up_message_data& dataPackage) {
+		message_data messageData = interactions::editFollowUpMessage(dataPackage);
+		input_event_data dataPackageNewer{};
+		dataPackageNewer.responseType					= input_event_response_type::Edit_Follow_Up_Message;
+		dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData.token			= dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData.id			= dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.interactionData.channelId		= messageData.channelId;
+		dataPackageNewer.interactionData.user			= messageData.author;
+		dataPackageNewer.interactionData.message		= messageData;
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(CreateEphemeralInteractionResponseData& dataPackage) {
+	input_event_data input_events::respondToInputEvent(create_ephemeral_interaction_response_data& dataPackage) {
 		dataPackage.generateExcludedKeys();
-		CreateInteractionResponseData dataPackageNew{ dataPackage };
-		MessageData messageData = Interactions::createInteractionResponse(dataPackageNew);
-		InputEventData dataPackageNewer{};
-		dataPackageNewer.responseType					= InputEventResponseType::Ephemeral_Interaction_Response;
-		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer.interactionData->token			= dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer.interactionData->id			= dataPackage.interactionPackage.interactionId;
-		dataPackageNewer.interactionData->channelId		= messageData.channelId;
-		dataPackageNewer.interactionData->user			= messageData.author;
-		dataPackageNewer.interactionData->message		= messageData;
+		create_interaction_response_data dataPackageNew{ dataPackage };
+		message_data messageData = interactions::createInteractionResponse(dataPackageNew);
+		input_event_data dataPackageNewer{};
+		dataPackageNewer.responseType					= input_event_response_type::Ephemeral_Interaction_Response;
+		dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData.token			= dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData.id			= dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.interactionData.channelId		= messageData.channelId;
+		dataPackageNewer.interactionData.user			= messageData.author;
+		dataPackageNewer.interactionData.message		= messageData;
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(CreateEphemeralFollowUpMessageData& dataPackage) {
-		CreateFollowUpMessageData dataPackageNew{ dataPackage };
-		MessageData messageData = Interactions::createFollowUpMessage(dataPackageNew);
-		InputEventData dataPackageNewer{};
-		dataPackageNewer.responseType					= InputEventResponseType::Ephemeral_Follow_Up_Message;
-		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer.interactionData->token			= dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer.interactionData->id			= dataPackage.interactionPackage.interactionId;
-		dataPackageNewer.interactionData->channelId		= messageData.channelId;
-		dataPackageNewer.interactionData->user			= messageData.author;
-		dataPackageNewer.interactionData->message		= messageData;
+	input_event_data input_events::respondToInputEvent(create_ephemeral_follow_up_message_data& dataPackage) {
+		create_follow_up_message_data dataPackageNew{ dataPackage };
+		message_data messageData = interactions::createFollowUpMessage(dataPackageNew);
+		input_event_data dataPackageNewer{};
+		dataPackageNewer.responseType					= input_event_response_type::Ephemeral_Follow_Up_Message;
+		dataPackageNewer.interactionData.applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData.token			= dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData.id			= dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.interactionData.channelId		= messageData.channelId;
+		dataPackageNewer.interactionData.user			= messageData.author;
+		dataPackageNewer.interactionData.message		= messageData;
 		return dataPackageNewer;
 	}
 

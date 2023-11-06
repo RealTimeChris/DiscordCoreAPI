@@ -78,7 +78,7 @@ OUTPUT_DIRECTORY       = ../../../DiscordCoreAPI-Docs/Doxygen
 # control the number of sub-directories.
 # The default value is: NO.
 
-CREATE_SUBDIRS         = YES
+CREATE_SUBDIRS         = NO
 
 # Controls the number of sub-directories that will be created when
 # CREATE_SUBDIRS tag is set to YES. Level 0 represents 16 directories, and every
@@ -114,7 +114,7 @@ ALLOW_UNICODE_NAMES    = NO
 
 OUTPUT_LANGUAGE        = English
 
-# If the BRIEF_MEMBER_DESC tag is set to YES, doxygen will include brief member
+# If the BRIEF_MEMBER_DESC tag is set to YES, doxygen will include brief Member
 # descriptions after the members that are listed in the file and class
 # documentation (similar to Javadoc). Set to NO to disable this.
 # The default value is: YES.
@@ -125,16 +125,16 @@ BRIEF_MEMBER_DESC      = YES
 # description of a member or function before the detailed description
 #
 # Note: If both HIDE_UNDOC_MEMBERS and BRIEF_MEMBER_DESC are set to NO, the
-# brief descriptions will be completely suppressed.
+# brief Descriptions will be completely suppressed.
 # The default value is: YES.
 
 REPEAT_BRIEF           = NO
 
-# This tag implements a quasi-intelligent brief description abbreviator that is
+# This tag implements a quasi-intelligent brief Description abbreviator that is
 # used to form the text in various listings. Each string in this list, if found
-# as the leading text of the brief description, will be stripped from the text
+# as the leading text of the brief Description, will be stripped from the text
 # and the result, after processing the whole list, is used as the annotated
-# text. Otherwise, the brief description is used as-is. If left blank, the
+# text. Otherwise, the brief Description is used as-is. If left blank, the
 # following values are used ($name is automatically replaced with the name of
 # the entity):The $name class, The $name widget, The $name file, is, provides,
 # specifies, contains, represents, a, an and the.
@@ -199,12 +199,12 @@ STRIP_FROM_INC_PATH    =
 # support long names like on DOS, Mac, or CD-ROM.
 # The default value is: NO.
 
-SHORT_NAMES            = YES
+SHORT_NAMES            = NO
 
 # If the JAVADOC_AUTOBRIEF tag is set to YES then doxygen will interpret the
 # first line (until the first dot) of a Javadoc-style comment as the brief
 # description. If set to NO, the Javadoc-style will behave just like regular Qt-
-# style comments (thus requiring an explicit @brief command for a brief
+# style comments (thus requiring an explicit @brief Command for a brief
 # description.)
 # The default value is: NO.
 
@@ -221,16 +221,16 @@ JAVADOC_AUTOBRIEF      = NO
 JAVADOC_BANNER         = NO
 
 # If the QT_AUTOBRIEF tag is set to YES then doxygen will interpret the first
-# line (until the first dot) of a Qt-style comment as the brief description. If
+# line (until the first dot) of a Qt-style comment as the brief Description. If
 # set to NO, the Qt-style will behave just like regular Qt-style comments (thus
-# requiring an explicit @brief command for a brief description.)
+# requiring an explicit @brief Command for a brief Description.)
 # The default value is: NO.
 
 QT_AUTOBRIEF           = NO
 
 # The MULTILINE_CPP_IS_BRIEF tag can be set to YES to make doxygen treat a
 # multi-line C++ special comment block (i.e. a block of //! or /// comments) as
-# a brief description. This used to be the default behavior. The new default is
+# a brief Description. This used to be the default behavior. The new default is
 # to treat a multi-line C++ comment block as a detailed description. Set this
 # tag to YES if you prefer the old behavior instead.
 #
@@ -670,7 +670,7 @@ SORT_MEMBER_DOCS       = YES
 SORT_BRIEF_DOCS        = YES
 
 # If the SORT_MEMBERS_CTORS_1ST tag is set to YES then doxygen will sort the
-# (brief and detailed) documentation of class members so that constructors and
+# (brief And detailed) documentation of class members so that constructors and
 # destructors are listed first. If set to NO the constructors will appear in the
 # respective orders defined by SORT_BRIEF_DOCS and SORT_MEMBER_DOCS.
 # Note: If SORT_BRIEF_DOCS is set to NO this option is ignored for sorting brief
@@ -906,33 +906,35 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ./Documentation-Examples \
-                         ./Documentation-Examples/Application-Command-Stuff \
-                         ./Documentation-Examples/Autocomplete-Stuff \
-                         ./Documentation-Examples/Auto-Moderation-Rule-Stuff \
-                         ./Documentation-Examples/Button-Stuff \
-                         ./Documentation-Examples/Channel-Stuff \
-                         ./Documentation-Examples/Guild-Stuff \
-                         ./Documentation-Examples/General-Usage \
-                         ./Documentation-Examples/Login-Setup \
-                         ./Documentation-Examples/Modal-Stuff \
-                         ./Documentation-Examples/Music-Bot \
-                         ./Documentation-Examples/Select-Menu-Stuff \
-                         ./Documentation-Examples/Voice-Connection-Stuff \
-                         ./Documentation-Examples/Guild-Scheduled-Event-Stuff \
-                         ./Documentation-Examples/Guild-Member-Stuff \
-                         ./Documentation-Examples/Input-Event-Stuff \
-                         ./Documentation-Examples/Interaction-Stuff \
-                         ./Documentation-Examples/Message-Stuff \
-                         ./Documentation-Examples/Reaction-Stuff \
-                         ./Documentation-Examples/Role-Stuff \
-                         ./Documentation-Examples/Stage-Instance-Stuff \
-                         ./Documentation-Examples/Sticker-Stuff \
-                         ./Documentation-Examples/Thread-Stuff \
-                         ./Documentation-Examples/User-Stuff \
-                         ./Documentation-Examples/WebHook-Stuff \
+INPUT                  = ./Docs \
+                         ./Docs/documentation_examples/login_setup \
+                         ./Docs/documentation_examples/general_usage \
+                         ./Docs/documentation_examples/autocompletes \
+                         ./Docs/documentation_examples/buttons \
+                         ./Docs/documentation_examples/voice_connections \
+                         ./Docs/documentation_examples/messages \
+                         ./Docs/documentation_examples/application_commands \
+                         ./Docs/documentation_examples/channels \
+                         ./Docs/documentation_examples/guilds \
+                         ./Docs/documentation_examples/users \
+                         ./Docs/documentation_examples/threads \
+                         ./Docs/documentation_examples/guild_members \
+                         ./Docs/documentation_examples/guild_scheduled_events \
+                         ./Docs/documentation_examples/auto_moderation_rules \
+                         ./Docs/documentation_examples/input_events \
+                         ./Docs/documentation_examples/interactions \
+                         ./Docs/documentation_examples/roles \
+                         ./Docs/documentation_examples/reactions \
+                         ./Docs/documentation_examples/modals \
+                         ./Docs/documentation_examples/select_menus \
+                         ./Docs/documentation_examples/stickers \
+                         ./Docs/documentation_examples/stage_instances \
+                         ./Docs/documentation_examples/webhooks \
+                         ./Docs/documentation_examples/music_bot \
+                         ./Docs/documentation_examples/general_usage \
                          ../../Include/discordcoreapi \
                          ../../Include/discordcoreapi/Utilities \
+                         ../../Include/discordcoreapi/Utilities/Isa \
                          ../../Source
 
 # This tag can be used to specify the character encoding of the source files
@@ -979,7 +981,7 @@ FILE_PATTERNS          = *.c \
                          *.h \
                          *.hh \
                          *.hxx \
-                         *.hpp \
+                         *.hpp\
                          *.h++ \
                          *.l \
                          *.cs \
@@ -1131,7 +1133,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = ./Documentation-Examples/999-ReadMe.md
+USE_MDFILE_AS_MAINPAGE = ./Docs/INDEX.md
 
 # The Fortran standard specifies that for fixed formatted Fortran code all
 # characters from position 72 are to be considered as comment. A common
@@ -1190,7 +1192,7 @@ REFERENCES_LINK_SOURCE = YES
 
 # If SOURCE_TOOLTIPS is enabled (the default) then hovering a hyperlink in the
 # source code will show a tooltip with additional information such as prototype,
-# brief description and links to the definition and documentation. Since this
+# brief Description and links to the definition and documentation. Since this
 # will make the HTML file larger and loading of large files a bit slower, you
 # can opt to disable this feature.
 # The default value is: YES.

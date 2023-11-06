@@ -23,142 +23,141 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// ApplicationCommandEntities.hpp - Header for the ApplicationCommandData classes
-/// and structs. Aug 25, 2021 Chris M.
+/// ApplicationCommandEntities.hpp - Header for the application_command_data classes
+/// and structs. aug 25, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file ApplicationCommandEntities.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
 	*/
 
-	/// @brief For getting all of the Global Application Commands.
-	struct GetGlobalApplicationCommandsData {
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
+	/// @brief For getting all of the global application commands.
+	struct get_global_application_commands_data {
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
 		bool withLocalizations{};///< Do we collect the name-and-description localizations?
 	};
 
-	/// @brief For collecting a single global ApplicationCommandData.
-	struct GetGlobalApplicationCommandData {
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
+	/// @brief For collecting a single global application_command_data.
+	struct get_global_application_command_data {
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
 		jsonifier::string commandId{};///< The id of the command which you would like to collect.
 	};
 
 	/// @brief For creating an application command.
-	struct CreateApplicationCommandData : public ApplicationCommandData {
-		friend class DiscordCoreClient;
+	struct create_application_command_data : public application_command_data {
+		friend class discord_core_client;
 
 	  protected:
 		bool alwaysRegister{};
 	};
 
-	/// @brief For creating a single global ApplicationCommandData.
-	struct CreateGlobalApplicationCommandData : public CreateApplicationCommandData {};
+	/// @brief For creating a single global application_command_data.
+	struct create_global_application_command_data : public create_application_command_data {};
 
-	/// @brief For editing a single global ApplicationCommandData.
-	struct EditGlobalApplicationCommandData {
-		UnorderedMap<jsonifier::string, jsonifier::string>
-			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		UnorderedMap<jsonifier::string, jsonifier::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		jsonifier::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommandData.
+	/// @brief For editing a single global application_command_data.
+	struct edit_global_application_command_data {
+		unordered_map<jsonifier::string, jsonifier::string>
+			descriptionLocalizations{};///< Dictionary with keys in available locales localization dictionary for the description field.
+		unordered_map<jsonifier::string, jsonifier::string> nameLocalizations{};///< Dictionary with keys in available locales localization dictionary for the name field.
+		jsonifier::vector<application_command_option_data> options{};///< The options for the application_command_data.
 		jsonifier::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		jsonifier::string description{};///< A description of the command.
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
+		bool dmPermission{};///< Indicates whether the command is available in dms with the app.
 		jsonifier::string name{};///< A name for the new command.
 	};
 
-	/// @brief For deleting a single global ApplicationCommandData.
-	struct DeleteGlobalApplicationCommandData {
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
+	/// @brief For deleting a single global application_command_data.
+	struct delete_global_application_command_data {
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
 		jsonifier::string name{};///< The name of the command to delete.
 	};
 
-	/// @brief For bulk-overwriting a collection of global ApplicationCommands.
-	struct BulkOverwriteGlobalApplicationCommandsData {
-		jsonifier::vector<CreateGlobalApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
+	/// @brief For bulk-overwriting a collection of global application_commands.
+	struct bulk_overwrite_global_application_commands_data {
+		jsonifier::vector<create_global_application_command_data> responseData{};///< A vector of the options for the application_commands.
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
 	};
 
-	/// @brief For acquiring all of the Guild ApplicationCommands of a single Guild.
-	struct GetGuildApplicationCommandsData {
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
+	/// @brief For acquiring all of the guild application_commands of a single guild.
+	struct get_guild_application_commands_data {
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
 		bool withLocalizations{};///< Do we collect the name-and-description localizations?
-		Snowflake guildId{};///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
+		snowflake guildId{};///< The id of the guild for which you would like to acquire the application_commands from.
 	};
 
-	/// @brief For creating a single Guild ApplicationCommandData.
-	struct CreateGuildApplicationCommandData : public CreateGlobalApplicationCommandData {};
+	/// @brief For creating a single guild application_command_data.
+	struct create_guild_application_command_data : public create_global_application_command_data {};
 
-	/// @brief For acquiring a single Guild ApplicationCommandData.
-	struct GetGuildApplicationCommandData {
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		uint64_t commandId{};///< The command id which you would like to acquire.
-		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the ApplicationCommandData from.
+	/// @brief For acquiring a single guild application_command_data.
+	struct get_guild_application_command_data {
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
+		snowflake commandId{};///< The command id which you would like to acquire.
+		snowflake guildId{};///< The id of the guild from which you would like to acquire the application_command_data from.
 	};
 
-	/// @brief For editing a single Guild ApplicationCommandData.
-	struct EditGuildApplicationCommandData {
-		UnorderedMap<jsonifier::string, jsonifier::string> descriptionLocalizations{};///< Dictionary with keys in available locales.
-		UnorderedMap<jsonifier::string, jsonifier::string> nameLocalizations{};///< Dictionary with keys in available locales.
-		jsonifier::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommandData.
+	/// @brief For editing a single guild application_command_data.
+	struct edit_guild_application_command_data {
+		unordered_map<jsonifier::string, jsonifier::string> descriptionLocalizations{};///< Dictionary with keys in available locales.
+		unordered_map<jsonifier::string, jsonifier::string> nameLocalizations{};///< Dictionary with keys in available locales.
+		jsonifier::vector<application_command_option_data> options{};///< The options for the application_command_data.
 		jsonifier::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		jsonifier::string description{};///< A description of the command.
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
-		Snowflake guildId{};///< The id of the Guild which you would like to add the new command to.
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
+		bool dmPermission{};///< Indicates whether the command is available in dms with the app.
+		snowflake guildId{};///< The id of the guild which you would like to add the new command to.
 		jsonifier::string name{};///< A name for the new command.
 	};
 
-	/// @brief For deleting a single Guild ApplicationCommandData.
-	struct DeleteGuildApplicationCommandData {
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		Snowflake guildId{};///< The id of the Guild which you would like to delete the command from.
+	/// @brief For deleting a single guild application_command_data.
+	struct delete_guild_application_command_data {
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
+		snowflake guildId{};///< The id of the guild which you would like to delete the command from.
 		jsonifier::string name{};///< A name of the command which you would like to delete.
 	};
 
-	/// @brief For bulk-overwriting a collection of Guild ApplicationCommands.
-	struct BulkOverwriteGuildApplicationCommandsData {
-		jsonifier::vector<CreateGuildApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		Snowflake guildId{};///< The id of the Guild which you would like to overwrite the commands of.
+	/// @brief For bulk-overwriting a collection of guild application_commands.
+	struct bulk_overwrite_guild_application_commands_data {
+		jsonifier::vector<create_guild_application_command_data> responseData{};///< A vector of the options for the application_commands.
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
+		snowflake guildId{};///< The id of the guild which you would like to overwrite the commands of.
 	};
 
-	/// @brief For acquiring the permissions of a collection of Guild ApplicationCommands.
-	struct GetGuildApplicationCommandPermissionsData {
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
+	/// @brief For acquiring the permissions of a collection of guild application_commands.
+	struct get_guild_application_command_permissions_data {
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
+		snowflake guildId{};///< The id of the guild from which you would like to acquire the command permissions.
 	};
 
-	/// @brief For acquiring the permissions of a single Guild ApplicationCommandData.
-	struct GetApplicationCommandPermissionsData {
+	/// @brief For acquiring the permissions of a single guild application_command_data.
+	struct get_application_command_permissions_data {
 		jsonifier::string commandName{};///< The name of the command which you would like to collect the permissions of.
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
+		snowflake guildId{};///< The id of the guild from which you would like to acquire the command permissions.
 	};
 
-	/// @brief For editing the permissions of a single Guild ApplicationCommandData.
-	struct EditGuildApplicationCommandPermissionsData {
-		jsonifier::vector<ApplicationCommandPermissionData> permissions{};///< A vector of ApplicationCommandData permissions.
+	/// @brief For editing the permissions of a single guild application_command_data.
+	struct edit_guild_application_command_permissions_data {
+		jsonifier::vector<application_command_permission_data> permissions{};///< A vector of application_command_data permissions.
 		jsonifier::string commandName{};///< The command name which you would like to edit the permissions of.
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		uint64_t commandId{};///< The command id which you would like to edit the permissions of.
-		Snowflake guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
+		snowflake commandId{};///< The command id which you would like to edit the permissions of.
+		snowflake guildId{};///< The guild id of the guild for which you would like to edit the command permissions.
 	};
 
-	/// @brief For batch editing the permissions of a collection of Guild ApplicationCommands.
-	struct BatchEditGuildApplicationCommandPermissionsData {
-		jsonifier::vector<GuildApplicationCommandPermissionsData> permissions{};///< A vector of edit-Guild-application-permissions responseData to edit.
-		Snowflake applicationId{};///< The current application's Snowflake (The Bot's UserData Snowflake).
-		Snowflake guildId{};///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
+	/// @brief For batch editing the permissions of a collection of guild application_commands.
+	struct batch_edit_guild_application_command_permissions_data {
+		jsonifier::vector<guild_application_command_permissions_data> permissions{};///< A vector of edit-guild-application-permissions responseData to edit.
+		snowflake applicationId{};///< The current application's snowflake (the bot's user_data snowflake).
+		snowflake guildId{};///< The guild id of the guild for which you would like to batch edit guild application permissions.
 	};
 
 	/**@}*/
@@ -167,89 +166,89 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// @brief An interface class for the ApplicationCommandData related Discord endpoints.
-	class ApplicationCommands {
+	/// @brief An interface class for the application_command_data related discord endpoints.
+	class application_commands {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(discord_core_internal::https_client*);
 
-		/// @brief Get all of the global ApplicationCommands for this bot.
-		/// @param dataPackage The info for acquiring the GlobalApplicationCommandData.
-		/// @return A CoRoutine containing a vector<ApplicationCommandData>.
-		static CoRoutine<jsonifier::vector<ApplicationCommandData>> getGlobalApplicationCommandsAsync(GetGlobalApplicationCommandsData dataPackage);
+		/// @brief Get all of the global application_commands for this bot.
+		/// @param dataPackage the info for acquiring the global_application_command_data.
+		/// @return a co_routine containing a vector<application_command_data>.
+		static co_routine<jsonifier::vector<application_command_data>> getGlobalApplicationCommandsAsync(get_global_application_commands_data dataPackage);
 
-		/// @brief Create a global ApplicationCommandData for this bot.
-		/// @param dataPackage A CreateGlobalApplicationCommandData structure.
-		/// @return A CoRoutine containing an ApplicationCommandData.
-		static CoRoutine<ApplicationCommandData> createGlobalApplicationCommandAsync(CreateGlobalApplicationCommandData dataPackage);
+		/// @brief Create a global application_command_data for this bot.
+		/// @param dataPackage a create_global_application_command_data structure.
+		/// @return a co_routine containing an application_command_data.
+		static co_routine<application_command_data> createGlobalApplicationCommandAsync(create_global_application_command_data dataPackage);
 
-		/// @brief Get a single global ApplicationCommandData for this bot.
-		/// @param dataPackage A GetGlobalApplicationCommandData structure.
-		/// @return A CoRoutine containing an ApplicationCommandData.
-		static CoRoutine<ApplicationCommandData> getGlobalApplicationCommandAsync(GetGlobalApplicationCommandData dataPackage);
+		/// @brief Get a single global application_command_data for this bot.
+		/// @param dataPackage a get_global_application_command_data structure.
+		/// @return a co_routine containing an application_command_data.
+		static co_routine<application_command_data> getGlobalApplicationCommandAsync(get_global_application_command_data dataPackage);
 
-		/// @brief Edit a global ApplicationCommandData for this bot.
-		/// @param dataPackage An EditGlobalApplicationCommandData structure.
-		/// @return A CoRoutine containing an ApplicationCommandData.
-		static CoRoutine<ApplicationCommandData> editGlobalApplicationCommandAsync(EditGlobalApplicationCommandData dataPackage);
+		/// @brief Edit a global application_command_data for this bot.
+		/// @param dataPackage an edit_global_application_command_data structure.
+		/// @return a co_routine containing an application_command_data.
+		static co_routine<application_command_data> editGlobalApplicationCommandAsync(edit_global_application_command_data dataPackage);
 
-		/// @brief Delete a global ApplicationCommandData for this bot.
-		/// @param dataPackage A DeleteGlobalApplicationCommandData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteGlobalApplicationCommandAsync(DeleteGlobalApplicationCommandData dataPackage);
+		/// @brief Delete a global application_command_data for this bot.
+		/// @param dataPackage a delete_global_application_command_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteGlobalApplicationCommandAsync(delete_global_application_command_data dataPackage);
 
-		/// @brief Bulk overwrites a collection of global ApplicationCommands.
-		/// @param dataPackage A BulkOverwriteGlobalApplicationCommandsData structure.
-		/// @return A CoRoutine containing a vector<ApplicationCommandData>.
-		static CoRoutine<jsonifier::vector<ApplicationCommandData>> bulkOverwriteGlobalApplicationCommandsAsync(BulkOverwriteGlobalApplicationCommandsData dataPackage);
+		/// @brief Bulk overwrites a collection of global application_commands.
+		/// @param dataPackage a bulk_overwrite_global_application_commands_data structure.
+		/// @return a co_routine containing a vector<application_command_data>.
+		static co_routine<jsonifier::vector<application_command_data>> bulkOverwriteGlobalApplicationCommandsAsync(bulk_overwrite_global_application_commands_data dataPackage);
 
-		/// @brief Get all of the Guild ApplicationCommands for a single Guild for this bot.
-		/// @param dataPackage A GetGuildApplicationCommandsData structure.
-		/// @return A CoRoutine containing a vector<ApplicationCommandData>.
-		static CoRoutine<jsonifier::vector<ApplicationCommandData>> getGuildApplicationCommandsAsync(GetGuildApplicationCommandsData dataPackage);
+		/// @brief Get all of the guild application_commands for a single guild for this bot.
+		/// @param dataPackage a get_guild_application_commands_data structure.
+		/// @return a co_routine containing a vector<application_command_data>.
+		static co_routine<jsonifier::vector<application_command_data>> getGuildApplicationCommandsAsync(get_guild_application_commands_data dataPackage);
 
-		/// @brief Create a Guild ApplicationCommandData for a single server for this bot.
-		/// @param dataPackage A CreateGuildApplicationCommandData structure.
-		/// @return A CoRoutine containing an ApplicationCommandData.
-		static CoRoutine<ApplicationCommandData> createGuildApplicationCommandAsync(CreateGuildApplicationCommandData dataPackage);
+		/// @brief Create a guild application_command_data for a single server for this bot.
+		/// @param dataPackage a create_guild_application_command_data structure.
+		/// @return a co_routine containing an application_command_data.
+		static co_routine<application_command_data> createGuildApplicationCommandAsync(create_guild_application_command_data dataPackage);
 
-		/// @brief Get a single Guild ApplicationCommandData for a single server for this bot.
-		/// @param dataPackage A GetGuildApplicationCommandData structure.
-		/// @return A CoRoutine containing an ApplicationCommandData.
-		static CoRoutine<ApplicationCommandData> getGuildApplicationCommandAsync(GetGuildApplicationCommandData dataPackage);
+		/// @brief Get a single guild application_command_data for a single server for this bot.
+		/// @param dataPackage a get_guild_application_command_data structure.
+		/// @return a co_routine containing an application_command_data.
+		static co_routine<application_command_data> getGuildApplicationCommandAsync(get_guild_application_command_data dataPackage);
 
-		/// @brief Edit a single Guild ApplicationCommandData for a single server for this bot.
-		/// @param dataPackage An EditGuildApplicationCommandData structure.
-		/// @return A CoRoutine containing an ApplicationCommandData.
-		static CoRoutine<ApplicationCommandData> editGuildApplicationCommandAsync(EditGuildApplicationCommandData dataPackage);
+		/// @brief Edit a single guild application_command_data for a single server for this bot.
+		/// @param dataPackage an edit_guild_application_command_data structure.
+		/// @return a co_routine containing an application_command_data.
+		static co_routine<application_command_data> editGuildApplicationCommandAsync(edit_guild_application_command_data dataPackage);
 
-		/// @brief Delete a single Guild ApplicationCommandData for a single server for this bot.
-		/// @param dataPackage A DeleteGuildApplicationCommandData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildApplicationCommandAsync(DeleteGuildApplicationCommandData dataPackage);
+		/// @brief Delete a single guild application_command_data for a single server for this bot.
+		/// @param dataPackage a delete_guild_application_command_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteGuildApplicationCommandAsync(delete_guild_application_command_data dataPackage);
 
-		/// @brief Bulkoverwrites some Guild ApplicationCommands for this bot.
-		/// @param dataPackage A BulkOverwriteGuildApplicationCommandsData structure.
-		/// @return A CoRoutine containing a vector<ApplicationCommandData>.
-		static CoRoutine<jsonifier::vector<ApplicationCommandData>> bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage);
+		/// @brief Bulkoverwrites some guild application_commands for this bot.
+		/// @param dataPackage a bulk_overwrite_guild_application_commands_data structure.
+		/// @return a co_routine containing a vector<application_command_data>.
+		static co_routine<jsonifier::vector<application_command_data>> bulkOverwriteGuildApplicationCommandsAsync(bulk_overwrite_guild_application_commands_data dataPackage);
 
-		/// @brief Gets Guild ApplicationCommandData permissions for a single server on this bot.
-		/// @param dataPackage A GetGuildApplicationCommandPermissionsData structure.
-		/// @return A CoRoutine containing a vector<GuildApplicationCommandPermissionsData>.
-		static CoRoutine<jsonifier::vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(
-			GetGuildApplicationCommandPermissionsData dataPackage);
+		/// @brief Gets guild application_command_data permissions for a single server on this bot.
+		/// @param dataPackage a get_guild_application_command_permissions_data structure.
+		/// @return a co_routine containing a vector<guild_application_command_permissions_data>.
+		static co_routine<jsonifier::vector<guild_application_command_permissions_data>> getGuildApplicationCommandPermissionsAsync(
+			get_guild_application_command_permissions_data dataPackage);
 
-		/// @brief Get ApplicationCommandData permissions for a single command on this bot.
-		/// @param dataPackage A GetApplicationCommandPermissionsData structure.
-		/// @return A CoRoutine containing a GuildApplicationCommandPermissionsData.
-		static CoRoutine<GuildApplicationCommandPermissionsData> getApplicationCommandPermissionsAsync(GetApplicationCommandPermissionsData dataPackage);
+		/// @brief Get application_command_data permissions for a single command on this bot.
+		/// @param dataPackage a get_application_command_permissions_data structure.
+		/// @return a co_routine containing a guild_application_command_permissions_data.
+		static co_routine<guild_application_command_permissions_data> getApplicationCommandPermissionsAsync(get_application_command_permissions_data dataPackage);
 
-		/// @brief Edit Guild ApplicationCommandData permissions for a server on this bot.
-		/// @param dataPackage An EditGuildApplicationCommandPermissionsData structure.
-		/// @return A CoRoutine containing a GuildApplicationCommandPermissionsData.
-		static CoRoutine<GuildApplicationCommandPermissionsData> editGuildApplicationCommandPermissionsAsync(EditGuildApplicationCommandPermissionsData dataPackage);
+		/// @brief Edit guild application_command_data permissions for a server on this bot.
+		/// @param dataPackage an edit_guild_application_command_permissions_data structure.
+		/// @return a co_routine containing a guild_application_command_permissions_data.
+		static co_routine<guild_application_command_permissions_data> editGuildApplicationCommandPermissionsAsync(edit_guild_application_command_permissions_data dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static discord_core_internal::https_client* httpsClient;
 	};
 
 	/**@}*/

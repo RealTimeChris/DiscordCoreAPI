@@ -21,7 +21,7 @@ alt="DiscordCoreAPI WebSite" width="500"/></p>
 ![Mac](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_13-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=MacOS&labelColor=pewter&color=blue)
 
 # Documentation/Examples
-[Documentation/Examples](https://discordcoreapi.org/da/d26/a08215.html)
+[Documentation/Examples](https://discordcoreapi.com/documentation_examples.html)
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)

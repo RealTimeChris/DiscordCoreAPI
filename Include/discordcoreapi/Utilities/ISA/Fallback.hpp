@@ -34,21 +34,21 @@
 	#include <cstdint>
 	#include <numeric>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	namespace discord_core_internal {
 
 		// @brief A class for audio mixing operations using AVX instructions.
-		class AudioMixer {
+		class audio_mixer {
 		  public:
-			// @brief The number of 32-bit values per CPU register.
-			inline static constexpr int32_t byteBlocksPerRegister{ 2 };
+			// @brief The number of 32-bit values per cpu register.
+			static constexpr int32_t byteBlocksPerRegister{ 2 };
 
-			// @brief Collect a single register worth of data from dataIn, apply gain and increment, and store the result in dataOut. This version uses x64 instructions.
-			// @param dataIn Pointer to the input array of int32_t values.
-			// @param dataOut Pointer to the output array of int16_t values.
-			// @param currentGain The gain to be applied to the elements.
-			// @param increment The increment value to be added to each element.
+			// @brief Collect a single register worth of data from dataIn, apply gain and increment, and store the result in dataOut. this version uses x64 instructions.
+			// @param dataIn pointer to the input array of int32_t values.
+			// @param dataOut pointer to the output array of int16_t values.
+			// @param currentGain the gain to be applied to the elements.
+			// @param increment the increment value to be added to each element.
 			inline static void collectSingleRegister(const int32_t* dataIn, int16_t* dataOut, const float currentGain, const float increment) {
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					float incrementNew	   = increment * static_cast<float>(x);
@@ -63,9 +63,9 @@ namespace DiscordCoreAPI {
 				}
 			}
 
-			// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. This version uses x64 instructions.
-			// @param upSampledVector Pointer to the array of int32_t values.
-			// @param decodedData Pointer to the array of int16_t values.
+			// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. this version uses x64 instructions.
+			// @param upSampledVector pointer to the array of int32_t values.
+			// @param decodedData pointer to the array of int16_t values.
 			inline static void combineSamples(const int16_t* decodedData, int32_t* upSampledVector) {
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					upSampledVector[x] += static_cast<int32_t>(decodedData[x]);

@@ -23,76 +23,75 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// GuildScheduledEventEntities.hpp - Header for the Guild Scheduled Events stuff.
+/// GuildScheduledEventEntities.hpp - Header for the guild scheduled events stuff.
 /// Nov 27, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file GuildScheduledEventEntities.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
-	/// @brief For collecting a list of a Guild's scheduled events.
-	struct GetGuildScheduledEventsData {
+	/// @brief For collecting a list of a guild's scheduled events.
+	struct get_guild_scheduled_events_data {
 		bool withUserCount{};///< Do we collect the user counts?
-		Snowflake guildId{};///< Guild from which we would like to collect the events.
+		snowflake guildId{};///< Guild from which we would like to collect the events.
 	};
 
-	/// @brief For creating a GuildScheduledEventData.
-	struct CreateGuildScheduledEventData {
-		GuildScheduledEventPrivacyLevel privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
-		GuildScheduledEventMetadata entityMetadata{};/// The entity metadata of the scheduled event.
-		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
+	/// @brief For creating a guild_scheduled_event_data.
+	struct create_guild_scheduled_event_data {
+		guild_scheduled_event_privacy_level privacyLevel{ guild_scheduled_event_privacy_level::Guild_Only };///< The privacy level of the scheduled event.
+		guild_scheduled_event_metadata entityMetadata{};/// the entity metadata of the scheduled event.
+		guild_scheduled_event_entity_type entityType{};///< The entity type of the scheduled event.
 		jsonifier::string scheduledStartTime{};///< The time to schedule the scheduled event.
 		jsonifier::string scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
 		jsonifier::string description{};///< The description of the scheduled event.
-		Snowflake channelId{};///< The ChannelData id of the scheduled event.
-		Snowflake guildId{};///< The Guild within which to create the event.
+		snowflake channelId{};///< The channel_data id of the scheduled event.
+		snowflake guildId{};///< The guild within which to create the event.
 		jsonifier::string name{};///< The name of the scheduled event.
 	};
 
-	/// @brief For collecting a single Guild scheduled event.
-	struct GetGuildScheduledEventData {
-		Snowflake guildScheduledEventId{};///< The id of the desired scheduled event.
+	/// @brief For collecting a single guild scheduled event.
+	struct get_guild_scheduled_event_data {
+		snowflake guildScheduledEventId{};///< The id of the desired scheduled event.
 		bool withUserCount{};///< Do we collect the user counts?
-		Snowflake guildId{};///< Guild from which we would like to collect the events.
+		snowflake guildId{};///< Guild from which we would like to collect the events.
 	};
 
-	/// @brief For modifying a single Guild Scheduled Event.
-	struct ModifyGuildScheduledEventData {
-		GuildScheduledEventPrivacyLevel privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
-		GuildScheduledEventStatus status{ GuildScheduledEventStatus::Active };///< The status of the scheduled event.
-		GuildScheduledEventMetadata entityMetadata{};///< The entity metadata of the scheduled event.
-		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
-		Snowflake guildScheduledEventId{};///< The id of the event to modify.
+	/// @brief For modifying a single guild scheduled event.
+	struct modify_guild_scheduled_event_data {
+		guild_scheduled_event_privacy_level privacyLevel{ guild_scheduled_event_privacy_level::Guild_Only };///< The privacy level of the scheduled event.
+		guild_scheduled_event_status status{ guild_scheduled_event_status::Active };///< The status of the scheduled event.
+		guild_scheduled_event_metadata entityMetadata{};///< The entity metadata of the scheduled event.
+		guild_scheduled_event_entity_type entityType{};///< The entity type of the scheduled event.
+		snowflake guildScheduledEventId{};///< The id of the event to modify.
 		jsonifier::string scheduledStartTime{};///< The time to schedule the scheduled event.
 		jsonifier::string scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
 		jsonifier::string description{};///< The description of the scheduled event.
-		Snowflake channelId{};///< The ChannelData id of the scheduled event, set to null if changing entity type to External.
-		Snowflake guildId{};///< The Guild within which to modify the event.
+		snowflake channelId{};///< The channel_data id of the scheduled event, set to null if changing entity type to external.
+		snowflake guildId{};///< The guild within which to modify the event.
 		jsonifier::string name{};///< The name of the scheduled event.
 	};
 
-	/// @brief For deleting a single Guild Scheduled Event.
-	struct DeleteGuildScheduledEventData {
-		Snowflake guildScheduledEventId{};///< The id of the event to modify.
-		Snowflake guildId{};///< The Guild within which to modify the event.
+	/// @brief For deleting a single guild scheduled event.
+	struct delete_guild_scheduled_event_data {
+		snowflake guildScheduledEventId{};///< The id of the event to modify.
+		snowflake guildId{};///< The guild within which to modify the event.
 	};
 
-	/// @brief For collecting a list of Guild Scheduled Event Users.
-	struct GetGuildScheduledEventUsersData {
-		Snowflake guildScheduledEventId{};///< The id of the event to modify.
-		Snowflake guildId{};///< The Guild within which to modify the event.
-		Snowflake before{};///< Consider only users before given user id.
-		bool withMember{};///< Include Guild member responseData if it exists.
-		Snowflake after{};///< Consider only users after given user id.
+	/// @brief For collecting a list of guild scheduled event users.
+	struct get_guild_scheduled_event_users_data {
+		snowflake guildScheduledEventId{};///< The id of the event to modify.
+		snowflake guildId{};///< The guild within which to modify the event.
+		snowflake before{};///< consider only users before given user id.
+		bool withMember{};///< Include guild member responseData if it exists.
+		snowflake after{};///< consider only users after given user id.
 		uint32_t limit{};///< How many users to receive from the event.
 	};
 
@@ -102,43 +101,43 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// @brief An interface class for the GuildScheduledEventData related Discord endpoints.
-	class DiscordCoreAPI_Dll GuildScheduledEvents {
+	/// @brief An interface class for the guild_scheduled_event_data related discord endpoints.
+	class DiscordCoreAPI_Dll guild_scheduled_events {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(discord_core_internal::https_client*);
 
-		/// @brief Gets a list of a given Guild's scheduled events.
-		/// @param dataPackage A GetGuildScheduledEventsstructure.
-		/// @return A CoRoutine containing a vector<GuildScheduledEventData>.
-		static CoRoutine<jsonifier::vector<GuildScheduledEventData>> getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage);
+		/// @brief Gets a list of a given guild's scheduled events.
+		/// @param dataPackage a get_guild_scheduled_eventsstructure.
+		/// @return a co_routine containing a vector<guild_scheduled_event_data>.
+		static co_routine<jsonifier::vector<guild_scheduled_event_data>> getGuildScheduledEventsAsync(get_guild_scheduled_events_data dataPackage);
 
-		/// @brief Creates a new GuildScheduledEventData within a chosen Guild.
-		/// @param dataPackage A CreateGuildScheduledEventData structure.
-		/// @return A CoRoutine containing a GuildScheduledEventData.
-		static CoRoutine<GuildScheduledEventData> createGuildScheduledEventAsync(CreateGuildScheduledEventData dataPackage);
+		/// @brief Creates a new guild_scheduled_event_data within a chosen guild.
+		/// @param dataPackage a create_guild_scheduled_event_data structure.
+		/// @return a co_routine containing a guild_scheduled_event_data.
+		static co_routine<guild_scheduled_event_data> createGuildScheduledEventAsync(create_guild_scheduled_event_data dataPackage);
 
-		/// @brief Collects a single GuildScheduledEventData.
-		/// @param dataPackage A GetGuildScheduledEventData structure.
-		/// @return A CoRoutine containing a GuildScheduledEventData.
-		static CoRoutine<GuildScheduledEventData> getGuildScheduledEventAsync(GetGuildScheduledEventData dataPackage);
+		/// @brief Collects a single guild_scheduled_event_data.
+		/// @param dataPackage a get_guild_scheduled_event_data structure.
+		/// @return a co_routine containing a guild_scheduled_event_data.
+		static co_routine<guild_scheduled_event_data> getGuildScheduledEventAsync(get_guild_scheduled_event_data dataPackage);
 
-		/// @brief Modifies a single GuildScheduledEventData.
-		/// @param dataPackage A ModifyGuildScheduledEventData structure.
-		/// @return A CoRoutine containing a GuildScheduledEventData.
-		static CoRoutine<GuildScheduledEventData> modifyGuildScheduledEventAsync(ModifyGuildScheduledEventData dataPackage);
+		/// @brief Modifies a single guild_scheduled_event_data.
+		/// @param dataPackage a modify_guild_scheduled_event_data structure.
+		/// @return a co_routine containing a guild_scheduled_event_data.
+		static co_routine<guild_scheduled_event_data> modifyGuildScheduledEventAsync(modify_guild_scheduled_event_data dataPackage);
 
-		/// @brief Deletes a single GuildScheduledEventData.
-		/// @param dataPackage A DeleteGuildScheduledEventData structure.
-		/// @return A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildScheduledEventAsync(DeleteGuildScheduledEventData dataPackage);
+		/// @brief Deletes a single guild_scheduled_event_data.
+		/// @param dataPackage a delete_guild_scheduled_event_data structure.
+		/// @return a co_routine containing void.
+		static co_routine<void> deleteGuildScheduledEventAsync(delete_guild_scheduled_event_data dataPackage);
 
-		/// @brief Collects a list of Users for a given GuildScheduledEventData.
-		/// @param dataPackage A GetGuildScheduledEventUsersData structure.
-		/// @return A CoRoutine containing a vector<GuildScheduledEventUser>.
-		static CoRoutine<jsonifier::vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
+		/// @brief Collects a list of users for a given guild_scheduled_event_data.
+		/// @param dataPackage a get_guild_scheduled_event_users_data structure.
+		/// @return a co_routine containing a vector<guild_scheduled_event_user>.
+		static co_routine<jsonifier::vector<guild_scheduled_event_user_data>> getGuildScheduledEventUsersAsync(get_guild_scheduled_event_users_data dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static discord_core_internal::https_client* httpsClient;
 	};
 	/**@}*/
 }

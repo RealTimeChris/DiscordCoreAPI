@@ -27,7 +27,6 @@
 /// May 12, 2021
 /// https://discordcoreapi.com
 /// \file UnorderedMap.hpp
-
 #pragma once
 
 #include <discordcoreapi/Utilities/Hash.hpp>
@@ -39,36 +38,37 @@
 #include <vector>
 #include <mutex>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	template<typename KeyType, typename ValueType> class UnorderedMap;
+	template<typename key_type, typename value_type> class unordered_map;
 
-	template<typename MapIterator, typename KeyType, typename ValueType>
-	concept MapContainerIteratorT = std::same_as<typename UnorderedMap<KeyType, ValueType>::iterator, std::decay_t<MapIterator>>;
+	template<typename map_iterator, typename key_type, typename value_type>
+	concept map_container_iterator_t = std::same_as<typename unordered_map<key_type, value_type>::iterator, std::decay_t<map_iterator>>;
 
-	template<typename KeyType, typename ValueType>
-	class UnorderedMap : protected HashPolicy<UnorderedMap<KeyType, ValueType>>, protected jsonifier_internal::alloc_wrapper<Pair<KeyType, ValueType>>, protected ObjectCompare {
+	template<typename key_type_new, typename value_type_new> class unordered_map : protected hash_policy<unordered_map<key_type_new, value_type_new>>,
+																				   protected jsonifier_internal::alloc_wrapper<pair<key_type_new, value_type_new>>,
+																				   protected object_compare {
 	  public:
-		using mapped_type	  = ValueType;
-		using key_type		  = KeyType;
+		using mapped_type	  = value_type_new;
+		using key_type		  = key_type_new;
 		using reference		  = mapped_type&;
-		using value_type	  = Pair<key_type, mapped_type>;
+		using value_type	  = pair<key_type, mapped_type>;
 		using const_reference = const mapped_type&;
 		using size_type		  = uint64_t;
-		using object_compare  = ObjectCompare;
-		using hash_policy	  = HashPolicy<UnorderedMap<key_type, mapped_type>>;
-		using key_hasher	  = hash_policy;
-		using iterator		  = HashIterator<UnorderedMap<key_type, mapped_type>>;
-		using const_iterator  = HashIterator<const UnorderedMap<key_type, mapped_type>>;
+		using object_compare  = object_compare;
+		using hash_policy_new = hash_policy<unordered_map<key_type, mapped_type>>;
+		using key_hasher	  = hash_policy_new;
+		using iterator		  = hash_iterator<unordered_map<key_type, mapped_type>>;
+		using const_iterator  = hash_iterator<const unordered_map<key_type, mapped_type>>;
 		using allocator		  = jsonifier_internal::alloc_wrapper<value_type>;
 
-		friend hash_policy;
+		friend hash_policy_new;
 		friend iterator;
 		friend const_iterator;
 
-		inline UnorderedMap(){};
+		inline unordered_map(){};
 
-		inline UnorderedMap& operator=(UnorderedMap&& other) noexcept {
+		inline unordered_map& operator=(unordered_map&& other) noexcept {
 			if (this != &other) {
 				reset();
 				swap(other);
@@ -76,11 +76,11 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline UnorderedMap(UnorderedMap&& other) noexcept {
+		inline unordered_map(unordered_map&& other) noexcept {
 			*this = std::move(other);
 		}
 
-		inline UnorderedMap& operator=(const UnorderedMap& other) {
+		inline unordered_map& operator=(const unordered_map& other) {
 			if (this != &other) {
 				reset();
 
@@ -92,11 +92,11 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline UnorderedMap(const UnorderedMap& other) {
+		inline unordered_map(const unordered_map& other) {
 			*this = other;
 		}
 
-		inline UnorderedMap(std::initializer_list<value_type> list) {
+		inline unordered_map(std::initializer_list<value_type> list) {
 			reserve(list.size());
 			for (auto& value: list) {
 				emplace(std::move(value.first), std::move(value.second));
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 			return emplaceInternal(std::forward<Args>(value)...);
 		}
 
-		template<typename key_type_new> inline const_iterator find(key_type_new&& key) const {
+		template<typename key_type_newer> inline const_iterator find(key_type_newer&& key) const {
 			if (sizeVal > 0) {
 				auto currentIndex = getHashPolicy().indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
@@ -119,7 +119,7 @@ namespace DiscordCoreAPI {
 			return end();
 		}
 
-		template<typename key_type_new> inline iterator find(key_type_new&& key) {
+		template<typename key_type_newer> inline iterator find(key_type_newer&& key) {
 			if (sizeVal > 0) {
 				auto currentIndex = getHashPolicy().indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
@@ -131,31 +131,31 @@ namespace DiscordCoreAPI {
 			return end();
 		}
 
-		template<typename key_type_new> inline const_reference operator[](key_type_new&& key) const {
+		template<typename key_type_newer> inline const_reference operator[](key_type_newer&& key) const {
 			return emplace(key)->second;
 		}
 
-		template<typename key_type_new> inline reference operator[](key_type_new&& key) {
+		template<typename key_type_newer> inline reference operator[](key_type_newer&& key) {
 			return emplace(key)->second;
 		}
 
-		template<typename key_type_new> inline const_reference at(key_type_new&& key) const {
-			auto iter = find(std::forward<key_type_new>(key));
+		template<typename key_type_newer> inline const_reference at(key_type_newer&& key) const {
+			auto iter = find(std::forward<key_type_newer>(key));
 			if (iter == end()) {
-				throw DCAException{ "Sorry, but an object by that key doesn't exist in this map." };
+				throw dca_exception{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
 			return iter->second;
 		}
 
-		template<typename key_type_new> inline reference at(key_type_new&& key) {
-			auto iter = find(std::forward<key_type_new>(key));
+		template<typename key_type_newer> inline reference at(key_type_newer&& key) {
+			auto iter = find(std::forward<key_type_newer>(key));
 			if (iter == end()) {
-				throw DCAException{ "Sorry, but an object by that key doesn't exist in this map." };
+				throw dca_exception{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
 			return iter->second;
 		}
 
-		template<typename key_type_new> inline bool contains(key_type_new&& key) const {
+		template<typename key_type_newer> inline bool contains(key_type_newer&& key) const {
 			if (sizeVal > 0) {
 				auto currentIndex = getHashPolicy().indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
@@ -167,14 +167,14 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 
-		template<MapContainerIteratorT<key_type, mapped_type> MapIterator> inline iterator erase(MapIterator&& iter) {
+		template<map_container_iterator_t<key_type, mapped_type> map_iterator> inline iterator erase(map_iterator&& iter) {
 			if (sizeVal > 0) {
 				auto currentIndex = static_cast<size_type>(iter.getRawPtr() - data);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(data[currentIndex], iter.operator*())) {
 						getAlloc().destroy(data + currentIndex);
 						sentinelVector[currentIndex] = 0;
-						sizeVal--;
+						--sizeVal;
 						return { this, ++currentIndex };
 					}
 				}
@@ -182,14 +182,14 @@ namespace DiscordCoreAPI {
 			return end();
 		}
 
-		template<typename key_type_new> inline iterator erase(key_type_new&& key) {
+		template<typename key_type_newer> inline iterator erase(key_type_newer&& key) {
 			if (sizeVal > 0) {
 				auto currentIndex = getHashPolicy().indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(data[currentIndex].first, key)) {
 						getAlloc().destroy(data + currentIndex);
 						sentinelVector[currentIndex] = 0;
-						sizeVal--;
+						--sizeVal;
 						return { this, ++currentIndex };
 					}
 				}
@@ -239,7 +239,7 @@ namespace DiscordCoreAPI {
 			resize(sizeNew);
 		}
 
-		inline void swap(UnorderedMap& other) {
+		inline void swap(unordered_map& other) {
 			std::swap(maxLookAheadDistance, other.maxLookAheadDistance);
 			std::swap(sentinelVector, other.sentinelVector);
 			std::swap(capacityVal, other.capacityVal);
@@ -251,7 +251,7 @@ namespace DiscordCoreAPI {
 			return capacityVal;
 		}
 
-		inline bool operator==(const UnorderedMap& other) const {
+		inline bool operator==(const unordered_map& other) const {
 			if (capacityVal != other.capacityVal || sizeVal != other.sizeVal || data != other.data) {
 				return false;
 			}
@@ -273,25 +273,25 @@ namespace DiscordCoreAPI {
 			sizeVal = 0;
 		}
 
-		inline ~UnorderedMap() {
+		inline ~unordered_map() {
 			reset();
 		};
 
 	  protected:
 		jsonifier::vector<int8_t> sentinelVector{};
-		int8_t maxLookAheadDistance{ minLookups };
+		int8_t maxLookAheadDistance{ 0 };
 		size_type capacityVal{};
 		size_type sizeVal{};
 		value_type* data{};
 
-		template<typename key_type_new, typename... mapped_type_new> inline iterator emplaceInternal(key_type_new&& key, mapped_type_new&&... value) {
+		template<typename key_type_newer, typename... mapped_type_new> inline iterator emplaceInternal(key_type_newer&& key, mapped_type_new&&... value) {
 			if (full() || capacityVal == 0) {
 				resize(capacityVal + 1);
 			}
 			auto currentIndex = getHashPolicy().indexForHash(key);
 			for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 				if (sentinelVector[currentIndex] == 0) {
-					new (std::addressof(data[currentIndex])) value_type{ std::forward<key_type_new>(key), std::forward<mapped_type_new>(value)... };
+					getAlloc().construct(std::addressof(data[currentIndex]), value_type{ std::forward<key_type_newer>(key), std::forward<mapped_type_new>(value)... });
 					sentinelVector[currentIndex] = 1;
 					sizeVal++;
 					return { this, currentIndex };
@@ -303,14 +303,14 @@ namespace DiscordCoreAPI {
 				}
 			}
 			resize(capacityVal + 1);
-			return emplaceInternal(std::forward<key_type_new>(key), std::forward<mapped_type_new>(value)...);
+			return emplaceInternal(std::forward<key_type_newer>(key), std::forward<mapped_type_new>(value)...);
 		}
 
 		inline allocator& getAlloc() {
 			return *this;
 		}
 
-		inline const hash_policy& getHashPolicy() const {
+		inline const hash_policy_new& getHashPolicy() const {
 			return *this;
 		}
 

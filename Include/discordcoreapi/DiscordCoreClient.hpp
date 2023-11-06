@@ -1,8 +1,7 @@
 /*
 	MIT License
 
-	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++
-   CoRoutines.
+	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
 	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
@@ -24,11 +23,10 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// DiscordCoreClient01.hpp - Header file for the main/exposed DiscordCoreClient class.
+/// DiscordCoreClient.hpp - Header file for the main/exposed discord_core_client class.
 /// May 12, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file DiscordCoreClient.hpp
-
 #pragma once
 
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
@@ -61,55 +59,55 @@
 #include <discordcoreapi/WebHookEntities.hpp>
 #include <discordcoreapi/YouTubeAPI.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	class SIGTERMError : public DCAException {
+	class sigtermerror : public dca_exception {
 	  public:
-		inline SIGTERMError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline sigtermerror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
-	class SIGSEGVError : public DCAException {
+	class sigsegverror : public dca_exception {
 	  public:
-		inline SIGSEGVError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline sigsegverror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
-	class SIGINTError : public DCAException {
+	class siginterror : public dca_exception {
 	  public:
-		inline SIGINTError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline siginterror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
-	class SIGILLError : public DCAException {
+	class sigillerror : public dca_exception {
 	  public:
-		inline SIGILLError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline sigillerror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
-	class SIGABRTError : public DCAException {
+	class sigabrterror : public dca_exception {
 	  public:
-		inline SIGABRTError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline sigabrterror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
-	class SIGFPEError : public DCAException {
+	class sigfpeerror : public dca_exception {
 	  public:
-		inline SIGFPEError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+		inline sigfpeerror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
-	using SoundCloudAPIMap = UnorderedMap<uint64_t, UniquePtr<DiscordCoreInternal::SoundCloudAPI>>;
+	using sound_cloud_apimap = unordered_map<uint64_t, unique_ptr<discord_core_internal::sound_cloud_api>>;
 
-	using YouTubeAPIMap = UnorderedMap<uint64_t, UniquePtr<DiscordCoreInternal::YouTubeAPI>>;
+	using you_tube_apimap = unordered_map<uint64_t, unique_ptr<discord_core_internal::you_tube_api>>;
 
-	using VoiceConnectionsMap = UnorderedMap<uint64_t, UniquePtr<VoiceConnection>>;
+	using voice_connections_map = unordered_map<uint64_t, unique_ptr<voice_connection>>;
 
-	using SongAPIMap = UnorderedMap<uint64_t, UniquePtr<SongAPI>>;
+	using song_apimap = unordered_map<uint64_t, unique_ptr<song_api>>;
 
-	template<typename... ArgTypes> using TimeElapsedHandler = std::function<void(ArgTypes...)>;
+	template<typename... arg_types> using time_elapsed_handler = std::function<void(arg_types...)>;
 
-	template<typename... ArgTypes>
-	inline static CoRoutine<void, false> threadFunction(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, bool repeated, int64_t timeInterval, ArgTypes... args) {
-		auto threadHandle = co_await NewThreadAwaitable<void, false>();
-		StopWatch<Milliseconds> stopWatch{ Milliseconds{ timeInterval } };
+	template<typename... arg_types>
+	inline static co_routine<void, false> threadFunction(time_elapsed_handler<arg_types...> timeElapsedHandler, bool repeated, int64_t timeInterval, arg_types... args) {
+		auto threadHandle = co_await newThreadAwaitable<void, false>();
+		stop_watch<milliseconds> stopWatch{ milliseconds{ timeInterval } };
 		stopWatch.reset();
 		do {
-			std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * 10.0f / 100.0f)) });
+			std::this_thread::sleep_for(milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * 10.0f / 100.0f)) });
 			while (!stopWatch.hasTimeElapsed() && !threadHandle.promise().stopRequested()) {
 				std::this_thread::sleep_for(1ms);
 			}
@@ -119,8 +117,8 @@ namespace DiscordCoreAPI {
 			}
 			try {
 				timeElapsedHandler(args...);
-			} catch (const DCAException& error) {
-				MessagePrinter::printError<PrintMessageType::General>(error.what());
+			} catch (const dca_exception& error) {
+				message_printer::printError<print_message_type::general>(error.what());
 			}
 			if (threadHandle.promise().stopRequested()) {
 				co_return;
@@ -130,9 +128,9 @@ namespace DiscordCoreAPI {
 		co_return;
 	};
 
-	template<typename... ArgTypes> inline static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeDelay, bool repeated,
-		bool blockForCompletion, ArgTypes... args) {
-		auto newThread = threadFunction<ArgTypes...>(timeElapsedHandler, repeated, timeDelay, args...);
+	template<typename... arg_types> inline static void executeFunctionAfterTimePeriod(time_elapsed_handler<arg_types...> timeElapsedHandler, int64_t timeDelay, bool repeated,
+		bool blockForCompletion, arg_types... args) {
+		auto newThread = threadFunction<arg_types...>(timeElapsedHandler, repeated, timeDelay, args...);
 		if (blockForCompletion) {
 			newThread.get();
 		}
@@ -142,96 +140,96 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// @brief DiscordCoreClient - The main class for this library.
-	class DiscordCoreAPI_Dll DiscordCoreClient {
+	/// @brief Discord_core_client - the main class for this library.
+	class DiscordCoreAPI_Dll discord_core_client {
 	  public:
-		friend class DiscordCoreInternal::WebSocketClient;
-		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreInternal::WebSocketCore;
-		friend class VoiceConnection;
-		friend class GuildData;
-		friend class BotUser;
-		friend class Guilds;
+		friend class discord_core_internal::websocket_client;
+		friend class discord_core_internal::base_socket_agent;
+		friend class discord_core_internal::websocket_core;
+		friend class voice_connection;
+		friend class guild_data;
+		friend class bot_user;
+		friend class guilds;
 
-		static DiscordCoreInternal::SoundCloudAPI& getSoundCloudAPI(Snowflake guildId);
+		static discord_core_internal::sound_cloud_api& getSoundCloudAPI(snowflake guildId);
 
-		static DiscordCoreInternal::YouTubeAPI& getYouTubeAPI(Snowflake guildId);
+		static discord_core_internal::you_tube_api& getYouTubeAPI(snowflake guildId);
 
-		static VoiceConnection& getVoiceConnection(Snowflake guildId);
+		static voice_connection& getVoiceConnection(snowflake guildId);
 
-		static SongAPI& getSongAPI(Snowflake guildId);
+		static song_api& getSongAPI(snowflake guildId);
 
-		static DiscordCoreClient* getInstance();
+		static discord_core_client* getInstance();
 
-		/// @brief DiscordCoreClient constructor.
-		/// @param configData A DiscordCoreClientConfig structure to select various library options.
-		DiscordCoreClient(const DiscordCoreClientConfig& configData);
+		/// @brief Discord_core_client constructor.
+		/// @param configData a discord_core_client_config structure to select various library options.
+		discord_core_client(const discord_core_client_config& configData);
 
-		/// @brief For registering a function with the CommandController.
-		/// @param functionNames A vector containing the possible names for activating this command/function.
-		/// @param baseFunction A unique_ptr to the command to be registered.
-		/// @param commandData A CreateApplicationCommandData structure describing the current function.
-		/// @param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of
+		/// @brief For registering a function with the command_controller.
+		/// @param functionNames a vector containing the possible names for activating this command/function.
+		/// @param baseFunction a unique_ptr to the command to be registered.
+		/// @param commandData a create_application_command_data structure describing the current function.
+		/// @param alwaysRegister whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of
 		/// registered commands.
-		void registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+		void registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, unique_ptr<base_function> baseFunction, create_application_command_data commandData,
 			bool alwaysRegister = false);
 
-		/// @brief For collecting a reference to the CommandController.
-		/// @return CommandController& A reference to the CommandController.
-		CommandController& getCommandController();
+		/// @brief For collecting a reference to the command_controller.
+		/// @return command_controller& a reference to the command_controller.
+		command_controller& getCommandController();
 
-		/// @brief For collecting a reference to the ConfigManager.
-		/// @return ConfigManager& A reference to the ConfigManager.
-		const ConfigManager& getConfigManager() const;
+		/// @brief For collecting a reference to the config_manager.
+		/// @return config_manager& a reference to the config_manager.
+		const config_manager& getConfigManager() const;
 
-		/// @brief For collecting a reference to the EventManager.
-		/// @return EventManager& A reference to the EventManager.
-		EventManager& getEventManager();
+		/// @brief For collecting a reference to the event_manager.
+		/// @return event_manager& a reference to the event_manager.
+		event_manager& getEventManager();
 
 		/// @brief For collecting, the total time in milliseconds that this bot has been up for.
-		/// @return Milliseconds A size, in milliseconds, since the bot has come online.
-		Milliseconds getTotalUpTime();
+		/// @return milliseconds a size, in milliseconds, since the bot has come online.
+		milliseconds getTotalUpTime();
 
-		/// @brief For collecting a copy of the current bot's UserData.
-		/// @return BotUser An instance of BotUser.
-		static BotUser getBotUser();
+		/// @brief For collecting a copy of the current bot's user_data.
+		/// @return bot_user an instance of bot_user.
+		static bot_user getBotUser();
 
 		/// @brief Executes the library, and waits for completion.
 		void runBot();
 
-		~DiscordCoreClient();
+		~discord_core_client();
 
 	  protected:
-		inline static UniquePtr<DiscordCoreClient> instancePtr{};
-		static BotUser currentUser;
+		inline static unique_ptr<discord_core_client> instancePtr{};
+		static bot_user currentUser;
 
-		DiscordCoreClient& operator=(DiscordCoreClient&&) = delete;
-		DiscordCoreClient(DiscordCoreClient&&)			  = delete;
+		discord_core_client& operator=(discord_core_client&&) = delete;
+		discord_core_client(discord_core_client&&)			  = delete;
 
-		DiscordCoreClient& operator=(const DiscordCoreClient&) = delete;
-		DiscordCoreClient(const DiscordCoreClient&)			   = delete;
+		discord_core_client& operator=(const discord_core_client&) = delete;
+		discord_core_client(const discord_core_client&)			   = delete;
 
-		UnorderedMap<uint64_t, UniquePtr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
-		std::deque<CreateApplicationCommandData> commandsToRegister{};
-		UniquePtr<DiscordCoreInternal::HttpsClient> httpsClient{};
-		StopWatch<Milliseconds> connectionStopWatch01{ 5000ms };
-#ifdef _WIN32
-		DiscordCoreInternal::WSADataWrapper theWSAData{};
+		unordered_map<uint64_t, unique_ptr<discord_core_internal::base_socket_agent>> baseSocketAgentsMap{};
+		std::deque<create_application_command_data> commandsToRegister{};
+		unique_ptr<discord_core_internal::https_client> httpsClient{};
+		stop_watch<milliseconds> connectionStopWatch01{ 5000ms };
+#if defined(_WIN32)
+		discord_core_internal::wsadata_wrapper theWSAData{};
 #endif
 		std::atomic_uint64_t currentlyConnectingShard{};
 		std::atomic_bool areWeReadyToConnect{ false };
-		CommandController commandController{};
-		Milliseconds startupTimeSinceEpoch{};
-		ConfigManager configManager{};
-		EventManager eventManager{};///< An event-manager, for hooking into Discord-API-Events sent over the Websockets.
+		command_controller commandController{};
+		milliseconds startupTimeSinceEpoch{};
+		config_manager configManager{};
+		event_manager eventManager{};///< An event-manager, for hooking into discord-api-events sent over the websockets.
 
 		bool areWeFullyConnected();
 
 		void registerFunctionsInternal();
 
-		GatewayBotData getGateWayBot();
+		gateway_bot_data getGateWayBot();
 
 		bool instantiateWebSockets();
 	};
 	/**@}*/
-}// namespace DiscordCoreAPI
+}// namespace discord_core_api

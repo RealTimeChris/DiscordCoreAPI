@@ -23,19 +23,20 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// ThreadWrapper.hpp - Header file for the ThreadWrapper class.
+/// ThreadWrapper.hpp - Header file for the thread_wrapper class.
 /// Jun 28, 2022
 /// https://discordcoreapi.com
 /// \file ThreadWrapper.hpp
-
 #pragma once
 
 #include <discordcoreapi/Utilities/CountedPtr.hpp>
 #include <thread>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
-	namespace DiscordCoreInternal {
+	class counted_atomic_bool : public reference_counter, public std::atomic_bool {};
+
+	namespace discord_core_internal {
 
 		/**
 		 * \addtogroup discord_core_internal
@@ -43,11 +44,11 @@ namespace DiscordCoreAPI {
 		 */
 
 		/// @brief A token used to control thread stopping.
-		class StopToken {
+		class stop_token {
 		  public:
-			/// @brief Constructor that takes a CountedPtr to a std::atomic_bool.
-			/// @param theBool The CountedPtr to a std::atomic_bool.
-			inline StopToken(const CountedPtr<std::atomic_bool>& theBool) {
+			/// @brief Constructor that takes a counted_ptr to a std::atomic_bool.
+			/// @param theBool the counted_ptr to a std::atomic_bool.
+			inline stop_token(const counted_ptr<counted_atomic_bool>& theBool) {
 				atomicBoolPtr = theBool;
 			}
 
@@ -69,39 +70,39 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			CountedPtr<std::atomic_bool> atomicBoolPtr{};///< Pointer to the managed std::atomic_bool.
+			counted_ptr<counted_atomic_bool> atomicBoolPtr{};///< Pointer to the managed std::atomic_bool.
 		};
 
 		/// @brief A wrapper class for managing threads with stopping capability.
-		class ThreadWrapper {
+		class thread_wrapper {
 		  public:
 			/// @brief Default constructor.
-			inline ThreadWrapper() = default;
+			inline thread_wrapper() = default;
 
 			/// @brief Move assignment operator.
-			/// @param other The other ThreadWrapper to copy from.
-			/// @return The new ThreadWrapper instance.
-			inline ThreadWrapper& operator=(ThreadWrapper&& other) noexcept {
+			/// @param other the other thread_wrapper to copy from.
+			/// @return the new thread_wrapper instance.
+			inline thread_wrapper& operator=(thread_wrapper&& other) noexcept {
 				currentThread.swap(other.currentThread);
 				atomicBool.swap(other.atomicBool);
 				return *this;
 			}
 
 			/// @brief Move constructor.
-			/// @param other The other ThreadWrapper to copy from.
-			inline ThreadWrapper(ThreadWrapper&& other) noexcept {
+			/// @param other the other thread_wrapper to copy from.
+			inline thread_wrapper(thread_wrapper&& other) noexcept {
 				*this = std::move(other);
 			}
 
-			inline ThreadWrapper& operator=(const ThreadWrapper& other) = delete;
-			inline ThreadWrapper(const ThreadWrapper& other)			= delete;
+			inline thread_wrapper& operator=(const thread_wrapper& other) = delete;
+			inline thread_wrapper(const thread_wrapper& other)			  = delete;
 
 			/// @brief Constructor that takes a callable object.
-			/// @tparam Function The type of the callable object.
-			/// @param function The callable object to be executed by the thread.
-			template<typename Function> inline ThreadWrapper(Function&& function) {
+			/// @tparam function the type of the callable object.
+			/// @param functionNew the callable object to be executed by the thread.
+			template<typename function_type> inline thread_wrapper(function_type&& functionNew) {
 				currentThread = std::thread(
-					[&, function = std::forward<Function>(function)](StopToken stopToken) {
+					[&, function = std::forward<function_type>(functionNew)](stop_token stopToken) {
 						function(stopToken);
 					},
 					atomicBool);
@@ -120,14 +121,14 @@ namespace DiscordCoreAPI {
 			}
 
 			/// @brief Get the hardware concurrency available.
-			/// @return The number of available hardware threads.
+			/// @return the number of available hardware threads.
 			inline static uint64_t hardware_concurrency() {
 				return std::thread::hardware_concurrency();
 			}
 
-			/// @brief Get the StopToken associated with this thread wrapper.
-			/// @return The StopToken for stopping control.
-			inline StopToken stopToken() {
+			/// @brief Get the stop_token associated with this thread wrapper.
+			/// @return the stop_token for stopping control.
+			inline stop_token stopToken() {
 				return atomicBool;
 			}
 
@@ -145,7 +146,7 @@ namespace DiscordCoreAPI {
 			}
 
 			/// @brief Destructor that requests stop and joins the managed thread.
-			inline ~ThreadWrapper() {
+			inline ~thread_wrapper() {
 				requestStop();
 				if (currentThread.joinable()) {
 					currentThread.join();
@@ -153,7 +154,7 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			CountedPtr<std::atomic_bool> atomicBool{ makeCounted<std::atomic_bool>() };///< Managed atomic bool for stopping control.
+			counted_ptr<counted_atomic_bool> atomicBool{ makeCounted<counted_atomic_bool>() };///< Managed atomic bool for stopping control.
 			std::thread currentThread{};///< Managed thread.
 		};
 		/**@}*/

@@ -27,44 +27,43 @@
 /// Oct 23, 2021
 /// https://discordcoreapi.com
 /// \file CoRoutine.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/CoRoutineThreadPool.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	* \addtogroup utilities
 	* @{
 	*/
 
-	/// @brief The current status of the associated CoRoutine.
-	enum class CoRoutineStatus {
-		Idle	  = 0,///< Idle.
-		Running	  = 1,///< Running.
-		Complete  = 2,///< Complete.
-		Cancelled = 3///< Cancelled.
+	/// @brief The current status of the associated co_routine.
+	enum class co_routine_status {
+		idle	  = 0,///< Idle.
+		running	  = 1,///< Running.
+		complete  = 2,///< complete.
+		cancelled = 3///< cancelled.
 	};
 
-	/// @brief An error type for CoRoutines.
-	struct CoRoutineError : public DCAException {
-		inline CoRoutineError(jsonifier::string_view message, std::source_location location = std::source_location::current()) : DCAException{ message, location } {};
+	/// @brief An error type for co_routines.
+	struct co_routine_error : public dca_exception {
+		inline co_routine_error(jsonifier::string_view message, const std::source_location& location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
-	template<typename ValueType> class ResultHolder {
+	template<typename value_type> class result_holder {
 	  public:
-		template<typename ValueTypeNew> inline void setResult(ValueTypeNew&& newResult) {
-			result = makeUnique<ValueType>(std::forward<ValueTypeNew>(newResult));
+		template<typename value_type_new> inline void setResult(value_type_new&& newResult) {
+			result = makeUnique<value_type>(std::forward<value_type_new>(newResult));
 		}
 
 		inline void setStatus() {
 			sentYet.store(true, std::memory_order_release);
 		}
 
-		inline ValueType getResult() {
+		inline value_type getResult() {
 			if (sentYet.load(std::memory_order_acquire) && result) {
 				sentYet.store(false, std::memory_order_release);
 				return std::move(*result);
@@ -78,17 +77,17 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		UniquePtr<ValueType> result{};
+		unique_ptr<value_type> result{};
 		std::atomic_bool sentYet{};
 	};
 
-	/// @brief A CoRoutine - representing a potentially asynchronous operation/function.
-	/// \tparam ReturnType The type of parameter that is returned by the CoRoutine.
-	template<typename ReturnType, bool timeOut> class CoRoutine {
+	/// @brief A co_routine - representing a potentially asynchronous operation/function.
+	/// \tparam return_type the type of parameter that is returned by the co_routine.
+	template<typename return_type, bool timeOut> class co_routine {
 	  public:
 		class promise_type {
 		  public:
-			template<typename ReturnType02, bool timeOut02> friend class CoRoutine;
+			template<typename return_type02, bool timeOut02> friend class co_routine;
 
 			inline void requestStop() {
 				areWeStoppedBool.store(true, std::memory_order_release);
@@ -98,14 +97,14 @@ namespace DiscordCoreAPI {
 				return areWeStoppedBool.load(std::memory_order_acquire);
 			}
 
-			template<typename ReturnTypeNew> inline void return_value(ReturnTypeNew&& returnValue) {
+			template<typename return_type_new> inline void return_value(return_type_new&& returnValue) {
 				if (resultBuffer) {
-					resultBuffer->setResult(std::forward<ReturnTypeNew>(returnValue));
+					resultBuffer->setResult(std::forward<return_type_new>(returnValue));
 				}
 			}
 
 			inline auto get_return_object() {
-				return CoRoutine<ReturnType, timeOut>{ std::coroutine_handle<promise_type>::from_promise(*this) };
+				return co_routine<return_type, timeOut>{ std::coroutine_handle<promise_type>::from_promise(*this) };
 			}
 
 			inline std::suspend_never initial_suspend() {
@@ -135,69 +134,69 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			ResultHolder<std::exception_ptr>* exceptionBuffer{};
-			ResultHolder<ReturnType>* resultBuffer{};
+			result_holder<std::exception_ptr>* exceptionBuffer{};
+			result_holder<return_type>* resultBuffer{};
 			std::atomic_bool areWeStoppedBool{};
 		};
 
-		inline CoRoutine() = default;
+		inline co_routine() = default;
 
-		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) noexcept {
+		inline co_routine& operator=(co_routine<return_type, timeOut>&& other) noexcept {
 			if (this != &other) {
 				coroutineHandle							  = other.coroutineHandle;
 				other.coroutineHandle					  = nullptr;
 				coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
 				coroutineHandle.promise().resultBuffer	  = &resultBuffer;
 				currentStatus.store(other.currentStatus.load(std::memory_order_acquire), std::memory_order_release);
-				other.currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
+				other.currentStatus.store(co_routine_status::cancelled, std::memory_order_release);
 			}
 			return *this;
 		}
 
-		inline CoRoutine(CoRoutine<ReturnType, timeOut>&& other) noexcept {
+		inline co_routine(co_routine<return_type, timeOut>&& other) noexcept {
 			*this = std::move(other);
 		}
 
-		inline CoRoutine& operator=(const CoRoutine<ReturnType, timeOut>& other) = delete;
-		inline CoRoutine(const CoRoutine<ReturnType, timeOut>& other)			 = delete;
+		inline co_routine& operator=(const co_routine<return_type, timeOut>& other) = delete;
+		inline co_routine(const co_routine<return_type, timeOut>& other)			= delete;
 
-		inline CoRoutine& operator=(std::coroutine_handle<promise_type> coroutineHandleNew) {
+		inline co_routine& operator=(std::coroutine_handle<promise_type> coroutineHandleNew) {
 			coroutineHandle							  = coroutineHandleNew;
 			coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
 			coroutineHandle.promise().resultBuffer	  = &resultBuffer;
 			return *this;
 		}
 
-		inline explicit CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) {
+		inline explicit co_routine(std::coroutine_handle<promise_type> coroutineHandleNew) {
 			*this = coroutineHandleNew;
 		};
 
-		inline ~CoRoutine() {
+		inline ~co_routine() {
 			if (coroutineHandle) {
 				coroutineHandle.promise().exceptionBuffer = nullptr;
 				coroutineHandle.promise().resultBuffer	  = nullptr;
 			}
 		}
 
-		/// @brief Collects the status of the CoRoutine.
-		/// @return CoRoutineStatus The status of the CoRoutine.
-		inline CoRoutineStatus getStatus() {
+		/// @brief Collects the status of the co_routine.
+		/// @return co_routine_status the status of the co_routine.
+		inline co_routine_status getStatus() {
 			if (!coroutineHandle) {
-				currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
+				currentStatus.store(co_routine_status::cancelled, std::memory_order_release);
 			} else if (coroutineHandle && !coroutineHandle.done()) {
-				currentStatus.store(CoRoutineStatus::Running, std::memory_order_release);
+				currentStatus.store(co_routine_status::running, std::memory_order_release);
 			} else if (coroutineHandle && coroutineHandle.done()) {
-				currentStatus.store(CoRoutineStatus::Complete, std::memory_order_release);
+				currentStatus.store(co_routine_status::complete, std::memory_order_release);
 			}
 			return currentStatus.load(std::memory_order_acquire);
 		}
 
-		/// @brief Gets the resulting value of the CoRoutine.
-		/// @return The final value resulting from the CoRoutine's execution.
-		inline ReturnType get() {
+		/// @brief Gets the resulting value of the co_routine.
+		/// @return the final value resulting from the co_routine's execution.
+		inline return_type get() {
 			if (coroutineHandle) {
 				if (!coroutineHandle.done()) {
-					StopWatch<Milliseconds> stopWatch{ 15000 };
+					stop_watch<milliseconds> stopWatch{ 15000 };
 					stopWatch.reset();
 					while (!resultBuffer.checkForResult()) {
 						checkForExceptions();
@@ -210,21 +209,21 @@ namespace DiscordCoreAPI {
 					}
 				}
 				checkForExceptions();
-				currentStatus.store(CoRoutineStatus::Complete, std::memory_order_release);
+				currentStatus.store(co_routine_status::complete, std::memory_order_release);
 				return resultBuffer.getResult();
 			} else {
-				throw CoRoutineError{ "CoRoutine::get(), You called get() on a CoRoutine that is "
-									  "not in a valid state." };
+				throw co_routine_error{ "co_routine::get(), you called get() on a co_routine that is "
+										"not in a valid state." };
 			}
 		}
 
-		/// @brief Cancels the currently running CoRoutine, while blocking to wait for it to complete.
-		/// @return The final value resulting from the CoRoutine's execution.
-		inline ReturnType cancelAndWait() {
+		/// @brief Cancels the currently running co_routine, while blocking to wait for it to complete.
+		/// @return the final value resulting from the co_routine's execution.
+		inline return_type cancelAndWait() {
 			if (coroutineHandle) {
 				if (!coroutineHandle.done()) {
 					coroutineHandle.promise().requestStop();
-					StopWatch<Milliseconds> stopWatch{ 15000 };
+					stop_watch<milliseconds> stopWatch{ 15000 };
 					stopWatch.reset();
 					while (!resultBuffer.checkForResult()) {
 						checkForExceptions();
@@ -237,35 +236,35 @@ namespace DiscordCoreAPI {
 					}
 				}
 				checkForExceptions();
-				currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
+				currentStatus.store(co_routine_status::cancelled, std::memory_order_release);
 				return resultBuffer.getResult();
 			} else {
-				throw CoRoutineError{ "CoRoutine::cancelAndWait(), You called get() on a CoRoutine that is "
-									  "not in a valid state." };
+				throw co_routine_error{ "co_routine::cancelAndWait(), you called get() on a co_routine that is "
+										"not in a valid state." };
 			}
 		}
 
-		/// @brief Cancels the currently executing CoRoutine and returns the current result.
-		/// @return The final value resulting from the CoRoutine's execution.
-		inline ReturnType cancel() {
+		/// @brief Cancels the currently executing co_routine and returns the current result.
+		/// @return the final value resulting from the co_routine's execution.
+		inline return_type cancel() {
 			if (coroutineHandle) {
 				if (!coroutineHandle.done()) {
 					coroutineHandle.promise().requestStop();
 				}
 				checkForExceptions();
-				currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
+				currentStatus.store(co_routine_status::cancelled, std::memory_order_release);
 				return resultBuffer.getResult();
 			} else {
-				throw CoRoutineError{ "CoRoutine::cancel(), You called cancel() on a CoRoutine that is "
-									  "not in a valid state." };
+				throw co_routine_error{ "co_routine::cancel(), you called cancel() on a co_routine that is "
+										"not in a valid state." };
 			}
 		}
 
 	  protected:
-		std::atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
+		std::atomic<co_routine_status> currentStatus{ co_routine_status::idle };
 		std::coroutine_handle<promise_type> coroutineHandle{};
-		ResultHolder<std::exception_ptr> exceptionBuffer{};
-		ResultHolder<ReturnType> resultBuffer{};
+		result_holder<std::exception_ptr> exceptionBuffer{};
+		result_holder<return_type> resultBuffer{};
 
 		inline void checkForExceptions() {
 			if (exceptionBuffer.checkForResult()) {
@@ -274,13 +273,13 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	/// @brief A CoRoutine - representing a potentially asynchronous operation/function.
-	/// \tparam void The type of parameter that is returned by the CoRoutine.
-	template<jsonifier_internal::void_t ReturnType, bool timeOut> class CoRoutine<ReturnType, timeOut> {
+	/// @brief A co_routine - representing a potentially asynchronous operation/function.
+	/// \tparam void the type of parameter that is returned by the co_routine.
+	template<jsonifier::concepts::void_t return_type, bool timeOut> class co_routine<return_type, timeOut> {
 	  public:
 		class promise_type {
 		  public:
-			template<typename ReturnType02, bool timeOut02> friend class CoRoutine;
+			template<typename return_type02, bool timeOut02> friend class co_routine;
 
 			inline void requestStop() {
 				areWeStoppedBool.store(true, std::memory_order_release);
@@ -295,7 +294,7 @@ namespace DiscordCoreAPI {
 			};
 
 			inline auto get_return_object() {
-				return CoRoutine<ReturnType, timeOut>{ std::coroutine_handle<promise_type>::from_promise(*this) };
+				return co_routine<return_type, timeOut>{ std::coroutine_handle<promise_type>::from_promise(*this) };
 			}
 
 			inline std::suspend_never initial_suspend() {
@@ -325,68 +324,68 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			ResultHolder<std::exception_ptr>* exceptionBuffer{};
+			result_holder<std::exception_ptr>* exceptionBuffer{};
 			std::atomic_bool areWeStoppedBool{};
 			std::atomic_bool* resultBuffer{};
 		};
 
-		inline CoRoutine() = default;
+		inline co_routine() = default;
 
-		inline CoRoutine& operator=(CoRoutine<ReturnType, timeOut>&& other) noexcept {
+		inline co_routine& operator=(co_routine<return_type, timeOut>&& other) noexcept {
 			if (this != &other) {
 				coroutineHandle							  = other.coroutineHandle;
 				other.coroutineHandle					  = nullptr;
 				coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
 				coroutineHandle.promise().resultBuffer	  = &resultBuffer;
 				currentStatus.store(other.currentStatus.load(std::memory_order_acquire), std::memory_order_release);
-				other.currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
+				other.currentStatus.store(co_routine_status::cancelled, std::memory_order_release);
 			}
 			return *this;
 		}
 
-		inline CoRoutine(CoRoutine<ReturnType, timeOut>&& other) noexcept {
+		inline co_routine(co_routine<return_type, timeOut>&& other) noexcept {
 			*this = std::move(other);
 		}
 
-		inline CoRoutine& operator=(const CoRoutine<ReturnType, timeOut>& other) = delete;
-		inline CoRoutine(const CoRoutine<ReturnType, timeOut>& other)			 = delete;
+		inline co_routine& operator=(const co_routine<return_type, timeOut>& other) = delete;
+		inline co_routine(const co_routine<return_type, timeOut>& other)			= delete;
 
-		inline CoRoutine& operator=(std::coroutine_handle<promise_type> coroutineHandleNew) {
+		inline co_routine& operator=(std::coroutine_handle<promise_type> coroutineHandleNew) {
 			coroutineHandle							  = coroutineHandleNew;
 			coroutineHandle.promise().exceptionBuffer = &exceptionBuffer;
 			coroutineHandle.promise().resultBuffer	  = &resultBuffer;
 			return *this;
 		}
 
-		inline explicit CoRoutine(std::coroutine_handle<promise_type> coroutineHandleNew) {
+		inline explicit co_routine(std::coroutine_handle<promise_type> coroutineHandleNew) {
 			*this = coroutineHandleNew;
 		};
 
-		inline ~CoRoutine() {
+		inline ~co_routine() {
 			if (coroutineHandle) {
 				coroutineHandle.promise().exceptionBuffer = nullptr;
 				coroutineHandle.promise().resultBuffer	  = nullptr;
 			}
 		}
 
-		/// @brief Collects the status of the CoRoutine.
-		/// @return CoRoutineStatus The status of the CoRoutine.
-		inline CoRoutineStatus getStatus() {
+		/// @brief Collects the status of the co_routine.
+		/// @return co_routine_status the status of the co_routine.
+		inline co_routine_status getStatus() {
 			if (!coroutineHandle) {
-				currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
+				currentStatus.store(co_routine_status::cancelled, std::memory_order_release);
 			} else if (coroutineHandle && !coroutineHandle.done()) {
-				currentStatus.store(CoRoutineStatus::Running, std::memory_order_release);
+				currentStatus.store(co_routine_status::running, std::memory_order_release);
 			} else if (coroutineHandle && coroutineHandle.done()) {
-				currentStatus.store(CoRoutineStatus::Complete, std::memory_order_release);
+				currentStatus.store(co_routine_status::complete, std::memory_order_release);
 			}
 			return currentStatus.load(std::memory_order_acquire);
 		}
 
-		/// @brief Gets the resulting value of the CoRoutine.
+		/// @brief Gets the resulting value of the co_routine.
 		inline void get() {
 			if (coroutineHandle) {
 				if (!coroutineHandle.done()) {
-					StopWatch<Milliseconds> stopWatch{ 15000 };
+					stop_watch<milliseconds> stopWatch{ 15000 };
 					stopWatch.reset();
 					while (!resultBuffer.load()) {
 						checkForExceptions();
@@ -399,20 +398,20 @@ namespace DiscordCoreAPI {
 					}
 				}
 				checkForExceptions();
-				currentStatus.store(CoRoutineStatus::Complete, std::memory_order_release);
+				currentStatus.store(co_routine_status::complete, std::memory_order_release);
 				return;
 			} else {
-				throw CoRoutineError{ "CoRoutine::get(), You called get() on a CoRoutine that is "
-									  "not in a valid state." };
+				throw co_routine_error{ "co_routine::get(), you called get() on a co_routine that is "
+										"not in a valid state." };
 			}
 		}
 
-		/// @brief Cancels the currently running CoRoutine, while blocking to wait for it to complete.
+		/// @brief Cancels the currently running co_routine, while blocking to wait for it to complete.
 		inline void cancelAndWait() {
 			if (coroutineHandle) {
 				if (!coroutineHandle.done()) {
 					coroutineHandle.promise().requestStop();
-					StopWatch<Milliseconds> stopWatch{ 15000 };
+					stop_watch<milliseconds> stopWatch{ 15000 };
 					stopWatch.reset();
 					while (!resultBuffer.load()) {
 						checkForExceptions();
@@ -425,33 +424,33 @@ namespace DiscordCoreAPI {
 					}
 				}
 				checkForExceptions();
-				currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
+				currentStatus.store(co_routine_status::cancelled, std::memory_order_release);
 				return;
 			} else {
-				throw CoRoutineError{ "CoRoutine::cancelAndWait(), You called get() on a CoRoutine that is "
-									  "not in a valid state." };
+				throw co_routine_error{ "co_routine::cancelAndWait(), you called get() on a co_routine that is "
+										"not in a valid state." };
 			}
 		}
 
-		/// @brief Cancels the currently executing CoRoutine and returns the current result.
+		/// @brief Cancels the currently executing co_routine and returns the current result.
 		inline void cancel() {
 			if (coroutineHandle) {
 				if (!coroutineHandle.done()) {
 					coroutineHandle.promise().requestStop();
 				}
 				checkForExceptions();
-				currentStatus.store(CoRoutineStatus::Cancelled, std::memory_order_release);
+				currentStatus.store(co_routine_status::cancelled, std::memory_order_release);
 				return;
 			} else {
-				throw CoRoutineError{ "CoRoutine::cancel(), You called cancel() on a CoRoutine that is "
-									  "not in a valid state." };
+				throw co_routine_error{ "co_routine::cancel(), you called cancel() on a co_routine that is "
+										"not in a valid state." };
 			}
 		}
 
 	  protected:
-		std::atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
+		std::atomic<co_routine_status> currentStatus{ co_routine_status::idle };
 		std::coroutine_handle<promise_type> coroutineHandle{};
-		ResultHolder<std::exception_ptr> exceptionBuffer{};
+		result_holder<std::exception_ptr> exceptionBuffer{};
 		std::atomic_bool resultBuffer{};
 
 		inline void checkForExceptions() {
@@ -461,21 +460,21 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class NewThreadAwaiterBase {
+	class new_thread_awaiter_base {
 	  public:
-		inline static DiscordCoreInternal::CoRoutineThreadPool threadPool{};
+		inline static discord_core_internal::co_routine_thread_pool threadPool{};
 	};
 
-	/// @brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
-	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
-	template<typename ReturnType, bool timeOut> class NewThreadAwaiter : public NewThreadAwaiterBase {
+	/// @brief An awaitable that can be used to launch the co_routine onto a new thread - as well as return the handle for stoppping its execution.
+	/// \tparam return_type the type of value returned by the containing co_routine.
+	template<typename return_type, bool timeOut> class new_thread_awaiter : public new_thread_awaiter_base {
 	  public:
 		inline bool await_ready() const {
 			return false;
 		}
 
-		inline void await_suspend(std::coroutine_handle<typename CoRoutine<ReturnType, timeOut>::promise_type> coroHandleNew) {
-			NewThreadAwaiterBase::threadPool.submitTask(coroHandleNew);
+		inline void await_suspend(std::coroutine_handle<typename co_routine<return_type, timeOut>::promise_type> coroHandleNew) {
+			new_thread_awaiter_base::threadPool.submitTask(coroHandleNew);
 			coroHandle = coroHandleNew;
 		}
 
@@ -484,7 +483,7 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::coroutine_handle<typename CoRoutine<ReturnType, timeOut>::promise_type> coroHandle{};
+		std::coroutine_handle<typename co_routine<return_type, timeOut>::promise_type> coroHandle{};
 	};
 
 	/**@}*/

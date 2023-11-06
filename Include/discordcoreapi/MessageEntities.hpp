@@ -23,18 +23,17 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// MessageEntities.hpp - Header for the Message related classes and structs.
+/// MessageEntities.hpp - Header for the message related classes and structs.
 /// May 13, 2021
 /// https://discordcoreapi.com
 /// \file MessageEntities.hpp
-
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
-namespace DiscordCoreAPI {
+namespace discord_core_api {
 
 	/**
 	 * \addtogroup foundation_entities
@@ -42,155 +41,155 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// @brief Typedef for the message filter.
-	template<typename ValueType> using ObjectFilter = std::function<bool(ValueType)>;
+	template<typename value_type> using object_filter = std::function<bool(value_type)>;
 
-	/// @brief Object collector, for collecting Objects from a Channel.
-	template<typename ValueType> class DiscordCoreAPI_Dll ObjectCollector {
+	/// @brief Object collector, for collecting objects from a channel.
+	template<typename value_type> class DiscordCoreAPI_Dll object_collector {
 	  public:
-		/// @brief ObjectCollectorReturnData responseData.c
-		struct ObjectCollectorReturnData {
-			jsonifier::vector<ValueType> objects{};///< A vector of collected Objects.
+		/// @brief Object_collector_return_data responseData.c
+		struct object_collector_return_data {
+			jsonifier::vector<value_type> objects{};///< A vector of collected objects.
 		};
 
-		static UnorderedMap<jsonifier::string, UnboundedMessageBlock<ValueType>*> objectsBuffersMap;
+		static unordered_map<jsonifier::string, unbounded_message_block<value_type>*> objectsBuffersMap;
 
-		ObjectCollector();
+		object_collector();
 
-		/// @brief Begin waiting for Objects.
-		/// @param quantityToCollect Maximum quantity of Objects to collect before returning the results.
-		/// @param msToCollectForNew Maximum number of Milliseconds to wait for Objects before returning the results.
-		/// @param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
-		/// @returns A ObjectCollectorReturnData structure.
-		CoRoutine<ObjectCollectorReturnData, false> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<ValueType> filteringFunctionNew);
+		/// @brief Begin waiting for objects.
+		/// @param quantityToCollect maximum quantity of objects to collect before returning the results.
+		/// @param msToCollectForNew maximum number of milliseconds to wait for objects before returning the results.
+		/// @param filteringFunctionNew a filter function to apply to new objects, where returning "true" from the function results in a object being stored.
+		/// @return A object_collector_return_data structure.
+		co_routine<object_collector_return_data, false> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, object_filter<value_type> filteringFunctionNew);
 
-		void run(std::coroutine_handle<typename DiscordCoreAPI::CoRoutine<typename DiscordCoreAPI::ObjectCollector<ValueType>::ObjectCollectorReturnData, false>::promise_type>&
-				coroHandle);
+		void run(std::coroutine_handle<
+			typename discord_core_api::co_routine<typename discord_core_api::object_collector<value_type>::object_collector_return_data, false>::promise_type>& coroHandle);
 
-		~ObjectCollector();
+		~object_collector();
 
 	  protected:
-		UnboundedMessageBlock<ValueType> objectsBuffer{};
-		ObjectCollectorReturnData objectReturnData{};
-		ObjectFilter<ValueType> filteringFunction{};
+		unbounded_message_block<value_type> objectsBuffer{};
+		object_collector_return_data objectReturnData{};
+		object_filter<value_type> filteringFunction{};
 		int32_t quantityOfObjectsToCollect{};
 		jsonifier::string collectorId{};
 		int32_t msToCollectFor{};
 	};
 
-	using MessageCollector = ObjectCollector<MessageData>;
+	using message_collector = object_collector<message_data>;
 
-	/// @brief For getting a collection of Messages.
-	struct GetMessagesData {
-		Snowflake beforeThisId{};///< Before this id.
-		uint64_t aroundThisId{};///< Around this id.
-		Snowflake afterThisId{};///< After this id.
-		Snowflake channelId{};///< ChannelData from which to collect the Messages.
-		int32_t limit{};///< Limit of Messages to collect.
+	/// @brief For getting a collection of messages.
+	struct get_messages_data {
+		snowflake beforeThisId{};///< Before this id.
+		snowflake aroundThisId{};///< Around this id.
+		snowflake afterThisId{};///< After this id.
+		snowflake channelId{};///< channel_data from which to collect the messages.
+		int32_t limit{};///< Limit of messages to collect.
 	};
 
-	/// @brief For getting a Message.
-	struct GetMessageData {
-		Snowflake channelId{};///< The ChannelData from which to collect the MessageData.
-		Snowflake id{};///< The id of the Message to collect.
+	/// @brief For getting a message.
+	struct get_message_data {
+		snowflake channelId{};///< The channel_data from which to collect the message_data.
+		snowflake id{};///< The id of the message to collect.
 	};
 
-	/// @brief For creating a Message.
-	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
+	/// @brief For creating a message.
+	class DiscordCoreAPI_Dll create_message_data : public message_response_base {
 	  public:
-		template<typename ValueType> friend struct jsonifier::core;
-		friend class InputEvents;
-		friend class Messages;
+		template<typename value_type> friend struct jsonifier::core;
+		friend class input_events;
+		friend class messages;
 
-		CreateMessageData(const Snowflake channelIdNew);
+		create_message_data(const snowflake channelIdNew);
 
-		CreateMessageData(RespondToInputEventData dataPackage);
+		create_message_data(respond_to_input_event_data dataPackage);
 
-		CreateMessageData(InputEventData dataPackage);
+		create_message_data(input_event_data dataPackage);
 
-		CreateMessageData(MessageData dataPackage);
+		create_message_data(message_data dataPackage);
 
-		Snowflake channelId{};
+		snowflake channelId{};
 
-		CreateMessageData() = default;
+		create_message_data() = default;
 
 	  protected:
-		jsonifier::vector<AttachmentData> attachments{};
-		MessageReferenceData messageReference{};
+		jsonifier::vector<attachment_data> attachments{};
+		message_reference_data messageReference{};
 		jsonifier::vector<jsonifier::string> stickerIds{};
 	};
 
 	/// @brief For sending a direct-message.
-	class DiscordCoreAPI_Dll SendDMData : public CreateMessageData {
+	class DiscordCoreAPI_Dll send_dmdata : public create_message_data {
 	  public:
-		friend class InputEvents;
+		friend class input_events;
 
-		SendDMData(RespondToInputEventData dataPackage);
+		send_dmdata(respond_to_input_event_data dataPackage);
 
 	  protected:
-		Snowflake targetUserId{};
+		snowflake targetUserId{};
 	};
 
-	/// @brief For crossposting a Message.
-	struct CrosspostMessageData {
-		Snowflake messageId{};///< Snowflake of the message to be crossposted.
-		Snowflake channelId{};///< ChannelData within which to crosspost the Message from.
+	/// @brief For crossposting a message.
+	struct crosspost_message_data {
+		snowflake messageId{};///< Snowflake of the message to be crossposted.
+		snowflake channelId{};///< channel_data within which to crosspost the message from.
 	};
 
-	/// @brief For editing a Message.
-	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
+	/// @brief For editing a message.
+	class DiscordCoreAPI_Dll edit_message_data : public message_response_base {
 	  public:
-		template<typename ValueType> friend struct jsonifier::core;
-		friend class InputEvents;
-		friend class Messages;
+		template<typename value_type> friend struct jsonifier::core;
+		friend class input_events;
+		friend class messages;
 
-		EditMessageData(InputEventData dataPackage);
+		edit_message_data(input_event_data dataPackage);
 
-		EditMessageData(RespondToInputEventData dataPackage);
+		edit_message_data(respond_to_input_event_data dataPackage);
 
 	  protected:
-		jsonifier::vector<AttachmentData> attachments{};
-		Snowflake channelId{};
-		Snowflake messageId{};
+		jsonifier::vector<attachment_data> attachments{};
+		snowflake channelId{};
+		snowflake messageId{};
 		int32_t flags{};
 
-		EditMessageData() = default;
+		edit_message_data() = default;
 	};
 
-	/// @brief For deleting a Message.
-	struct DiscordCoreAPI_Dll DeleteMessageData {
+	/// @brief For deleting a message.
+	struct DiscordCoreAPI_Dll delete_message_data {
 	  public:
-		DeleteMessageData(const MessageData& messageToDelete);
-		TimeStampParse timeStamp{};///< The created-at timeStamp of the original message.
-		Snowflake channelId{};///< The channel Snowflake of the Message to delete.
-		Snowflake messageId{};///< The message Snowflake of the Message to delete.
-		jsonifier::string reason{};///< The reason for deleting the MessageData.
-		int32_t timeDelay{};///< Number of Milliseconds to wait before deleting the MessageData.
+		delete_message_data(const message_data& messageToDelete);
+		time_stamp timeStamp{};///< The created-at timeStamp of the original message.
+		snowflake channelId{};///< The channel snowflake of the message to delete.
+		snowflake messageId{};///< The message snowflake of the message to delete.
+		jsonifier::string reason{};///< The reason for deleting the message_data.
+		int32_t timeDelay{};///< Number of milliseconds to wait before deleting the message_data.
 	};
 
-	/// @brief For deleting a bulk of Messages.
-	struct DeleteMessagesBulkData {
-		jsonifier::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
-		Snowflake channelId{};///< ChannelData within which to delete the Messages.
-		jsonifier::string reason{};///< The reason for deleting the Messages.
+	/// @brief For deleting a bulk of messages.
+	struct delete_messages_bulk_data {
+		jsonifier::vector<snowflake> messageIds{};///< Array of message ids to delete.
+		snowflake channelId{};///< channel_data within which to delete the messages.
+		jsonifier::string reason{};///< The reason for deleting the messages.
 	};
 
-	/// @brief For getting a collection of pinned Messages.
-	struct GetPinnedMessagesData {
-		Snowflake channelId{};///< The ChannelData from which to collect pinned Messages.
+	/// @brief For getting a collection of pinned messages.
+	struct get_pinned_messages_data {
+		snowflake channelId{};///< The channel_data from which to collect pinned messages.
 	};
 
-	/// @brief For pinning a single MessageData.
-	struct PinMessageData {
-		Snowflake channelId{};///< The ChannelData within which to pin the MessageData.
-		Snowflake messageId{};///< The Message which you would like to pin.
-		jsonifier::string reason{};///< Reason for pinning this MessageData.
+	/// @brief For pinning a single message_data.
+	struct pin_message_data {
+		snowflake channelId{};///< The channel_data within which to pin the message_data.
+		snowflake messageId{};///< The message which you would like to pin.
+		jsonifier::string reason{};///< Reason for pinning this message_data.
 	};
 
-	/// @brief For unpinning a single MessageData.
-	struct UnpinMessageData {
-		Snowflake channelId{};///< The ChannelData within which to unpin the MessageData.
-		Snowflake messageId{};///< The Message which you would like to unpin.
-		jsonifier::string reason{};///< Reason for pinning this MessageData.
+	/// @brief For unpinning a single message_data.
+	struct unpin_message_data {
+		snowflake channelId{};///< The channel_data within which to unpin the message_data.
+		snowflake messageId{};///< The message which you would like to unpin.
+		jsonifier::string reason{};///< Reason for pinning this message_data.
 	};
 
 	/**@}*/
@@ -199,63 +198,63 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// @brief An interface class for the Message related Discord endpoints.
-	class DiscordCoreAPI_Dll Messages {
+	/// @brief An interface class for the message related discord endpoints.
+	class DiscordCoreAPI_Dll messages {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(discord_core_internal::https_client*);
 
-		/// @brief Collects a collection of Message from the Discord servers
-		/// @param dataPackage A GetMessagesData structure.
-		/// @returns A CoRoutine containing a jsonifier::vector<MessageData>.
-		static CoRoutine<jsonifier::vector<MessageData>> getMessagesAsync(GetMessagesData dataPackage);
+		/// @brief Collects a collection of message from the discord servers
+		/// @param dataPackage a get_messages_data structure.
+		/// @return A co_routine containing a jsonifier::vector<message_data>.
+		static co_routine<jsonifier::vector<message_data>> getMessagesAsync(get_messages_data dataPackage);
 
-		/// @brief Collects a Message from the Discord servers.
-		/// @param dataPackage A GetMessageData structure.
-		/// @returns A CoRoutine containing a Message.
-		static CoRoutine<MessageData> getMessageAsync(GetMessageData dataPackage);
+		/// @brief Collects a message from the discord servers.
+		/// @param dataPackage a get_message_data structure.
+		/// @return A co_routine containing a message.
+		static co_routine<message_data> getMessageAsync(get_message_data dataPackage);
 
-		/// @brief Creates a new MessageData.
-		/// @param dataPackage A CreateMessageData structure.
-		/// @returns A CoRoutine containing a Message.
-		static CoRoutine<MessageData> createMessageAsync(CreateMessageData dataPackage);
+		/// @brief Creates a new message_data.
+		/// @param dataPackage a create_message_data structure.
+		/// @return A co_routine containing a message.
+		static co_routine<message_data> createMessageAsync(create_message_data dataPackage);
 
-		/// @brief Crossposts a message from a News ChannelData to the following Channels.
-		/// @param dataPackage A CrosspostMessageData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<MessageData> crosspostMessageAsync(CrosspostMessageData dataPackage);
+		/// @brief Crossposts a message from a news channel_data to the following channels.
+		/// @param dataPackage a crosspost_message_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<message_data> crosspostMessageAsync(crosspost_message_data dataPackage);
 
-		/// @brief Edit a Message.
-		/// @param dataPackage An EditMessageData structure.
-		/// @returns A CoRoutine containing a Message.
-		static CoRoutine<MessageData> editMessageAsync(EditMessageData dataPackage);
+		/// @brief Edit a message.
+		/// @param dataPackage an edit_message_data structure.
+		/// @return A co_routine containing a message.
+		static co_routine<message_data> editMessageAsync(edit_message_data dataPackage);
 
-		/// @brief Deletes a Message.
-		/// @param dataPackage A DeleteMessageData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> deleteMessageAsync(DeleteMessageData dataPackage);
+		/// @brief Deletes a message.
+		/// @param dataPackage a delete_message_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> deleteMessageAsync(delete_message_data dataPackage);
 
-		/// @brief Deletes a collection of Messages.
-		/// @param dataPackage A DeleteMessagesBulkData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage);
+		/// @brief Deletes a collection of messages.
+		/// @param dataPackage a delete_messages_bulk_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> deleteMessagesBulkAsync(delete_messages_bulk_data dataPackage);
 
-		/// @brief Collects a collection of pinned Messages from the Discord servers.
-		/// @param dataPackage A GetPinnedMessagesData structure.
-		/// @returns A CoRoutine containing a jsonifier::vector<MessageData>.
-		static CoRoutine<jsonifier::vector<MessageData>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
+		/// @brief Collects a collection of pinned messages from the discord servers.
+		/// @param dataPackage a get_pinned_messages_data structure.
+		/// @return A co_routine containing a jsonifier::vector<message_data>.
+		static co_routine<jsonifier::vector<message_data>> getPinnedMessagesAsync(get_pinned_messages_data dataPackage);
 
-		/// @brief Pins a Message to a given Channel.
-		/// @param dataPackage A PinMessageData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> pinMessageAsync(PinMessageData dataPackage);
+		/// @brief Pins a message to a given channel.
+		/// @param dataPackage a pin_message_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> pinMessageAsync(pin_message_data dataPackage);
 
-		/// @brief Unpins a Message from a given Channel.
-		/// @param dataPackage An UnpinMessageData structure.
-		/// @returns A CoRoutine containing void.
-		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
+		/// @brief Unpins a message from a given channel.
+		/// @param dataPackage an unpin_message_data structure.
+		/// @return A co_routine containing void.
+		static co_routine<void> unpinMessageAsync(unpin_message_data dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static discord_core_internal::https_client* httpsClient;
 	};
 	/**@}*/
 

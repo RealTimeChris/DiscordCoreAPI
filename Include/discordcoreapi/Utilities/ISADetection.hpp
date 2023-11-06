@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// ISADetection.hpp - Header for the detection of the AVX instruction set.
+/// Isadetection.hpp - Header for the detection of the AVX instruction set.
 /// Nov 8, 2021
 /// https://discordcoreapi.com
 /// \file ISADetection.hpp
