@@ -1,5 +1,5 @@
 Select Menus {#select_menus}
 ============
-* \subpage instantiatingcreatingselectmenu
+* \subpage creating_a_select_menu
 
-* \subpage collectingselectmenuinput
+* \subpage collecting_select_menu_input

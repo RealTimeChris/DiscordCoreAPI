@@ -1,7 +1,7 @@
-Getting a Thread Member {#gettingathreadmember}
+Getting a Thread Member {#getting_a_thread_member}
 ============
-- Execute the, `threads::getThreadMemberAsync()` function, while passing in a value of type `get_thread_member_data`, with a return value of type `auto` or `thread_member_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::threads::getThreadMemberAsync()` function, while passing in a value of type `discord_core_api::get_thread_member_data`, with a return value of type `auto` or `discord_core_api::thread_member_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.channelId = "909435143561809953";
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				auto newThreadMember = threads::getThreadMemberAsync(const& dataPackage).get();
+				auto newThreadMember = threads::getThreadMemberAsync(const dataPackage).get();
 
 
 			} catch (...) {

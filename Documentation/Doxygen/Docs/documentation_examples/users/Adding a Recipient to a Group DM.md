@@ -1,7 +1,7 @@
-Adding a Recipient to a Group DM {#addingarecipienttoagroupdm}
+Adding a Recipient to a Group DM {#adding_a_recipient_to_a_group_dm}
 ============
-- Execute the, `users::addRecipientToGroupDMAsync()` function, while passing in a value of type `add_recipient_to_group_dmdata`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::users::addRecipientToGroupDMAsync()` function, while passing in a value of type `discord_core_api::add_recipient_to_group_dmdata`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				guild_member guildMember = guild_members::getCachedGuildMember(
+				guild_member_data guildMember = guild_members::getCachedGuildMember(
 															  {.guildMemberId = args.eventData.getAuthorId(), .guildId = args.eventData.getGuildId()})
 															  .get();
 
@@ -42,7 +42,7 @@ namespace discord_core_api {
 				dataPackage.token = "YOUR_ACCESS_TOKEN_HERE";
 				dataPackage.nick = guildMember.nick;
 
-				users::addRecipientToGroupDMAsync(const& dataPackage).get();
+				users::addRecipientToGroupDMAsync(const dataPackage).get();
 
 
 			} catch (...) {

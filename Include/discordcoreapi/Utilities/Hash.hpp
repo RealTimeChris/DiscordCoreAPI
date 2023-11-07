@@ -288,7 +288,7 @@ namespace discord_core_api {
 	  public:
 		using iterator_category	  = std::forward_iterator_tag;
 		using value_type_internal = value_type_internal_new;
-		using value_type		  = value_type_internal::value_type;
+		using value_type		  = typename value_type_internal::value_type;
 		using reference			  = value_type&;
 		using pointer			  = value_type*;
 		using pointer_internal	  = value_type_internal*;

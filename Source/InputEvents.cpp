@@ -35,7 +35,7 @@
 
 namespace discord_core_api {
 
-	co_routine<input_event_data> input_events::respondToInputEventAsync(respond_to_input_event_data dataPackage) {
+	co_routine<input_event_data> input_events::respondToInputEventAsync(const respond_to_input_event_data dataPackage) {
 		co_await newThreadAwaitable<input_event_data>();
 		if (dataPackage.type == input_event_response_type::unset) {
 			throw dca_exception("input_events::respondToInputEventAsync() error: please set an "
@@ -112,7 +112,7 @@ namespace discord_core_api {
 		co_return input_event_data();
 	}
 
-	co_routine<void> input_events::deleteInputEventResponseAsync(input_event_data& dataPackage, uint32_t timeDelayNew) {
+	co_routine<void> input_events::deleteInputEventResponseAsync(const input_event_data dataPackage, uint32_t timeDelayNew) {
 		input_event_data newPackage = dataPackage;
 		co_await newThreadAwaitable<void>();
 		if (newPackage.responseType == input_event_response_type::Follow_Up_Message || newPackage.responseType == input_event_response_type::Edit_Follow_Up_Message ||
@@ -132,7 +132,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	input_event_data input_events::respondToInputEvent(create_deferred_interaction_response_data& dataPackage) {
+	input_event_data input_events::respondToInputEvent(create_deferred_interaction_response_data dataPackage) {
 		dataPackage.generateExcludedKeys();
 		create_interaction_response_data dataPackageNew{ dataPackage };
 		auto result = interactions::createInteractionResponse(dataPackageNew);
@@ -147,7 +147,7 @@ namespace discord_core_api {
 		return dataPackageNewer;
 	}
 
-	input_event_data input_events::respondToInputEvent(create_interaction_response_data& dataPackage) {
+	input_event_data input_events::respondToInputEvent(create_interaction_response_data dataPackage) {
 		dataPackage.generateExcludedKeys();
 		message_data messageData = interactions::createInteractionResponse(dataPackage);
 		input_event_data dataPackageNewer{};
@@ -161,7 +161,7 @@ namespace discord_core_api {
 		return dataPackageNewer;
 	}
 
-	input_event_data input_events::respondToInputEvent(edit_interaction_response_data& dataPackage) {
+	input_event_data input_events::respondToInputEvent(edit_interaction_response_data dataPackage) {
 		dataPackage.generateExcludedKeys();
 		message_data messageData = interactions::editInteractionResponse(dataPackage);
 		input_event_data dataPackageNewer{};
@@ -175,7 +175,7 @@ namespace discord_core_api {
 		return dataPackageNewer;
 	}
 
-	input_event_data input_events::respondToInputEvent(create_follow_up_message_data& dataPackage) {
+	input_event_data input_events::respondToInputEvent(create_follow_up_message_data dataPackage) {
 		dataPackage.generateExcludedKeys();
 		message_data messageData = interactions::createFollowUpMessage(dataPackage);
 		input_event_data dataPackageNewer{};
@@ -189,7 +189,7 @@ namespace discord_core_api {
 		return dataPackageNewer;
 	}
 
-	input_event_data input_events::respondToInputEvent(edit_follow_up_message_data& dataPackage) {
+	input_event_data input_events::respondToInputEvent(edit_follow_up_message_data dataPackage) {
 		message_data messageData = interactions::editFollowUpMessage(dataPackage);
 		input_event_data dataPackageNewer{};
 		dataPackageNewer.responseType					= input_event_response_type::Edit_Follow_Up_Message;
@@ -202,7 +202,7 @@ namespace discord_core_api {
 		return dataPackageNewer;
 	}
 
-	input_event_data input_events::respondToInputEvent(create_ephemeral_interaction_response_data& dataPackage) {
+	input_event_data input_events::respondToInputEvent(create_ephemeral_interaction_response_data dataPackage) {
 		dataPackage.generateExcludedKeys();
 		create_interaction_response_data dataPackageNew{ dataPackage };
 		message_data messageData = interactions::createInteractionResponse(dataPackageNew);
@@ -217,7 +217,7 @@ namespace discord_core_api {
 		return dataPackageNewer;
 	}
 
-	input_event_data input_events::respondToInputEvent(create_ephemeral_follow_up_message_data& dataPackage) {
+	input_event_data input_events::respondToInputEvent(create_ephemeral_follow_up_message_data dataPackage) {
 		create_follow_up_message_data dataPackageNew{ dataPackage };
 		message_data messageData = interactions::createFollowUpMessage(dataPackageNew);
 		input_event_data dataPackageNewer{};

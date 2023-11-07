@@ -1,3 +1,3 @@
 Voice Connections {#voice_connections}
 ============
-* \subpage connectingtodisconnecting
+* \subpage connecting_and_disconnecting

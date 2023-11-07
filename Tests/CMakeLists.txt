@@ -34,6 +34,30 @@ target_link_libraries(
 	Jsonifier::Jsonifier
 )
 
+target_compile_options(
+	"DiscordCoreAPITest" PUBLIC
+	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:/fsanitize=address>>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/MP${THREAD_COUNT}>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-fcoroutines>"
+	"$<$<CXX_COMPILER_ID:GNU>:-fcoroutines>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-Wextra>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-Wall>"
+	"$<$<CXX_COMPILER_ID:GNU>:-Wextra>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/Wall>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
+	"$<$<CXX_COMPILER_ID:GNU>:-Wall>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
+	"${AVX_FLAG}"
+)
+
+target_link_options(
+	"DiscordCoreAPITest" PUBLIC
+	"$<$<CXX_COMPILER_ID:GNU>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:-fsanitize=address>>"
+	"$<$<CXX_COMPILER_ID:CLANG>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:-fsanitize=address>>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/DEBUG>"
+)
+
 if (WIN32)
 	install(
 		FILES 

@@ -1,12 +1,12 @@
-Collecting Button Input {#collectingbuttoninput}
+Collecting Button Input {#collecting_button_input}
 ============
-- after creating a button, create an object of the `button_collector` class, passing into its constructor the `input_event_data` that resulted from the call to `input_events::respondToInputEventAsync`, when the button was created.
-- call the `button_collector::collectButtonData()` function from the instance of the button_collector. note: the arguments for this function are as follows:  
-`getButtonDataForAllNew` = whether or not it accepts button presses from everyone or just the individual selected with the `targetUser` argument.   
+- after creating a button, create an object of the `discord_core_api::button_collector` class, passing into its constructor the `discord_core_api::input_event_data` that resulted from the call to `discord_core_api::input_events::respondToInputEventAsync`, when the button was created.
+- call the `discord_core_api::button_collector::collectButtonData()` function from the instance of the button_collector. note: the arguments for this function are as follows:  
+`getButtonDataForAllNew` = whether or not it accepts button presses from everyone or just the individual selected with the `discord_core_api::targetUser` argument.   
 `maxWaitTimeInMsNew` = the maximum number of milliseconds that the collector will wait for button presses.   
 `maxNumberOfPressesNew` = the maximum number of button presses that the collector will collect.   
-`targetUser` = the target user, if `getButtonDataForAllNew` is disabled.
-- collect a result of type `jsonifier::vector<button_response_data>` and deal with the button responses as you see fit! keep in mind that you could set up a voting message by using `getButtonDataForAllNew` and having multiple presses allowed.
+`targetUser` = the target user, if `discord_core_api::getButtonDataForAllNew` is disabled.
+- collect a result of type `jsonifier::vector<button_response_data>` and deal with the button responses as you see fit! keep in mind that you could set up a voting message by using `discord_core_api::getButtonDataForAllNew` and having multiple presses allowed.
 ```cpp
 /// Test.hpp -header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -42,7 +42,7 @@ namespace discord_core_api {
 			dataPackage.addContent("test response");
 			dataPackage.addMessageEmbed(embed_data {.description = "testing!", .title = "test title"});
 			dataPackage.type = input_event_response_type::Interaction_Response;
-			auto inputEventData = input_events::respondToInputEventAsync(const& dataPackage).get();
+			auto inputEventData = input_events::respondToInputEventAsync(const dataPackage).get();
 
 			button_collector buttonCollector {inputEventData};
 			auto results = buttonCollector.collectButtonData(false, 2334, 1, "").get();

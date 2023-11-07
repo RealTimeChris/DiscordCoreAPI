@@ -1,6 +1,6 @@
-Instantiating/Creating an Autocomplete {#instantiatingcreatingautocomplete}
+Instantiating/Creating an Autocomplete {#creating_an_auto_complete}
 ============ 
-- create a data structure of type `create_global_application_command_data` or `create_guild_application_command_data`, and be sure to set one or more of the `application_command_option_data`'s settings for `autocomplete` to true.
+- create a data structure of type `discord_core_api::create_global_application_command_data` or `discord_core_api::create_guild_application_command_data`, and be sure to set one or more of the `discord_core_api::application_command_option_data`'s settings for `discord_core_api::autocomplete` to true.
 - use this data structure to create the application command.
 
 ```cpp

@@ -147,7 +147,7 @@ namespace discord_core_api {
 
 	user_cache_data guild_member_data::getUserData() {
 		if (user.id != 0) {
-			return users::getCachedUser(get_user_data{ .userId = user.id });
+			return users::getCachedUser({ .userId = user.id });
 		} else {
 			return {};
 		}
@@ -159,7 +159,7 @@ namespace discord_core_api {
 
 	user_cache_data guild_member_cache_data::getUserData() {
 		if (user.id != 0) {
-			return users::getCachedUser(get_user_data{ .userId = user.id });
+			return users::getCachedUser({ .userId = user.id });
 		} else {
 			return {};
 		}
@@ -729,7 +729,7 @@ namespace discord_core_api {
 		return returnData;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::operator=(const interaction_data& dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::operator=(const interaction_data dataPackage) {
 		applicationId	 = dataPackage.applicationId;
 		messageId		 = dataPackage.message.id;
 		channelId		 = dataPackage.channelId;
@@ -739,11 +739,11 @@ namespace discord_core_api {
 		return *this;
 	};
 
-	respond_to_input_event_data::respond_to_input_event_data(const interaction_data& dataPackage) {
+	respond_to_input_event_data::respond_to_input_event_data(const interaction_data dataPackage) {
 		*this = dataPackage;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::operator=(const input_event_data& dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::operator=(const input_event_data dataPackage) {
 		applicationId	 = dataPackage.getInteractionData().applicationId;
 		interactionToken = dataPackage.getInteractionData().token;
 		channelId		 = dataPackage.interactionData.channelId;
@@ -752,7 +752,7 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data::respond_to_input_event_data(const input_event_data& dataPackage) {
+	respond_to_input_event_data::respond_to_input_event_data(const input_event_data dataPackage) {
 		*this = dataPackage;
 	}
 
@@ -843,7 +843,7 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addAllowedMentions(const allowed_mentions_data& dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::addAllowedMentions(const allowed_mentions_data dataPackage) {
 		allowedMentions = dataPackage;
 		return *this;
 	}
@@ -853,12 +853,12 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addComponentRow(const action_row_data& dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::addComponentRow(const action_row_data dataPackage) {
 		components.emplace_back(dataPackage);
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addMessageEmbed(const embed_data& dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::addMessageEmbed(const embed_data dataPackage) {
 		embeds.emplace_back(dataPackage);
 		return *this;
 	}
@@ -975,17 +975,17 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	message_response_base& message_response_base::addAllowedMentions(const allowed_mentions_data& dataPackage) {
+	message_response_base& message_response_base::addAllowedMentions(const allowed_mentions_data dataPackage) {
 		allowedMentions = dataPackage;
 		return *this;
 	}
 
-	message_response_base& message_response_base::addComponentRow(const action_row_data& dataPackage) {
+	message_response_base& message_response_base::addComponentRow(const action_row_data dataPackage) {
 		components.emplace_back(dataPackage);
 		return *this;
 	}
 
-	message_response_base& message_response_base::addMessageEmbed(const embed_data& dataPackage) {
+	message_response_base& message_response_base::addMessageEmbed(const embed_data dataPackage) {
 		embeds.emplace_back(dataPackage);
 		return *this;
 	}
@@ -1191,7 +1191,7 @@ namespace discord_core_api {
 					dataPackage02->addComponentRow(actionRow);
 				}
 				if (deleteAfter == true) {
-					input_event_data dataPackage03{ originalEvent };
+					input_event_data& dataPackage03{ originalEvent };
 					input_events::deleteInputEventResponseAsync(dataPackage03);
 				} else {
 					dataPackage02->setResponseType(input_event_response_type::Edit_Interaction_Response);

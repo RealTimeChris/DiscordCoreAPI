@@ -1,7 +1,7 @@
-Modifying a Stage Instance {#modifyingastageinstance}
+Modifying a Stage Instance {#modifying_a_stage_instance}
 ============
-- Execute the, `stage_instances::modifyStageInstanceAsync()` function, while passing in a value of type `modify_stage_instance_data`, with a return value of type `auto` or `stage_instance`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::stage_instances::modifyStageInstanceAsync()` function, while passing in a value of type `discord_core_api::modify_stage_instance_data`, with a return value of type `auto` or `discord_core_api::stage_instance`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage.reason = "testing!";
 				dataPackage.topic = "new topic!";
 
-				auto responseData = stage_instances::modifyStageInstanceAsync(const& dataPackage).get();
+				auto responseData = stage_instances::modifyStageInstanceAsync(const dataPackage).get();
 
 				std::cout << "the topic: " << responseData.topic << std::endl;
 

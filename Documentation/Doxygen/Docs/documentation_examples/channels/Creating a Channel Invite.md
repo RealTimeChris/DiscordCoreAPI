@@ -1,7 +1,7 @@
-Creating a Channel Invite {#creatingchannelinvite}
+Creating a Channel Invite {#creating_channel_invites}
 ============
-- Execute the `channels::createChannelInviteAsync()` function, while passing in a data structure of type `create_channel_invite_data`, with a return value of `auto` or `invite_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::channels::createChannelInviteAsync()` function, while passing in a data structure of type `discord_core_api::create_channel_invite_data`, with a return value of `auto` or `discord_core_api::invite_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.targetType = invite_target_types::Embedded_Application;
 				dataPackage.temporary = true;
 
-				invite_data channelInvite = channels::createChannelInviteAsync(const& dataPackage).get();
+				invite_data channelInvite = discord_core_api::channels::createChannelInviteAsync(const dataPackage).get();
 				std::cout << "channel invite: " << channelInvite.inviter.userName << std::endl;
 
 			} catch (...) {

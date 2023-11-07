@@ -1,7 +1,7 @@
-Getting Nitro Sticker Packs {#gettingnitrostickerpacks}
+Getting Nitro Sticker Packs {#getting_nitro_sticker_packs}
 ============
-- Execute the, `stickers::getNitroStickerPacksAsync()` function, with a return value of type `auto` or `vector<sticker_pack_data>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::stickers::getNitroStickerPacksAsync()` function, with a return value of type `auto` or `jsonifier::vector<sticker_pack_data>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.

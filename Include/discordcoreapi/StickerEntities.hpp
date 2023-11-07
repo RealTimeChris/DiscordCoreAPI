@@ -91,7 +91,7 @@ namespace discord_core_api {
 		/// @brief Gets a single sticker_data item.
 		/// @param dataPackage a get_sticker_data structure.
 		/// @return a co_routine containing a sticker_data.
-		static co_routine<sticker_data> getStickerAsync(get_sticker_data dataPackage);
+		static co_routine<sticker_data> getStickerAsync(const get_sticker_data dataPackage);
 
 		/// @brief Gets a list of nitro-available sticker_data packs
 		/// @return a co_routine containing a sticker_pack_data
@@ -100,22 +100,22 @@ namespace discord_core_api {
 		/// @brief Gets a list of stickers from a guild.
 		/// @param dataPackage a get_guild_stickers_data structure.
 		/// @return a co_routine containing a jsonifier::vector<sticker_data>.
-		static co_routine<jsonifier::vector<sticker_data>> getGuildStickersAsync(get_guild_stickers_data dataPackage);
+		static co_routine<jsonifier::vector<sticker_data>> getGuildStickersAsync(const get_guild_stickers_data dataPackage);
 
 		/// @brief Creates a new sticker_data within a chosen guild.
 		/// @param dataPackage a create_guild_sticker_data structure.
 		/// @return a co_routine containing a sticker_data.
-		static co_routine<sticker_data> createGuildStickerAsync(create_guild_sticker_data dataPackage);
+		static co_routine<sticker_data> createGuildStickerAsync(const create_guild_sticker_data dataPackage);
 
 		/// @brief Modifies a sticker_data within a chosen guild.
 		/// @param dataPackage a modify_guild_sticker_data structure.
 		/// @return a co_routine containing a sticker_data.
-		static co_routine<sticker_data> modifyGuildStickerAsync(modify_guild_sticker_data dataPackage);
+		static co_routine<sticker_data> modifyGuildStickerAsync(const modify_guild_sticker_data dataPackage);
 
 		/// @brief Deletes a sticker_data within a chosen guild.
 		/// @param dataPackage a delete_guild_sticker_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteGuildStickerAsync(delete_guild_sticker_data dataPackage);
+		static co_routine<void> deleteGuildStickerAsync(const delete_guild_sticker_data dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;

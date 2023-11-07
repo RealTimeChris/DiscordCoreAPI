@@ -2373,11 +2373,11 @@ namespace discord_core_api {
 
 		/// @brief Updates the bot's current voice-status. joins/leaves a channel, and/or self deafens/mutes.
 		/// @param dataPackage the new voice_state_data.
-		void updateVoiceStatus(update_voice_state_data& dataPackage);
+		void updateVoiceStatus(update_voice_state_data dataPackage);
 
 		/// @brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
 		/// @param dataPackage the new presence data.
-		void updatePresence(update_presence_data& dataPackage);
+		void updatePresence(update_presence_data dataPackage);
 
 	  protected:
 		bot_user() = default;
@@ -2533,6 +2533,7 @@ namespace discord_core_api {
 
 		bool areWeConnected();
 
+		/// \brief For disconnecting from the current guild's voice channel.
 		void disconnect();
 	};
 
@@ -2584,6 +2585,7 @@ namespace discord_core_api {
 
 		bool areWeConnected();
 
+		/// \brief For disconnecting from the current guild's voice channel.
 		void disconnect();
 	};
 
@@ -2746,13 +2748,13 @@ namespace discord_core_api {
 
 		operator interaction_callback_data() const;
 
-		respond_to_input_event_data& operator=(const interaction_data& dataPackage);
+		respond_to_input_event_data& operator=(const interaction_data dataPackage);
 
-		respond_to_input_event_data(const interaction_data& dataPackage);
+		respond_to_input_event_data(const interaction_data dataPackage);
 
-		respond_to_input_event_data& operator=(const input_event_data& dataPackage);
+		respond_to_input_event_data& operator=(const input_event_data dataPackage);
 
-		respond_to_input_event_data(const input_event_data& dataPackage);
+		respond_to_input_event_data(const input_event_data dataPackage);
 
 		/// @brief Adds a button to the response message_data.
 		/// @param disabled whether the button is active or not.
@@ -2804,7 +2806,7 @@ namespace discord_core_api {
 		/// @brief For setting the allowable mentions in a response.
 		/// @param dataPackage an allowed_mentions_data structure.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addAllowedMentions(const allowed_mentions_data& dataPackage);
+		respond_to_input_event_data& addAllowedMentions(const allowed_mentions_data dataPackage);
 
 		/// @brief For setting the type of response to make.
 		/// @param typeNew an input_event_response_type.
@@ -2814,12 +2816,12 @@ namespace discord_core_api {
 		/// @brief For setting the components in a response.
 		/// @param dataPackage an action_row_data structure.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addComponentRow(const action_row_data& dataPackage);
+		respond_to_input_event_data& addComponentRow(const action_row_data dataPackage);
 
 		/// @brief For setting the embeds in a response.
 		/// @param dataPackage an embed_data structure.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addMessageEmbed(const embed_data& dataPackage);
+		respond_to_input_event_data& addMessageEmbed(const embed_data dataPackage);
 
 		/// @brief For setting the message content in a response.
 		/// @param dataPackage a string, containing the content.
@@ -2918,17 +2920,17 @@ namespace discord_core_api {
 		/// @brief For setting the allowable mentions in a response.
 		/// @param dataPackage an allowed_mentions_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addAllowedMentions(const allowed_mentions_data& dataPackage);
+		message_response_base& addAllowedMentions(const allowed_mentions_data dataPackage);
 
 		/// @brief For setting the components in a response.
 		/// @param dataPackage an action_row_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addComponentRow(const action_row_data& dataPackage);
+		message_response_base& addComponentRow(const action_row_data dataPackage);
 
 		/// @brief For setting the embeds in a response.
 		/// @param dataPackage an embed_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addMessageEmbed(const embed_data& dataPackage);
+		message_response_base& addMessageEmbed(const embed_data dataPackage);
 
 		/// @brief For setting the message content in a response.
 		/// @param dataPackage a string, containing the content.

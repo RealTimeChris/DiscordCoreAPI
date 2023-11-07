@@ -1,7 +1,7 @@
-Modifying a Channel {#modifyingchannel}
+Modifying a Channel {#modifying_channel}
 ============
-- Execute the `channels::modifyChannelAsync()` function, while passing to it a completed data structure `modify_channel_data`, with a return value of `auto` or `channel`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::channels::modifyChannelAsync()` function, while passing to it a completed data structure `discord_core_api::modify_channel_data`, with a return value of `auto` or `discord_core_api::channel_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,10 +32,10 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				channel channel = channels::getCachedChannel({.channelId = args.eventData.getChannelId()}).get();
+				channel channel = discord_core_api::channels::getCachedChannel({.channelId = args.eventData.getChannelId()}).get();
 				modify_channel_data dataPackage {channel};
 				dataPackage.channelData.name = "test update";
-				channel channelNew = channels::modifyChannelAsync(const& dataPackage).get();
+				channel channelNew = discord_core_api::channels::modifyChannelAsync(const dataPackage).get();
 
 			} catch (...) {
 				rethrowException("test::execute() error: ");

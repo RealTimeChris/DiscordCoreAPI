@@ -1,7 +1,7 @@
-Deleting All Reactions for Emoji {#deletingallreactionsforemoji}
+Deleting All Reactions for Emoji {#deleting_all_reactions_for_emoji}
 ============
-- Execute the, `reactions::deleteReactionsByEmojiAsync()` function, while passing in a data structure of type `delete_reactions_by_emoji_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::reactions::deleteReactionsByEmojiAsync()` function, while passing in a data structure of type `discord_core_api::delete_reactions_by_emoji_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.emojiName = "💯";
 
-				reactions::deleteReactionsByEmojiAsync(const& dataPackage).get();
+				reactions::deleteReactionsByEmojiAsync(const dataPackage).get();
 
 
 			} catch (...) {

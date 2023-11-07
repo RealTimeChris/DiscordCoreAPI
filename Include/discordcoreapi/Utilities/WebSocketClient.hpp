@@ -32,7 +32,6 @@
 #include <discordcoreapi/Utilities/AudioDecoder.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/EventEntities.hpp>
-#include <discordcoreapi/Utilities/ThreadWrapper.hpp>
 #include <discordcoreapi/Utilities/TCPConnection.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
 #include <thread>
@@ -305,9 +304,9 @@ namespace discord_core_api {
 			unordered_map<uint64_t, websocket_client> shardMap{};
 			std::deque<connection_package> connections{};
 			std::atomic_bool* doWeQuit{};
-			thread_wrapper taskThread{};
+			std::jthread taskThread{};
 
-			void run(stop_token);
+			void run(std::stop_token);
 		};
 
 	}// namespace

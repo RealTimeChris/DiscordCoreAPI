@@ -25,10 +25,10 @@ namespace discord_core_api {
 		}
 		void execute(base_function_arguments& newArgs) {
 			try {
-				channel channel = channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
+				channel channel = discord_core_api::channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				guild guild = guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get();
-				discord_guild discordGuild(guild);
+				guild_data guild_data = guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get();
+				discord_guild discordGuild(guild_data);
 
 				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
@@ -36,7 +36,7 @@ namespace discord_core_api {
 					return;
 				}
 
-				guild_member guildMember =
+				guild_member_data guildMember =
 					guild_members::getCachedGuildMember({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
 				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
@@ -63,14 +63,14 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 					return;
 				}
 				voice_connection* voiceConnection{};
 				voice_state_data voiceStateData{};
-				if (guild.voiceStates.contains(guildMember.id)) {
-					voiceStateData = guild.voiceStates.at(guildMember.id);
-					voiceConnection = guild.connectToVoice(0, voiceStateData.channelId, true, false);
+				if (guild_data.voiceStates.contains(guildMember.id)) {
+					voiceStateData = guild_data.voiceStates.at(guildMember.id);
+					voiceConnection = guild_data.connectToVoice(0, voiceStateData.channelId, true, false);
 				} else {
 					embed_data newEmbed{};
 					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
@@ -81,7 +81,7 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 					return;
 				}
 				loadPlaylist(discordGuild);
@@ -95,7 +95,7 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 					return;
 				}
 
@@ -109,11 +109,11 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 					return;
 				}
 
-				if (!guild.areWeConnected() || !song_api::areWeCurrentlyPlaying(guild.id)) {
+				if (!guild_data.areWeConnected() || !song_api::areWeCurrentlyPlaying(guild_data.id)) {
 					jsonifier::string msgString = "------\n**there's no music playing to be stopped!**\n------";
 					embed_data msgEmbed;
 					msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
@@ -124,19 +124,19 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(msgEmbed);
-					newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 					return;
 				}
 
-				song_api::stop(guild.id);
+				song_api::stop(guild_data.id);
 				savePlaylist(discordGuild);
 				embed_data msgEmbed;
 				msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 				msgEmbed.setColor(discordGuild.data.borderColor);
-				msgEmbed.setDescription("\n------\n__**songs remaining in queue:**__ " + jsonifier::toString(song_api::getPlaylist(guild.id).songQueue.size()) + "\n------");
+				msgEmbed.setDescription("\n------\n__**songs remaining in queue:**__ " + jsonifier::toString(song_api::getPlaylist(guild_data.id).songQueue.size()) + "\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**stopping playback:**__");
-				respond_to_input_event_data dataPackage02(newArgs.eventData);
+				respond_to_input_event_data& dataPackage02(newArgs.eventData);
 				dataPackage02.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 				dataPackage02.addMessageEmbed(msgEmbed);
 				input_events::respondToInputEventAsync(const dataPackage02).get();

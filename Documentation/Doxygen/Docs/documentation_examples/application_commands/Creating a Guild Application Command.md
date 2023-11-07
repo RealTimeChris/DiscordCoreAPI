@@ -1,7 +1,7 @@
-Creating a Guild Application Command {#createguildcommand}
+Creating a Guild Application Command {#create_guild_command}
 ============
-- Execute the `application_commands::createGuildApplicationCommandAsync()` function, while passing in a data structure of type `create_guild_application_command_data` (important #1: notes on which kind of types to set can be found [here](https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups).), with a return value of type `auto` or `application_command`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::application_commands::createGuildApplicationCommandAsync()` function, while passing in a data structure of type `discord_core_api::create_guild_application_command_data` (important #1: notes on which kind of types to set can be found [here](https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups).), with a return value of type `auto` or `discord_core_api::application_command_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -38,7 +38,7 @@ namespace discord_core_api {
 			dataPackage.type = application_command_type::Chat_Input;
 			dataPackage.guildId = args.eventData.getGuildId();
 
-			auto returnValue = application_commands::createGuildApplicationCommandAsync(const& dataPackage).get();
+			auto returnValue = application_commands::createGuildApplicationCommandAsync(const dataPackage).get();
 
 			std::cout << returnValue.name << std::endl;
 		}

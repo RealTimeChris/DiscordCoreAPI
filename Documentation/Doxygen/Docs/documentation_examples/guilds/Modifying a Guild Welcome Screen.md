@@ -1,7 +1,7 @@
-Modifying a Guild Welcome Screen {#modifyingaguildwelcomescreen}
+Modifying a Guild Welcome Screen {#modifying_a_guild_welcome_screen}
 ============
-- Execute the, `guilds::modifyGuildWelcomeScreenAsync()` function, while passing in a value of type `modify_guild_welcome_screen_data`, with a return value of type `auto` or `welcome_screen_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guilds::modifyGuildWelcomeScreenAsync()` function, while passing in a value of type `discord_core_api::modify_guild_welcome_screen_data`, with a return value of type `auto` or `discord_core_api::welcome_screen_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -39,7 +39,7 @@ namespace discord_core_api {
 				channelData.emojiName = "🏳";
 				vector.emplace_back(channelData);
 
-				modify_guild_welcome_screen_data dataPackage01;
+				modify_guild_welcome_screen_data& dataPackage01;
 				dataPackage01.reason = "testing purposes";
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.description = "the description!";

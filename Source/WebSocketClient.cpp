@@ -1156,7 +1156,7 @@ namespace discord_core_api {
 
 		base_socket_agent::base_socket_agent(std::atomic_bool* doWeQuitNew) {
 			doWeQuit   = doWeQuitNew;
-			taskThread = thread_wrapper([this](stop_token token) {
+			taskThread = std::jthread([this](std::stop_token token) {
 				run(token);
 			});
 		}
@@ -1179,7 +1179,7 @@ namespace discord_core_api {
 			discord_core_client::getInstance()->connectionStopWatch01.reset();
 		}
 
-		void base_socket_agent::run(stop_token token) {
+		void base_socket_agent::run(std::stop_token token) {
 			unordered_map<uint64_t, websocket_tcpconnection*> processIOMapNew{};
 			while (!discord_core_client::getInstance()->areWeReadyToConnect.load(std::memory_order_acquire)) {
 				std::this_thread::sleep_for(1ms);
@@ -1200,7 +1200,7 @@ namespace discord_core_api {
 				connect(value);
 				discord_core_client::getInstance()->currentlyConnectingShard.fetch_add(1, std::memory_order_release);
 			}
-			while (!token.stopRequested() && !doWeQuit->load(std::memory_order_acquire)) {
+			while (!token.stop_requested() && !doWeQuit->load(std::memory_order_acquire)) {
 				try {
 					for (auto& [key, value]: shardMap) {
 						if (value.areWeConnected()) {

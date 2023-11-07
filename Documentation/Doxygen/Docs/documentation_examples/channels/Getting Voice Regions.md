@@ -1,7 +1,7 @@
-Getting Voice Regions {#gettingvoiceregions}
+Getting Voice Regions {#getting_voice_regions}
 ============
-- Execute the, `channels::getVoiceRegionsAsync()` function, with a return value of type `auto` or `vector<voice_region_data>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::channels::getVoiceRegionsAsync()` function, with a return value of type `auto` or `jsonifier::vector<discord_core_api::voice_region_data>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				auto responseData = channels::getVoiceRegionsAsync().get();
+				auto responseData = discord_core_api::channels::getVoiceRegionsAsync().get();
 
 				for (auto& value: responseData) {
 					std::cout << "the region: " << value.name << std::endl;

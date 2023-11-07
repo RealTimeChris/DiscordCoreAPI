@@ -1,7 +1,7 @@
-Unpinning a Message {#unpinningamessage}
+Unpinning a Message {#unpinning_a_message}
 ============
-- Execute the, `messages::unpinMessageAsync()` function, while passing in a value of type `unpin_message_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::messages::unpinMessageAsync()` function, while passing in a value of type `discord_core_api::unpin_message_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.messageId = "909216949471428659";
 
-				messages::unpinMessageAsync(const& dataPackage).get();
+				messages::unpinMessageAsync(const dataPackage).get();
 
 
 			} catch (...) {

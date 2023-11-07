@@ -26,11 +26,11 @@ namespace discord_core_api {
 
 		void execute(base_function_arguments& newArgs) {
 			try {
-				channel channel = channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
+				channel channel = discord_core_api::channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				guild guild = guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get();
+				guild_data guild_data = guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get();
 
-				discord_guild discordGuild(guild);
+				discord_guild discordGuild(guild_data);
 
 				bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
@@ -38,7 +38,7 @@ namespace discord_core_api {
 					return;
 				}
 
-				guild_member guildMember =
+				guild_member_data guildMember =
 					guild_members::getCachedGuildMember({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
 				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
@@ -47,15 +47,15 @@ namespace discord_core_api {
 					return;
 				}
 
-				if (song_api::isLoopAllEnabled(guild.id)) {
-					song_api::setLoopAllStatus(false, guild.id);
+				if (song_api::isLoopAllEnabled(guild_data.id)) {
+					song_api::setLoopAllStatus(false, guild_data.id);
 				} else {
-					song_api::setLoopAllStatus(true, guild.id);
+					song_api::setLoopAllStatus(true, guild_data.id);
 				}
 				embed_data msgEmbed;
 				msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 				msgEmbed.setColor(discordGuild.data.borderColor);
-				if (song_api::isLoopAllEnabled(guild.id)) {
+				if (song_api::isLoopAllEnabled(guild_data.id)) {
 					msgEmbed.setDescription("\n------\n__**looping-all has been enabled!**__\n------\n");
 				} else {
 					msgEmbed.setDescription("\n------\n__**looping-all has been disabled!**__\n------\n");
@@ -66,7 +66,7 @@ namespace discord_core_api {
 				respond_to_input_event_data dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
-				auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 
 				return;
 			} catch (...) {

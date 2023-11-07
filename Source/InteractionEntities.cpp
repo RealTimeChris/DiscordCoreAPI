@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// InteractionEntities.cpp - Source file for the interaction related classes and structs.
+/// InteractionEntities.cpp - Source file for the interaction_data related classes and structs.
 /// May 28, 2021
 /// https://discordcoreapi.com
 /// \file InteractionEntities.cpp
@@ -164,12 +164,12 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	interaction_response_base& interaction_response_base::addAllowedMentions(const allowed_mentions_data& dataPackage) {
+	interaction_response_base& interaction_response_base::addAllowedMentions(const allowed_mentions_data dataPackage) {
 		data.allowedMentions = dataPackage;
 		return *this;
 	}
 
-	interaction_response_base& interaction_response_base::addComponentRow(const action_row_data& dataPackage) {
+	interaction_response_base& interaction_response_base::addComponentRow(const action_row_data dataPackage) {
 		data.components.emplace_back(dataPackage);
 		return *this;
 	}
@@ -221,7 +221,7 @@ namespace discord_core_api {
 		return;
 	}
 
-	interaction_response_base& interaction_response_base::addMessageEmbed(const embed_data& dataPackage) {
+	interaction_response_base& interaction_response_base::addMessageEmbed(const embed_data dataPackage) {
 		data.embeds.emplace_back(dataPackage);
 		return *this;
 	}
@@ -252,7 +252,7 @@ namespace discord_core_api {
 		interactions::httpsClient = client;
 	}
 
-	create_ephemeral_interaction_response_data::create_ephemeral_interaction_response_data(const respond_to_input_event_data& dataPackage) {
+	create_ephemeral_interaction_response_data::create_ephemeral_interaction_response_data(const respond_to_input_event_data dataPackage) {
 		data = dataPackage;
 		if (dataPackage.eventType == interaction_type::Message_Component) {
 			type = interaction_callback_type::Update_Message;
@@ -265,7 +265,7 @@ namespace discord_core_api {
 		data.flags							= 64;
 	}
 
-	create_deferred_interaction_response_data::create_deferred_interaction_response_data(const respond_to_input_event_data& dataPackage) {
+	create_deferred_interaction_response_data::create_deferred_interaction_response_data(const respond_to_input_event_data dataPackage) {
 		data = dataPackage;
 		if (dataPackage.eventType == interaction_type::Message_Component) {
 			type = interaction_callback_type::Deferred_Update_Message;
@@ -277,7 +277,7 @@ namespace discord_core_api {
 		interactionPackage.interactionId	= dataPackage.interactionId;
 	}
 
-	create_interaction_response_data::create_interaction_response_data(const create_deferred_interaction_response_data& dataPackage) {
+	create_interaction_response_data::create_interaction_response_data(const create_deferred_interaction_response_data dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.interactionPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionPackage.interactionId;
@@ -286,7 +286,7 @@ namespace discord_core_api {
 		data								= dataPackage.data;
 	}
 
-	create_interaction_response_data::create_interaction_response_data(const create_ephemeral_interaction_response_data& dataPackage) {
+	create_interaction_response_data::create_interaction_response_data(const create_ephemeral_interaction_response_data dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.interactionPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionPackage.interactionId;
@@ -296,7 +296,7 @@ namespace discord_core_api {
 		data.flags							= 64;
 	}
 
-	create_interaction_response_data::create_interaction_response_data(const respond_to_input_event_data& dataPackage) {
+	create_interaction_response_data::create_interaction_response_data(const respond_to_input_event_data dataPackage) {
 		data = dataPackage;
 		if (dataPackage.eventType == interaction_type::Message_Component && dataPackage.type == input_event_response_type::Deferred_Response) {
 			type = interaction_callback_type::Deferred_Update_Message;
@@ -317,7 +317,7 @@ namespace discord_core_api {
 		data.files							= dataPackage.files;
 	}
 
-	create_interaction_response_data::create_interaction_response_data(const interaction_data& dataPackage) {
+	create_interaction_response_data::create_interaction_response_data(const interaction_data dataPackage) {
 		if (dataPackage.type == interaction_type::Message_Component) {
 			type = interaction_callback_type::Update_Message;
 		} else {
@@ -328,7 +328,7 @@ namespace discord_core_api {
 		interactionPackage.interactionId	= dataPackage.id;
 	}
 
-	edit_interaction_response_data::edit_interaction_response_data(const respond_to_input_event_data& dataPackage) {
+	edit_interaction_response_data::edit_interaction_response_data(const respond_to_input_event_data dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
@@ -342,7 +342,7 @@ namespace discord_core_api {
 		tts									= dataPackage.tts;
 	}
 
-	create_ephemeral_follow_up_message_data::create_ephemeral_follow_up_message_data(const respond_to_input_event_data& dataPackage) {
+	create_ephemeral_follow_up_message_data::create_ephemeral_follow_up_message_data(const respond_to_input_event_data dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
@@ -355,7 +355,7 @@ namespace discord_core_api {
 		flags								= 64;
 	}
 
-	create_follow_up_message_data::create_follow_up_message_data(const create_ephemeral_follow_up_message_data& dataPackage) {
+	create_follow_up_message_data::create_follow_up_message_data(const create_ephemeral_follow_up_message_data dataPackage) {
 		interactionPackage = dataPackage.interactionPackage;
 		allowedMentions	   = dataPackage.allowedMentions;
 		components		   = dataPackage.components;
@@ -367,7 +367,7 @@ namespace discord_core_api {
 		flags			   = 64;
 	}
 
-	create_follow_up_message_data::create_follow_up_message_data(const respond_to_input_event_data& dataPackage) {
+	create_follow_up_message_data::create_follow_up_message_data(const respond_to_input_event_data dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
@@ -423,7 +423,7 @@ namespace discord_core_api {
 		return;
 	}
 
-	edit_follow_up_message_data::edit_follow_up_message_data(const respond_to_input_event_data& dataPackage) {
+	edit_follow_up_message_data::edit_follow_up_message_data(const respond_to_input_event_data dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		allowedMentions						= dataPackage.allowedMentions;
 		interactionPackage.applicationId	= dataPackage.applicationId;
@@ -436,7 +436,7 @@ namespace discord_core_api {
 		files								= dataPackage.files;
 	}
 
-	delete_follow_up_message_data::delete_follow_up_message_data(const respond_to_input_event_data& dataPackage) {
+	delete_follow_up_message_data::delete_follow_up_message_data(const respond_to_input_event_data dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
@@ -444,7 +444,7 @@ namespace discord_core_api {
 		messagePackage.messageId			= dataPackage.messageId;
 	}
 
-	delete_interaction_response_data::delete_interaction_response_data(const respond_to_input_event_data& dataPackage) {
+	delete_interaction_response_data::delete_interaction_response_data(const respond_to_input_event_data dataPackage) {
 		interactionPackage.interactionToken = dataPackage.interactionToken;
 		interactionPackage.applicationId	= dataPackage.applicationId;
 		interactionPackage.interactionId	= dataPackage.interactionId;
@@ -485,7 +485,7 @@ namespace discord_core_api {
 	}
 
 
-	co_routine<message_data> interactions::getInteractionResponseAsync(get_interaction_response_data dataPackage) {
+	co_routine<message_data> interactions::getInteractionResponseAsync(const get_interaction_response_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Interaction_Response };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -514,7 +514,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> interactions::deleteInteractionResponseAsync(delete_interaction_response_data dataPackage) {
+	co_routine<void> interactions::deleteInteractionResponseAsync(const delete_interaction_response_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Interaction_Response };
 		co_await newThreadAwaitable<void>();
 		std::this_thread::sleep_for(milliseconds{ dataPackage.timeDelay });
@@ -543,7 +543,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> interactions::getFollowUpMessageAsync(get_follow_up_message_data dataPackage) {
+	co_routine<message_data> interactions::getFollowUpMessageAsync(const get_follow_up_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Followup_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -554,7 +554,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> interactions::editFollowUpMessageAsync(edit_follow_up_message_data dataPackage) {
+	co_routine<message_data> interactions::editFollowUpMessageAsync(const edit_follow_up_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Followup_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -572,7 +572,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> interactions::deleteFollowUpMessageAsync(delete_follow_up_message_data dataPackage) {
+	co_routine<void> interactions::deleteFollowUpMessageAsync(const delete_follow_up_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Followup_Message };
 		co_await newThreadAwaitable<void>();
 		std::this_thread::sleep_for(milliseconds{ dataPackage.timeDelay });
@@ -658,7 +658,7 @@ namespace discord_core_api {
 		return returnData;
 	}
 
-	select_menu_collector::select_menu_collector(input_event_data& dataPackage) {
+	select_menu_collector::select_menu_collector(input_event_data dataPackage) {
 		channelId		 = dataPackage.getInteractionData().channelId;
 		messageId		 = dataPackage.getMessageData().id;
 		*interactionData = dataPackage.getInteractionData();
@@ -791,7 +791,7 @@ namespace discord_core_api {
 		select_menu_collector::selectMenuInteractionBuffersMap.erase(buffersMapKey);
 	}
 
-	button_collector::button_collector(input_event_data& dataPackage) {
+	button_collector::button_collector(input_event_data dataPackage) {
 		channelId													 = dataPackage.getInteractionData().channelId;
 		messageId													 = dataPackage.getMessageData().id;
 		*interactionData											 = dataPackage.getInteractionData();
@@ -919,7 +919,7 @@ namespace discord_core_api {
 		button_collector::buttonInteractionBuffersMap.erase(buffersMapKey);
 	}
 
-	modal_collector::modal_collector(input_event_data& dataPackage) {
+	modal_collector::modal_collector(input_event_data dataPackage) {
 		channelId											   = dataPackage.getInteractionData().channelId;
 		modal_collector::modalInteractionBuffersMap[channelId.operator jsonifier::string()] = &modalIncomingInteractionBuffer;
 	}

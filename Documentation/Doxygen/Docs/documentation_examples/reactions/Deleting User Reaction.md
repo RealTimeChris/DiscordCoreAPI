@@ -1,7 +1,7 @@
-Deleting User Reaction {#deletinguserreaction}
+Deleting User Reaction {#deleting_user_reaction}
 ============
-- Execute the, `reactions::deleteUserReactionAsync()` function, while passing in a data structure of type `delete_user_reaction_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::reactions::deleteUserReactionAsync()` function, while passing in a data structure of type `discord_core_api::delete_user_reaction_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage.emojiName = "😆";
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				reactions::deleteUserReactionAsync(const& dataPackage).get();
+				reactions::deleteUserReactionAsync(const dataPackage).get();
 
 
 			} catch (...) {

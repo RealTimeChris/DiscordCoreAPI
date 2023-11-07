@@ -1,7 +1,7 @@
-Deleting a Global Application Command {#deleteglobalcommand}
+Deleting a Global Application Command {#delete_global_command}
 ============
-- Execute the `application_commands::deleteGlobalApplicationCommandAsync()` function, while passing in a data structure of type `delete_global_application_command_data`, with no return value.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::application_commands::deleteGlobalApplicationCommandAsync()` function, while passing in a data structure of type `discord_core_api::delete_global_application_command_data`, with no return value.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -33,7 +33,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			delete_global_application_command_data dataPackage;
 			dataPackage.name = "testcommandname";
-			application_commands::deleteGlobalApplicationCommandAsync(const& dataPackage).get();
+			application_commands::deleteGlobalApplicationCommandAsync(const dataPackage).get();
 		}
 	};
 }

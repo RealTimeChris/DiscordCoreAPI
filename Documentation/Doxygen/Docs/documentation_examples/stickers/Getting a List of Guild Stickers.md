@@ -1,7 +1,7 @@
-Getting a List of Guild Stickers {#gettingalistofguildstickers}
+Getting a List of Guild Stickers {#getting_a_list_of_guild_stickers}
 ============
-- Execute the, `stickers::getGuildStickersAsync()` function, while passing in a value of type `get_guild_stickers_data`, with a return value of type `auto` or `vector<sticker>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::stickers::getGuildStickersAsync()` function, while passing in a value of type `discord_core_api::get_guild_stickers_data`, with a return value of type `auto` or `jsonifier::vector<sticker>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_stickers_data dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto responseData = stickers::getGuildStickersAsync(const& dataPackage).get();
+				auto responseData = stickers::getGuildStickersAsync(const dataPackage).get();
 
 				for (auto& value: responseData) {
 					std::cout << "the name: " << value.name << std::endl;

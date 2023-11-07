@@ -1,7 +1,7 @@
-Creating a Guild Channel {#creatingguildchannel}
+Creating a Guild Channel {#creating_guild_channel}
 ============
-- Execute the, `channels::createGuildChannelAsync()` function, while passing in a data structure of type `create_guild_channel_data`, with a return value of type `auto` or `channel`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::channels::createGuildChannelAsync()` function, while passing in a data structure of type `discord_core_api::create_guild_channel_data`, with a return value of type `auto` or `discord_core_api::channel_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.reason = "testing purposes!";
 
-				vector<channel> channels = channels::getGuildChannelsAsync(const {.guildId = args.eventData.getGuildId()}).get();
+				vector<discord_core_api::channel_data> channels = discord_core_api::channels::getGuildChannelsAsync(const {.guildId = args.eventData.getGuildId()}).get();
 
 				for (const auto& value: channels) {
 					if (value.type == channel_type::GUILD_CATEGORY) {
@@ -47,7 +47,7 @@ namespace discord_core_api {
 					}
 				}
 
-				channel channel = channels::createGuildChannelAsync(const& dataPackage).get();
+				channel channel = discord_core_api::channels::createGuildChannelAsync(const dataPackage).get();
 
 				std::cout << "the name: " << channel.name << std::endl;
 

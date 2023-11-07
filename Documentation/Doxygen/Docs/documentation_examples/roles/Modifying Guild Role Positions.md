@@ -1,7 +1,7 @@
-Modifying Guild Role Positions {#modifyingguildrolepositions}
+Modifying Guild Role Positions {#modifying_guild_role_positions}
 ============
-- Execute the, `roles::modifyGuildRolePositionsAsync()` function, while passing in a value of type `modify_guild_role_positions_data`, with a return value of type `auto` or `vector<role>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::roles::modifyGuildRolePositionsAsync()` function, while passing in a value of type `discord_core_api::modify_guild_role_positions_data`, with a return value of type `auto` or `jsonifier::vector<role>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				modify_guild_role_positions_data dataPackage01;
+				modify_guild_role_positions_data& dataPackage01;
 				dataPackage01.newPosition = 12;
 				dataPackage01.roleId = "886366417316896799";
 				dataPackage01.reason = "testing!";

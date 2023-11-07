@@ -1,7 +1,7 @@
-Listing Guild Members {#listingguildmembers}
+Listing Guild Members {#listing_guild_members}
 ============
-- Execute the, `guild_members::listGuildMembersAsync()` function, while passing in a value of type `list_guild_members_data`, with a return value of type `auto` or `jsonifier::vector<guild_member>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guild_members::listGuildMembersAsync()` function, while passing in a value of type `discord_core_api::list_guild_members_data`, with a return value of type `auto` or `jsonifier::vector<discord_core_api::guild_member_data>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.limit = 20;
 
-				auto guildMembers = guild_members::listGuildMembersAsync(const& dataPackage).get();
+				auto guildMembers = guild_members::listGuildMembersAsync(const dataPackage).get();
 
 				for (const auto& value: guildMembers) {
 					std::cout << "the name: " << value.user.userName << std::endl;

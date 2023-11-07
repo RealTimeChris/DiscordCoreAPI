@@ -1,7 +1,7 @@
-Instantiating/Creating a Button {#instantiatingcreatingbutton}
+Instantiating/Creating a Button {#creating_a_button}
 ============ 
-- create a data structure of type `respond_to_input_event_data`, and add either some content or a message embed.- add one or more buttons by using the `respond_to_input_event_data::addButton` of the `respond_to_input_event_data` structure.
-- call the `input_events::respondToInputEventAsync()` function, passing it the `respond_to_input_event_data` structure.
+- create a data structure of type `discord_core_api::respond_to_input_event_data`, and add either some content or a message embed.- add one or more buttons by using the `discord_core_api::respond_to_input_event_data::addButton` of the `discord_core_api::respond_to_input_event_data` structure.
+- call the `discord_core_api::input_events::respondToInputEventAsync()` function, passing it the `discord_core_api::respond_to_input_event_data` structure.
 ```cpp
 /// Test.hpp -header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -37,7 +37,7 @@ Instantiating/Creating a Button {#instantiatingcreatingbutton}
 			dataPackage.addContent("test response");
 			dataPackage.addMessageEmbed(embed_data {.description = "testing!", .title = "test title"});
 			dataPackage.type = input_event_response_type::Interaction_Response;
-			auto inputEventData = input_events::respondToInputEventAsync(const& dataPackage);
+			auto inputEventData = input_events::respondToInputEventAsync(const dataPackage);
 		}
 	};
 }

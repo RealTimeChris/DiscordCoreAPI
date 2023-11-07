@@ -1,4 +1,4 @@
-Beginner's Notes {#beginnernotes}
+Beginner's Notes {#beginner_notes}
 ============
 - <b><u>Important:</u></b> You will need to enable the following settings in your bot's control panel: enter your "developer control panel" and select a bot, then go to the "bot" section-in here, enable "presence intent", "server members intent", "message content intent" - and hit "save".   
 <br>
@@ -41,4 +41,4 @@ Beginner's Notes {#beginnernotes}
 <br>
 - Each of the functions in this library takes an argument that is of a type who's name is derived from the function-for example, the data structure that gets passed into `discord_core_api::guilds::getGuildAsync()` is `discord_core_api::get_guild_data`.   
 <br>
-- Most of the functions in this library are `async`, meaning that they return a value of type `discord_core_api::co_routine<task_type>`, which you call `.get()` on to retrieve the returned value, and to suspend the current thread in the process of waiting for it. alternatively, you have the option of leaving the task's completion up to the background thread that is handling it, by not calling `.get()`.
+- Most of the functions in this library are `discord_core_api::async`, meaning that they return a value of type `discord_core_api::co_routine<discord_core_api::co_routine::return_type>`, which you call `discord_core_api::co_routine::get()` on to retrieve the returned value, and to suspend the current thread in the process of waiting for it. alternatively, you have the option of leaving the task's completion up to the background thread that is handling it, by not calling `discord_core_api::co_routine::get()`.

@@ -114,27 +114,27 @@ namespace discord_core_api {
 		/// @brief Get all of the guild's auto-moderation-rules.
 		/// @param dataPackage the moderation rule data to get.
 		/// @return a co_routine containing a vector<auto_moderation_rule_data>.
-		co_routine<jsonifier::vector<auto_moderation_rule_data>> listAutoModerationRulesForGuildAsync(list_auto_moderation_rules_for_guild_data dataPackage);
+		co_routine<jsonifier::vector<auto_moderation_rule_data>> listAutoModerationRulesForGuildAsync(const list_auto_moderation_rules_for_guild_data dataPackage);
 
 		/// @brief Get a particular auto-moderation-rule
 		/// @param dataPackage the moderation rule data to get.
 		/// @return a co_routine containing a auto_moderation_rule_data.
-		co_routine<auto_moderation_rule_data> getAutoModerationRuleAsync(get_auto_moderation_rule_data dataPackage);
+		co_routine<auto_moderation_rule_data> getAutoModerationRuleAsync(const get_auto_moderation_rule_data dataPackage);
 
 		/// @brief Create a particular auto-moderation-rule
 		/// @param dataPackage the moderation rule data to create.
 		/// @return a co_routine containing a auto_moderation_rule_data.
-		co_routine<auto_moderation_rule_data> createAutoModerationRuleAsync(create_auto_moderation_rule_data dataPackage);
+		co_routine<auto_moderation_rule_data> createAutoModerationRuleAsync(const create_auto_moderation_rule_data dataPackage);
 
 		/// @brief Modify a particular auto-moderation-rule
 		/// @param dataPackage the moderation rule data to apply.
 		/// @return a co_routine containing a auto_moderation_rule_data.
-		co_routine<auto_moderation_rule_data> modifyAutoModerationRuleAsync(modify_auto_moderation_rule_data dataPackage);
+		co_routine<auto_moderation_rule_data> modifyAutoModerationRuleAsync(const modify_auto_moderation_rule_data dataPackage);
 
 		/// @brief Delete a particular auto-moderation-rule
 		/// @param dataPackage the moderation rule data to delete.
 		/// @return a co_routine containing a void.
-		co_routine<void> deleteAutoModerationRuleAsync(delete_auto_moderation_rule_data dataPackage);
+		co_routine<void> deleteAutoModerationRuleAsync(const delete_auto_moderation_rule_data dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;

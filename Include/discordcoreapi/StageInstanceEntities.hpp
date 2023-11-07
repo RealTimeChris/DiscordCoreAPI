@@ -73,22 +73,22 @@ namespace discord_core_api {
 		/// @brief Creates a stage_instance_data.
 		/// @param dataPackage a create_stage_instance_data structure.
 		/// @return a co_routine containing a stage_instance_data.
-		static co_routine<stage_instance_data> createStageInstanceAsync(create_stage_instance_data dataPackage);
+		static co_routine<stage_instance_data> createStageInstanceAsync(const create_stage_instance_data dataPackage);
 
 		/// @brief Collects a stage_instance_data.
 		/// @param dataPackage a get_stage_instance_data structure.
 		/// @return a co_routine containing a stage_instance_data.
-		static co_routine<stage_instance_data> getStageInstanceAsync(get_stage_instance_data dataPackage);
+		static co_routine<stage_instance_data> getStageInstanceAsync(const get_stage_instance_data dataPackage);
 
 		/// @brief Modifies a stage_instance_data.
 		/// @param dataPackage a modify_stage_instance_data structure.
 		/// @return a co_routine containing a stage_instance_data.
-		static co_routine<stage_instance_data> modifyStageInstanceAsync(modify_stage_instance_data dataPackage);
+		static co_routine<stage_instance_data> modifyStageInstanceAsync(const modify_stage_instance_data dataPackage);
 
 		/// @brief Deletes a stage_instance_data.
 		/// @param dataPackage a delete_stage_instance_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteStageInstanceAsync(delete_stage_instance_data dataPackage);
+		static co_routine<void> deleteStageInstanceAsync(const delete_stage_instance_data dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;

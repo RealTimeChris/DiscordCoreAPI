@@ -1,7 +1,7 @@
-Getting Reactions {#gettingreactions}
+Getting Reactions {#getting_reactions}
 ============
-- Execute the, `reactions::getReactionsAsync()` function, while passing in a data structure of type `get_reactions_data`, with a return value of type `auto` or `vector<user>`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::reactions::getReactionsAsync()` function, while passing in a data structure of type `discord_core_api::get_reactions_data`, with a return value of type `auto` or `jsonifier::vector<user>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage.emoji = "😆";
 				dataPackage.limit = 50;
 
-				vector<user> usersResponse = reactions::getReactionsAsync(const& dataPackage).get();
+				vector<user> usersResponse = reactions::getReactionsAsync(const dataPackage).get();
 
 
 			} catch (...) {

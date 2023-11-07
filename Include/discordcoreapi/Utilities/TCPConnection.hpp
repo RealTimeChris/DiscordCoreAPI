@@ -301,23 +301,23 @@ namespace discord_core_api {
 			addrinfo* ptr{ &value };
 		};
 
-		class sslcontext_holder {
+		class ssl_context_holder {
 		  public:
 			inline static SSL_CTXWrapper context{};
 			inline static std::mutex accessMutex{};
 
 			inline static bool initialize() {
-				if (sslcontext_holder::context = SSL_CTX_new(TLS_client_method()); !sslcontext_holder::context) {
+				if (ssl_context_holder::context = SSL_CTX_new(TLS_client_method()); !ssl_context_holder::context) {
 					return false;
 				}
 
-				if (!SSL_CTX_set_min_proto_version(sslcontext_holder::context, TLS1_2_VERSION)) {
+				if (!SSL_CTX_set_min_proto_version(ssl_context_holder::context, TLS1_2_VERSION)) {
 					return false;
 				}
 
 #if defined(SSL_OP_IGNORE_UNEXPECTED_EOF)
-				auto originalOptions{ SSL_CTX_get_options(sslcontext_holder::context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
-				if (SSL_CTX_set_options(sslcontext_holder::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
+				auto originalOptions{ SSL_CTX_get_options(ssl_context_holder::context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
+				if (SSL_CTX_set_options(ssl_context_holder::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
 					return false;
 				}
 #endif
@@ -444,8 +444,8 @@ namespace discord_core_api {
 					return;
 				}
 
-				std::unique_lock lock{ sslcontext_holder::accessMutex };
-				if (ssl = SSL_new(sslcontext_holder::context); !ssl) {
+				std::unique_lock lock{ ssl_context_holder::accessMutex };
+				if (ssl = SSL_new(ssl_context_holder::context); !ssl) {
 					message_printer::printError<print_message_type::general>(
 						reportSSLError("tcp_connection::connect::SSL_new(), to: " + baseUrlNew) + "\n" + reportError("tcp_connection::connect::SSL_new(), to: " + baseUrlNew));
 					currentStatus = connection_status::CONNECTION_Error;

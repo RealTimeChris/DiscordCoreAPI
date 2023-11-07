@@ -27,30 +27,30 @@ namespace discord_core_api {
 
 		void execute(base_function_arguments& newArgs) {
 			try {
-				channel channel = channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
+				channel channel = discord_core_api::channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				guild guild = guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get();
-				discord_guild discordGuild(guild);
+				guild_data guild_data = guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get();
+				discord_guild discordGuild(guild_data);
 				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 				if (!checkIfAllowedInChannel) {
 					return;
 				}
 
-				guild_member guildMember =
+				guild_member_data guildMember =
 					guild_members::getCachedGuildMember({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 				if (!doWeHaveControl) {
 					return;
 				}
 
-				respond_to_input_event_data dataPackage00(newArgs.eventData);
+				respond_to_input_event_data& dataPackage00(newArgs.eventData);
 				dataPackage00.setResponseType(input_event_response_type::Ephemeral_Deferred_Response);
 				input_events::respondToInputEventAsync(const dataPackage00).get();
 				voice_connection* voiceConnection{};
 				voice_state_data voiceStateData{};
-				if (guild.voiceStates.contains(guildMember.id)) {
-					voiceStateData = guild.voiceStates.at(guildMember.id);
-					voiceConnection = guild.connectToVoice(0, voiceStateData.channelId, true, false);
+				if (guild_data.voiceStates.contains(guildMember.id)) {
+					voiceStateData = guild_data.voiceStates.at(guildMember.id);
+					voiceConnection = guild_data.connectToVoice(0, voiceStateData.channelId, true, false);
 				} else {
 					embed_data newEmbed{};
 					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
@@ -61,11 +61,11 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					input_events::respondToInputEventAsync(const& dataPackage).get();
+					input_events::respondToInputEventAsync(const dataPackage).get();
 					return;
 				}
 				loadPlaylist(discordGuild);
-				if (voiceConnection == nullptr || !guild.areWeConnected()) {
+				if (voiceConnection == nullptr || !guild_data.areWeConnected()) {
 					embed_data newEmbed{};
 					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**sorry, but there is no voice connection that is currently held by me!**__\n------");
@@ -75,7 +75,7 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 					return;
 				}
 
@@ -89,11 +89,11 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 					return;
 				}
 
-				if (!song_api::areWeCurrentlyPlaying(guild.id)) {
+				if (!song_api::areWeCurrentlyPlaying(guild_data.id)) {
 					embed_data newEmbed{};
 					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**sorry, but i need to be either playing or paused for this command to be possible!**__\n------");
@@ -103,22 +103,22 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 					return;
 				}
 
-				song_api::pauseToggle(guild.id);
+				song_api::pauseToggle(guild_data.id);
 
 				embed_data msgEmbed;
 				msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 				msgEmbed.setColor(discordGuild.data.borderColor);
-				msgEmbed.setDescription("\n------\n__**songs remaining in queue:**__ " + jsonifier::toString(song_api::getPlaylist(guild.id).songQueue.size()) + "\n------");
+				msgEmbed.setDescription("\n------\n__**songs remaining in queue:**__ " + jsonifier::toString(song_api::getPlaylist(guild_data.id).songQueue.size()) + "\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**paused playback:**__");
 				respond_to_input_event_data dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
-				auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 
 				return;
 			} catch (...) {

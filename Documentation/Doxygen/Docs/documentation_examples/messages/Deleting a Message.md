@@ -1,7 +1,7 @@
-Deleting a Message {#deletingamessage}
+Deleting a Message {#deleting_a_message}
 ============
-- Execute the, from the `messages::deleteMessageAsync()` function, while passing in a data structure of type `delete_message_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, from the `discord_core_api::messages::deleteMessageAsync()` function, while passing in a data structure of type `discord_core_api::delete_message_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.timeDelay = 500;
 				dataPackage.messageData = args.eventData.getMessageData();
 
-				messages::deleteMessageAsync(const& dataPackage).get();
+				messages::deleteMessageAsync(const dataPackage).get();
 
 
 			} catch (...) {

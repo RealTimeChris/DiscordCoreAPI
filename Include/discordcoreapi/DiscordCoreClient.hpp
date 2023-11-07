@@ -140,7 +140,7 @@ namespace discord_core_api {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// @brief Discord_core_client - the main class for this library.
+	/// @brief discord_core_client - the main class for this library.
 	class DiscordCoreAPI_Dll discord_core_client {
 	  public:
 		friend class discord_core_internal::websocket_client;
@@ -161,7 +161,7 @@ namespace discord_core_api {
 
 		static discord_core_client* getInstance();
 
-		/// @brief Discord_core_client constructor.
+		/// @brief discord_core_client constructor.
 		/// @param configData a discord_core_client_config structure to select various library options.
 		discord_core_client(const discord_core_client_config& configData);
 

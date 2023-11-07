@@ -1,7 +1,7 @@
-Creating a Guild {#creatingaguild}
+Creating a Guild {#creating_a_guild}
 ============
-- Execute the, `guilds::createGuildAsync()` function, while passing in a data structure of type `create_guild_data` with a return value of type `auto` or `guild`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guilds::createGuildAsync()` function, while passing in a data structure of type `discord_core_api::create_guild_data` with a return value of type `auto` or `discord_core_api::guild_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,12 +32,12 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				create_guild_data dataPackage00;
-				dataPackage00.name = "test guild";
+				create_guild_data& dataPackage00;
+				dataPackage00.name = "test guild_data";
 
-				auto guild = guilds::createGuildAsync(const dataPackage00).get();
+				auto guild_data = guilds::createGuildAsync(const dataPackage00).get();
 
-				std::cout << "the name: " << guild.name << std::endl;
+				std::cout << "the name: " << guild_data.name << std::endl;
 
 
 			} catch (...) {

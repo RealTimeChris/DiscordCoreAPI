@@ -1,6 +1,6 @@
-Creating an Interaction Response {#creatinganinteractionresponse}
+Creating an Interaction Response {#creating_an_interaction_response}
 ============
-- Execute the, `input_events::respondToInputEventAsync()` function, while passing in a data structure of type `respond_to_input_event_data` with a type set to either `input_event_response_type::Deferred_Response`, `input_event_response_type::Interaction_Response`, or `input_event_response_type::Ephemeral_Interaction_Response`, with a return value of type `auto` or `unique_ptr<input_event_data>`.
+- Execute the, `discord_core_api::input_events::respondToInputEventAsync()` function, while passing in a data structure of type `discord_core_api::respond_to_input_event_data` with a type set to either `discord_core_api::input_event_response_type::Deferred_Response`, `discord_core_api::input_event_response_type::Interaction_Response`, or `discord_core_api::input_event_response_type::Ephemeral_Interaction_Response`, with a return value of type `auto` or `discord_core_api::unique_ptr<input_event_data>`.
 ```cpp
 /// Test.hpp -header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -33,14 +33,14 @@ Creating an Interaction Response {#creatinganinteractionresponse}
 
 			respond_to_input_event_data dataPackage {args.eventData};
 			dataPackage.type = input_event_response_type::Deferred_Response;
-			input_events::respondToInputEventAsync(const& dataPackage);
+			input_events::respondToInputEventAsync(const dataPackage);
 
-			respond_to_input_event_data dataPackage01 {args.eventData};
+			respond_to_input_event_data& dataPackage01 {args.eventData};
 			dataPackage01.type = input_event_response_type::Interaction_Response;
 			dataPackage01.addContent("test response");
 			input_events::respondToInputEventAsync(const dataPackage01);
 
-			respond_to_input_event_data dataPackage02 {args.eventData};
+			respond_to_input_event_data& dataPackage02 {args.eventData};
 			dataPackage02.type = input_event_response_type::Ephemeral_Interaction_Response;
 			dataPackage02.addContent("test response");
 			input_events::respondToInputEventAsync(const dataPackage02);

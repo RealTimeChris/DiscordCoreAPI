@@ -1,7 +1,7 @@
-Beginning a Guild Prune {#beginningaguildprune}
+Beginning a Guild Prune {#beginning_a_guild_prune}
 ============
-- Execute the,` guilds::beginGuildPruneAsync()` function, while passing in a value of type `begin_guild_prune_data`, with a return value of type `auto` or `guild_prune_count_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the,` guilds::beginGuildPruneAsync()` function, while passing in a value of type `discord_core_api::begin_guild_prune_data`, with a return value of type `auto` or `discord_core_api::guild_prune_count_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				begin_guild_prune_data dataPackage01;
+				begin_guild_prune_data& dataPackage01;
 				dataPackage01.days = 30;
 				dataPackage01.includeRoles.emplace_back("860075141818744853");
 				dataPackage01.guildId = args.eventData.getGuildId();

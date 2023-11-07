@@ -1,7 +1,7 @@
-Getting an Invite {#gettinganinvite}
+Getting an Invite {#getting_an_invite}
 ============
-- Execute the, `guilds::getInviteAsync()` function, while passing in a value of type `get_invite_data`, with a return value of type `auto` or `invite_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guilds::getInviteAsync()` function, while passing in a value of type `discord_core_api::get_invite_data`, with a return value of type `auto` or `discord_core_api::invite_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -35,9 +35,9 @@ namespace discord_core_api {
 				get_guild_invites_data dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto responseVector = guilds::getGuildInvitesAsync(const& dataPackage).get();
+				auto responseVector = guilds::getGuildInvitesAsync(const dataPackage).get();
 
-				get_invite_data dataPackage01;
+				get_invite_data& dataPackage01;
 				dataPackage01.withExpiration = true;
 				dataPackage01.withCount = true;
 				dataPackage01.inviteId = responseVector[0].code;

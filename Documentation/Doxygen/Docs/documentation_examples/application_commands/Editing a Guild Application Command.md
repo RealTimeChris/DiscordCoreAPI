@@ -1,7 +1,7 @@
-Editing a Guild Application Command {#editguildcommand}
+Editing a Guild Application Command {#edit_guild_command}
 ============
-- Execute the `application_commands::editGuildApplicationCommandAsync()` function, while passing in a data structure of type `edit_guild_application_command_data`, with a return value of type `auto` or `application_command`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::application_commands::editGuildApplicationCommandAsync()` function, while passing in a data structure of type `discord_core_api::edit_guild_application_command_data`, with a return value of type `auto` or `discord_core_api::application_command_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -40,7 +40,7 @@ namespace discord_core_api {
 			dataPackage.name = returnVector.at(0).name;
 			dataPackage.description = "a test description";
 
-			auto returnValue = application_commands::editGuildApplicationCommandAsync(const& dataPackage).get();
+			auto returnValue = application_commands::editGuildApplicationCommandAsync(const dataPackage).get();
 
 			std::cout << returnValue.description << std::endl;
 		}

@@ -1,7 +1,7 @@
-Deleting a Guild {#deletingaguild}
+Deleting a Guild {#deleting_a_guild}
 ============
-- Execute the, `guilds::deleteGuildAsync()` function, while passing in a value of type `delete_guild_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guilds::deleteGuildAsync()` function, while passing in a value of type `discord_core_api::delete_guild_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,12 +32,12 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				vector<guild> guilds = guilds::getAllGuildsAsync().get();
+				vector<guild_data> guilds = guilds::getAllGuildsAsync().get();
 				for (const auto& value: guilds) {
-					if (value.name == "newer test guild two!") {
+					if (value.name == "newer test guild_data two!") {
 						delete_guild_data dataPackage;
 						dataPackage.guildId = value.id;
-						guilds::deleteGuildAsync(const& dataPackage).get();
+						guilds::deleteGuildAsync(const dataPackage).get();
 					};
 				}
 

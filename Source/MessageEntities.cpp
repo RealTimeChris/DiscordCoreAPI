@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// MessageEntities.cpp - Source file for the message related classes and structs.
+/// MessageEntities.cpp - Source file for the message_data related classes and structs.
 /// May 13, 2021
 /// https://discordcoreapi.com
 /// \file MessageEntities.cpp
@@ -177,7 +177,7 @@ namespace discord_core_api {
 		messages::httpsClient = client;
 	}
 
-	co_routine<jsonifier::vector<message_data>> messages::getMessagesAsync(get_messages_data dataPackage) {
+	co_routine<jsonifier::vector<message_data>> messages::getMessagesAsync(const get_messages_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Messages };
 		co_await newThreadAwaitable<jsonifier::vector<message_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -216,7 +216,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> messages::getMessageAsync(get_message_data dataPackage) {
+	co_routine<message_data> messages::getMessageAsync(const get_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -227,7 +227,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> messages::createMessageAsync(create_message_data dataPackage) {
+	co_routine<message_data> messages::createMessageAsync(const create_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -244,7 +244,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> messages::crosspostMessageAsync(crosspost_message_data dataPackage) {
+	co_routine<message_data> messages::crosspostMessageAsync(const crosspost_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Crosspost_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -255,7 +255,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> messages::editMessageAsync(edit_message_data dataPackage) {
+	co_routine<message_data> messages::editMessageAsync(const edit_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -272,7 +272,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> messages::deleteMessageAsync(delete_message_data dataPackage) {
+	co_routine<void> messages::deleteMessageAsync(const delete_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{};
 		bool hasTimeElapsedNew = dataPackage.timeStamp.hasTimeElapsed(14, 0, 0);
 		if (!hasTimeElapsedNew) {
@@ -294,7 +294,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> messages::deleteMessagesBulkAsync(delete_messages_bulk_data dataPackage) {
+	co_routine<void> messages::deleteMessagesBulkAsync(const delete_messages_bulk_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Bulk_Delete_Messages };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -307,7 +307,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<message_data>> messages::getPinnedMessagesAsync(get_pinned_messages_data dataPackage) {
+	co_routine<jsonifier::vector<message_data>> messages::getPinnedMessagesAsync(const get_pinned_messages_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Pinned_Messages };
 		co_await newThreadAwaitable<jsonifier::vector<message_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -318,7 +318,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> messages::pinMessageAsync(pin_message_data dataPackage) {
+	co_routine<void> messages::pinMessageAsync(const pin_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Pin_Message };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
@@ -331,7 +331,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> messages::unpinMessageAsync(unpin_message_data dataPackage) {
+	co_routine<void> messages::unpinMessageAsync(const unpin_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Pin_Message };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;

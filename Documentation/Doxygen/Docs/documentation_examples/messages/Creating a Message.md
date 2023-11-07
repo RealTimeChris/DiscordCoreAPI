@@ -1,7 +1,7 @@
-Creating a Message {#creatingamessage}
+Creating a Message {#creating_a_message}
 ============
-- Execute the, `messages::createMessageAsync()` function, while passing in a data structure of type `create_message_data`, with a return value of type `auto`, or, `message`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::messages::createMessageAsync()` function, while passing in a data structure of type `discord_core_api::create_message_data`, with a return value of type `auto`, or, `discord_core_api::message_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -35,7 +35,7 @@ namespace discord_core_api {
 				create_message_data dataPackage {args.eventData};
 				dataPackage.addContent("test content");
 
-				message responseMessages = messages::createMessageAsync(const& dataPackage).get();
+				message responseMessages = messages::createMessageAsync(const dataPackage).get();
 
 
 			} catch (...) {

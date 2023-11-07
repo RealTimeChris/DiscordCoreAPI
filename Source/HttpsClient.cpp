@@ -55,7 +55,7 @@ namespace discord_core_api {
 			return result;
 		}
 
-		uint64_t parseCode(const jsonifier::string_view& string) {
+		uint64_t parseCode(jsonifier::string_view string) {
 			uint64_t start = string.find(' ');
 			if (start == jsonifier::string_view::npos) {
 				return 0;

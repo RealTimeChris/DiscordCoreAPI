@@ -1,7 +1,7 @@
-Modifying Current User's Voice State {#modifyingcurrentusersvoicestate}
+Modifying Current User's Voice State {#modifying_current_user_voice_state}
 ============
-- Execute the, `users::modifyCurrentUserVoiceStateAsync()` function, while passing in a value of type `modify_current_user_voice_state_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::users::modifyCurrentUserVoiceStateAsync()` function, while passing in a value of type `discord_core_api::modify_current_user_voice_state_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.suppress = false;
 
-				users::modifyCurrentUserVoiceStateAsync(const& dataPackage).get();
+				users::modifyCurrentUserVoiceStateAsync(const dataPackage).get();
 
 
 			} catch (...) {

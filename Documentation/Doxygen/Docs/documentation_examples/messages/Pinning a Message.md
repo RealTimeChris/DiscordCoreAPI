@@ -1,7 +1,7 @@
-Pinning a Message {#pinningamessage}
+Pinning a Message {#pinning_a_message}
 ============
-- Execute the, `messages::pinMessageAsync()` function, while passing in a value of type `pin_message_data`, with a return value of type `void` while passing it the created data structure.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::messages::pinMessageAsync()` function, while passing in a value of type `discord_core_api::pin_message_data`, with a return value of type `void` while passing it the created data structure.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.messageId = args.eventData.getMessageId();
 
-				messages::pinMessageAsync(const& dataPackage).get();
+				messages::pinMessageAsync(const dataPackage).get();
 
 
 			} catch (...) {

@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// InteractionEntities.hpp - Header for the interaction related classes and
+/// InteractionEntities.hpp - Header for the interaction_data related classes and
 /// structs. may 28, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file InteractionEntities.hpp
@@ -93,11 +93,11 @@ namespace discord_core_api {
 
 		/// @brief For setting the allowable mentions in a response.
 		/// @param dataPackage an allowed_mentions_data structure.
-		interaction_response_base& addAllowedMentions(const allowed_mentions_data& dataPackage);
+		interaction_response_base& addAllowedMentions(const allowed_mentions_data dataPackage);
 
 		/// @brief For setting the components in a response.
 		/// @param dataPackage an action_row_data structure.
-		interaction_response_base& addComponentRow(const action_row_data& dataPackage);
+		interaction_response_base& addComponentRow(const action_row_data dataPackage);
 
 		/// @brief Sets the response type of the current message_data.
 		/// @param type interaction callback type.
@@ -105,7 +105,7 @@ namespace discord_core_api {
 
 		/// @brief For setting the embeds in a response.
 		/// @param dataPackage an embed_data structure.send_dmdata
-		interaction_response_base& addMessageEmbed(const embed_data& dataPackage);
+		interaction_response_base& addMessageEmbed(const embed_data dataPackage);
 
 		/// @brief For setting the content in a response.
 		/// @param dataPackage a string, containing the content.
@@ -137,7 +137,7 @@ namespace discord_core_api {
 		friend class interactions;
 		friend class input_events;
 
-		create_ephemeral_interaction_response_data(const respond_to_input_event_data& dataPackage);
+		create_ephemeral_interaction_response_data(const respond_to_input_event_data dataPackage);
 
 		virtual ~create_ephemeral_interaction_response_data() = default;
 	};
@@ -149,7 +149,7 @@ namespace discord_core_api {
 		friend class interactions;
 		friend class input_events;
 
-		create_deferred_interaction_response_data(const respond_to_input_event_data& dataPackage);
+		create_deferred_interaction_response_data(const respond_to_input_event_data dataPackage);
 
 		virtual ~create_deferred_interaction_response_data() = default;
 	};
@@ -164,13 +164,13 @@ namespace discord_core_api {
 		friend class interactions;
 		friend class input_events;
 
-		create_interaction_response_data(const create_ephemeral_interaction_response_data& dataPackage);
+		create_interaction_response_data(const create_ephemeral_interaction_response_data dataPackage);
 
-		create_interaction_response_data(const create_deferred_interaction_response_data& dataPackage);
+		create_interaction_response_data(const create_deferred_interaction_response_data dataPackage);
 
-		create_interaction_response_data(const respond_to_input_event_data& dataPackage);
+		create_interaction_response_data(const respond_to_input_event_data dataPackage);
 
-		create_interaction_response_data(const interaction_data& dataPackage);
+		create_interaction_response_data(const interaction_data dataPackage);
 
 		create_interaction_response_data() = default;
 
@@ -192,7 +192,7 @@ namespace discord_core_api {
 
 		unordered_set<jsonifier::string_view> excludedKeys{};
 
-		edit_interaction_response_data(const respond_to_input_event_data& dataPackage);
+		edit_interaction_response_data(const respond_to_input_event_data dataPackage);
 
 		void generateExcludedKeys();
 
@@ -207,7 +207,7 @@ namespace discord_core_api {
 		friend class interactions;
 		friend class input_events;
 
-		delete_interaction_response_data(const respond_to_input_event_data& dataPackage);
+		delete_interaction_response_data(const respond_to_input_event_data dataPackage);
 
 	  protected:
 		interaction_package_data interactionPackage{};
@@ -221,7 +221,7 @@ namespace discord_core_api {
 		friend class interactions;
 		friend class input_events;
 
-		create_ephemeral_follow_up_message_data(const respond_to_input_event_data& dataPackage);
+		create_ephemeral_follow_up_message_data(const respond_to_input_event_data dataPackage);
 
 		virtual ~create_ephemeral_follow_up_message_data() = default;
 
@@ -240,9 +240,9 @@ namespace discord_core_api {
 
 		unordered_set<jsonifier::string_view> excludedKeys{};
 
-		create_follow_up_message_data(const create_ephemeral_follow_up_message_data& dataPackage);
+		create_follow_up_message_data(const create_ephemeral_follow_up_message_data dataPackage);
 
-		create_follow_up_message_data(const respond_to_input_event_data& dataPackage);
+		create_follow_up_message_data(const respond_to_input_event_data dataPackage);
 
 		void generateExcludedKeys();
 
@@ -268,7 +268,7 @@ namespace discord_core_api {
 
 		unordered_set<jsonifier::string_view> excludedKeys{};
 
-		edit_follow_up_message_data(const respond_to_input_event_data& dataPackage);
+		edit_follow_up_message_data(const respond_to_input_event_data dataPackage);
 
 		virtual ~edit_follow_up_message_data() = default;
 
@@ -282,7 +282,7 @@ namespace discord_core_api {
 		friend class interactions;
 		friend class input_events;
 
-		delete_follow_up_message_data(const respond_to_input_event_data& dataPackage);
+		delete_follow_up_message_data(const respond_to_input_event_data dataPackage);
 
 	  protected:
 		interaction_package_data interactionPackage{};
@@ -297,7 +297,7 @@ namespace discord_core_api {
 	 * @{
 	 */
 
-	/// @brief An interface class for the interaction related discord endpoints.
+	/// @brief An interface class for the interaction_data related discord endpoints.
 	class DiscordCoreAPI_Dll interactions {
 	  public:
 		friend class discord_core_internal::base_socket_agent;
@@ -315,7 +315,7 @@ namespace discord_core_api {
 		/// @brief Collects an interaction response.
 		/// @param dataPackage a get_interaction_response_data structure.
 		/// @return A co_routine containing an interaction_response_data.
-		static co_routine<message_data> getInteractionResponseAsync(get_interaction_response_data dataPackage);
+		static co_routine<message_data> getInteractionResponseAsync(const get_interaction_response_data dataPackage);
 
 		/// @brief Edits an interaction response.
 		/// @param dataPackage a edit_interaction_response_data structure.
@@ -325,7 +325,7 @@ namespace discord_core_api {
 		/// @brief Deletes an interaction respnose.
 		/// @param dataPackage a delete_interaction_response_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteInteractionResponseAsync(delete_interaction_response_data dataPackage);
+		static co_routine<void> deleteInteractionResponseAsync(const delete_interaction_response_data dataPackage);
 
 		/// @brief Creates a follow up message to an input interaction.
 		/// @param dataPackage a create_follow_up_message_data structure.
@@ -335,17 +335,17 @@ namespace discord_core_api {
 		/// @brief Creates a follow up message to an input interaction.
 		/// @param dataPackage a create_follow_up_message_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> getFollowUpMessageAsync(get_follow_up_message_data dataPackage);
+		static co_routine<message_data> getFollowUpMessageAsync(const get_follow_up_message_data dataPackage);
 
 		/// @brief Edits a follow up message_data.
 		/// @param dataPackage a edit_follow_up_message_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> editFollowUpMessageAsync(edit_follow_up_message_data dataPackage);
+		static co_routine<message_data> editFollowUpMessageAsync(const edit_follow_up_message_data dataPackage);
 
 		/// @brief Deletes a follow up message_data.
 		/// @param dataPackage a delete_follow_up_message_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteFollowUpMessageAsync(delete_follow_up_message_data dataPackage);
+		static co_routine<void> deleteFollowUpMessageAsync(const delete_follow_up_message_data dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;
@@ -428,7 +428,7 @@ namespace discord_core_api {
 
 		/// @brief Constructor.
 		/// @param dataPackage an input_event_data structure, from the response that came from the submitted select-menu.
-		select_menu_collector(input_event_data& dataPackage);
+		select_menu_collector(input_event_data dataPackage);
 
 		/// @brief Used to collect the select-menu inputs from one or more users.
 		/// @param getSelectMenuDataForAllNew whether or not to collect select-menu input from a single target user_data or all potential users.
@@ -525,7 +525,7 @@ namespace discord_core_api {
 
 		/// @brief Constructor.
 		/// @param dataPackage an input_event_data structure, from the response that came from the submitted button.
-		button_collector(input_event_data& dataPackage);
+		button_collector(input_event_data dataPackage);
 
 		/// @brief Used to collect the button inputs from one or more users.
 		/// @param getButtonDataForAllNew whether or not to collect input from a single target user_data or all potential users.
@@ -606,7 +606,7 @@ namespace discord_core_api {
 
 		/// @brief Constructor.
 		/// @param dataPackage an input_event_data structure, from the response that came from the submitted button.
-		modal_collector(input_event_data& dataPackage);
+		modal_collector(input_event_data dataPackage);
 
 		/// @brief Used to collect the button inputs from one or more users.
 		/// @param maxWaitTimeInMsNew the maximum amount of time to wait for new inputs, in milliseconds.
