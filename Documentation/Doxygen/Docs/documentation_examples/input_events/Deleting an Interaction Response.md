@@ -1,7 +1,7 @@
-Deleting an Interaction Response {#deletinganinputeventresponse}
+Deleting an Interaction Response {#deleting_an_input_event_response}
 ============
-- Execute the, `input_events::deleteInputEventResponseAsync()` function, while passing in a data structure of type `input_event_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::input_events::deleteInputEventResponseAsync()` function, while passing in a data structure of type `discord_core_api::input_event_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -33,7 +33,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			input_events::deleteInputEventResponseAsync(const args.eventData).get();
 
-			respond_to_input_event_data dataPackage02 {args.eventData};
+			respond_to_input_event_data& dataPackage02 {args.eventData};
 			dataPackage02.addContent("test response");
 			auto inputEventData = input_events::respondToInputEventAsync(const dataPackage02);
 

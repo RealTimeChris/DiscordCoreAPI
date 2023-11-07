@@ -1,7 +1,7 @@
-Adding a Command {#addingcommand}
+Adding a Command {#adding_a_command}
 ============
-- First, create an instance of `Discord
-`, and then use from it the `DiscordCoreClient::registerFunction` function. Passing into it an instance of a `Jsonifier::Vector` of `jsonifier::string`, which will act as the command names to be triggering the commands, a `UniquePtr` containing a command function derived from the `BaseFunction` class, and an instance of either `CreateGlobalApplicationCommandData` or `CreateGuildApplicationCommandData`.
+- First, create an instance of `discord_core_api::Discord
+`, and then use from it the `discord_core_api::DiscordCoreClient::registerFunction` function. Passing into it an instance of a `discord_core_api::Jsonifier::Vector` of `jsonifier::string`, which will act as the command names to be triggering the commands, a `discord_core_api::UniquePtr` containing a command function derived from the `discord_core_api::BaseFunction` class, and an instance of either `discord_core_api::CreateGlobalApplicationCommandData` or `discord_core_api::CreateGuildApplicationCommandData`.
 - Note that these functions will be registered with the Discord API if any of their properties change.
 
 ```cpp

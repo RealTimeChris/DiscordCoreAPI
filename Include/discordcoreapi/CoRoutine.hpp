@@ -50,16 +50,13 @@ namespace discord_core_api {
 
 	/// @brief An error type for co_routines.
 	struct co_routine_error : public dca_exception {
-		inline co_routine_error(jsonifier::string_view message, const std::source_location& location = std::source_location::current()) : dca_exception{ message, location } {};
+		inline co_routine_error(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
 	template<typename value_type> class result_holder {
 	  public:
 		template<typename value_type_new> inline void setResult(value_type_new&& newResult) {
 			result = makeUnique<value_type>(std::forward<value_type_new>(newResult));
-		}
-
-		inline void setStatus() {
 			sentYet.store(true, std::memory_order_release);
 		}
 
@@ -83,8 +80,10 @@ namespace discord_core_api {
 
 	/// @brief A co_routine - representing a potentially asynchronous operation/function.
 	/// \tparam return_type the type of parameter that is returned by the co_routine.
-	template<typename return_type, bool timeOut> class co_routine {
+	template<typename return_type_new, bool timeOut> class co_routine {
 	  public:
+		using return_type = return_type_new;///< The return type of this co_routine.
+
 		class promise_type {
 		  public:
 			template<typename return_type02, bool timeOut02> friend class co_routine;
@@ -97,9 +96,9 @@ namespace discord_core_api {
 				return areWeStoppedBool.load(std::memory_order_acquire);
 			}
 
-			template<typename return_type_new> inline void return_value(return_type_new&& returnValue) {
+			template<typename return_type_newer> inline void return_value(return_type_newer&& returnValue) {
 				if (resultBuffer) {
-					resultBuffer->setResult(std::forward<return_type_new>(returnValue));
+					resultBuffer->setResult(std::forward<return_type_newer>(returnValue));
 				}
 			}
 
@@ -115,16 +114,12 @@ namespace discord_core_api {
 			}
 
 			inline std::suspend_always final_suspend() noexcept {
-				if (resultBuffer) {
-					resultBuffer->setStatus();
-				}
 				return {};
 			}
 
 			inline void unhandled_exception() {
 				if (exceptionBuffer) {
 					exceptionBuffer->setResult(std::current_exception());
-					exceptionBuffer->setStatus();
 				}
 			}
 
@@ -275,8 +270,10 @@ namespace discord_core_api {
 
 	/// @brief A co_routine - representing a potentially asynchronous operation/function.
 	/// \tparam void the type of parameter that is returned by the co_routine.
-	template<jsonifier::concepts::void_t return_type, bool timeOut> class co_routine<return_type, timeOut> {
+	template<jsonifier::concepts::void_t return_type_new, bool timeOut> class co_routine<return_type_new, timeOut> {
 	  public:
+		using return_type = return_type_new;///< The return type of this co_routine.
+
 		class promise_type {
 		  public:
 			template<typename return_type02, bool timeOut02> friend class co_routine;
@@ -314,7 +311,6 @@ namespace discord_core_api {
 			inline void unhandled_exception() {
 				if (exceptionBuffer) {
 					exceptionBuffer->setResult(std::current_exception());
-					exceptionBuffer->setStatus();
 				}
 			}
 

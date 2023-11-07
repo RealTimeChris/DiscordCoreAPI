@@ -23,18 +23,20 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// UnorderedMap.hpp - Header file for the UnorderedMap class.
+/// unordered_map.hpp - Header file for the unordered_map class.
 /// May 12, 2021
 /// https://discordcoreapi.com
-/// \file UnorderedMap.hpp
+/// \file unordered_map.hpp
 #pragma once
 
 #include <discordcoreapi/Utilities/Hash.hpp>
+#include <discordcoreapi/Utilities/UniquePtr.hpp>
 
 #include <memory_resource>
 #include <shared_mutex>
 #include <exception>
 #include <optional>
+#include <utility>
 #include <vector>
 #include <mutex>
 
@@ -46,21 +48,24 @@ namespace discord_core_api {
 	concept map_container_iterator_t = std::same_as<typename unordered_map<key_type, value_type>::iterator, std::decay_t<map_iterator>>;
 
 	template<typename key_type_new, typename value_type_new> class unordered_map : protected hash_policy<unordered_map<key_type_new, value_type_new>>,
-																				   protected jsonifier_internal::alloc_wrapper<pair<key_type_new, value_type_new>>,
+																				   protected jsonifier_internal::alloc_wrapper<std::pair<key_type_new, value_type_new>>,
 																				   protected object_compare {
 	  public:
-		using mapped_type	  = value_type_new;
-		using key_type		  = key_type_new;
-		using reference		  = mapped_type&;
-		using value_type	  = pair<key_type, mapped_type>;
-		using const_reference = const mapped_type&;
-		using size_type		  = uint64_t;
-		using object_compare  = object_compare;
-		using hash_policy_new = hash_policy<unordered_map<key_type, mapped_type>>;
-		using key_hasher	  = hash_policy_new;
-		using iterator		  = hash_iterator<unordered_map<key_type, mapped_type>>;
-		using const_iterator  = hash_iterator<const unordered_map<key_type, mapped_type>>;
-		using allocator		  = jsonifier_internal::alloc_wrapper<value_type>;
+		using key_type			= key_type_new;
+		using value_type		= std::pair<key_type_new, value_type_new>;
+		using allocator_type	= jsonifier_internal::alloc_wrapper<value_type>;
+		using allocator_traits	= std::allocator_traits<allocator_type>;
+		using size_type			= uint64_t;
+		using difference_type	= int64_t;
+		using pointer			= typename allocator_traits::pointer;
+		using const_pointer		= typename allocator_traits::const_pointer;
+		using mapped_type		= value_type_new;
+		using reference			= value_type&;
+		using const_reference	= const value_type&;
+		using iterator			= hash_iterator<unordered_map<key_type, mapped_type>>;
+		using const_iterator	= hash_iterator<const unordered_map<key_type, mapped_type>>;
+		using object_compare	= object_compare;
+		using hash_policy_new	= hash_policy<unordered_map<key_type, mapped_type>>;
 
 		friend hash_policy_new;
 		friend iterator;
@@ -109,7 +114,7 @@ namespace discord_core_api {
 
 		template<typename key_type_newer> inline const_iterator find(key_type_newer&& key) const {
 			if (sizeVal > 0) {
-				auto currentIndex = getHashPolicy().indexForHash(key);
+				auto currentIndex = hash_policy_new::indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(data[currentIndex].first, key)) {
 						return { this, currentIndex };
@@ -121,7 +126,7 @@ namespace discord_core_api {
 
 		template<typename key_type_newer> inline iterator find(key_type_newer&& key) {
 			if (sizeVal > 0) {
-				auto currentIndex = getHashPolicy().indexForHash(key);
+				auto currentIndex = hash_policy_new::indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(data[currentIndex].first, key)) {
 						return { this, currentIndex };
@@ -131,33 +136,33 @@ namespace discord_core_api {
 			return end();
 		}
 
-		template<typename key_type_newer> inline const_reference operator[](key_type_newer&& key) const {
-			return emplace(key)->second;
+		template<typename key_type_newer> inline const mapped_type& operator[](key_type_newer&& key) const {
+			return emplaceInternal(key)->second;
 		}
 
-		template<typename key_type_newer> inline reference operator[](key_type_newer&& key) {
-			return emplace(key)->second;
+		template<typename key_type_newer> inline mapped_type& operator[](key_type_newer&& key) {
+			return emplaceInternal(key)->second;
 		}
 
-		template<typename key_type_newer> inline const_reference at(key_type_newer&& key) const {
+		template<typename key_type_newer> inline const mapped_type& at(key_type_newer&& key) const {
 			auto iter = find(std::forward<key_type_newer>(key));
 			if (iter == end()) {
-				throw dca_exception{ "Sorry, but an object by that key doesn't exist in this map." };
+				throw std::runtime_error{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
 			return iter->second;
 		}
 
-		template<typename key_type_newer> inline reference at(key_type_newer&& key) {
+		template<typename key_type_newer> inline mapped_type& at(key_type_newer&& key) {
 			auto iter = find(std::forward<key_type_newer>(key));
 			if (iter == end()) {
-				throw dca_exception{ "Sorry, but an object by that key doesn't exist in this map." };
+				throw std::runtime_error{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
 			return iter->second;
 		}
 
 		template<typename key_type_newer> inline bool contains(key_type_newer&& key) const {
 			if (sizeVal > 0) {
-				auto currentIndex = getHashPolicy().indexForHash(key);
+				auto currentIndex = hash_policy_new::indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(data[currentIndex].first, key)) {
 						return true;
@@ -172,7 +177,7 @@ namespace discord_core_api {
 				auto currentIndex = static_cast<size_type>(iter.getRawPtr() - data);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(data[currentIndex], iter.operator*())) {
-						getAlloc().destroy(data + currentIndex);
+						allocator_traits::destroy(*this, data + currentIndex);
 						sentinelVector[currentIndex] = 0;
 						--sizeVal;
 						return { this, ++currentIndex };
@@ -184,10 +189,10 @@ namespace discord_core_api {
 
 		template<typename key_type_newer> inline iterator erase(key_type_newer&& key) {
 			if (sizeVal > 0) {
-				auto currentIndex = getHashPolicy().indexForHash(key);
+				auto currentIndex = hash_policy_new::indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 					if (sentinelVector[currentIndex] > 0 && object_compare()(data[currentIndex].first, key)) {
-						getAlloc().destroy(data + currentIndex);
+						allocator_traits::destroy(*this, data + currentIndex);
 						sentinelVector[currentIndex] = 0;
 						--sizeVal;
 						return { this, ++currentIndex };
@@ -266,7 +271,7 @@ namespace discord_core_api {
 		inline void clear() {
 			for (size_type x = 0; x < sentinelVector.size(); ++x) {
 				if (sentinelVector.at(x) > 0) {
-					getAlloc().destroy(data + x);
+					allocator_traits::destroy(*this, data + x);
 					sentinelVector.at(x) = 0;
 				}
 			}
@@ -288,10 +293,14 @@ namespace discord_core_api {
 			if (full() || capacityVal == 0) {
 				resize(capacityVal + 1);
 			}
-			auto currentIndex = getHashPolicy().indexForHash(key);
+			auto currentIndex = hash_policy_new::indexForHash(key);
 			for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 				if (sentinelVector[currentIndex] == 0) {
-					getAlloc().construct(std::addressof(data[currentIndex]), value_type{ std::forward<key_type_newer>(key), std::forward<mapped_type_new>(value)... });
+					if constexpr ((( !std::is_void_v<mapped_type_new> ) || ...)) {
+						new (std::addressof(data[currentIndex])) value_type{ std::make_pair(std::forward<key_type_newer>(key), std::forward<mapped_type_new>(value)...) };
+					} else {
+						new (std::addressof(data[currentIndex])) value_type{ std::make_pair(std::forward<key_type_newer>(key), mapped_type{}) };
+					}
 					sentinelVector[currentIndex] = 1;
 					sizeVal++;
 					return { this, currentIndex };
@@ -306,25 +315,17 @@ namespace discord_core_api {
 			return emplaceInternal(std::forward<key_type_newer>(key), std::forward<mapped_type_new>(value)...);
 		}
 
-		inline allocator& getAlloc() {
-			return *this;
-		}
-
-		inline const hash_policy_new& getHashPolicy() const {
-			return *this;
-		}
-
 		inline void resize(size_type capacityNew) {
-			auto newSize = getHashPolicy().nextPowerOfTwo(capacityNew);
+			auto newSize = hash_policy_new::nextPowerOfTwo(capacityNew);
 			if (newSize > capacityVal) {
 				jsonifier::vector<int8_t> oldSentinelVector = std::move(sentinelVector);
 				auto oldMaxLookAheadDistance				= maxLookAheadDistance;
 				auto oldCapacity							= capacityVal;
 				auto oldSize								= sizeVal;
 				auto oldPtr									= data;
-				maxLookAheadDistance						= getHashPolicy().computeMaxLookAheadDistance(newSize);
+				maxLookAheadDistance						= hash_policy_new::computeMaxLookAheadDistance(newSize);
 				sizeVal										= 0;
-				data										= getAlloc().allocate(newSize + 1 + maxLookAheadDistance);
+				data										= allocator_traits::allocate(*this, newSize + 1 + maxLookAheadDistance);
 				sentinelVector.resize(newSize + 1 + maxLookAheadDistance);
 				sentinelVector[newSize + maxLookAheadDistance] = -1;
 				capacityVal									   = newSize;
@@ -335,7 +336,7 @@ namespace discord_core_api {
 					}
 				}
 				if (oldPtr && oldCapacity) {
-					getAlloc().deallocate(oldPtr, oldCapacity + 1 + oldMaxLookAheadDistance);
+					allocator_traits::deallocate(*this, oldPtr, oldCapacity + 1 + oldMaxLookAheadDistance);
 				}
 			}
 		}
@@ -344,10 +345,11 @@ namespace discord_core_api {
 			if (data && sizeVal > 0) {
 				for (uint64_t x = 0; x < sentinelVector.size(); ++x) {
 					if (sentinelVector.at(x) > 0) {
-						getAlloc().destroy(data + x);
+						allocator_traits::destroy(*this, data + x);
+						sentinelVector.at(x) = 0;
 					}
 				}
-				getAlloc().deallocate(data, capacityVal + 1 + maxLookAheadDistance);
+				allocator_traits::deallocate(*this, data, capacityVal + 1 + maxLookAheadDistance);
 				sentinelVector.clear();
 				sizeVal		= 0;
 				capacityVal = 0;

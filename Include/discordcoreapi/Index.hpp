@@ -29,4 +29,5 @@
 /// \file Index.hpp
 #pragma once
 
+#include <discordcoreapi/Utilities/UnicodeEmoji.hpp>
 #include <discordcoreapi/ToEntity.hpp>

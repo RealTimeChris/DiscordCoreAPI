@@ -1,7 +1,7 @@
-Deleting All Reactions {#deletingallreactions}
+Deleting All Reactions {#deleting_all_reactions}
 ============
-- Execute the, `reactions::deleteAllReactionsAsync()` function, while passing in a data structure of type `delete_all_reactions_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::reactions::deleteAllReactionsAsync()` function, while passing in a data structure of type `discord_core_api::delete_all_reactions_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,11 +32,11 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				delete_all_reactions_data dataPackage;
+				delete_all_reactions_data& dataPackage;
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				reactions::deleteAllReactionsAsync(const& dataPackage).get();
+				reactions::deleteAllReactionsAsync(const dataPackage).get();
 
 
 			} catch (...) {

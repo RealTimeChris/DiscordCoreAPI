@@ -27,10 +27,10 @@ namespace discord_core_api {
 
 		void execute(base_function_arguments& newArgs) {
 			try {
-				channel channel = channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
+				channel channel = discord_core_api::channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				guild_data guild = guilds::getCachedGuild({ newArgs.eventData.getGuildId() }).get();
-				discord_guild discordGuild(guild);
+				guild_data guild_data = guilds::getCachedGuild({ newArgs.eventData.getGuildId() }).get();
+				discord_guild discordGuild(guild_data);
 
 				bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
@@ -38,7 +38,7 @@ namespace discord_core_api {
 					return;
 				}
 
-				guild_member guildMember =
+				guild_member_data guildMember =
 					guild_members::getCachedGuildMember({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
 				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
@@ -46,19 +46,19 @@ namespace discord_core_api {
 				if (!doWeHaveControl) {
 					return;
 				}
-				if (guild.areWeConnected()) {
+				if (guild_data.areWeConnected()) {
 					embed_data newEmbed{};
 					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**i'm disconnecting from the voice channel!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**disconnected:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 					input_events::deleteInputEventResponseAsync(const newEvent, 20000);
-					guild.disconnect();
+					guild_data.disconnect();
 					savePlaylist(discordGuild);
 				} else {
 					embed_data newEmbed{};
@@ -67,10 +67,10 @@ namespace discord_core_api {
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**disconnected:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 				}
 
 				return;

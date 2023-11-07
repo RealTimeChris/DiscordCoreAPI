@@ -25,11 +25,11 @@ namespace discord_core_api {
 
 		void execute(base_function_arguments& newArgs) {
 			try {
-				channel channel = channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
+				channel channel = discord_core_api::channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				guild guild = guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get();
+				guild_data guild_data = guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get();
 
-				discord_guild discordGuild(guild);
+				discord_guild discordGuild(guild_data);
 
 				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
@@ -37,7 +37,7 @@ namespace discord_core_api {
 					return;
 				}
 
-				guild_member guildMember =
+				guild_member_data guildMember =
 					guild_members::getCachedGuildMember({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
 				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
@@ -46,9 +46,9 @@ namespace discord_core_api {
 					return;
 				}
 
-				auto playlist = song_api::getPlaylist(guild.id);
+				auto playlist = song_api::getPlaylist(guild_data.id);
 				playlist.songQueue.clear();
-				song_api::setPlaylist(playlist, guild.id);
+				song_api::setPlaylist(playlist, guild_data.id);
 				savePlaylist(discordGuild);
 
 				embed_data msgEmbed;
@@ -57,10 +57,10 @@ namespace discord_core_api {
 				msgEmbed.setDescription("\n------\n__**you have cleared the song queue!**__\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**queue cleared:**__");
-				respond_to_input_event_data dataPackage(newArgs.eventData);
+				respond_to_input_event_data& dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
-				auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 
 				return;
 			} catch (...) {

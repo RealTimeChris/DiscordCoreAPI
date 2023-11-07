@@ -79,7 +79,6 @@ namespace discord_core_api {
 
 	void atexitHandler() noexcept {
 		doWeQuit.store(true, std::memory_order_release);
-		exit(EXIT_FAILURE);
 	}
 
 	void signalHandler(int32_t value) noexcept {
@@ -94,7 +93,7 @@ namespace discord_core_api {
 			}
 			case SIGINT: {
 				message_printer::printError<print_message_type::general>("SIGINT ERROR.");
-				exit(EXIT_FAILURE);
+				exit(EXIT_SUCCESS);
 			}
 			case SIGILL: {
 				message_printer::printError<print_message_type::general>("SIGILL ERROR.");
@@ -121,7 +120,7 @@ namespace discord_core_api {
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
 		message_printer::initialize(configManager);
-		if (!discord_core_internal::sslcontext_holder::initialize()) {
+		if (!discord_core_internal::ssl_context_holder::initialize()) {
 			message_printer::printError<print_message_type::general>("Failed to initialize the SSL_CTX structure!");
 			return;
 		}
@@ -189,7 +188,7 @@ namespace discord_core_api {
 	}
 
 	milliseconds discord_core_client::getTotalUpTime() {
-		return std::chrono::duration_cast<milliseconds>(hrclock::now().time_since_epoch()) - startupTimeSinceEpoch;
+		return std::chrono::duration_cast<milliseconds>(sys_clock::now().time_since_epoch()) - startupTimeSinceEpoch;
 	}
 
 	void discord_core_client::registerFunctionsInternal() {
@@ -257,7 +256,7 @@ namespace discord_core_api {
 		gateway_bot_data gatewayData{};
 		try {
 			gatewayData = getGateWayBot();
-		} catch (const dca_exception& error) {
+		} catch (const discord_core_internal::https_error& error) {
 			message_printer::printError<print_message_type::general>(error.what());
 			return false;
 		}
@@ -273,9 +272,8 @@ namespace discord_core_api {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		uint64_t workerCount = configManager.getTotalShardCount() <= discord_core_internal::thread_wrapper::hardware_concurrency()
-			? configManager.getTotalShardCount()
-			: static_cast<uint64_t>(discord_core_internal::thread_wrapper::hardware_concurrency());
+		uint64_t workerCount = configManager.getTotalShardCount() <= std::jthread::hardware_concurrency() ? configManager.getTotalShardCount()
+																										  : static_cast<uint64_t>(std::jthread::hardware_concurrency());
 
 		if (configManager.getConnectionAddress() == "") {
 			configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + jsonifier::string{ "wss://" }.size()));
@@ -299,7 +297,7 @@ namespace discord_core_api {
 		for (auto& value: configManager.getFunctionsToExecute()) {
 			executeFunctionAfterTimePeriod(value.function, value.intervalInMs, value.repeated, false, this);
 		}
-		startupTimeSinceEpoch = std::chrono::duration_cast<milliseconds>(hrclock::now().time_since_epoch());
+		startupTimeSinceEpoch = std::chrono::duration_cast<milliseconds>(sys_clock::now().time_since_epoch());
 		return true;
 	}
 

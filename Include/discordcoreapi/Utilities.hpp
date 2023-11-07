@@ -61,7 +61,7 @@ namespace discord_core_api {
 
 	/// @brief Activity data.
 	struct activity_data {
-		unordered_set<jsonifier::string> excludedKeys{};
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 		jsonifier::string details{};///< What the player is currently doing.
 		snowflake applicationId{};///< Application id for the game.
 		jsonifier::string state{};///< User's current party status, or text used for a custom status.
@@ -131,7 +131,7 @@ namespace discord_core_api {
 	struct DiscordCoreAPI_Dll update_presence_data {
 		template<typename value_type> friend struct jsonifier::core;
 		jsonifier::vector<activity_data> activities{};///< A vector of activities.
-		unordered_set<jsonifier::string> excludedKeys{};
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 		presence_update_state status{};///< current status.
 		int64_t since{};///< When was the activity started?
 		bool afk{};///< Are we afk.
@@ -389,6 +389,8 @@ namespace discord_core_api {
 
 		audio_frame_data& operator+=(jsonifier::string_view_base<uint8_t>);
 
+		audio_frame_data& operator+=(jsonifier::vector<uint8_t>);
+
 		inline bool operator==(const audio_frame_data& rhs) const {
 			return currentSize == rhs.currentSize && data == rhs.data;
 		}
@@ -537,7 +539,6 @@ namespace discord_core_api {
 	/// @brief Permissions_base class, for representing and manipulating permission values.
 	template<typename value_type> class permissions_base {
 	  public:
-		friend class jsonifier_internal::parser;
 
 		/// @brief Returns a string containing all of a given user's permissions_base for a given channel.
 		/// @param guildMember the guild_member_data who's permissions_base to analyze.

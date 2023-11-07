@@ -41,10 +41,9 @@
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/Utilities.hpp>
 #include <fstream>
+#include <time.h>
 
 namespace discord_core_api {
-
-	thread_local jsonifier::jsonifier_core parser{};
 
 	update_presence_data::update_presence_data(presence_update_state state) {
 		status = state;
@@ -190,6 +189,17 @@ namespace discord_core_api {
 	}
 
 	audio_frame_data& audio_frame_data::operator+=(jsonifier::string_view_base<uint8_t> other) {
+		if (other.size() > 0) {
+			if (data.size() < other.size()) {
+				data.resize(other.size());
+			}
+			std::memcpy(data.data(), other.data(), other.size());
+		}
+		currentSize = static_cast<int64_t>(other.size());
+		return *this;
+	}
+
+	audio_frame_data& audio_frame_data::operator+=(jsonifier::vector<uint8_t> other) {
 		if (other.size() > 0) {
 			if (data.size() < other.size()) {
 				data.resize(other.size());
@@ -510,22 +520,22 @@ namespace discord_core_api {
 			if (stopWatch.hasTimeElapsed()) {
 				break;
 			}
-			returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
+			returnString.pushBack(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < string.size()) {
-				returnString.push_back(base64Chars[((string[static_cast<uint64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<uint64_t>(pos + 1)] & 0xf0) >> 4)]);
+				returnString.pushBack(base64Chars[((string[static_cast<uint64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<uint64_t>(pos + 1)] & 0xf0) >> 4)]);
 
 				if (static_cast<uint64_t>(pos + 2) < string.size()) {
-					returnString.push_back(base64Chars[((string[static_cast<uint64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<uint64_t>(pos + 2)] & 0xc0) >> 6)]);
-					returnString.push_back(base64Chars[string[static_cast<uint64_t>(pos + 2)] & 0x3f]);
+					returnString.pushBack(base64Chars[((string[static_cast<uint64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<uint64_t>(pos + 2)] & 0xc0) >> 6)]);
+					returnString.pushBack(base64Chars[string[static_cast<uint64_t>(pos + 2)] & 0x3f]);
 				} else {
-					returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 1)] & 0x0f) << 2]);
-					returnString.push_back(trailing_char);
+					returnString.pushBack(base64Chars[(string[static_cast<uint64_t>(pos + 1)] & 0x0f) << 2]);
+					returnString.pushBack(trailing_char);
 				}
 			} else {
-				returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0x03) << 4]);
-				returnString.push_back(trailing_char);
-				returnString.push_back(trailing_char);
+				returnString.pushBack(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0x03) << 4]);
+				returnString.pushBack(trailing_char);
+				returnString.pushBack(trailing_char);
 			}
 
 			pos += 3;
@@ -549,10 +559,10 @@ namespace discord_core_api {
 				if (value + difference == '\0') {
 					continue;
 				} else {
-					returnString.push_back(value + static_cast<char>(difference));
+					returnString.pushBack(value + static_cast<char>(difference));
 				}
 			} else {
-				returnString.push_back(value);
+				returnString.pushBack(value);
 			}
 		}
 		return returnString;
@@ -579,17 +589,17 @@ namespace discord_core_api {
 	}
 
 	void spinLock(uint64_t timeInNsToSpinLockFor) {
-		uint64_t startTime = std::chrono::duration_cast<nanoseconds>(hrclock::now().time_since_epoch()).count();
-		uint64_t timePassed{};
-		while (timePassed < timeInNsToSpinLockFor) {
-			timePassed = std::chrono::duration_cast<nanoseconds>(hrclock::now().time_since_epoch()).count() - startTime;
+		int64_t startTime = std::chrono::duration_cast<nanoseconds>(sys_clock::now().time_since_epoch()).count();
+		int64_t timePassed{};
+		while (timePassed < static_cast<int64_t>(timeInNsToSpinLockFor)) {
+			timePassed = std::chrono::duration_cast<nanoseconds>(sys_clock::now().time_since_epoch()).count() - startTime;
 		}
 	}
 
 	jsonifier::string generateBase64EncodedKey() {
 		jsonifier::string returnString{};
 		returnString.resize(16);
-		std::mt19937_64 randomEngine{ static_cast<uint64_t>(hrclock::now().time_since_epoch().count()) };
+		std::mt19937_64 randomEngine{ static_cast<uint64_t>(sys_clock::now().time_since_epoch().count()) };
 		for (uint64_t x = 0; x < 16; ++x) {
 			returnString.at(x) = static_cast<char>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
 		}
@@ -615,29 +625,14 @@ namespace discord_core_api {
 		std::this_thread::sleep_for(nanoseconds{ ns });
 #endif
 		return true;
-	}
+	}	
 
 	jsonifier::string getTimeAndDate() {
-		time_t now = std::time(nullptr);
-		std::tm time{ getCurrentTimeVal(now) };
-		jsonifier::string timeStamp{};
-		timeStamp.resize(48);
-		if (time.tm_isdst) {
-			if (time.tm_hour + 4 >= 24) {
-				time.tm_hour = 0 + time.tm_hour + 4 - 24;
-
-			} else {
-				time.tm_hour = time.tm_hour + 4;
-			}
-		} else {
-			if (time.tm_hour + 5 >= 24) {
-				time.tm_hour = 0 + time.tm_hour + 5 - 24;
-			} else {
-				time.tm_hour = time.tm_hour + 5;
-			}
-		}
-		uint64_t size = strftime(timeStamp.data(), 48, "%F %R", &time);
-		timeStamp.resize(size);
-		return timeStamp;
+		std::time_t time = std::time({});
+		time			 = std::chrono::current_zone()->to_sys(std::chrono::local_time<std::chrono::seconds>(std::chrono::seconds{ time })).time_since_epoch().count();
+		char timeString[std::size("yyyy-mm-ddThh:mm:ss")];
+		tm timeNew{ getTime(time) };
+		std::strftime(std::data(timeString), std::size(timeString), "%FT%T", &timeNew);
+		return timeString;
 	}
 };

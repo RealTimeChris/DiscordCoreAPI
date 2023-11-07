@@ -80,6 +80,7 @@ project(
 set(DiscordCoreAPI-POPCNT_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
 set(DiscordCoreAPI-LZCNT_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
 set(DiscordCoreAPI-BMI_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
+set(DiscordCoreAPI-BMI2_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
 set(DiscordCoreAPI-AVX_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
 set(DiscordCoreAPI-AVX2_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")
 set(DiscordCoreAPI-AVX512_EXITCODE 0 CACHE INTERNAL "For cross-compiling.")

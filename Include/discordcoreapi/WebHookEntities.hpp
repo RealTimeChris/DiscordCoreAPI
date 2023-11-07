@@ -61,7 +61,7 @@ namespace discord_core_api {
 
 		execute_web_hook_data() = default;
 
-		execute_web_hook_data(web_hook_data dataNew);
+		execute_web_hook_data(const web_hook_data& dataNew);
 
 		/// @brief Adds a button to the response message_data.
 		/// @param disabled whether the button is active or not.
@@ -85,8 +85,9 @@ namespace discord_core_api {
 		/// @param type the type of select-menu that this is.
 		/// @param channelTypes types of channels that can be accepted if this is of the type channel_type.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		execute_web_hook_data& addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<select_option_data> options, jsonifier::string_view placeholder,
-			int32_t maxValues, int32_t minValues, select_menu_type type, jsonifier::vector<channel_type> channelTypes = jsonifier::vector<channel_type>{});
+		execute_web_hook_data& addSelectMenu(bool disabled, jsonifier::string_view customIdNew, const jsonifier::vector<select_option_data>& options,
+			jsonifier::string_view placeholder, int32_t maxValues, int32_t minValues, select_menu_type type,
+			const jsonifier::vector<channel_type>& channelTypes = jsonifier::vector<channel_type>{});
 
 		/// @brief Adds a modal to the response message_data.
 		/// @param topTitleNew a title for the modal.
@@ -107,22 +108,22 @@ namespace discord_core_api {
 		/// @brief Adds a file to the current collection of files for this message response.
 		/// @param theFile the file to be added.
 		/// @return message_response_base& a reference to this data structure.
-		execute_web_hook_data& addFile(file theFile);
+		execute_web_hook_data& addFile(const file& theFile);
 
 		/// @brief For setting the allowable mentions in a response.
 		/// @param dataPackage an allowed_mentions_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		execute_web_hook_data& addAllowedMentions(allowed_mentions_data dataPackage);
+		execute_web_hook_data& addAllowedMentions(const allowed_mentions_data dataPackage);
 
 		/// @brief For setting the components in a response.
 		/// @param dataPackage an action_row_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		execute_web_hook_data& addComponentRow(action_row_data dataPackage);
+		execute_web_hook_data& addComponentRow(const action_row_data dataPackage);
 
 		/// @brief For setting the embeds in a response.
 		/// @param dataPackage an embed_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		execute_web_hook_data& addMessageEmbed(embed_data dataPackage);
+		execute_web_hook_data& addMessageEmbed(const embed_data dataPackage);
 
 		/// @brief For setting the content in a response.
 		/// @param dataPackage a string, containing the content.
@@ -133,6 +134,10 @@ namespace discord_core_api {
 		/// @param enabledTTs a bool.
 		/// @return message_response_base& a reference to this data structure.
 		execute_web_hook_data& setTTSStatus(bool enabledTTs);
+
+		void generateExcludedKeys();
+
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 
 	  protected:
 		jsonifier::vector<attachment_data> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
@@ -168,7 +173,7 @@ namespace discord_core_api {
 
 		edit_web_hook_data() = default;
 
-		edit_web_hook_data(web_hook_data dataNew);
+		edit_web_hook_data(const web_hook_data& dataNew);
 	};
 
 	/// @brief For collecting a list of web_hooks from a chosen channel_data.
@@ -183,13 +188,13 @@ namespace discord_core_api {
 
 	/// @brief Collects a single web_hook_data.
 	struct get_web_hook_data {
-		snowflake webHookId{};///< Snowflake of the desired web_hook_data to collect.
+		snowflake webHookId{};///< snowflake of the desired web_hook_data to collect.
 	};
 
 	/// @brief Collects a single web_hook_data, using the token and snowflake.
-	struct get_web_hook_data_with_token_data {
+	struct get_web_hook_with_token_data {
 		jsonifier::string webhookToken{};///< Token of the desired web_hook_data.
-		snowflake webHookId{};///< Snowflake of the desired web_hook_data.
+		snowflake webHookId{};///< snowflake of the desired web_hook_data.
 	};
 
 	/// @brief For modifying a web_hook.
@@ -201,7 +206,7 @@ namespace discord_core_api {
 	};
 
 	/// @brief For modifying a web_hook.
-	struct modify_web_hook_data_with_token_data {
+	struct modify_web_hook_with_token_data {
 		jsonifier::string webhookToken{};///< Token of the desired web_hook_data.
 		snowflake channelId{};///< The new channel_data id this webhook should be moved to.
 		snowflake webHookId{};///< The web_hook_data to be modified.
@@ -215,13 +220,13 @@ namespace discord_core_api {
 	};
 
 	/// @brief For deleting a web_hook, using its token.
-	struct delete_web_hook_data_with_token_data {
+	struct delete_web_hook_with_token_data {
 		jsonifier::string webhookToken{};///< Token of the desired web_hook_data.
 		snowflake webHookId{};///< The desired web_hook_data to delete.
 	};
 
 	/// @brief For getting a web_hook message_data.
-	struct get_web_hook_data_message_data {
+	struct get_web_hook_message_data {
 		jsonifier::string webhookToken{};///< The web_hook_data token you would like to collect.
 		snowflake webHookId{};///< The web_hook_data you would like to collect.
 		snowflake messageId{};///< The message snowflake to collect.
@@ -229,7 +234,7 @@ namespace discord_core_api {
 	};
 
 	/// @brief For deleting a web_hook message_data.
-	struct delete_web_hook_data_message_data {
+	struct delete_web_hook_message_data {
 		jsonifier::string webhookToken{};///< The web_hook_data token you would like to collect.
 		snowflake webHookId{};///< The web_hook_data you would like to collect.
 		snowflake messageId{};///< The message snowflake to collect.
@@ -250,67 +255,67 @@ namespace discord_core_api {
 		/// @brief Creates a new web_hook_data.
 		/// @param dataPackage a get_message_data structure.
 		/// @return a co_routine containing a web_hook.
-		static co_routine<web_hook_data> createWebHookAsync(create_web_hook_data dataPackage);
+		static co_routine<web_hook_data> createWebHookAsync(const create_web_hook_data dataPackage);
 
 		/// @brief Collects a list of web_hooks from a chosen channel_data.
 		/// @param dataPackage a get_channel_web_hooks_data structure.
 		/// @return a co_routine containing a jsonifier::vector<web_hook_data>.
-		static co_routine<jsonifier::vector<web_hook_data>> getChannelWebHooksAsync(get_channel_web_hooks_data dataPackage);
+		static co_routine<jsonifier::vector<web_hook_data>> getChannelWebHooksAsync(const get_channel_web_hooks_data dataPackage);
 
 		/// @brief Collects a list of web_hooks from a chosen guild.
 		/// @param dataPackage a get_guild_web_hooks_data structure.
 		/// @return a co_routine containing a jsonifier::vector<web_hook_data>.
-		static co_routine<jsonifier::vector<web_hook_data>> getGuildWebHooksAsync(get_guild_web_hooks_data dataPackage);
+		static co_routine<jsonifier::vector<web_hook_data>> getGuildWebHooksAsync(const get_guild_web_hooks_data dataPackage);
 
 		/// @brief Collects a single web_hook_data.
 		/// @param dataPackage a get_web_hook_data structure.
 		/// @return a co_routine containing a web_hook.
-		static co_routine<web_hook_data> getWebHookAsync(get_web_hook_data dataPackage);
+		static co_routine<web_hook_data> getWebHookAsync(const get_web_hook_data dataPackage);
 
 		/// @brief Collects a single web_hook_data, using the token.
-		/// @param dataPackage a get_web_hook_data_with_token_data structure.
+		/// @param dataPackage a get_web_hook_with_token_data structure.
 		/// @return a co_routine containing a web_hook.
-		static co_routine<web_hook_data> getWebHookWithTokenAsync(get_web_hook_data_with_token_data dataPackage);
+		static co_routine<web_hook_data> getWebHookWithTokenAsync(const get_web_hook_with_token_data dataPackage);
 
 		/// @brief Modifies a single web_hook_data.
 		/// @param dataPackage a modify_web_hook_data structure.
 		/// @return a co_routine containing a web_hook.
-		static co_routine<web_hook_data> modifyWebHookAsync(modify_web_hook_data dataPackage);
+		static co_routine<web_hook_data> modifyWebHookAsync(const modify_web_hook_data dataPackage);
 
 		/// @brief Modifies a single web_hook_data, using its token.
-		/// @param dataPackage a modify_web_hook_data_with_token_data structure.
+		/// @param dataPackage a modify_web_hook_with_token_data structure.
 		/// @return a co_routine containing a web_hook.
-		static co_routine<web_hook_data> modifyWebHookWithTokenAsync(modify_web_hook_data_with_token_data dataPackage);
+		static co_routine<web_hook_data> modifyWebHookWithTokenAsync(const modify_web_hook_with_token_data dataPackage);
 
 		/// @brief Deletes a single web_hook_data.
 		/// @param dataPackage a delete_web_hook_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteWebHookAsync(delete_web_hook_data dataPackage);
+		static co_routine<void> deleteWebHookAsync(const delete_web_hook_data dataPackage);
 
 		/// @brief Deletes a single web_hook_data, using its token.
-		/// @param dataPackage a delete_web_hook_data_with_token_data structure.
+		/// @param dataPackage a delete_web_hook_with_token_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteWebHookWithTokenAsync(delete_web_hook_data_with_token_data dataPackage);
+		static co_routine<void> deleteWebHookWithTokenAsync(const delete_web_hook_with_token_data dataPackage);
 
 		/// @brief Executes a single web_hook_data.
 		/// @param dataPackage an execute_web_hook_data structure.
 		/// @return a co_routine containing a message.
-		static co_routine<message_data> executeWebHookAsync(execute_web_hook_data dataPackage);
+		static co_routine<message_data> executeWebHookAsync(const execute_web_hook_data dataPackage);
 
 		/// @brief Collects a web_hook message_data.
-		/// @param dataPackage an get_web_hook_data_message_data structure.
+		/// @param dataPackage an get_web_hook_message_data structure.
 		/// @return a co_routine containing a message.
-		static co_routine<message_data> getWebHookMessageAsync(get_web_hook_data_message_data dataPackage);
+		static co_routine<message_data> getWebHookMessageAsync(const get_web_hook_message_data dataPackage);
 
 		/// @brief Edits a web_hook message_data.
 		/// @param dataPackage an edit_web_hook_data_message_data structure.
 		/// @return a co_routine containing a message.
-		static co_routine<message_data> editWebHookMessageAsync(edit_web_hook_data dataPackage);
+		static co_routine<message_data> editWebHookMessageAsync(const edit_web_hook_data dataPackage);
 
 		/// @brief Deletes a web_hook message_data.
-		/// @param dataPackage an delete_web_hook_data_message_data structure.
+		/// @param dataPackage an delete_web_hook_message_data structure.
 		/// @return a co_routine containing a message.
-		static co_routine<void> deleteWebHookMessageAsync(delete_web_hook_data_message_data dataPackage);
+		static co_routine<void> deleteWebHookMessageAsync(const delete_web_hook_message_data dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;

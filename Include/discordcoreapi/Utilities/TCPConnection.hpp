@@ -165,13 +165,13 @@ namespace discord_core_api {
 		};
 #endif
 
-		struct poll_fdwrapper {
+		struct poll_fd_wrapper {
 			jsonifier::vector<uint64_t> indices{};
 			jsonifier::vector<pollfd> polls{};
 		};
 
-		struct SSL_CTXWrapper {
-			struct SSL_CTXDeleter {
+		struct ssl_ctx_wrapper {
+			struct ssl_ctx_deleter {
 				inline void operator()(SSL_CTX* other) {
 					if (other) {
 						SSL_CTX_free(other);
@@ -180,7 +180,7 @@ namespace discord_core_api {
 				}
 			};
 
-			inline SSL_CTXWrapper& operator=(SSL_CTX* other) {
+			inline ssl_ctx_wrapper& operator=(SSL_CTX* other) {
 				ptr.reset(other);
 				return *this;
 			}
@@ -190,12 +190,12 @@ namespace discord_core_api {
 			}
 
 		  protected:
-			unique_ptr<SSL_CTX, SSL_CTXDeleter> ptr{};
+			unique_ptr<SSL_CTX, ssl_ctx_deleter> ptr{};
 		};
 
-		class sslwrapper {
+		class ssl_wrapper {
 		  public:
-			struct ssldeleter {
+			struct ssl_deleter {
 				inline void operator()(SSL* other) {
 					if (other) {
 						SSL_shutdown(other);
@@ -205,18 +205,18 @@ namespace discord_core_api {
 				}
 			};
 
-			inline sslwrapper() = default;
+			inline ssl_wrapper() = default;
 
-			inline sslwrapper& operator=(sslwrapper&& other) noexcept {
-				this->ptr = std::move(other.ptr);
+			inline ssl_wrapper& operator=(ssl_wrapper&& other) noexcept {
+				ptr = std::move(other.ptr);
 				return *this;
 			}
 
-			inline sslwrapper(sslwrapper&& other) noexcept {
+			inline ssl_wrapper(ssl_wrapper&& other) noexcept {
 				*this = std::move(other);
 			}
 
-			inline sslwrapper& operator=(SSL* other) {
+			inline ssl_wrapper& operator=(SSL* other) {
 				ptr.reset(other);
 				return *this;
 			}
@@ -230,12 +230,12 @@ namespace discord_core_api {
 			}
 
 		  protected:
-			unique_ptr<SSL, ssldeleter> ptr{};
+			unique_ptr<SSL, ssl_deleter> ptr{};
 		};
 
-		class socketwrapper {
+		class socket_wrapper {
 		  public:
-			struct socketdeleter {
+			struct socket_deleter {
 				inline void operator()(SOCKET* ptrNew) {
 					if (ptrNew && *ptrNew != INVALID_SOCKET) {
 						shutdown(*ptrNew, SHUT_RDWR);
@@ -247,23 +247,23 @@ namespace discord_core_api {
 				}
 			};
 
-			inline socketwrapper() = default;
+			inline socket_wrapper() = default;
 
-			inline socketwrapper& operator=(socketwrapper&& other) noexcept {
-				this->ptr = std::move(other.ptr);
+			inline socket_wrapper& operator=(socket_wrapper&& other) noexcept {
+				ptr = std::move(other.ptr);
 				return *this;
 			}
 
-			inline socketwrapper(socketwrapper&& other) noexcept {
+			inline socket_wrapper(socket_wrapper&& other) noexcept {
 				*this = std::move(other);
 			}
 
-			inline socketwrapper& operator=(SOCKET other) {
+			inline socket_wrapper& operator=(SOCKET other) {
 				ptr.reset(new SOCKET{ other });
 				return *this;
 			}
 
-			inline socketwrapper(SOCKET other) {
+			inline socket_wrapper(SOCKET other) {
 				*this = other;
 			}
 
@@ -280,10 +280,10 @@ namespace discord_core_api {
 			}
 
 		  protected:
-			unique_ptr<SOCKET, socketdeleter> ptr{};
+			unique_ptr<SOCKET, socket_deleter> ptr{};
 		};
 
-		struct addrinfoWrapper {
+		struct addrinfo_wrapper {
 			inline addrinfo* operator->() {
 				return ptr;
 			}
@@ -301,23 +301,23 @@ namespace discord_core_api {
 			addrinfo* ptr{ &value };
 		};
 
-		class sslcontext_holder {
+		class ssl_context_holder {
 		  public:
-			inline static SSL_CTXWrapper context{};
+			inline static ssl_ctx_wrapper context{};
 			inline static std::mutex accessMutex{};
 
 			inline static bool initialize() {
-				if (sslcontext_holder::context = SSL_CTX_new(TLS_client_method()); !sslcontext_holder::context) {
+				if (ssl_context_holder::context = SSL_CTX_new(TLS_client_method()); !ssl_context_holder::context) {
 					return false;
 				}
 
-				if (!SSL_CTX_set_min_proto_version(sslcontext_holder::context, TLS1_2_VERSION)) {
+				if (!SSL_CTX_set_min_proto_version(ssl_context_holder::context, TLS1_2_VERSION)) {
 					return false;
 				}
 
 #if defined(SSL_OP_IGNORE_UNEXPECTED_EOF)
-				auto originalOptions{ SSL_CTX_get_options(sslcontext_holder::context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
-				if (SSL_CTX_set_options(sslcontext_holder::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
+				auto originalOptions{ SSL_CTX_get_options(ssl_context_holder::context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
+				if (SSL_CTX_set_options(ssl_context_holder::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
 					return false;
 				}
 #endif
@@ -392,12 +392,12 @@ namespace discord_core_api {
 		template<typename value_type> class tcp_connection : public ssl_data_interface<tcp_connection<value_type>> {
 		  public:
 			connection_status currentStatus{ connection_status::NO_Error };
-			socketwrapper socket{};
+			socket_wrapper socket{};
 			bool writeWantWrite{};
 			bool writeWantRead{};
 			bool readWantWrite{};
 			bool readWantRead{};
-			sslwrapper ssl{};
+			ssl_wrapper ssl{};
 
 			tcp_connection& operator=(tcp_connection&& other)	   = default;
 			tcp_connection(tcp_connection&& other)				   = default;
@@ -418,7 +418,7 @@ namespace discord_core_api {
 				} else {
 					addressString = baseUrlNew;
 				}
-				addrinfoWrapper hints{}, address{};
+				addrinfo_wrapper hints{}, address{};
 				hints->ai_family   = AF_INET;
 				hints->ai_socktype = SOCK_STREAM;
 				hints->ai_protocol = IPPROTO_TCP;
@@ -444,8 +444,8 @@ namespace discord_core_api {
 					return;
 				}
 
-				std::unique_lock lock{ sslcontext_holder::accessMutex };
-				if (ssl = SSL_new(sslcontext_holder::context); !ssl) {
+				std::unique_lock lock{ ssl_context_holder::accessMutex };
+				if (ssl = SSL_new(ssl_context_holder::context); !ssl) {
 					message_printer::printError<print_message_type::general>(
 						reportSSLError("tcp_connection::connect::SSL_new(), to: " + baseUrlNew) + "\n" + reportError("tcp_connection::connect::SSL_new(), to: " + baseUrlNew));
 					currentStatus = connection_status::CONNECTION_Error;
@@ -666,7 +666,7 @@ namespace discord_core_api {
 
 			template<typename value_type2> inline static unordered_map<uint64_t, value_type2*> processIO(unordered_map<uint64_t, value_type2*>& shardMap) {
 				unordered_map<uint64_t, value_type2*> returnData{};
-				poll_fdwrapper readWriteSet{};
+				poll_fd_wrapper readWriteSet{};
 				for (auto& [key, value]: shardMap) {
 					if (value->areWeStillConnected()) {
 						pollfd fdSet{};
@@ -696,8 +696,8 @@ namespace discord_core_api {
 						if (readWriteSet.polls.at(x).revents & POLLERR || readWriteSet.polls.at(x).revents & POLLHUP || readWriteSet.polls.at(x).revents & POLLNVAL) {
 							shardMap.at(readWriteSet.indices.at(x))->currentStatus = connection_status::SOCKET_Error;
 							returnData.emplace(readWriteSet.indices.at(x), shardMap.at(readWriteSet.indices.at(x)));
-							readWriteSet.indices.erase(readWriteSet.indices.begin() + x);
-							readWriteSet.polls.erase(readWriteSet.polls.begin() + x);
+							readWriteSet.indices.erase(readWriteSet.indices.begin() + static_cast<int64_t>(x));
+							readWriteSet.polls.erase(readWriteSet.polls.begin() + static_cast<int64_t>(x));
 							didWeFindTheSocket = true;
 						}
 					}

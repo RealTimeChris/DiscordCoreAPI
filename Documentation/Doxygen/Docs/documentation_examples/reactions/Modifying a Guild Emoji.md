@@ -1,7 +1,7 @@
-Modifying a Guild Emoji {#modifyingaguildemoji}
+Modifying a Guild Emoji {#modifying_a_guild_emoji}
 ============
-- Execute the, `reactions::modifyGuildEmojiAsync()` function, while passing in a value of type `modify_guild_emoji_data`, with a return value of type `auto` or `emoji_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::reactions::modifyGuildEmojiAsync()` function, while passing in a value of type `discord_core_api::modify_guild_emoji_data`, with a return value of type `auto` or `discord_core_api::emoji_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,17 +32,17 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_emoji_list_data dataPackage00 { };
+				get_emoji_list_data& dataPackage00 { };
 				dataPackage00.guildId = args.eventData.getGuildId();
 
 				auto emojiList = reactions::getEmojiListAsync(const dataPackage00).get();
 
-				modify_guild_emoji_data dataPackage;
+				modify_guild_emoji_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.emojiId = emojiList[0].id;
 				dataPackage.reason = "testing purposes";
 				dataPackage.name = "testemoji";
-				auto emoji = reactions::modifyGuildEmojiAsync(const& dataPackage).get();
+				auto emoji = reactions::modifyGuildEmojiAsync(const dataPackage).get();
 
 				std::cout << "the name: " << emoji.name << std::endl;
 

@@ -29,7 +29,7 @@
 /// \file UniquePtr.hpp
 #pragma once
 
-#include <discordcoreapi/Utilities/Base.hpp>
+#include <jsonifier/Index.hpp>
 
 namespace discord_core_api {
 

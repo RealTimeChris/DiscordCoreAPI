@@ -327,7 +327,7 @@ namespace discord_core_api {
 		};
 
 		template<typename value_type> struct websocket_message_data {
-			unordered_set<jsonifier::string> excludedKeys{};
+			unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 			jsonifier::string t{};
 			value_type d{};
 			int64_t op{};
@@ -579,7 +579,7 @@ namespace discord_core_api {
 
 	/// @brief Embed image data.
 	struct embed_image_data {
-		unordered_set<jsonifier::string_view> excludedKeys{};///< For excluding certain keys from parsing/serialization.
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};///< For excluding certain keys from parsing/serialization.
 		jsonifier::string proxyUrl{};///< Proxy url.
 		jsonifier::string url{};///< Image url.
 		uint64_t height{};///< Image height.
@@ -612,7 +612,7 @@ namespace discord_core_api {
 
 	/// @brief Embed author data.
 	struct embed_author_data {
-		unordered_set<jsonifier::string_view> excludedKeys{};///< For excluding certain keys from parsing/serialization.
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};///< For excluding certain keys from parsing/serialization.
 		jsonifier::string proxyIconUrl{};///< Proxy icon url.
 		jsonifier::string iconUrl{};///< Icon url.
 		jsonifier::string name{};///< Name.
@@ -641,20 +641,20 @@ namespace discord_core_api {
 	/// @brief Embed data.
 	class DiscordCoreAPI_Dll embed_data {
 	  public:
-		unordered_set<jsonifier::string_view> excludedKeys{};///< For excluding certain keys from parsing/serialization.
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};///< For excluding certain keys from parsing/serialization.
 		jsonifier::vector<embed_field_data> fields{};///< Array of embed fields.
-		jsonifier::string description{};///< Description of the embed.
 		embed_thumbnail_data thumbnail{};///< Embed thumbnail data.
+		jsonifier::string description{};///< Description of the embed.
 		embed_provider_data provider{};///< Embed provider data.
-		time_stamp timeStamp{};///< Timestamp to be placed on the embed.
-		jsonifier::string title{};///< Title of the embed.
-		uint64_t hexColorValue{};///< Hex color value of the embed.
 		embed_footer_data footer{};///< Embed footer data.
 		embed_author_data author{};///< Embed author data.
+		jsonifier::string title{};///< Title of the embed.
+		uint64_t hexColorValue{};///< Hex color value of the embed.
 		jsonifier::string type{};///< Type of the embed.
-		jsonifier::string url{};///< Url for the embed.
 		embed_image_data image{};///< Embed image data.
 		embed_video_data video{};///< Embed video data.
+		jsonifier::string url{};///< Url for the embed.
+		time_stamp timeStamp{};///< Timestamp to be placed on the embed.
 
 		void generateExcludedKeys();
 
@@ -711,9 +711,9 @@ namespace discord_core_api {
 	/// @brief Message reference data.
 	struct message_reference_data {
 		bool failIfNotExists{};///< Fail if the message doesn't exist?
-		snowflake messageId{};///< Snowflake of the message to reference.
-		snowflake channelId{};///< Snowflake of the channel_data that the referenced message was sent in.
-		snowflake guildId{};///< Snowflake of the guild that the referenced message was sent in.
+		snowflake messageId{};///< snowflake of the message to reference.
+		snowflake channelId{};///< snowflake of the channel_data that the referenced message was sent in.
+		snowflake guildId{};///< snowflake of the guild that the referenced message was sent in.
 	};
 
 	enum class media_type : uint8_t { png = 0, gif = 1, jpeg = 2, mpeg = 3, mp3 = 4 };
@@ -927,7 +927,7 @@ namespace discord_core_api {
 	class DiscordCoreAPI_Dll partial_emoji_data {
 	  public:
 		friend class emoji_data;
-		unordered_set<jsonifier::string> excludedKeys{};///< Excluding keys from parsing/serializing.
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};///< Excluding keys from parsing/serializing.
 		jsonifier::string name{};///< What is its name?
 		bool animated{};///< Is it animated?
 		snowflake id{};///< This emoji's id.
@@ -940,7 +940,7 @@ namespace discord_core_api {
 	/// @brief Data structure representing a single emoji.
 	class DiscordCoreAPI_Dll emoji_data : public partial_emoji_data {
 	  public:
-		unordered_set<jsonifier::string> excludedKeys{};///< Excluding keys from parsing/serializing.
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};///< Excluding keys from parsing/serializing.
 		jsonifier::vector<role_data> roles{};///< Roles that are allowed to use this emoji.
 		std::wstring unicodeName{ L"" };///< What is its unicode name?
 		bool available{ true };///< Is it available to be used?
@@ -977,7 +977,7 @@ namespace discord_core_api {
 		jsonifier::vector<activity_data> activities{};///< Array of activity objects user_data's current activities.
 		client_status clientStatus{};///< 	user_data's platform-dependent status
 		jsonifier::string status{};///< Either "idle", "dnd", "online", or "offline".
-		snowflake guildId{};///< Snowflake id of the guild.
+		snowflake guildId{};///< snowflake id of the guild.
 		user_data user{};///< User_data object user_data whose presence is being updated.
 	};
 
@@ -1086,7 +1086,7 @@ namespace discord_core_api {
 		jsonifier::string name{};///< The name of the tag(0 - 20 characters).
 		snowflake emojiId{};///< The id of a guild's custom emoji.
 		bool moderated{};///< Whether this tag can only be added to or removed from threads by a member with the MANAGE_THREADS permission.
-		snowflake id{};///< Snowflake of the tag.
+		snowflake id{};///< snowflake of the tag.
 	};
 
 	/// forum layout types.
@@ -1152,11 +1152,11 @@ namespace discord_core_api {
 		jsonifier::string topic{};///< channel_data topic.
 		jsonifier::string name{};///< Name of the channel_data.
 		uint32_t memberCount{};///< count of members active in the channel_data.
-		snowflake parentId{};///< Snowflake of the channel_data's parent channel_data/category.
+		snowflake parentId{};///< snowflake of the channel_data's parent channel_data/category.
 		channel_flags flags{};///< Flags combined as a bitmask.
 		uint32_t position{};///< The position of the channel_data, in the guild's channel_data list.
-		snowflake ownerId{};///< Snowflake of the channel_data's owner.
-		snowflake guildId{};///< Snowflake of the channel_data's guild, if applicable.
+		snowflake ownerId{};///< snowflake of the channel_data's owner.
+		snowflake guildId{};///< snowflake of the channel_data's guild, if applicable.
 		snowflake id{};///< This channel's id.
 
 		inline channel_cache_data() = default;
@@ -1364,13 +1364,13 @@ namespace discord_core_api {
 	struct team_members_object_data {
 		jsonifier::vector<permissions_parse> permissions{};///< Permissions for the team.
 		uint64_t membershipState{};///< current state.
-		snowflake teamId{};///< Snowflake of the current team.
+		snowflake teamId{};///< snowflake of the current team.
 		user_data user{};///< User_data data of the current user_data.
 	};
 
 	/// @brief For updating the current voice state.
 	struct update_voice_state_data {
-		snowflake channelId{};///< Snowflake of the desired voice channel_data. leave blank to disconnect.
+		snowflake channelId{};///< snowflake of the desired voice channel_data. leave blank to disconnect.
 		snowflake guildId{};///< The id of the guild fo which we would like to establish a voice connection.
 		bool selfMute{};///< Whether or not we self-mute ourselves.
 		bool selfDeaf{};///< Whether or not we self-deafen ourselves.
@@ -1380,7 +1380,7 @@ namespace discord_core_api {
 
 	/// @brief For updating the current voice state.
 	struct update_voice_state_data_dc {
-		std::nullptr_t channelId{ nullptr };///< Snowflake of the desired voice channel_data. leave blank to disconnect.
+		std::nullptr_t channelId{ nullptr };///< snowflake of the desired voice channel_data. leave blank to disconnect.
 		snowflake guildId{};///< The id of the guild fo which we would like to establish a voice connection.
 		bool selfDeaf{};///< Whether or not we self-deafen ourselves.
 		bool selfMute{};///< Whether or not we self-mute ourselves.
@@ -1606,8 +1606,8 @@ namespace discord_core_api {
 		time_stamp createdTimeStamp{};///< Time at which this entry was created.
 		audit_log_event actionType{};///< Audit log action type.
 		jsonifier::string reason{};///< The reason that was entered for the given change.
-		snowflake targetId{};///< Snowflake of the target user_data.
-		snowflake userId{};///< Snowflake of the executing user_data.
+		snowflake targetId{};///< snowflake of the target user_data.
+		snowflake userId{};///< snowflake of the executing user_data.
 		snowflake id{};
 	};
 
@@ -1652,7 +1652,7 @@ namespace discord_core_api {
 	struct welcome_screen_channel_data {
 		jsonifier::string description{};///< Description of the welcome channel_data.
 		jsonifier::string emojiName{};///< Emoji name for the channel_data.
-		snowflake channelId{};///< Snowflake of the welcome channel_data.
+		snowflake channelId{};///< snowflake of the welcome channel_data.
 		snowflake emojiId{};///< Emoji id for the channel_data.
 	};
 
@@ -1847,7 +1847,7 @@ namespace discord_core_api {
 	class application_command_option_choice_data {
 	  public:
 		unordered_map<jsonifier::string, jsonifier::string> nameLocalizations{};///< Dictionary with keys in available locales localization dictionary for the name.
-		unordered_set<jsonifier::string> excludedKeys{};
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 		jsonifier::raw_json_data value{};///< The value of the option.
 		jsonifier::string name{};///< The name of the current choice.
 
@@ -1864,7 +1864,7 @@ namespace discord_core_api {
 		jsonifier::vector<application_command_option_data> options{};///< A vector of possible options for the current application_command_data option.
 		int64_t minValue{ std::numeric_limits<int64_t>::max() };///< If the option is an integer or number type, the minimum value permitted.
 		int64_t maxValue{ std::numeric_limits<int64_t>::min() };///< If the option is an integer or number type, the maximum value permitted.
-		unordered_set<jsonifier::string> excludedKeys{};
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 		jsonifier::vector<channel_type> channelTypes{};///< Set when the application_command_data option type is set to channel_data.
 		application_command_option_type type{};///< The type of command option.
 		jsonifier::string description{};///< A description of the current application_command_data option.
@@ -1991,7 +1991,7 @@ namespace discord_core_api {
 
 	struct DiscordCoreAPI_Dll component_data {
 		jsonifier::vector<select_default_value_data> defaultValues{};
-		unordered_set<jsonifier::string> excludedKeys{};
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 		jsonifier::vector<select_option_data> options{};
 		jsonifier::vector<channel_type> channelTypes{};
 		jsonifier::string placeholder{};
@@ -2018,6 +2018,9 @@ namespace discord_core_api {
 	  public:
 		component_type type{ component_type::Action_Row };
 		jsonifier::vector<component_data> components{};///< Array of components to make up the action-row.
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};
+
+		void generateExcludedKeys();
 	};
 
 	/// @brief Interaction callback types.
@@ -2035,7 +2038,7 @@ namespace discord_core_api {
 	struct DiscordCoreAPI_Dll interaction_callback_data {
 		jsonifier::vector<application_command_option_choice_data> choices{};///< Autocomplete choices(max of 25 choices).
 		jsonifier::vector<attachment_data> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
-		unordered_set<jsonifier::string> excludedKeys{};///< Keys to exclude from parsing/serializing.
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};///< Keys to exclude from parsing/serializing.
 		jsonifier::vector<action_row_data> components{};///< Message components.
 		allowed_mentions_data allowedMentions{};///< Allowed mentions data.
 		jsonifier::vector<embed_data> embeds{};///< Message embeds.
@@ -2057,7 +2060,7 @@ namespace discord_core_api {
 		unordered_map<jsonifier::string, jsonifier::string> descriptionLocalizations{};///< Dictionary with keys in available locales.
 		unordered_map<jsonifier::string, jsonifier::string> nameLocalizations{};///< Dictionary with keys in available locales.
 		jsonifier::vector<application_command_option_data> options{};///< A vector of possible options for the current application_command_data.
-		unordered_set<jsonifier::string> excludedKeys{};///< Keys to exclude at serialization time.
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};///< Keys to exclude at serialization time.
 		permission defaultMemberPermissions{};///< Set of permissions represented as a bit set all
 		jsonifier::string description{};///< A description of the current application_command_data.
 		application_command_type type{};///< The type of application_command_data.
@@ -2190,7 +2193,7 @@ namespace discord_core_api {
 	};
 
 	/// @brief The core of a message's data structure.
-	class message_data_old {
+	class message_data {
 	  public:
 		jsonifier::vector<channel_mention_data> mentionChannels{};///< Array of channel_data mention data.
 		jsonifier::vector<jsonifier::string> mentionRoles{};///< Jsonifier::vector of "mention roles" ids.
@@ -2223,34 +2226,28 @@ namespace discord_core_api {
 		bool pinned{};///< Is it pinned?
 		bool tts{};///< Is it a text-to-speech message_data?
 
-		virtual inline ~message_data_old() = default;
-	};
-
-	/// @brief Data structure representing a single message_data.
-	class message_data : public message_data_old {
-	  public:
-		message_data_old referencedMessage{};///< The referenced message, to reply to.
+		virtual inline ~message_data() = default;
 	};
 
 	/// @brief Resolved data.
 	struct resolved_data {
-		unordered_map<jsonifier::string, attachment_data> attachments{};///< Unordered_map of snowflakes to attachment objects the ids.
-		unordered_map<jsonifier::string, guild_member_data> members{};///< Unordered_map full of guild_memeber_data.
-		unordered_map<jsonifier::string, channel_data> channels{};///< Unordered_map full of channel_data.
-		unordered_map<jsonifier::string, message_data> messages{};///< Unordered_map full of messageData.
-		unordered_map<jsonifier::string, user_data> users{};///< Unordered_map full of user_data.
-		unordered_map<jsonifier::string, role_data> roles{};///< Unordered_map full of role_data.
+		unordered_map<snowflake, attachment_data> attachments{};///< Unordered_map of snowflakes to attachment objects the ids.
+		unordered_map<snowflake, guild_member_data> members{};///< Unordered_map full of guild_memeber_data.
+		unordered_map<snowflake, channel_data> channels{};///< Unordered_map full of channel_data.
+		unordered_map<snowflake, message_data> messages{};///< Unordered_map full of messageData.
+		unordered_map<snowflake, user_data> users{};///< Unordered_map full of user_data.
+		unordered_map<snowflake, role_data> roles{};///< Unordered_map full of role_data.
 	};
 
 	/// @brief Represents a sticker_data pack.
 	struct sticker_pack_data {
 		jsonifier::vector<sticker_data> stickers{};///< Array of sticker_data objects	the stickers in the pack.
-		jsonifier::string coverStickerId{};///< Snowflake of a sticker_data in the pack which is shown as the pack's icon.
-		jsonifier::string bannerAssetId{};///< Snowflake of the sticker_data pack's banner image.
+		jsonifier::string coverStickerId{};///< snowflake of a sticker_data in the pack which is shown as the pack's icon.
+		jsonifier::string bannerAssetId{};///< snowflake of the sticker_data pack's banner image.
 		jsonifier::string description{};///< Description of the sticker_data pack.
-		jsonifier::string skuId{};///< Snowflake of the pack's sku.
+		jsonifier::string skuId{};///< snowflake of the pack's sku.
 		jsonifier::string name{};///< Name of the sticker_data pack.
-		snowflake id{};///< Snowflake of the sticker_data pack.
+		snowflake id{};///< snowflake of the sticker_data pack.
 	};
 
 	/// @brief Connection visibility types.
@@ -2269,7 +2266,7 @@ namespace discord_core_api {
 		bool friendSync{};///< Whether friend sync is enabled for this connection.
 		bool verified{};///< Whether the connection is verified.
 		bool revoked{};///< Whether the connection is revoked.
-		snowflake id{};///< Snowflake of the connection account.
+		snowflake id{};///< snowflake of the connection account.
 	};
 
 	struct application_command_interaction_data_option;
@@ -2286,38 +2283,16 @@ namespace discord_core_api {
 	/// @brief Interaction data data.
 	struct interaction_data_data {
 		jsonifier::vector<application_command_interaction_data_option> options{};///< Application_command_data interaction data options.
-		jsonifier::vector<jsonifier::string> values{};///< The values of the components.
-		jsonifier::string customIdSmall{};///< The custom id of a particular modal input.
-		application_command_type type{};///< The type of application_command_data.
-		component_type componentType{};///< The type of component.
-		jsonifier::string customId{};///< The custom id of the interaction entity.
-		jsonifier::string value{};///< The input value of the modal.
-		jsonifier::string name{};///< The name of the command.
+		jsonifier::vector<action_row_data> components{};///< Array of message componentsthe values submitted by the user.
+		jsonifier::vector<jsonifier::string> values{};///< Array of select option values the user selected in a select menu component.
+		application_command_type type{};///< The type of application_command.
+		component_type componentType{};///< The type of the component.
+		jsonifier::string customId{};///< The custom_id of the component.
+		jsonifier::string name{};///< The name of the invoked command.
 		resolved_data resolved{};///< Resolved data.
 		snowflake targetId{};///< The target message_data's id.
 		snowflake guildId{};///< The guild that the command took place in.
-	};
-
-	/// @brief Interaction data.
-	class interaction_data {
-	  public:
-		permissions_parse appPermissions{};///< Bitwise set of permissions the app or bot has within the channel the interaction was sent from.
-		jsonifier::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.
-		interaction_data_data data{};///< The interaction's data.
-		jsonifier::string locale{};///< The locale.
-		guild_member_data member{};///< The data of the guild member who sent the interaction, if applicable.
-		jsonifier::string token{};///< The interaction token.
-		snowflake applicationId{};///< The application's id.
-		interaction_type type{};///< The type of interaction.
-		channel_data channel{};///< The channel that the interaction was sent through.
-		message_data message{};///< The message that the interaction came through on, if applicable.
-		snowflake channelId{};///< The channel_data the interaction was sent in.
-		snowflake guildId{};///< The guild id of the guild it was sent in.
-		uint64_t version{};///< The interaction version.
-		user_data user{};///< The user_data data of the sender of the interaction.
-		snowflake id{};
-
-		inline interaction_data() = default;
+		snowflake id{};///< The ID of the invoked command.
 	};
 
 	/// @brief Data from the session_start info.
@@ -2369,15 +2344,15 @@ namespace discord_core_api {
 		template<typename value_type> friend class get_user_image_url;
 		friend class discord_core_client;
 
-		bot_user(user_data dataPackage, discord_core_internal::base_socket_agent* pBaseBaseSocketAgentNew);
+		bot_user(user_data& dataPackage, discord_core_internal::base_socket_agent* pBaseBaseSocketAgentNew);
 
 		/// @brief Updates the bot's current voice-status. joins/leaves a channel, and/or self deafens/mutes.
 		/// @param dataPackage the new voice_state_data.
-		void updateVoiceStatus(update_voice_state_data& dataPackage);
+		void updateVoiceStatus(update_voice_state_data dataPackage);
 
 		/// @brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
 		/// @param dataPackage the new presence data.
-		void updatePresence(update_presence_data& dataPackage);
+		void updatePresence(update_presence_data dataPackage);
 
 	  protected:
 		bot_user() = default;
@@ -2533,6 +2508,7 @@ namespace discord_core_api {
 
 		bool areWeConnected();
 
+		/// \brief For disconnecting from the current guild's voice channel.
 		void disconnect();
 	};
 
@@ -2584,7 +2560,31 @@ namespace discord_core_api {
 
 		bool areWeConnected();
 
+		/// \brief For disconnecting from the current guild's voice channel.
 		void disconnect();
+	};
+
+	/// @brief Interaction data.
+	class interaction_data {
+	  public:
+		jsonifier::string appPermissions{};
+		jsonifier::string guildLocale{};
+		interaction_data_data data{};
+		jsonifier::string locale{};
+		guild_member_data member{};
+		snowflake applicationId{};
+		jsonifier::string token{};
+		interaction_type type{};
+		message_data message{};
+		channel_data channel{};
+		snowflake channelId{};
+		snowflake guildId{};
+		guild_data guild{};
+		int64_t version{};
+		user_data user{};
+		snowflake id{};
+
+		inline interaction_data() = default;
 	};
 
 	class partial_guild_data {
@@ -2717,7 +2717,7 @@ namespace discord_core_api {
 		const user_data& getUserData() const;
 
 	  protected:
-		interaction_data interactionData{};
+		unique_ptr<interaction_data> interactionData{ makeUnique<interaction_data>() };
 	};
 
 	struct DiscordCoreAPI_Dll move_through_message_pages_data;
@@ -2746,13 +2746,13 @@ namespace discord_core_api {
 
 		operator interaction_callback_data() const;
 
-		respond_to_input_event_data& operator=(const interaction_data& dataPackage);
+		respond_to_input_event_data& operator=(const interaction_data dataPackage);
 
-		respond_to_input_event_data(const interaction_data& dataPackage);
+		respond_to_input_event_data(const interaction_data dataPackage);
 
-		respond_to_input_event_data& operator=(const input_event_data& dataPackage);
+		respond_to_input_event_data& operator=(const input_event_data dataPackage);
 
-		respond_to_input_event_data(const input_event_data& dataPackage);
+		respond_to_input_event_data(const input_event_data dataPackage);
 
 		/// @brief Adds a button to the response message_data.
 		/// @param disabled whether the button is active or not.
@@ -2804,7 +2804,7 @@ namespace discord_core_api {
 		/// @brief For setting the allowable mentions in a response.
 		/// @param dataPackage an allowed_mentions_data structure.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addAllowedMentions(const allowed_mentions_data& dataPackage);
+		respond_to_input_event_data& addAllowedMentions(const allowed_mentions_data dataPackage);
 
 		/// @brief For setting the type of response to make.
 		/// @param typeNew an input_event_response_type.
@@ -2814,12 +2814,12 @@ namespace discord_core_api {
 		/// @brief For setting the components in a response.
 		/// @param dataPackage an action_row_data structure.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addComponentRow(const action_row_data& dataPackage);
+		respond_to_input_event_data& addComponentRow(const action_row_data dataPackage);
 
 		/// @brief For setting the embeds in a response.
 		/// @param dataPackage an embed_data structure.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addMessageEmbed(const embed_data& dataPackage);
+		respond_to_input_event_data& addMessageEmbed(const embed_data dataPackage);
 
 		/// @brief For setting the message content in a response.
 		/// @param dataPackage a string, containing the content.
@@ -2918,17 +2918,17 @@ namespace discord_core_api {
 		/// @brief For setting the allowable mentions in a response.
 		/// @param dataPackage an allowed_mentions_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addAllowedMentions(const allowed_mentions_data& dataPackage);
+		message_response_base& addAllowedMentions(const allowed_mentions_data dataPackage);
 
 		/// @brief For setting the components in a response.
 		/// @param dataPackage an action_row_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addComponentRow(const action_row_data& dataPackage);
+		message_response_base& addComponentRow(const action_row_data dataPackage);
 
 		/// @brief For setting the embeds in a response.
 		/// @param dataPackage an embed_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addMessageEmbed(const embed_data& dataPackage);
+		message_response_base& addMessageEmbed(const embed_data dataPackage);
 
 		/// @brief For setting the message content in a response.
 		/// @param dataPackage a string, containing the content.
@@ -3157,11 +3157,11 @@ namespace discord_core_api {
 		virtual ~command_data() = default;
 
 	  protected:
+		unique_ptr<input_event_data> eventData{};
 		jsonifier::string subCommandGroupName{};
 		jsonifier::string subCommandName{};
 		jsonifier::string commandName{};
 		serializer_value optionsArgs{};
-		input_event_data eventData{};
 	};
 
 	/// @brief Base arguments for the command classes.
@@ -3196,7 +3196,7 @@ namespace discord_core_api {
 	/**@}*/
 
 	struct ready_data {
-		unordered_set<jsonifier::string> excludedKeys{};
+		unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 		jsonifier::vector<jsonifier::string> trace{};
 		jsonifier::string resumeGatewayUrl{};
 		application_data application{};

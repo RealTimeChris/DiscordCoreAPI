@@ -1,7 +1,7 @@
-Getting a Channel {#gettingchannel}
+Getting a Channel {#getting_channel}
 ============
-- Execute the `channels::getCachedChannel()` (which collects it from the cache), or `getChannelAsync()` (which collects it from the discord servers) function, while passing to it a data structure of type `get_channel_data`, with a return type of `auto` or `channel`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::channels::getCachedChannel()` (which collects it from the cache), or `discord_core_api::getChannelAsync()` (which collects it from the discord servers) function, while passing to it a data structure of type `discord_core_api::get_channel_data`, with a return type of `auto` or `discord_core_api::channel_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 ```cpp
 /// Test.hpp -header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -30,9 +30,9 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			channel channel = channels::getCachedChannel({args.eventData.getChannelId()}).get();
+			channel channel = discord_core_api::channels::getCachedChannel({args.eventData.getChannelId()}).get();
 
-			channel channel = channels::getChannelAsync(const {args.eventData.getChannelId()}).get();
+			channel channel = discord_core_api::channels::getChannelAsync(const {args.eventData.getChannelId()}).get();
 		}
 	};
 }

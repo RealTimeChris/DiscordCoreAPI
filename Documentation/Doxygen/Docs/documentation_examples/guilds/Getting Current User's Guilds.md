@@ -1,7 +1,7 @@
-Getting Current User's Guilds {#gettingcurrentusersguilds}
+Getting Current User's Guilds {#getting_current_users_guilds}
 ============
-- Execute the, `guilds::getCurrentUserGuildsAsync()` function, while passing in a value of type `get_current_user_guilds_data`, with a return value of type `auto` or `vector<guild>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guilds::getCurrentUserGuildsAsync()` function, while passing in a value of type `discord_core_api::get_current_user_guilds_data`, with a return value of type `auto` or `jsonifier::vector<guild_data>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,13 +32,13 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_current_user_guilds_data dataPackage;
+				get_current_user_guilds_data& dataPackage;
 				dataPackage.limit = 2;
 
-				auto currentOutput = guilds::getCurrentUserGuildsAsync(const& dataPackage).get();
+				auto currentOutput = guilds::getCurrentUserGuildsAsync(const dataPackage).get();
 
 				for (auto& value: currentOutput) {
-					std::cout << "guild name: " << value.name << std::endl;
+					std::cout << "guild_data name: " << value.name << std::endl;
 				}
 
 

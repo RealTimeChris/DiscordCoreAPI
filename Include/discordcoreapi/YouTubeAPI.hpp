@@ -111,7 +111,7 @@ namespace discord_core_api {
 		};
 
 		struct streaming_data {
-			std::vector<format> adaptiveFormats{};
+			jsonifier::vector<format> adaptiveFormats{};
 		};
 
 		struct thumbnail_element {
@@ -120,7 +120,7 @@ namespace discord_core_api {
 		};
 
 		struct video_details_thumbnail {
-			std::vector<thumbnail_element> thumbnails{};
+			jsonifier::vector<thumbnail_element> thumbnails{};
 		};
 
 		struct video_details {

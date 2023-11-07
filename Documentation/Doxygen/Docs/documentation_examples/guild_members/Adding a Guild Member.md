@@ -1,7 +1,7 @@
-Adding a Guild Member {#addingaguildmember}
+Adding a Guild Member {#adding_a_guild_member}
 ============
-- Execute the, `guild_members::addGuildMemberAsync()` function, while passing in a value of type `add_guild_member_data`, with a return value of type `auto` or `guild_member`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guild_members::addGuildMemberAsync()` function, while passing in a value of type `discord_core_api::add_guild_member_data`, with a return value of type `auto` or `discord_core_api::guild_member_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,13 +32,13 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				add_guild_member_data dataPackage;
+				add_guild_member_data& dataPackage;
 				dataPackage.accessToken = "YOUR_ACCESS_TOKEN_HERE";
 				dataPackage.userId = args.eventData.getAuthorId();
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.nick = "real_time chris";
 
-				auto guildMember = guild_members::addGuildMemberAsync(const& dataPackage).get();
+				auto guildMember = guild_members::addGuildMemberAsync(const dataPackage).get();
 
 				std::cout << "the name: " << guildMember.user.userName << std::endl;
 

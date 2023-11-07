@@ -94,7 +94,7 @@ namespace discord_core_api {
 		application_commands::httpsClient = client;
 	}
 
-	co_routine<jsonifier::vector<application_command_data>> application_commands::getGlobalApplicationCommandsAsync(get_global_application_commands_data dataPackage) {
+	co_routine<jsonifier::vector<application_command_data>> application_commands::getGlobalApplicationCommandsAsync(const get_global_application_commands_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Global_Application_Commands };
 		co_await newThreadAwaitable<jsonifier::vector<application_command_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -114,14 +114,14 @@ namespace discord_core_api {
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		dataPackage.generateExcludedKeys();
 		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands";
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "application_commands::createGlobalApplicationCommandAsync()";
 		application_command_data returnData{};
 		application_commands::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	co_routine<application_command_data> application_commands::getGlobalApplicationCommandAsync(get_global_application_command_data dataPackage) {
+	co_routine<application_command_data> application_commands::getGlobalApplicationCommandAsync(const get_global_application_command_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Global_Application_Command };
 		co_await newThreadAwaitable<application_command_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -132,7 +132,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<application_command_data> application_commands::editGlobalApplicationCommandAsync(edit_global_application_command_data dataPackage) {
+	co_routine<application_command_data> application_commands::editGlobalApplicationCommandAsync(const edit_global_application_command_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Global_Application_Command };
 		co_await newThreadAwaitable<application_command_data>();
 		jsonifier::vector<application_command_data> appCommands = getGlobalApplicationCommandsAsync({ .applicationId = dataPackage.applicationId }).get();
@@ -149,14 +149,14 @@ namespace discord_core_api {
 		}
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/commands/" + appCommandId.operator jsonifier::string();
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "application_commands::editGlobalApplicationCommandAsync()";
 		application_command_data returnData{};
 		application_commands::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	co_routine<void> application_commands::deleteGlobalApplicationCommandAsync(delete_global_application_command_data dataPackage) {
+	co_routine<void> application_commands::deleteGlobalApplicationCommandAsync(const delete_global_application_command_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Global_Application_Command };
 		co_await newThreadAwaitable<void>();
 		jsonifier::vector<application_command_data> appCommands = getGlobalApplicationCommandsAsync({ .applicationId = dataPackage.applicationId }).get();
@@ -178,20 +178,20 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<application_command_data>> application_commands::bulkOverwriteGlobalApplicationCommandsAsync(
+	co_routine<jsonifier::vector<application_command_data>> application_commands::bulkOverwriteGlobalApplicationCommandsAsync(const 
 		bulk_overwrite_global_application_commands_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Bulk_Put_Global_Application_Commands };
 		co_await newThreadAwaitable<jsonifier::vector<application_command_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
 		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/commands";
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "application_commands::bulkOverwriteGlobalApplicationCommandsAsync()";
 		jsonifier::vector<application_command_data> returnData{};
 		application_commands::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<application_command_data>> application_commands::getGuildApplicationCommandsAsync(get_guild_application_commands_data dataPackage) {
+	co_routine<jsonifier::vector<application_command_data>> application_commands::getGuildApplicationCommandsAsync(const get_guild_application_commands_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Application_Commands };
 		co_await newThreadAwaitable<jsonifier::vector<application_command_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -212,14 +212,14 @@ namespace discord_core_api {
 		workload.workloadClass	  = discord_core_internal::https_workload_class::Post;
 		dataPackage.generateExcludedKeys();
 		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "application_commands::createGuildApplicationCommandAsync()";
 		application_command_data returnData{};
 		application_commands::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	co_routine<application_command_data> application_commands::getGuildApplicationCommandAsync(get_guild_application_command_data dataPackage) {
+	co_routine<application_command_data> application_commands::getGuildApplicationCommandAsync(const get_guild_application_command_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Application_Command };
 		co_await newThreadAwaitable<application_command_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -230,7 +230,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<application_command_data> application_commands::editGuildApplicationCommandAsync(edit_guild_application_command_data dataPackage) {
+	co_routine<application_command_data> application_commands::editGuildApplicationCommandAsync(const edit_guild_application_command_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Application_Command };
 		co_await newThreadAwaitable<application_command_data>();
 		jsonifier::vector<application_command_data> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
@@ -247,14 +247,14 @@ namespace discord_core_api {
 		}
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + appCommandId;
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "application_commands::editGuildApplicationCommandAsync()";
 		application_command_data returnData{};
 		application_commands::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	co_routine<void> application_commands::deleteGuildApplicationCommandAsync(delete_guild_application_command_data dataPackage) {
+	co_routine<void> application_commands::deleteGuildApplicationCommandAsync(const delete_guild_application_command_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild_Application_Command };
 		co_await newThreadAwaitable<void>();
 		jsonifier::vector<application_command_data> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
@@ -276,11 +276,11 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<application_command_data>> application_commands::bulkOverwriteGuildApplicationCommandsAsync(
+	co_routine<jsonifier::vector<application_command_data>> application_commands::bulkOverwriteGuildApplicationCommandsAsync(const 
 		bulk_overwrite_guild_application_commands_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Bulk_Put_Guild_Application_Commands };
 		co_await newThreadAwaitable<jsonifier::vector<application_command_data>>();
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
 		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
 		workload.callStack	   = "application_commands::bulkOverwriteGuildApplicationCommandsAsync()";
@@ -289,7 +289,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<guild_application_command_permissions_data>> application_commands::getGuildApplicationCommandPermissionsAsync(
+	co_routine<jsonifier::vector<guild_application_command_permissions_data>> application_commands::getGuildApplicationCommandPermissionsAsync(const 
 		get_guild_application_command_permissions_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Application_Commands_Permissions };
 		co_await newThreadAwaitable<jsonifier::vector<guild_application_command_permissions_data>>();
@@ -301,7 +301,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_application_command_permissions_data> application_commands::getApplicationCommandPermissionsAsync(get_application_command_permissions_data dataPackage) {
+	co_routine<guild_application_command_permissions_data> application_commands::getApplicationCommandPermissionsAsync(const get_application_command_permissions_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Application_Command_Permissions };
 		co_await newThreadAwaitable<guild_application_command_permissions_data>();
 		jsonifier::vector<application_command_data> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
@@ -324,7 +324,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_application_command_permissions_data> application_commands::editGuildApplicationCommandPermissionsAsync(
+	co_routine<guild_application_command_permissions_data> application_commands::editGuildApplicationCommandPermissionsAsync(const 
 		edit_guild_application_command_permissions_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Guild_Application_Command_Permissions };
 		co_await newThreadAwaitable<guild_application_command_permissions_data>();
@@ -342,7 +342,7 @@ namespace discord_core_api {
 		}
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
 		workload.relativePath  = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + commandId + "/permissions";
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "application_commands::editGuildApplicationCommandPermissionsAsync()";
 		guild_application_command_permissions_data returnData{};
 		application_commands::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);

@@ -54,8 +54,8 @@ namespace jsonifier {
 			createObject("channelId", &value_type::channelId, "webHookId", &value_type::webHookId, "avatar", &value_type::avatar, "name", &value_type::name);
 	};
 
-	template<> struct core<discord_core_api::modify_web_hook_data_with_token_data> {
-		using value_type				 = discord_core_api::modify_web_hook_data_with_token_data;
+	template<> struct core<discord_core_api::modify_web_hook_with_token_data> {
+		using value_type				 = discord_core_api::modify_web_hook_with_token_data;
 		static constexpr auto parseValue = createObject("webhookToken", &value_type::webhookToken, "channelId", &value_type::channelId, "webHookId", &value_type::webHookId,
 			"avatar", &value_type::avatar, "name", &value_type::name);
 	};
@@ -73,7 +73,7 @@ namespace jsonifier {
 
 namespace discord_core_api {
 
-	execute_web_hook_data::execute_web_hook_data(web_hook_data dataNew) {
+	execute_web_hook_data::execute_web_hook_data(const web_hook_data& dataNew) {
 		webhookToken = dataNew.token;
 		webHookId	 = dataNew.id;
 	}
@@ -90,7 +90,7 @@ namespace discord_core_api {
 				component.type		 = component_type::Button;
 				component.emoji.name = emojiName;
 				component.label		 = buttonLabel;
-				component.style		 = static_cast<int32_t>(buttonStyle);
+				component.style		 = static_cast<uint64_t>(buttonStyle);
 				component.customId	 = customIdNew;
 				component.disabled	 = disabled;
 				component.emoji.id	 = emojiId;
@@ -104,8 +104,8 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	execute_web_hook_data& execute_web_hook_data::addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<select_option_data> options,
-		jsonifier::string_view placeholder, int32_t maxValues, int32_t minValues, select_menu_type type, jsonifier::vector<channel_type> channelTypes) {
+	execute_web_hook_data& execute_web_hook_data::addSelectMenu(bool disabled, jsonifier::string_view customIdNew, const jsonifier::vector<select_option_data>& options,
+		jsonifier::string_view placeholder, int32_t maxValues, int32_t minValues, select_menu_type type, const jsonifier::vector<channel_type>& channelTypes) {
 		if (components.size() == 0) {
 			action_row_data actionRowData;
 			components.emplace_back(actionRowData);
@@ -117,8 +117,8 @@ namespace discord_core_api {
 				componentData.channelTypes = channelTypes;
 				componentData.placeholder  = placeholder;
 				componentData.customId	   = customIdNew;
-				componentData.maxValues	   = maxValues;
-				componentData.minValues	   = minValues;
+				componentData.maxValues	   = static_cast<uint64_t>(maxValues);
+				componentData.minValues	   = static_cast<uint64_t>(minValues);
 				componentData.disabled	   = disabled;
 				componentData.options	   = options;
 				components[components.size() - 1].components.emplace_back(componentData);
@@ -144,10 +144,10 @@ namespace discord_core_api {
 				component_data component{};
 				component.type		  = component_type::Text_Input;
 				component.customId	  = customIdNew;
-				component.style		  = static_cast<int32_t>(inputStyle);
+				component.style		  = static_cast<uint64_t>(inputStyle);
 				component.title		  = titleNew;
-				component.maxLength	  = maxLength;
-				component.minLength	  = minLength;
+				component.maxLength	  = static_cast<uint64_t>(maxLength);
+				component.minLength	  = static_cast<uint64_t>(minLength);
 				component.label		  = label;
 				component.required	  = required;
 				component.placeholder = placeholder;
@@ -160,22 +160,22 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	execute_web_hook_data& execute_web_hook_data::addFile(file theFile) {
+	execute_web_hook_data& execute_web_hook_data::addFile(const file& theFile) {
 		files.emplace_back(theFile);
 		return *this;
-	}
 
-	execute_web_hook_data& execute_web_hook_data::addAllowedMentions(allowed_mentions_data dataPackage) {
+	}
+	execute_web_hook_data& execute_web_hook_data::addAllowedMentions(const allowed_mentions_data dataPackage) {
 		allowedMentions = dataPackage;
 		return *this;
 	}
 
-	execute_web_hook_data& execute_web_hook_data::addComponentRow(action_row_data dataPackage) {
+	execute_web_hook_data& execute_web_hook_data::addComponentRow(const action_row_data dataPackage) {
 		components.emplace_back(dataPackage);
 		return *this;
 	}
 
-	execute_web_hook_data& execute_web_hook_data::addMessageEmbed(embed_data dataPackage) {
+	execute_web_hook_data& execute_web_hook_data::addMessageEmbed(const embed_data dataPackage) {
 		embeds.emplace_back(dataPackage);
 		return *this;
 	}
@@ -190,28 +190,69 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	edit_web_hook_data::edit_web_hook_data(web_hook_data dataNew) {
+	edit_web_hook_data::edit_web_hook_data(const web_hook_data& dataNew) {
 		webhookToken = dataNew.token;
 		webHookId	 = dataNew.id;
 	}
+
+	void execute_web_hook_data::generateExcludedKeys() {
+		if (attachments.size() == 0) {
+			jsonifierExcludedKeys.emplace("attachments");
+		}
+		if (allowedMentions.parse.size() == 0 && allowedMentions.roles.size() == 0 && allowedMentions.users.size() == 0) {
+			jsonifierExcludedKeys.emplace("allowed_mentions");
+		}
+		if (components.size() == 0) {
+			jsonifierExcludedKeys.emplace("components");
+		}
+		for (auto& value: components) {
+			value.generateExcludedKeys();
+		}
+		if (embeds.size() == 0) {
+			jsonifierExcludedKeys.emplace("embeds");
+		}
+		for (auto& value: embeds) {
+			value.generateExcludedKeys();
+		}
+		if (files.size() == 0) {
+			jsonifierExcludedKeys.emplace("files");
+		}
+		if (avatarUrl == "") {
+			jsonifierExcludedKeys.emplace("avatar_url");
+		}
+		if (customId == "") {
+			jsonifierExcludedKeys.emplace("custom_id");
+		}
+		if (userName == "") {
+			jsonifierExcludedKeys.emplace("username");
+		}
+		if (title == "") {
+			jsonifierExcludedKeys.emplace("title");
+		}
+		if (content == "") {
+			jsonifierExcludedKeys.emplace("content");
+		}
+		return;
+	}
+
 
 	void discord_core_api::web_hooks::initialize(discord_core_internal::https_client* client) {
 		discord_core_api::web_hooks::httpsClient = client;
 	}
 
-	co_routine<web_hook_data> discord_core_api::web_hooks::createWebHookAsync(create_web_hook_data dataPackage) {
+	co_routine<web_hook_data> discord_core_api::web_hooks::createWebHookAsync(const create_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Webhook };
 		co_await newThreadAwaitable<web_hook_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/webhooks";
 		workload.callStack	   = "discord_core_api::web_hooks::createWebHookAsync()";
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		web_hook_data returnData{};
 		discord_core_api::web_hooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<web_hook_data>> discord_core_api::web_hooks::getChannelWebHooksAsync(get_channel_web_hooks_data dataPackage) {
+	co_routine<jsonifier::vector<web_hook_data>> discord_core_api::web_hooks::getChannelWebHooksAsync(const get_channel_web_hooks_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Channel_Webhooks };
 		co_await newThreadAwaitable<jsonifier::vector<web_hook_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -222,7 +263,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<web_hook_data>> discord_core_api::web_hooks::getGuildWebHooksAsync(get_guild_web_hooks_data dataPackage) {
+	co_routine<jsonifier::vector<web_hook_data>> discord_core_api::web_hooks::getGuildWebHooksAsync(const get_guild_web_hooks_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Webhooks };
 		co_await newThreadAwaitable<jsonifier::vector<web_hook_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -233,7 +274,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<web_hook_data> discord_core_api::web_hooks::getWebHookAsync(get_web_hook_data dataPackage) {
+	co_routine<web_hook_data> discord_core_api::web_hooks::getWebHookAsync(const get_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Webhook };
 		co_await newThreadAwaitable<web_hook_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -244,7 +285,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<web_hook_data> discord_core_api::web_hooks::getWebHookWithTokenAsync(get_web_hook_data_with_token_data dataPackage) {
+	co_routine<web_hook_data> discord_core_api::web_hooks::getWebHookWithTokenAsync(const get_web_hook_with_token_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Webhook_With_Token };
 		co_await newThreadAwaitable<web_hook_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -255,31 +296,31 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<web_hook_data> discord_core_api::web_hooks::modifyWebHookAsync(modify_web_hook_data dataPackage) {
+	co_routine<web_hook_data> discord_core_api::web_hooks::modifyWebHookAsync(const modify_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Webhook };
 		co_await newThreadAwaitable<web_hook_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/webhooks/" + dataPackage.webHookId;
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "discord_core_api::web_hooks::modifyWebHookAsync()";
 		web_hook_data returnData{};
 		discord_core_api::web_hooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	co_routine<web_hook_data> discord_core_api::web_hooks::modifyWebHookWithTokenAsync(modify_web_hook_data_with_token_data dataPackage) {
+	co_routine<web_hook_data> discord_core_api::web_hooks::modifyWebHookWithTokenAsync(const modify_web_hook_with_token_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Webhook_With_Token };
 		co_await newThreadAwaitable<web_hook_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/webhooks/" + dataPackage.webHookId + "/" + dataPackage.webhookToken;
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "discord_core_api::web_hooks::modifyWebHookWithTokenAsync()";
 		web_hook_data returnData{};
 		discord_core_api::web_hooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	co_routine<void> discord_core_api::web_hooks::deleteWebHookAsync(delete_web_hook_data dataPackage) {
+	co_routine<void> discord_core_api::web_hooks::deleteWebHookAsync(const delete_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Webhook };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -289,7 +330,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> discord_core_api::web_hooks::deleteWebHookWithTokenAsync(delete_web_hook_data_with_token_data dataPackage) {
+	co_routine<void> discord_core_api::web_hooks::deleteWebHookWithTokenAsync(const delete_web_hook_with_token_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Webhook_With_Token };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -299,7 +340,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<message_data> discord_core_api::web_hooks::executeWebHookAsync(execute_web_hook_data dataPackage) {
+	co_routine<message_data> discord_core_api::web_hooks::executeWebHookAsync(const execute_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Execute_Webhook };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -316,17 +357,17 @@ namespace discord_core_api {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = discord_core_internal::payload_type::Multipart_Form;
-			parser.serializeJson<true>(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 			workload.content = constructMultiPartData(workload.content, dataPackage.files);
 		} else {
-			parser.serializeJson<true>(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 		}
 		message_data returnData{};
 		discord_core_api::web_hooks::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;
 	}
 
-	co_routine<message_data> discord_core_api::web_hooks::getWebHookMessageAsync(get_web_hook_data_message_data dataPackage) {
+	co_routine<message_data> discord_core_api::web_hooks::getWebHookMessageAsync(const get_web_hook_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Webhook_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -340,7 +381,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> discord_core_api::web_hooks::editWebHookMessageAsync(edit_web_hook_data dataPackage) {
+	co_routine<message_data> discord_core_api::web_hooks::editWebHookMessageAsync(const edit_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Webhook_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -350,10 +391,10 @@ namespace discord_core_api {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = discord_core_internal::payload_type::Multipart_Form;
-			parser.serializeJson<true>(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 			workload.content = constructMultiPartData(workload.content, dataPackage.files);
 		} else {
-			parser.serializeJson<true>(dataPackage, workload.content);
+			parser.serializeJson(dataPackage, workload.content);
 		}
 		workload.callStack = "discord_core_api::web_hooks::editWebHookMessageAsync()";
 		message_data returnData{};
@@ -361,7 +402,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> discord_core_api::web_hooks::deleteWebHookMessageAsync(delete_web_hook_data_message_data dataPackage) {
+	co_routine<void> discord_core_api::web_hooks::deleteWebHookMessageAsync(const delete_web_hook_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Webhook_Message };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;

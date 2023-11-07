@@ -261,34 +261,11 @@ namespace discord_core_api {
 		}
 	};
 
-	template<typename first_type_new, typename second_type_new> class pair {
-	  public:
-		using first_type  = first_type_new;
-		using second_type = second_type_new;
-
-		first_type first;
-		second_type second;
-
-		template<typename first_type_newer, typename second_type_newer> inline pair(first_type_newer&& firstNew, second_type_newer&& secondNew)
-			: first{ std::forward<first_type_newer>(firstNew) }, second{ std::forward<second_type_newer>(secondNew) } {
-		}
-
-		template<typename first_type_newer> inline pair(first_type_newer&& firstNew) : first{ std::forward<first_type_newer>(firstNew) }, second{} {
-		}
-
-		template<typename... args> inline pair(args&&... argsNew) : pair{ std::forward<args>(argsNew)... } {
-		}
-
-		inline bool operator==(const pair& other) {
-			return first == other.first && second == other.second;
-		}
-	};
-
 	template<typename value_type_internal_new> class hash_iterator {
 	  public:
 		using iterator_category	  = std::forward_iterator_tag;
 		using value_type_internal = value_type_internal_new;
-		using value_type		  = value_type_internal::value_type;
+		using value_type		  = typename value_type_internal::value_type;
 		using reference			  = value_type&;
 		using pointer			  = value_type*;
 		using pointer_internal	  = value_type_internal*;

@@ -45,32 +45,32 @@ namespace discord_core_api {
 		/// @brief Responds to one of a number of types of "input_events".
 		/// @param dataPackage a respond_to_input_event_data structure.
 		/// @return an unique_ptr containing an input_event_data structure.
-		static co_routine<input_event_data> respondToInputEventAsync(respond_to_input_event_data dataPackage);
+		static co_routine<input_event_data> respondToInputEventAsync(const respond_to_input_event_data dataPackage);
 
 		/// @brief Deletes a previously sent "input-event-response".
 		/// @param dataPackage a unique_ptr containing an input_event_data structure.
 		/// @param timeDelayNew an int32_t representing the desired delay until the message is deleted, in milliseconds.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteInputEventResponseAsync(input_event_data& dataPackage, uint32_t timeDelayNew = 0);
+		static co_routine<void> deleteInputEventResponseAsync(const input_event_data dataPackage, uint32_t timeDelayNew = 0);
 
 	  protected:
-		static input_event_data respondToInputEvent(create_ephemeral_interaction_response_data& dataPackage);
+		static input_event_data respondToInputEvent(create_ephemeral_interaction_response_data dataPackage);
 
-		static input_event_data respondToInputEvent(create_deferred_interaction_response_data& dataPackage);
+		static input_event_data respondToInputEvent(create_deferred_interaction_response_data dataPackage);
 
-		static input_event_data respondToInputEvent(create_ephemeral_follow_up_message_data& dataPackage);
+		static input_event_data respondToInputEvent(create_ephemeral_follow_up_message_data dataPackage);
 
-		static input_event_data respondToInputEvent(create_interaction_response_data& dataPackage);
+		static input_event_data respondToInputEvent(create_interaction_response_data dataPackage);
 
-		static input_event_data respondToInputEvent(edit_interaction_response_data& dataPackage);
+		static input_event_data respondToInputEvent(edit_interaction_response_data dataPackage);
 
-		static input_event_data respondToInputEvent(create_follow_up_message_data& dataPackage);
+		static input_event_data respondToInputEvent(create_follow_up_message_data dataPackage);
 
-		static input_event_data respondToInputEvent(edit_follow_up_message_data& dataPackage);
+		static input_event_data respondToInputEvent(edit_follow_up_message_data dataPackage);
 
-		static input_event_data respondToInputEvent(create_message_data& dataPackage);
+		static input_event_data respondToInputEvent(create_message_data dataPackage);
 
-		static input_event_data respondToInputEvent(edit_message_data& dataPackage);
+		static input_event_data respondToInputEvent(edit_message_data dataPackage);
 	};
 	/**@}*/
 }

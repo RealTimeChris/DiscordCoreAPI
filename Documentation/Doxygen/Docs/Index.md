@@ -2,22 +2,22 @@
 [![Codacy Badge](https://img.shields.io/codacy/grade/1e5ae970aed34d0b96249cdfd02099cf?color=lightblue&label=Code%20Quality&style=plastic)](https://www.codacy.com/gh/RealTimeChris/DiscordCoreAPI/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RealTimeChris/DiscordCoreAPI&amp;utm_campaign=Badge_Grade)
 [![Discord](https://img.shields.io/discord/931640556814237706?color=red&label=Discord%20Server&style=plastic)](https://discord.gg/adgMqeBuhP)
 ![Commit Activity](https://img.shields.io/github/commit-activity/y/realtimechris/discordcoreapi?color=green&label=Commits&style=plastic)
-![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?&style=plastic&label=Lines%20of%20Code)
+![Lines of Code](https://tokei.rs/b1/github/RealTimeChris/DiscordCoreAPI?color=light-blue&label=Lines%20Of%20Code%20&style=plastic)
 
-Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/HttpsClient.hpp#L253),
-[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/WebSocketClient.hpp#L176), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/VoiceConnection.hpp#L274) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
+Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous \ref discord_core_api::co_routine "CoRoutines", as well as a home-brew set of \ref discord_core_api::discord_core_internal::https_client "Https",
+\ref discord_core_api::discord_core_internal::websocket_client "WebSocket", and \ref discord_core_api::voice_connection "Datagram" socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 ![imageDiscordCoreAPI](./TheLogo.png "A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.")
 
 ## Compiler Support
-![MSVC_20922](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/MSVC_2022-Windows.yml?style=plastic&logo=microsoft&logoColor=green&label=MSVC_2022&labelColor=pewter&color=blue)
-![CLANG_18](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/CLANG_18-Ubuntu.yml?style=plastic&logo=linux&logoColor=green&label=CLANG_18&labelColor=pewter&color=blue)
-![GCC_13](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/GCC_13-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=GCC_13&labelColor=pewter&color=blue)
+![MSVC_20922](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/MSVC_2022-Windows.yml?style=plastic&logo=microsoft&logoColor=green&label=MSVC_2022&labelColor=pewter&color=blue)
+![CLANG_18](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_18-Ubuntu.yml?style=plastic&logo=linux&logoColor=green&label=CLANG_18&labelColor=pewter&color=blue)
+![GCC_13](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_13-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=GCC_13&labelColor=pewter&color=blue)
 
 ## Operating System Support
-![Windows](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/MSVC_2022-Windows.yml?style=plastic&logo=microsoft&logoColor=green&label=Windows&labelColor=pewter&color=blue)
-![Linux](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/CLANG_18-Ubuntu.yml?style=plastic&logo=linux&logoColor=green&label=Linux&labelColor=pewter&color=blue)
-![Mac](https://img.shields.io/github/actions/workflow/status/RealTimeChris/Jsonifier/GCC_13-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=MacOS&labelColor=pewter&color=blue)
+![Windows](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/MSVC_2022-Windows.yml?style=plastic&logo=microsoft&logoColor=green&label=Windows&labelColor=pewter&color=blue)
+![Linux](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_18-Ubuntu.yml?style=plastic&logo=linux&logoColor=green&label=Linux&labelColor=pewter&color=blue)
+![Mac](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_13-MacOS.yml?style=plastic&logo=apple&logoColor=green&label=MacOS&labelColor=pewter&color=blue)
 
 # Documentation/Examples
 \ref documentation_examples
@@ -30,15 +30,26 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 
 # Features   
 
+## Convert Snowflakes Into Data
+
+----
+- Using the `discord_core_api::snowflake::toEntity()` function of the `discord_core_api::snowflake` class allows for converting the entity's id directly into the data structure represented by it.
+- 
+```cpp
+discord_core_api::snowflake someChannelId{};
+discord_core_api::channel_data newChannel = someChannelId.toEntity<discord_core_api::channel_data>();
+std::cout << "CHANNEL NAME: " + newChannel.name << std::endl;
+```
+
 ## Performant   
 
 ----
-- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/Etf.hpp) for websocket transfer, and a pool of [kept-alive HTTPS connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/HttpsClient.hpp#L194) - this library offers the snappiest responses to your interactions and user input.
+- Thanks to utilizing \ref etf.hpp "Erlang Text Format" for websocket transfer, and a pool of \ref discord_core_api::discord_core_internal::https_connection_manager::httpsConnections "kept-alive HTTPS connections" - this library offers the snappiest responses to your interactions and user input.
 
 ## Audio-Bridge   
 
 ----
-- Connect multiple voice-channels to one-another using the `DiscordCoreAPI::StreamInfo` member of the `DiscordCoreAPI::VoiceConnectInitData` structure, with the `DiscordCoreAPI::VoiceConnection` class.
+- Connect multiple voice-channels to one-another using the `discord_core_api::stream_info` member of the `discord_core_api::voice_connect_init_data` structure, with the `discord_core_api::voice_connection` class.
 
 ## CPU Efficient   
 
@@ -53,7 +64,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 ## Concurrent Discord API Access   
 
 ----
-- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/CoRoutineThreadPool.hpp#L70), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.    
+- As a result of using \ref discord_core_api::co_routine "custom asynchronous coroutines" along with a \ref discord_core_api::discord_core_internal::co_routine_thread_pool "thread pool", this library has the ability to make fully asynchronous/concurrent requests to the Discord API.    
 
 ## Advanced Rate-Limiting System
 
@@ -107,9 +118,9 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 ## A Unified "Input-Event" System
 
 ----
-- User interactions (Application Commands, Message Commands, User Commands) are accepted via the `EventManager::onInputEventCreation` event.
-- They can all be responded to using the `InputEvents::respondToInputEventAsync()` function.
-- Alternatively you can implement your own input-event handling by using the raw `EventManager::onInteractionCreation` or `EventManager::onMessageCreation` events.
+- User interactions (Application Commands, Message Commands, User Commands) are accepted via the `discord_core_api::event_manager::onInputEventCreation` event.
+- They can all be responded to using the `discord_core_api::input_events::respondToInputEventAsync()` function.
+- Alternatively you can implement your own input-event handling by using the raw `discord_core_api::event_manager::onInteractionCreation` or `discord_core_api::event_manager::onMessageCreation` events.
 ```cpp
 EmbedData newEmbed{};
 newEmbed.setAuthor(args.eventData.getUserName(), args.eventData.getAvatarURL());
@@ -120,8 +131,8 @@ newEmbed.setColor(discordGuild.data.borderColor);
 RespondToInputEventData dataPackage{ args.eventData };
 dataPackage.addMessageEmbed(newEmbed);
 dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
-InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage);
-InputEvents::deleteInputEventResponseAsync(const newEvent, 20000).get();
+InputEventData newEvent = input_events::respondToInputEvent(dataPackage);
+input_events::deleteInputEventResponseAsync(const newEvent, 20000).get();
 ```
 
 # Build Instructions (Full-Vcpkg)
@@ -130,7 +141,7 @@ InputEvents::deleteInputEventResponseAsync(const newEvent, 20000).get();
 - [Install vcpkg](https://vcpkg.io/en/getting-started.html), if need be.
 - Make sure to run `vcpkg integrate install`.
 - Enter within a terminal `vcpkg install discordcoreapi:x64-windows_OR_linux`.
-- Set up a console project in your IDE and make sure to set the C++ standard to C++20 or later - and include `discordcoreapi/Index.hpp`.
+- Set up a console project in your IDE and make sure to set the C++ standard to C++20 or later - and include `discord_core_api::discordcoreapi/Index.hpp`.
 - Build and run!
 
 # Dependencies
@@ -138,7 +149,7 @@ InputEvents::deleteInputEventResponseAsync(const newEvent, 20000).get();
 ----
 - [CMake](https://cmake.org/) (Version 3.20 or greater)
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
-- [DiscordCoreAPI](https://github.com/RealTimeChris/DiscordCoreAPI) (.\\vcpkg install jsonifier:x64-windows_OR_linux)
+- [Jsonifier](https://github.com/RealTimeChris/Jsonifier) (.\\vcpkg install jsonifier:x64-windows_OR_linux)
 - [OpenSSL](https://github.com/openssl/openssl) (.\\vcpkg install openssl:x64-windows_OR_linux)
 - [Opus](https://github.com/xiph/opus) (.\\vcpkg install opus:x64-windows_OR_linux)
 - [Sodium](https://github.com/jedisct1/libsodium) (.\\vcpkg install libsodium:x64-windows_OR_linux)
@@ -163,7 +174,7 @@ InputEvents::deleteInputEventResponseAsync(const newEvent, 20000).get();
 ----
 - By running `cmake --install ./Build/Debug_OR_Release`, you will be given a cmake package, which can be used to build from this library, using other cmake projects.
 - It is used by setting `DiscordCoreAPI_DIR` to wherever the DiscordCoreAPIConfig.cmake file would have been installed on your system by having run the `cmake --install` command, and then using `find_package()` on `DiscordCoreAPI`.
-- When found, you will be granted the following cmake "variables"; `DiscordCoreAPI` - this is the library target which can be linked to from other targets in cmake, and on Windows; `$<TARGET_RUNTIME_DLLS:DiscordCoreAPI-Bot>` - which is a list of dll files to be copied into your executable's final location after building. As well as `RELEASE_PDB_FILE_PATH`, `DEBUG_PDB_FILE_PATH`, `RELEASE_PDB_FILE_NAME`, and `DEBUG_PDB_FILE_NAME`, which are full file/directory paths/filenames to the library's PDB files.
+- When found, you will be granted the following cmake "variables"; `DiscordCoreAPI::DiscordCoreAPI` - this is the library target which can be linked to from other targets in cmake, and on Windows; `$<TARGET_RUNTIME_DLLS:DiscordCoreAPI-Bot>` - which is a list of dll files to be copied into your executable's final location after building. As well as `RELEASE_PDB_FILE_PATH`, `DEBUG_PDB_FILE_PATH`, `RELEASE_PDB_FILE_NAME`, and `DEBUG_PDB_FILE_NAME`, which are full file/directory paths/filenames to the library's PDB files.
 - [Here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt) is an example of building an executable from this library with this method.
 
 # Build Instructions (Non-Vcpkg) - The Executable

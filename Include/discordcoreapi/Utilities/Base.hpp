@@ -70,10 +70,10 @@
 		#define NOMINMAX
 	#endif
 	#include <chrono>
-inline std::tm getCurrentTimeVal(time_t& result) {
-	std::tm resultTwo{};
-	localtime_s(&resultTwo, &result);
-	return resultTwo;
+inline tm getTime(time_t time) {
+	tm timeNew{};
+	gmtime_s(&timeNew, &time);
+	return timeNew;
 }
 	#include <WinSock2.h>
 #else
@@ -87,9 +87,8 @@ inline std::tm getCurrentTimeVal(time_t& result) {
 	#include <cstring>
 	#include <time.h>
 	#include <ctime>
-inline std::tm getCurrentTimeVal(time_t& result) {
-	std::tm resultTwo{ *localtime(&result) };
-	return resultTwo;
+inline tm getTime(time_t time) {
+	return *gmtime(&time);
 }
 #endif
 
@@ -158,7 +157,7 @@ using namespace std::literals;
 
 namespace discord_core_api {
 
-	extern thread_local jsonifier::jsonifier_core parser;
+	inline thread_local jsonifier::jsonifier_core parser{};
 
 	template<typename value_type> using stop_watch = jsonifier_internal::stop_watch<value_type>;
 	using sys_clock								   = std::chrono::system_clock;
@@ -174,19 +173,19 @@ namespace discord_core_api {
 		websocket = 2,
 	};
 
-	inline constexpr jsonifier::string_view shiftToBrightGreen() {
+	constexpr jsonifier::string_view shiftToBrightGreen() {
 		return "\033[1;40;92m";
 	}
 
-	inline constexpr jsonifier::string_view shiftToBrightBlue() {
+	constexpr jsonifier::string_view shiftToBrightBlue() {
 		return "\033[1;40;96m";
 	}
 
-	inline constexpr jsonifier::string_view shiftToBrightRed() {
+	constexpr jsonifier::string_view shiftToBrightRed() {
 		return "\033[1;40;91m";
 	}
 
-	inline constexpr jsonifier::string_view reset() {
+	constexpr jsonifier::string_view reset() {
 		return "\033[0m";
 	}
 
@@ -346,7 +345,7 @@ namespace discord_core_api {
 			uint64_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + ((hoursToAdd + 8) * secondsPerHour) +
 				(minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
-			std::tm resultTwo{ getCurrentTimeVal(result) };
+			std::tm resultTwo{ getTime(result) };
 			jsonifier::string returnString{};
 			if (resultTwo.tm_isdst) {
 				if (resultTwo.tm_hour + 4ULL >= 24) {
@@ -375,7 +374,7 @@ namespace discord_core_api {
 		/// @return iso8601 time stamp string.
 		inline static jsonifier::string convertToCurrentISO8601TimeStamp(time_format timeFormat) {
 			std::time_t result = std::time(nullptr);
-			std::tm resultTwo{ getCurrentTimeVal(result) };
+			std::tm resultTwo{ getTime(result) };
 			jsonifier::string returnString{};
 			if (resultTwo.tm_isdst) {
 				if (resultTwo.tm_hour + 4ULL >= 24) {
@@ -404,14 +403,16 @@ namespace discord_core_api {
 		/// @param hours number of hours for elapsed time.
 		/// @param minutes number of minutes for elapsed time.
 		/// @return true if the specified time has elapsed, otherwise false.
-		inline bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) const {
-			uint64_t startTimeRaw{ convertTimeStampToTimeUnits(static_cast<jsonifier::string>(*static_cast<const value_type*>(this))) };
-			auto currentTime						   = std::chrono::duration_cast<milliseconds>(sys_clock::now().time_since_epoch()).count();
-			static constexpr uint64_t secondsPerMinute = 60ULL;
-			static constexpr uint64_t secondsPerHour   = secondsPerMinute * 60ULL;
-			static constexpr uint64_t secondsPerDay	   = secondsPerHour * 24ULL;
+		inline bool hasTimeElapsed(int64_t days, int64_t hours, int64_t minutes) const {
+			int64_t startTimeRaw{ static_cast<int64_t>(convertTimeStampToTimeUnits(static_cast<jsonifier::string>(*static_cast<const value_type*>(this)))) };
+			startTimeRaw =
+				std::chrono::current_zone()->to_sys(std::chrono::local_time<std::chrono::milliseconds>(std::chrono::milliseconds{ startTimeRaw })).time_since_epoch().count();
+			auto currentTime						  = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			static constexpr int64_t secondsPerMinute = 60ULL;
+			static constexpr int64_t secondsPerHour	  = secondsPerMinute * 60ULL;
+			static constexpr int64_t secondsPerDay	  = secondsPerHour * 24ULL;
 			auto targetElapsedTime =
-				((static_cast<uint64_t>(days) * secondsPerDay) + (static_cast<uint64_t>(hours) * secondsPerHour) + (static_cast<uint64_t>(minutes) * secondsPerMinute)) * 1000ULL;
+				((static_cast<int64_t>(days) * secondsPerDay) + ((static_cast<int64_t>(hours)) * secondsPerHour) + (static_cast<int64_t>(minutes) * secondsPerMinute)) * 1000LL;
 			auto actualElapsedTime = currentTime - startTimeRaw;
 			if (actualElapsedTime <= 0) {
 				return false;
@@ -456,7 +457,7 @@ namespace discord_core_api {
 		inline static jsonifier::string getISO8601TimeStamp(time_format timeFormat, uint64_t inputTime) {
 			uint64_t timeValue = static_cast<uint64_t>(inputTime) / 1000ULL;
 			time_t rawTime(static_cast<time_t>(timeValue));
-			std::tm resultTwo{ getCurrentTimeVal(rawTime) };
+			std::tm resultTwo{ getTime(rawTime) };
 			jsonifier::string timeStamp{};
 			timeStamp.resize(48);
 			switch (timeFormat) {
@@ -666,6 +667,8 @@ namespace discord_core_api {
 
 	class snowflake;
 
+	/// @brief A class for converting snowflake id's into the data structures they represent.
+	/// @tparam value_type The type of value being acquired.
 	template<typename value_type = void> class to_entity {
 		inline static value_type toEntity(snowflake initialId, snowflake additionalId);
 
@@ -678,10 +681,17 @@ namespace discord_core_api {
 		/// @brief Default constructor for snowflake.
 		inline snowflake() = default;
 
+		/// @brief A class for converting snowflake id's into the data structures they represent.
+		/// @tparam value_type The type of value being acquired.
+		/// @return value_type If successful, the intended data structure.
 		template<typename value_type> inline value_type toEntity() {
 			return to_entity<value_type>{}.toEntity(*this);
 		}
 
+		/// @brief A class for converting snowflake id's into the data structures they represent.
+		/// @param additionalId For certain classes, a second Id for collecting the data structure.
+		/// @tparam value_type The type of value being acquired.
+		/// @return value_type If successful, the intended data structure.
 		template<typename value_type> inline value_type toEntity(snowflake additionalId) {
 			return to_entity<value_type>{}.toEntity(*this, additionalId);
 		}
@@ -810,9 +820,19 @@ namespace discord_core_api {
 		/// @brief Constructor to create a dca_exception with an error message and optional source location.
 		/// @param error the error message.
 		/// @param location the source location of the exception (default: current location).
-		inline dca_exception(jsonifier::string_view error, std::source_location location = std::source_location::current())
-			: std::runtime_error(std::string{ "thrown from: " + jsonifier::string{ location.file_name() } + jsonifier::string{ " (" } + jsonifier::toString(location.line()) + ":" +
-				  jsonifier::toString(location.column()) + ")\n" + error }){};
+		inline dca_exception(jsonifier::string_view error, std::source_location location = std::source_location::current()) : std::runtime_error{ "No error." } {
+			auto newError  = jsonifier::string{ "Thrown from: " };
+			auto newString = location.file_name();
+			if (newString) {
+				newError += newString;
+			}
+			newError += jsonifier::string{ " (" } + jsonifier::toString(location.line()) + jsonifier::string{ ":" };
+			newError += jsonifier::toString(location.column()) + jsonifier::string{ ")\n" };
+			newError += error;
+			if (!newError.empty()) {
+				*static_cast<std::runtime_error*>(this) = std::runtime_error{ std::string{ newError } };
+			}
+		};
 	};
 
 	/**@}*/

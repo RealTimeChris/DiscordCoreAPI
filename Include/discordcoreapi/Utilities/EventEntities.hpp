@@ -178,7 +178,7 @@ namespace discord_core_api {
 			/// @brief Default constructor for event class.
 			inline event() {
 				std::unique_lock lock{ accessMutex };
-				eventId = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(hrclock::now().time_since_epoch()).count();
+				eventId = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(sys_clock::now().time_since_epoch()).count();
 			}
 
 			/// @brief Add an event delegate to the event.
@@ -187,7 +187,7 @@ namespace discord_core_api {
 			inline event_delegate_token add(event_delegate<return_type, arg_types...>&& eventDelegate) {
 				std::unique_lock lock{ accessMutex };
 				event_delegate_token eventToken{};
-				eventToken.handlerId  = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(hrclock::now().time_since_epoch()).count();
+				eventToken.handlerId  = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(sys_clock::now().time_since_epoch()).count();
 				eventToken.eventId	  = eventId;
 				functions[eventToken] = std::move(eventDelegate);
 				return eventToken;
@@ -345,7 +345,7 @@ namespace discord_core_api {
 			/// @brief Default constructor for trigger_event class.
 			inline trigger_event() {
 				std::unique_lock lock{ accessMutex };
-				eventId = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(hrclock::now().time_since_epoch()).count();
+				eventId = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(sys_clock::now().time_since_epoch()).count();
 			}
 
 			/// @brief Add an event delegate to the event.
@@ -354,7 +354,7 @@ namespace discord_core_api {
 			inline event_delegate_token add(trigger_event_delegate<return_type, arg_types...>&& eventDelegate) {
 				std::unique_lock lock{ accessMutex };
 				event_delegate_token eventToken{};
-				eventToken.handlerId  = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(hrclock::now().time_since_epoch()).count();
+				eventToken.handlerId  = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(sys_clock::now().time_since_epoch()).count();
 				eventToken.eventId	  = eventId;
 				functions[eventToken] = std::move(eventDelegate);
 				return eventToken;

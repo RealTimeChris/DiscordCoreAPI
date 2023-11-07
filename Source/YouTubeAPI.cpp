@@ -197,7 +197,7 @@ namespace discord_core_api {
 				jsonifier::string stringSequence = ";</script><script nonce=";
 				newString						 = newString.substr(0, newString.find(stringSequence));
 				you_tube_search_results youtubeSearchResults{};
-				parser.parseJson<true, true>(youtubeSearchResults, newString);
+				parser.parseJson(youtubeSearchResults, newString);
 				for (auto& value: youtubeSearchResults.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents) {
 					for (auto& value02: value.itemSectionRendererContents.contents) {
 						if (value02.videoRenderer.videoId != "") {
@@ -225,7 +225,7 @@ namespace discord_core_api {
 				dataPackage02.headersToInsert["User-Agent"] = "com.google.android.youtube/17.10.35 (Linux; U; Android 12; US) gzip";
 				dataPackage02.headersToInsert["Origin"]		= "https://music.youtube.com";
 				dataPackage02.relativePath					= "/youtubei/v1/player?key=AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w";
-				parser.serializeJson<true>(requestData, dataPackage02.content);
+				parser.serializeJson(requestData, dataPackage02.content);
 				dataPackage02.workloadClass = https_workload_class::Post;
 				responseData				= submitWorkloadAndGetResult(std::move(dataPackage02));
 				if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200) {
@@ -234,7 +234,7 @@ namespace discord_core_api {
 				}
 				data dataNew{};
 				jsonifier::vector<format> potentialFormats{};
-				parser.parseJson<true, true>(dataNew, responseData.responseData);
+				parser.parseJson(dataNew, responseData.responseData);
 				for (auto& value: dataNew.streamingData.adaptiveFormats) {
 					if (value.mimeType == "audio/webm; codecs=\"opus\"") {
 						potentialFormats.emplace_back(value);
@@ -243,7 +243,7 @@ namespace discord_core_api {
 				uint64_t currentMax{};
 				int64_t maxIndex{ static_cast<int64_t>(std::numeric_limits<uint64_t>::max()) };
 				for (uint64_t x = 0; x < potentialFormats.size(); ++x) {
-					if (potentialFormats.at(x).bitrate > currentMax) {
+					if (potentialFormats.at(x).bitrate > static_cast<int64_t>(currentMax)) {
 						maxIndex = static_cast<int64_t>(x);
 					}
 				}
@@ -263,13 +263,13 @@ namespace discord_core_api {
 						}
 						thumbnailUrl = dataNew.videoDetails.thumbnail.thumbnails[currentThumbnailIndex].url;
 					}
-					auto httpsFind		   = potentialFormats[maxIndex].url.find("https://");
-					auto videoPlaybackFind = potentialFormats[maxIndex].url.find("/videoplayback?");
+					auto httpsFind		   = potentialFormats[static_cast<uint64_t>(maxIndex)].url.find("https://");
+					auto videoPlaybackFind = potentialFormats[static_cast<uint64_t>(maxIndex)].url.find("/videoplayback?");
 					if (httpsFind != jsonifier::string::npos && videoPlaybackFind != jsonifier::string::npos) {
 						jsonifier::string newString00 = "https://";
-						downloadBaseUrl				  = potentialFormats[maxIndex].url.substr(httpsFind + newString00.size(), videoPlaybackFind - newString00.size());
+						downloadBaseUrl = potentialFormats[static_cast<uint64_t>(maxIndex)].url.substr(httpsFind + newString00.size(), videoPlaybackFind - newString00.size());
 					}
-					auto newString = dataNew.videoDetails.shortDescription;
+					auto& newString = dataNew.videoDetails.shortDescription;
 					if (newString.size() > 0) {
 						if (newString.size() > 256) {
 							newString = newString.substr(0, 256);
@@ -277,13 +277,13 @@ namespace discord_core_api {
 						newerSong.description = utf8MakeValid(newString);
 						newerSong.description += "...";
 					}
-					jsonifier::string requestNew = potentialFormats[maxIndex].url.substr(potentialFormats[maxIndex].url.find(".com") + 4);
+					jsonifier::string requestNew = potentialFormats[static_cast<uint64_t>(maxIndex)].url.substr(potentialFormats[static_cast<uint64_t>(maxIndex)].url.find(".com") + 4);
 					newerSong.finalDownloadUrls.resize(3);
 					download_url downloadUrl01{};
-					downloadUrl01.contentSize = jsonifier::strToUint64(potentialFormats[maxIndex].contentLength.data());
+					downloadUrl01.contentSize = jsonifier::strToUint64(potentialFormats[static_cast<uint64_t>(maxIndex)].contentLength.data());
 					downloadUrl01.urlPath	  = downloadBaseUrl;
 					download_url downloadUrl02{};
-					downloadUrl02.contentSize		  = jsonifier::strToUint64(potentialFormats[maxIndex].contentLength.data());
+					downloadUrl02.contentSize		  = jsonifier::strToUint64(potentialFormats[static_cast<uint64_t>(maxIndex)].contentLength.data());
 					downloadUrl02.urlPath			  = requestNew;
 					newerSong.finalDownloadUrls.at(0) = downloadUrl01;
 					newerSong.finalDownloadUrls.at(1) = downloadUrl02;

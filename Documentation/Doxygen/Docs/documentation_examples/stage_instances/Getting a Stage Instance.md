@@ -1,7 +1,7 @@
-Getting a Stage Instance {#gettingastageinstance}
+Getting a Stage Instance {#getting_a_stage_instance}
 ============
-- Execute the, `stage_instances::getStageInstanceAsync()` function, while passing in a value of type `get_stage_instance_data`, with a return value of type `auto` or `stage_instance`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::stage_instances::getStageInstanceAsync()` function, while passing in a value of type `discord_core_api::get_stage_instance_data`, with a return value of type `auto` or `discord_core_api::stage_instance`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,10 +32,10 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_stage_instance_data dataPackage;
+				get_stage_instance_data& dataPackage;
 				dataPackage.channelId = "914726178022101052";
 
-				auto responseData = stage_instances::getStageInstanceAsync(const& dataPackage).get();
+				auto responseData = stage_instances::getStageInstanceAsync(const dataPackage).get();
 
 				std::cout << "the topic: " << responseData.topic << std::endl;
 

@@ -44,15 +44,14 @@ namespace discord_core_api {
 	};
 
 	co_routine<void> command_controller::checkForAndRunCommand(command_data&& commandData) {
-		base_function_arguments theArgsNew{ commandData };
+		unique_ptr<base_function_arguments> theArgsNew{ makeUnique<base_function_arguments>(commandData) };
 		co_await newThreadAwaitable<void>();
-		base_function_arguments theArgsNewer{ theArgsNew };
-		unique_ptr<base_function> functionPointer{ getCommand(theArgsNewer.getCommandName()) };
+		unique_ptr<base_function> functionPointer{ getCommand(theArgsNew->getCommandName()) };
 		if (!functionPointer.get()) {
 			co_return;
 		}
 
-		functionPointer->execute(theArgsNew);
+		functionPointer->execute(*theArgsNew);
 		co_return;
 	}
 

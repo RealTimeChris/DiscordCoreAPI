@@ -1,7 +1,7 @@
-Executing a WebHook using a Discord Bot Library C++ {#executingawebhook}
+Executing a WebHook using a Discord Bot Library C++ {#executing_a_web_hook}
 ============
-- Execute the, `discord_core_api::web_hooks::executeWebHookAsync()` function, while passing in a value of type `execute_web_hook_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::web_hooks::executeWebHookAsync()` function, while passing in a value of type `discord_core_api::execute_web_hook_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,12 +32,12 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_guild_web_hooks_data dataPackage;
+				get_guild_web_hooks_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto newWebHooks = discord_core_api::web_hooks::getGuildWebHooksAsync(const& dataPackage).get();
+				auto newWebHooks = discord_core_api::web_hooks::getGuildWebHooksAsync(const dataPackage).get();
 
-				execute_web_hook_data dataPackage01 {newWebHooks[0]};
+				execute_web_hook_data& dataPackage01 {newWebHooks[0]};
 				dataPackage01.addContent("test content");
 
 				discord_core_api::web_hooks::executeWebHookAsync(const dataPackage01).get();

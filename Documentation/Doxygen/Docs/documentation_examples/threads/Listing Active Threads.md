@@ -1,7 +1,7 @@
-Listing Active Threads {#listingactivethreads}
+Listing Active Threads {#listing_active_threads}
 ============
-- Execute the, `threads::getActiveThreadsAsync()` function, while passing in a value of type `get_active_threads_data`, with a return value of type `auto` or `active_threads_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::threads::getActiveThreadsAsync()` function, while passing in a value of type `discord_core_api::get_active_threads_data`, with a return value of type `auto` or `discord_core_api::active_threads_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,10 +32,10 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_active_threads_data dataPackage;
+				get_active_threads_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto threadsVector = threads::getActiveThreadsAsync(const& dataPackage).get();
+				auto threadsVector = threads::getActiveThreadsAsync(const dataPackage).get();
 
 				for (const auto& value: threadsVector.threads) {
 					std::cout << "the name: " << value.name << std::endl;

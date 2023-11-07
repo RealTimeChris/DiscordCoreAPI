@@ -38,7 +38,7 @@ namespace discord_core_api {
 			newEmbed->setDescription("__**react with ✅ to edit the contents of the current page. react with ❌ to exit!**__").fields = msgEmbedFields[y];
 			newMsgEmbeds.emplace_back(*newEmbed);
 		}
-		respond_to_input_event_data dataPackage(originalEvent);
+		respond_to_input_event_data& dataPackage(originalEvent);
 		dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 		dataPackage.addMessageEmbed(newMsgEmbeds[currentPageIndex]);
 		dataPackage.addContent("");
@@ -46,7 +46,7 @@ namespace discord_core_api {
 		dataPackage.addButton(false, "back", "back", button_style::success, "◀️");
 		dataPackage.addButton(false, "next", "next", button_style::success, "▶️");
 		dataPackage.addButton(false, "exit", "exit", button_style::success, "❌");
-		input_events::respondToInputEventAsync(const& dataPackage).get();
+		input_events::respondToInputEventAsync(const dataPackage).get();
 		return newMsgEmbeds;
 	}
 
@@ -70,10 +70,10 @@ namespace discord_core_api {
 		void execute(base_function_arguments& newArgs) {
 			try {
 
-				unique_ptr<channel> channel{ makeUnique<channel>(channels::getCachedChannel({ newArgs.eventData.getChannelId() }).get()) };
+				unique_ptr<discord_core_api::channel_data> channel{ makeUnique<discord_core_api::channel_data>(discord_core_api::channels::getCachedChannel({ newArgs.eventData.getChannelId() }).get()) };
 
-				unique_ptr<guild> guild{ makeUnique<guild>(guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get()) };
-				unique_ptr<discord_guild> discordGuild(makeUnique<discord_guild>(*guild));
+				unique_ptr<guild_data> guild_data{ makeUnique<guild_data>(guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get()) };
+				unique_ptr<discord_guild> discordGuild(makeUnique<discord_guild>(*guild_data));
 
 				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, *discordGuild);
 
@@ -81,7 +81,7 @@ namespace discord_core_api {
 					return;
 				}
 
-				guild_member guildMember =
+				guild_member_data guildMember =
 					guild_members::getCachedGuildMember({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
 				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, *discordGuild, guildMember);
@@ -93,17 +93,17 @@ namespace discord_core_api {
 				input_event_data newEvent{ newArgs.eventData };
 				loadPlaylist(*discordGuild);
 
-				if (song_api::getPlaylist(guild->id).songQueue.size() == 0) {
+				if (song_api::getPlaylist(guild_data->id).songQueue.size() == 0) {
 					unique_ptr<embed_data> newEmbed{ makeUnique<embed_data>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setColor(discordGuild->data.borderColor);
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**empty playlist:**__");
 					newEmbed->setDescription("------\n__**sorry, but there is nothing here to display!**__\n------");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(*newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 					return;
 				}
 
@@ -112,7 +112,7 @@ namespace discord_core_api {
 				jsonifier::vector<jsonifier::vector<embed_field_data>> msgEmbedFields;
 				msgEmbedFields.emplace_back(jsonifier::vector<embed_field_data>());
 				int32_t msgEmbedFieldsPage{};
-				for (int32_t y = 0; y < song_api::getPlaylist(guild->id).songQueue.size(); y += 1) {
+				for (int32_t y = 0; y < song_api::getPlaylist(guild_data->id).songQueue.size(); y += 1) {
 					if (y % 25 == 0 && y > 0) {
 						if (y > 0) {
 							msgEmbedFieldsPage += 1;
@@ -121,11 +121,11 @@ namespace discord_core_api {
 					}
 					embed_field_data msgEmbedField{};
 					msgEmbedField.inline = false;
-					msgEmbedField.value = "__**title:**__ [" + song_api::getPlaylist(guild->id).songQueue.at(y).songTitle + "](" +
-						song_api::getPlaylist(guild->id).songQueue.at(y).viewUrl + ")\n__**added by:**__ <@!" +
-						jsonifier::toString(song_api::getPlaylist(guild->id).songQueue.at(y).addedByUserId) + "> (" + song_api::getPlaylist(guild->id).songQueue.at(y).addedByUserName +
+					msgEmbedField.value = "__**title:**__ [" + song_api::getPlaylist(guild_data->id).songQueue.at(y).songTitle + "](" +
+						song_api::getPlaylist(guild_data->id).songQueue.at(y).viewUrl + ")\n__**added by:**__ <@!" +
+						jsonifier::toString(song_api::getPlaylist(guild_data->id).songQueue.at(y).addedByUserId) + "> (" + song_api::getPlaylist(guild_data->id).songQueue.at(y).addedByUserName +
 						")";
-					msgEmbedField.name = "__**" + jsonifier::toString(y + 1) + " of " + jsonifier::toString(song_api::getPlaylist(guild->id).songQueue.size()) + "**__";
+					msgEmbedField.name = "__**" + jsonifier::toString(y + 1) + " of " + jsonifier::toString(song_api::getPlaylist(guild_data->id).songQueue.size()) + "**__";
 					msgEmbedFields[msgEmbedFieldsPage].emplace_back(msgEmbedField);
 				}
 				jsonifier::vector<embed_data> msgEmbeds;
@@ -141,7 +141,7 @@ namespace discord_core_api {
 						.fields = msgEmbedFields[y];
 					msgEmbeds.emplace_back(*newEmbed);
 				}
-				respond_to_input_event_data dataPackage0(newEvent);
+				respond_to_input_event_data& dataPackage0(newEvent);
 				dataPackage0.setResponseType(input_event_response_type::Interaction_Response);
 				dataPackage0.addMessageEmbed(msgEmbeds[currentPageIndex]);
 				dataPackage0.addContent("");
@@ -157,7 +157,7 @@ namespace discord_core_api {
 					newEvent = *buttonCollectedData[0].interactionData;
 					uint64_t userID = newArgs.eventData.getAuthorId();
 					if (buttonCollectedData.size() == 0 || buttonCollectedData.at(0).buttonId == "exit" || buttonCollectedData.at(0).buttonId == "empty" || doWeQuit) {
-						respond_to_input_event_data dataPackage02(*buttonCollectedData.at(0).interactionData);
+						respond_to_input_event_data& dataPackage02(*buttonCollectedData.at(0).interactionData);
 						dataPackage02.setResponseType(input_event_response_type::Edit_Interaction_Response);
 						dataPackage02.addMessageEmbed(msgEmbeds[currentPageIndex]);
 						dataPackage02.addContent("");
@@ -240,12 +240,12 @@ namespace discord_core_api {
 							};
 							user user = users::getCachedUser({ newArgs.eventData.getAuthorId() }).get();
 							unique_ptr<message_collector> messageCollector{ makeUnique<message_collector>() };
-							auto returnedMessagesOld = messageCollector->collectMessages(1, 120000, messageFilter);
+							auto returnedMessagesOld = messageCollector->collectObjects(1, 120000, messageFilter);
 							auto returnedMessages = returnedMessagesOld.get();
 							if (returnedMessages.messages.size() == 0) {
 								msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
 								msgEmbeds =
-									updateMessageEmbeds(song_api::getPlaylist(guild->id).songQueue, discordGuild.get(), newEvent, newArgs.eventData, user, currentPageIndex);
+									updateMessageEmbeds(song_api::getPlaylist(guild_data->id).songQueue, discordGuild.get(), newEvent, newArgs.eventData, user, currentPageIndex);
 								doWeQuit = true;
 								break;
 							}
@@ -273,7 +273,7 @@ namespace discord_core_api {
 																 .reason = "deleting the message!" })
 									.get();
 								msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-								msgEmbeds = updateMessageEmbeds(song_api::getPlaylist(guild->id).songQueue, discordGuild.get(), newEvent, newEvent, user, currentPageIndex);
+								msgEmbeds = updateMessageEmbeds(song_api::getPlaylist(guild_data->id).songQueue, discordGuild.get(), newEvent, newEvent, user, currentPageIndex);
 								doWeQuit = true;
 								savePlaylist(*discordGuild);
 								break;
@@ -290,7 +290,7 @@ namespace discord_core_api {
 																 .messageId = returnedMessages.messages[0].id,
 																 .reason = "deleting the message!" })
 									.get();
-								respond_to_input_event_data dataPackage03(newEvent);
+								respond_to_input_event_data& dataPackage03(newEvent);
 								dataPackage03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 								dataPackage03.addMessageEmbed(msgEmbeds[currentPageIndex]);
 								dataPackage03.addContent("");
@@ -310,14 +310,14 @@ namespace discord_core_api {
 																	 .messageId = returnedMessages.messages[0].id,
 																	 .reason = "deleting the message!" })
 										.get();
-									respond_to_input_event_data dataPackage03(newEvent);
+									respond_to_input_event_data& dataPackage03(newEvent);
 									dataPackage03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 									dataPackage03.addMessageEmbed(msgEmbeds[currentPageIndex]);
 									dataPackage03.addContent("");
 									newEvent = input_events::respondToInputEventAsync(const dataPackage03).get();
 									continue;
 								}
-								if ((jsonifier::strToInt64(args2[1]) - 1) < 0 || ( uint64_t )(jsonifier::strToInt64(args2[1]) - 1) >= song_api::getPlaylist(guild->id).songQueue.size() || args2.size() < 1) {
+								if ((jsonifier::strToInt64(args2[1]) - 1) < 0 || ( uint64_t )(jsonifier::strToInt64(args2[1]) - 1) >= song_api::getPlaylist(guild_data->id).songQueue.size() || args2.size() < 1) {
 									msgEmbeds[currentPageIndex].setDescription(
 										"__**please enter a proper input!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap "
 										"<sourceTrackNumber> "
@@ -330,7 +330,7 @@ namespace discord_core_api {
 																	 .messageId = returnedMessages.messages[0].id,
 																	 .reason = "deleting the message!" })
 										.get();
-									respond_to_input_event_data dataPackage03(newEvent);
+									respond_to_input_event_data& dataPackage03(newEvent);
 									dataPackage03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 									dataPackage03.addMessageEmbed(msgEmbeds[currentPageIndex]);
 									dataPackage03.addContent("");
@@ -339,16 +339,16 @@ namespace discord_core_api {
 								}
 								int32_t removeIndex = ( int32_t )jsonifier::strToInt64(args2[1]);
 
-								auto playlist = song_api::getPlaylist(guild->id);
+								auto playlist = song_api::getPlaylist(guild_data->id);
 								playlist.songQueue.erase(playlist.songQueue.begin() + removeIndex - 1, playlist.songQueue.begin() + removeIndex);
-								song_api::setPlaylist(playlist, guild->id);
+								song_api::setPlaylist(playlist, guild_data->id);
 								messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																 .channelId = returnedMessages.messages[0].channelId,
 																 .messageId = returnedMessages.messages[0].id,
 																 .reason = "deleting the message!" })
 									.get();
 								msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-								msgEmbeds = updateMessageEmbeds(song_api::getPlaylist(guild->id).songQueue, discordGuild.get(), newEvent, newEvent, user, currentPageIndex);
+								msgEmbeds = updateMessageEmbeds(song_api::getPlaylist(guild_data->id).songQueue, discordGuild.get(), newEvent, newEvent, user, currentPageIndex);
 								doWeQuit = true;
 								savePlaylist(*discordGuild);
 								break;
@@ -366,7 +366,7 @@ namespace discord_core_api {
 																	 .messageId = returnedMessages.messages[0].id,
 																	 .reason = "deleting the message!" })
 										.get();
-									respond_to_input_event_data dataPackage03(newEvent);
+									respond_to_input_event_data& dataPackage03(newEvent);
 									dataPackage03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 									dataPackage03.addMessageEmbed(msgEmbeds[currentPageIndex]);
 									dataPackage03.addContent("");
@@ -374,8 +374,8 @@ namespace discord_core_api {
 									continue;
 								}
 								if (args2.size() < 2 ||
-									((jsonifier::strToInt64(args2[1]) - 1) < 0 || ( uint64_t )(jsonifier::strToInt64(args2[1]) - 1) >= song_api::getPlaylist(guild->id).songQueue.size() ||
-										(jsonifier::strToInt64(args2[2]) - 1) < 0 || ( uint64_t )(jsonifier::strToInt64(args2[2]) - 1) >= song_api::getPlaylist(guild->id).songQueue.size() || args2.size() < 2)) {
+									((jsonifier::strToInt64(args2[1]) - 1) < 0 || ( uint64_t )(jsonifier::strToInt64(args2[1]) - 1) >= song_api::getPlaylist(guild_data->id).songQueue.size() ||
+										(jsonifier::strToInt64(args2[2]) - 1) < 0 || ( uint64_t )(jsonifier::strToInt64(args2[2]) - 1) >= song_api::getPlaylist(guild_data->id).songQueue.size() || args2.size() < 2)) {
 									msgEmbeds[currentPageIndex].setDescription(
 										"__**please enter a proper input!**__\n__Type 'remove <trackNumber>' to remove a track.\nType 'swap "
 										"<sourceTrackNumber> "
@@ -388,7 +388,7 @@ namespace discord_core_api {
 																	 .messageId = returnedMessages.messages[0].id,
 																	 .reason = "deleting the message!" })
 										.get();
-									respond_to_input_event_data dataPackage03(newEvent);
+									respond_to_input_event_data& dataPackage03(newEvent);
 									dataPackage03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 									dataPackage03.addMessageEmbed(msgEmbeds[currentPageIndex]);
 									dataPackage03.addContent("");
@@ -398,19 +398,19 @@ namespace discord_core_api {
 
 								int32_t sourceIndex = ( int32_t )jsonifier::strToInt64(args2[1]) - 1;
 								int32_t destinationIndex = ( int32_t )jsonifier::strToInt64(args2[2]) - 1;
-								song_api::modifyQueue(sourceIndex, destinationIndex, guild->id);
+								song_api::modifyQueue(sourceIndex, destinationIndex, guild_data->id);
 								messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																 .channelId = returnedMessages.messages[0].channelId,
 																 .messageId = returnedMessages.messages[0].id,
 																 .reason = "deleting the message!" })
 									.get();
 								msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-								msgEmbeds = updateMessageEmbeds(song_api::getPlaylist(guild->id).songQueue, discordGuild.get(), newEvent, newEvent, user, currentPageIndex);
+								msgEmbeds = updateMessageEmbeds(song_api::getPlaylist(guild_data->id).songQueue, discordGuild.get(), newEvent, newEvent, user, currentPageIndex);
 								doWeQuit = true;
 								savePlaylist(*discordGuild);
 								break;
 							} else if (convertToLowerCase(args2[0]) == "shuffle") {
-								auto oldSongArray = song_api::getPlaylist(guild->id);
+								auto oldSongArray = song_api::getPlaylist(guild_data->id);
 								jsonifier::vector<song> newVector{};
 								while (oldSongArray.songQueue.size() > 0) {
 									std::mt19937_64 randomEngine{ static_cast<uint32_t>(
@@ -421,14 +421,14 @@ namespace discord_core_api {
 									oldSongArray.songQueue.erase(oldSongArray.songQueue.begin() + randomIndex, oldSongArray.songQueue.begin() + randomIndex + 1);
 								}
 								oldSongArray.songQueue = newVector;
-								song_api::setPlaylist(oldSongArray, guild->id);
+								song_api::setPlaylist(oldSongArray, guild_data->id);
 								messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																 .channelId = returnedMessages.messages[0].channelId,
 																 .messageId = returnedMessages.messages[0].id,
 																 .reason = "deleting the message!" })
 									.get();
 								msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-								msgEmbeds = updateMessageEmbeds(song_api::getPlaylist(guild->id).songQueue, discordGuild.get(), newEvent, newEvent, user, currentPageIndex);
+								msgEmbeds = updateMessageEmbeds(song_api::getPlaylist(guild_data->id).songQueue, discordGuild.get(), newEvent, newEvent, user, currentPageIndex);
 								doWeQuit = true;
 								savePlaylist(*discordGuild);
 								break;

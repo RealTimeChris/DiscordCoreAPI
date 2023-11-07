@@ -54,7 +54,7 @@ namespace discord_core_api {
 				Gateway_Unavailable = 502,///< There was not a gateway available to process your request. wait a bit and retry.
 			};
 
-			inline static unordered_map<https_response_codes, jsonifier::string_view> outputErrorValues{
+			inline static unordered_map<https_response_codes, jsonifier::string> outputErrorValues{
 				{ static_cast<https_response_codes>(200), "the request completed successfully" }, { static_cast<https_response_codes>(201), "the entity was created successfully" },
 				{ static_cast<https_response_codes>(204), "the request completed successfully but returned no content" },
 				{ static_cast<https_response_codes>(304), "the entity was not modified (no action was taken)" },
@@ -99,7 +99,7 @@ namespace discord_core_api {
 		class https_error : public dca_exception {
 		  public:
 			https_response_code errorCode{};
-			inline https_error(jsonifier::string_view message, const std::source_location& location = std::source_location::current()) : dca_exception{ message, location } {};
+			inline https_error(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 		};
 
 		struct DiscordCoreAPI_Dll https_response_data {
@@ -166,6 +166,8 @@ namespace discord_core_api {
 			virtual ~https_connection() = default;
 		};
 
+		/// @class https_connection_manager.
+		/// @brief For managing the collection of Https connections.
 		class DiscordCoreAPI_Dll https_connection_manager {
 		  public:
 			friend class https_client;
@@ -179,7 +181,7 @@ namespace discord_core_api {
 			rate_limit_queue& getRateLimitQueue();
 
 		  protected:
-			unordered_map<https_workload_type, unique_ptr<https_connection>> httpsConnections{};
+			unordered_map<https_workload_type, unique_ptr<https_connection>> httpsConnections{};///< Collection of Https connections.
 			rate_limit_queue* rateLimitQueue{};
 			std::mutex accessMutex{};
 		};
@@ -238,12 +240,19 @@ namespace discord_core_api {
 			https_response_data getResponse(https_connection& connection);
 		};
 
+		/**
+		 * \addtogroup discord_core_internal
+		 * @{
+		 */
+
+		/// @class https_client
+		/// @brief For sending Https requests.
 		class DiscordCoreAPI_Dll https_client : public https_client_core {
 		  public:
 			https_client(jsonifier::string_view botTokenNew);
 
 			template<typename value_type, typename string_type> void getParseErrors(jsonifier::jsonifier_core& parser, value_type& value, string_type& stringNew) {
-				parser.parseJson<true, true>(value, stringNew);
+				parser.parseJson(value, stringNew);
 				if (auto result = parser.getErrors(); result.size() > 0) {
 					for (auto& valueNew: result) {
 						message_printer::printError<print_message_type::websocket>(valueNew.reportError());
@@ -292,6 +301,8 @@ namespace discord_core_api {
 
 			https_response_data httpsRequest(https_connection& connection);
 		};
+
+		/**@}*/
 
 	}// namespace discord_core_internal
 }

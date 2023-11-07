@@ -42,18 +42,21 @@ namespace discord_core_api {
 	class unordered_set : protected hash_policy<unordered_set<value_type_new>>, protected jsonifier_internal::alloc_wrapper<value_type_new>, protected object_compare {
 	  public:
 		template<typename value_type_newer> using key_accessor = key_accessor<value_type_newer>;
-		using mapped_type									   = value_type_new;
-		using key_type										   = mapped_type;
-		using reference										   = mapped_type&;
-		using value_type									   = mapped_type;
-		using const_reference								   = const mapped_type&;
+		using key_type										   = value_type_new;
+		using value_type									   = value_type_new;
+		using mapped_type									   = value_type;
+		using allocator_type								   = jsonifier_internal::alloc_wrapper<value_type>;
+		using allocator_traits								   = std::allocator_traits<allocator_type>;
 		using size_type										   = uint64_t;
+		using difference_type								   = int64_t;
+		using pointer										   = typename allocator_traits::pointer;
+		using const_pointer									   = typename allocator_traits::const_pointer;
+		using reference										   = value_type&;
+		using const_reference								   = const value_type&;
+		using iterator										   = hash_iterator<unordered_set<value_type>>;
+		using const_iterator								   = hash_iterator<const unordered_set<value_type>>;
 		using object_compare								   = object_compare;
-		using hash_policy_new								   = hash_policy<unordered_set<mapped_type>>;
-		using key_hasher									   = hash_policy_new;
-		using iterator										   = hash_iterator<unordered_set<mapped_type>>;
-		using const_iterator								   = hash_iterator<const unordered_set<mapped_type>>;
-		using allocator										   = jsonifier_internal::alloc_wrapper<value_type>;
+		using hash_policy_new								   = hash_policy<unordered_set<value_type>>;
 
 		friend hash_policy_new;
 		friend iterator;
@@ -143,7 +146,7 @@ namespace discord_core_api {
 		template<typename key_type_new> inline const_reference at(key_type_new&& key) const {
 			auto iter = find(std::forward<key_type_new>(key));
 			if (iter == end()) {
-				throw dca_exception{ "Sorry, but an object by that key doesn't exist in this map." };
+				throw std::runtime_error{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
 			return *iter;
 		}
@@ -151,7 +154,7 @@ namespace discord_core_api {
 		template<typename key_type_new> inline reference at(key_type_new&& key) {
 			auto iter = find(std::forward<key_type_new>(key));
 			if (iter == end()) {
-				throw dca_exception{ "Sorry, but an object by that key doesn't exist in this map." };
+				throw std::runtime_error{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
 			return *iter;
 		}
@@ -265,7 +268,7 @@ namespace discord_core_api {
 		inline void clear() {
 			for (size_type x = 0; x < sentinelVector.size(); ++x) {
 				if (sentinelVector.at(x) > 0) {
-					getAlloc().destroy(data + x);
+					allocator_traits::destroy(*this, data + x);
 					sentinelVector.at(x) = 0;
 				}
 			}
@@ -305,29 +308,21 @@ namespace discord_core_api {
 			return emplaceInternal(std::forward<mapped_type_new>(value));
 		}
 
-		inline allocator& getAlloc() {
-			return *this;
-		}
-
-		inline const hash_policy_new& getHashPolicy() const {
-			return *this;
-		}
-
 		template<typename value_type_newer> inline uint64_t getKey(value_type_newer&& keyValue) const {
 			return key_accessor<std::unwrap_ref_decay_t<value_type_newer>>::getHashKey(std::forward<value_type_newer>(keyValue));
 		}
 
 		inline void resize(size_type capacityNew) {
-			auto newSize = getHashPolicy().nextPowerOfTwo(capacityNew);
+			auto newSize = hash_policy_new::nextPowerOfTwo(capacityNew);
 			if (newSize > capacityVal) {
 				jsonifier::vector<int8_t> oldSentinelVector = std::move(sentinelVector);
 				auto oldMaxLookAheadDistance				= maxLookAheadDistance;
 				auto oldCapacity							= capacityVal;
 				auto oldSize								= sizeVal;
 				auto oldPtr									= data;
-				maxLookAheadDistance						= getHashPolicy().computeMaxLookAheadDistance(newSize);
+				maxLookAheadDistance						= hash_policy_new::computeMaxLookAheadDistance(newSize);
 				sizeVal										= 0;
-				data										= getAlloc().allocate(newSize + 1 + maxLookAheadDistance);
+				data										= allocator_traits::allocate(*this, newSize + 1 + maxLookAheadDistance);
 				sentinelVector.resize(newSize + 1 + maxLookAheadDistance);
 				sentinelVector[newSize + maxLookAheadDistance] = -1;
 				capacityVal									   = newSize;
@@ -338,7 +333,7 @@ namespace discord_core_api {
 					}
 				}
 				if (oldPtr && oldCapacity) {
-					getAlloc().deallocate(oldPtr, oldCapacity + 1 + oldMaxLookAheadDistance);
+					allocator_traits::deallocate(*this, oldPtr, oldCapacity + 1 + oldMaxLookAheadDistance);
 				}
 			}
 		}
@@ -347,10 +342,11 @@ namespace discord_core_api {
 			if (data && sizeVal > 0) {
 				for (uint64_t x = 0; x < sentinelVector.size(); ++x) {
 					if (sentinelVector.at(x) > 0) {
-						getAlloc().destroy(data + x);
+						allocator_traits::destroy(*this, data + x);
+						sentinelVector.at(x) = 0;
 					}
 				}
-				getAlloc().deallocate(data, capacityVal + 1 + maxLookAheadDistance);
+				allocator_traits::deallocate(*this, data, capacityVal + 1 + maxLookAheadDistance);
 				sentinelVector.clear();
 				sizeVal		= 0;
 				capacityVal = 0;

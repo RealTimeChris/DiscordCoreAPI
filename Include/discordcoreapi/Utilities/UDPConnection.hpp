@@ -65,13 +65,13 @@ namespace discord_core_api {
 				*this = std::move(other);
 			};
 
-			inline udp_connection(jsonifier::string_view baseUrlNew, uint16_t portNew, stream_type streamTypeNew,
+			inline udp_connection(const jsonifier::string& baseUrlNew, uint16_t portNew, stream_type streamTypeNew,
 				std::coroutine_handle<discord_core_api::co_routine<void, false>::promise_type>* token) {
 				resampleVector.resize(maxBufferSize);
 				streamType = streamTypeNew;
 				baseUrl	   = baseUrlNew;
 				port	   = portNew;
-				addrinfoWrapper hints{};
+				addrinfo_wrapper hints{};
 				hints->ai_family   = AF_INET;
 				hints->ai_socktype = SOCK_DGRAM;
 				hints->ai_protocol = IPPROTO_UDP;
@@ -312,14 +312,14 @@ namespace discord_core_api {
 
 		  protected:
 			static constexpr uint64_t maxBufferSize{ (1024 * 16) };
+			jsonifier::vector<char> resampleVector{};
 			ring_buffer<uint8_t, 16> outputBuffer{};
 			ring_buffer<uint8_t, 16> inputBuffer{};
-			std::vector<char> resampleVector{};
 			connection_status currentStatus{};
 			jsonifier::string baseUrl{};
-			addrinfoWrapper address{};
+			addrinfo_wrapper address{};
 			stream_type streamType{};
-			socketwrapper socket{};
+			socket_wrapper socket{};
 			int64_t bytesRead{};
 			uint16_t port{};
 		};

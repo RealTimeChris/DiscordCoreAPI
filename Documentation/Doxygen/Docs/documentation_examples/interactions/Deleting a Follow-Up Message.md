@@ -1,7 +1,7 @@
-Deleting a Follow-Up Message {#deletingafollowupmessage}
+Deleting a Follow-Up Message {#deleting_a_follow_up_message}
 ============
-- Execute the, `input_events::deleteInputEventResponseAsync()` function, while passing in a data structure of type `input_event_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::input_events::deleteInputEventResponseAsync()` function, while passing in a data structure of type `discord_core_api::input_event_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,10 +32,10 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				respond_to_input_event_data dataPackage {args.eventData};
+				respond_to_input_event_data& dataPackage {args.eventData};
 				dataPackage.type = input_event_response_type::Follow_Up_Message;
 				dataPackage.addContent("test content");
-				auto result = input_events::respondToInputEventAsync(const& dataPackage);
+				auto result = input_events::respondToInputEventAsync(const dataPackage);
 				auto responseData = input_events::deleteInputEventResponseAsync(const result);
 
 			} catch (...) {

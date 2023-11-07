@@ -39,7 +39,7 @@ namespace discord_core_api {
 		template<> struct websocket_message_data<update_voice_state_data> {
 			websocket_message_data() = default;
 			websocket_message_data(const update_voice_state_data& data);
-			unordered_set<jsonifier::string> excludedKeys{};
+			unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 			using type = update_voice_state_data;
 			int64_t op{ -1 };
 			jsonifier::string t{};
@@ -51,7 +51,7 @@ namespace discord_core_api {
 		template<> struct websocket_message_data<update_voice_state_data_dc> {
 			websocket_message_data() = default;
 			websocket_message_data(const update_voice_state_data& data);
-			unordered_set<jsonifier::string> excludedKeys{};
+			unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 			using type = update_voice_state_data_dc;
 			int64_t op{ -1 };
 			jsonifier::string t{};
@@ -60,6 +60,52 @@ namespace discord_core_api {
 			operator etf_serializer();
 		};
 	}
+}
+
+namespace jsonifier_internal {
+
+	template<typename value_type>
+	concept snowflake_t = std::same_as<discord_core_api::snowflake, jsonifier::concepts::unwrap<value_type>>;
+
+	template<snowflake_t value_type_new> struct serialize_impl<value_type_new> {
+		template<bool shortStringsSupported, snowflake_t value_type, jsonifier::concepts::is_fwd_iterator buffer_type> inline static void op(value_type&& value, buffer_type&& buffer) {
+			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
+			serialize::op<shortStringsSupported>(newString, buffer);
+		}
+	};
+
+	template<snowflake_t value_type_new> struct parse_impl<value_type_new> {
+		template<bool shortStringsSupported, snowflake_t value_type, jsonifier::concepts::is_fwd_iterator iterator>
+		inline static void op(value_type&& value, iterator&& iter) {
+			jsonifier::raw_json_data newString{};
+			parse::op<shortStringsSupported>(newString, iter);
+			if (newString.getType() == jsonifier_internal::json_type::String) {
+				value = newString.operator jsonifier::string();
+			} else {
+				value = newString.operator uint64_t();
+			}
+		};
+	};
+
+	template<typename value_type>
+	concept time_stamp_t = std::same_as<discord_core_api::time_stamp, jsonifier::concepts::unwrap<value_type>>;
+
+	template<time_stamp_t value_type_new> struct serialize_impl<value_type_new> {
+		template<bool shortStringsSupported, time_stamp_t value_type, jsonifier::concepts::is_fwd_iterator buffer_type>
+		inline static void op(value_type&& value, buffer_type&& buffer) {
+			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
+			serialize::op<shortStringsSupported>(newString, buffer);
+		}
+	};
+
+	template<time_stamp_t value_type_new> struct parse_impl<value_type_new> {
+		template<bool shortStringsSupported, time_stamp_t value_type, jsonifier::concepts::is_fwd_iterator iterator>
+		inline static void op(value_type&& value, iterator&& iter) {
+			jsonifier::string newString{};
+			parse::op<shortStringsSupported>(newString, iter);
+			value = static_cast<jsonifier::string>(newString);
+		};
+	};
 }
 
 namespace jsonifier {
@@ -79,47 +125,6 @@ namespace jsonifier {
 		using value_type				 = discord_core_api::discord_core_internal::websocket_message_data<oty2>;
 		static constexpr auto parseValue = createObject("d", &value_type::d, "op", &value_type::op, "s", &value_type::s);
 	};
-
-}
-
-namespace jsonifier_internal {
-
-	template<bool excludeKeys> struct serialize_impl<excludeKeys, discord_core_api::snowflake> {
-		template<jsonifier::concepts::buffer_like buffer_type> static void op(const discord_core_api::snowflake& value, buffer_type& buffer, uint64_t& index) {
-			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serialize<excludeKeys>::op(newString, buffer, index);
-		}
-	};
-
-	template<bool excludeKeys> struct parse_impl<excludeKeys, discord_core_api::snowflake> {
-		inline static void op(discord_core_api::snowflake& value, structural_iterator& iter, parser& parser) {
-			jsonifier::raw_json_data newString{};
-			parse<excludeKeys>::op(newString, iter, parser);
-			if (newString.getType() == jsonifier::json_type::String) {
-				value = newString.operator jsonifier::string();
-			} else {
-				value = newString.operator uint64_t();
-			}
-		};
-	};
-
-	template<bool excludeKeys> struct serialize_impl<excludeKeys, discord_core_api::time_stamp> {
-		template<jsonifier::concepts::buffer_like buffer_type> static void op(const discord_core_api::time_stamp& value, buffer_type& buffer, uint64_t& index) {
-			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serialize<excludeKeys>::op(newString, buffer, index);
-		}
-	};
-
-	template<bool excludeKeys> struct parse_impl<excludeKeys, discord_core_api::time_stamp> {
-		inline static void op(discord_core_api::time_stamp& value, structural_iterator& iter, parser& parser) {
-			jsonifier::string newString{};
-			parse<excludeKeys>::op(newString, iter, parser);
-			value = static_cast<jsonifier::string>(newString);
-		};
-	};
-}
-
-namespace jsonifier {
 
 	template<> struct core<discord_core_api::application_command_permission_data> {
 		using value_type				 = discord_core_api::application_command_permission_data;
@@ -305,9 +310,9 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::interaction_data_data> {
 		using value_type				 = discord_core_api::interaction_data_data;
-		static constexpr auto parseValue = createObject("options", &value_type::options, "type", &value_type::type, "resolved", &value_type::resolved, "guild_id",
-			&value_type::guildId, "name", &value_type::name, "values", &value_type::values, "component_type", &value_type::componentType, "custom_id", &value_type::customId,
-			"custom_id_small", &value_type::customIdSmall, "value", &value_type::value, "target_id", &value_type::targetId);
+		static constexpr auto parseValue = createObject("options", &value_type::options, "values", &value_type::values, "components", &value_type::components, "type",
+			&value_type::type, "component_type", &value_type::componentType, "custom_id", &value_type::customId, "name", &value_type::name, "resolved", &value_type::resolved,
+			"target_id", &value_type::targetId, "guild_id", &value_type::guildId, "id", &value_type::id);
 	};
 
 	template<> struct core<discord_core_api::resolved_data> {
@@ -324,10 +329,10 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::interaction_data> {
 		using value_type				 = discord_core_api::interaction_data;
-		static constexpr auto parseValue = createObject("app_permissions", &value_type::appPermissions, "data", &value_type::data, "guild_locale", &value_type::guildLocale,
-			"application_id", &value_type::applicationId, "member", &value_type::member, "type", &value_type::type, "message", &value_type::message, "channel_id",
-			&value_type::channelId, "locale", &value_type::locale, "guild_id", &value_type::guildId, "token", &value_type::token, "version", &value_type::version, "user",
-			&value_type::user, "id", &value_type::id, "channel", &value_type::channel);
+		static constexpr auto parseValue = createObject("app_permissions", &value_type::appPermissions, "guild_locale", &value_type::guildLocale, "data", &value_type::data,
+			"locale", &value_type::locale, "member", &value_type::member, "application_id", &value_type::applicationId, "token", &value_type::token, "message",
+			&value_type::message, "channel", &value_type::channel, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "guild", &value_type::guild, "version",
+			&value_type::version, "user", &value_type::user, "id", &value_type::id, "type", &value_type::type);
 	};
 
 	template<> struct core<discord_core_api::input_event_data> {
@@ -481,18 +486,7 @@ namespace jsonifier {
 		static constexpr auto parseValue = createObject("author", &value_type::author, "color", &value_type::hexColorValue, "description", &value_type::description, "fields",
 			&value_type::fields, "footer", &value_type::footer, "image", &value_type::image, "provider", &value_type::provider, "thumbnail", &value_type::thumbnail, "timestamp",
 			&value_type::timeStamp, "title", &value_type::title, "type", &value_type::type, "url", &value_type::url, "video", &value_type::video);
-	};
-
-	template<> struct core<discord_core_api::message_data_old> {
-		using value_type				 = discord_core_api::message_data_old;
-		static constexpr auto parseValue = createObject("activity", &value_type::activity, "application", &value_type::application, "application_id", &value_type::applicationId,
-			"attachments", &value_type::attachments, "author", &value_type::author, "channel_id", &value_type::channelId, "components", &value_type::components, "content",
-			&value_type::content, "edited_timestamp", &value_type::editedTimestamp, "embeds", &value_type::embeds, "flags", &value_type::flags, "guild_id", &value_type::guildId,
-			"id", &value_type::id, "interaction", &value_type::interaction, "mention_channels", &value_type::mentionChannels, "mention_everyone", &value_type::mentionEveryone,
-			"mention_roles", &value_type::mentionRoles, "mentions", &value_type::mentions, "message_reference", &value_type::messageReference, "nonce", &value_type::nonce,
-			"pinned", &value_type::pinned, "reactions", &value_type::reactions, "sticker_items", &value_type::stickerItems, "stickers", &value_type::stickers, "thread",
-			&value_type::thread, "timestamp", &value_type::timeStamp, "tts", &value_type::tts, "type", &value_type::type, "webhook_id", &value_type::webHookId);
-	};
+	}; 
 
 	template<> struct core<discord_core_api::reaction_data> {
 		using value_type = discord_core_api::reaction_data;
@@ -682,9 +676,9 @@ namespace jsonifier {
 			&value_type::content, "edited_timestamp", &value_type::editedTimestamp, "embeds", &value_type::embeds, "flags", &value_type::flags, "guild_id", &value_type::guildId,
 			"id", &value_type::id, "interaction", &value_type::interaction, "member", &value_type::member, "mention_channels", &value_type::mentionChannels, "mention_everyone",
 			&value_type::mentionEveryone, "mention_roles", &value_type::mentionRoles, "mentions", &value_type::mentions, "message_reference", &value_type::messageReference,
-			"nonce", &value_type::nonce, "pinned", &value_type::pinned, "reactions", &value_type::reactions, "referenced_message", &value_type::referencedMessage, "sticker_items",
-			&value_type::stickerItems, "stickers", &value_type::stickers, "thread", &value_type::thread, "timestamp", &value_type::timeStamp, "tts", &value_type::tts, "type",
-			&value_type::type, "webhook_id", &value_type::webHookId);
+			"nonce", &value_type::nonce, "pinned", &value_type::pinned, "reactions", &value_type::reactions, "sticker_items", &value_type::stickerItems, "stickers",
+			&value_type::stickers, "thread", &value_type::thread, "timestamp", &value_type::timeStamp, "tts", &value_type::tts, "type", &value_type::type, "webhook_id",
+			&value_type::webHookId);
 	};
 
 	template<> struct core<discord_core_api::sticker_pack_data> {

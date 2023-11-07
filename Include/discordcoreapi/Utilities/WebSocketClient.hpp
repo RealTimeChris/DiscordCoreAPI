@@ -32,7 +32,6 @@
 #include <discordcoreapi/Utilities/AudioDecoder.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Utilities/EventEntities.hpp>
-#include <discordcoreapi/Utilities/ThreadWrapper.hpp>
 #include <discordcoreapi/Utilities/TCPConnection.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
 #include <thread>
@@ -41,12 +40,12 @@ namespace discord_core_api {
 
 	namespace discord_core_internal {
 
-		inline constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
-		inline constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126u };
-		inline constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127u };
-		inline constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
-		inline constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125u };
-		inline constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
+		constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
+		constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126u };
+		constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127u };
+		constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
+		constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125u };
+		constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
 		enum class websocket_op_code : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
@@ -84,10 +83,10 @@ namespace discord_core_api {
 				{ 4010, websocket_close_code::Invalid_Shard }, { 4011, websocket_close_code::Sharding_Required }, { 4012, websocket_close_code::Invalid_API_Version },
 				{ 4013, websocket_close_code::Invalid_Intent }, { 4014, websocket_close_code::Disallowed_Intent } };
 
-			inline static unordered_map<websocket_close_code, jsonifier::string_view> outputErrorValues{ {
-																											 websocket_close_code::Unknown_Error,
-																											 "we're not sure what went wrong.",
-																										 },
+			inline static unordered_map<websocket_close_code, jsonifier::string> outputErrorValues{ {
+																										websocket_close_code::Unknown_Error,
+																										"we're not sure what went wrong.",
+																									},
 				{ websocket_close_code::Unknown_Opcode, "you sent an invalid gateway opcode or an invalid payload for an opcode. don't do that!" },
 				{ websocket_close_code::Decode_Error, "you sent an invalid payload to discord. don't do that!" },
 				{ websocket_close_code::Not_Authenticated, "you sent us a payload prior to identifying." },
@@ -126,12 +125,12 @@ namespace discord_core_api {
 
 		class DiscordCoreAPI_Dll event_converter {
 		  public:
-			event_converter(jsonifier::string eventNew);
+			event_converter(const jsonifier::string& eventNew);
 
 			operator uint64_t();
 
 		  protected:
-			jsonifier::string eventValue{};
+			jsonifier::string_view eventValue{};
 		};
 
 		/// @brief For the opcodes that could be sent/received via discord's websockets.
@@ -186,21 +185,21 @@ namespace discord_core_api {
 
 			template<typename value_type> void createHeader(jsonifier::string_base<value_type>& outBuffer, websocket_op_code opCode) {
 				int64_t originalSize{ static_cast<int64_t>(outBuffer.size()) };
-				outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(static_cast<uint8_t>(opCode) | webSocketMaskBit));
+				outBuffer.insert(outBuffer.begin(), static_cast<value_type>(static_cast<uint8_t>(opCode) | webSocketMaskBit));
 
 				int64_t indexCount{};
 				if (originalSize <= webSocketMaxPayloadLengthSmall) {
-					outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(originalSize));
+					outBuffer.insert(outBuffer.begin() + 1, static_cast<value_type>(originalSize));
 					indexCount = 0;
 				} else if (originalSize <= webSocketMaxPayloadLengthLarge) {
-					outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(webSocketPayloadLengthMagicLarge));
+					outBuffer.insert(outBuffer.begin() + 1, static_cast<value_type>(webSocketPayloadLengthMagicLarge));
 					indexCount = 2;
 				} else {
-					outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(webSocketPayloadLengthMagicHuge));
+					outBuffer.insert(outBuffer.begin() + 1, static_cast<value_type>(webSocketPayloadLengthMagicHuge));
 					indexCount = 8;
 				}
 				for (int64_t x = indexCount - 1; x >= 0; x--) {
-					outBuffer.insert(outBuffer.begin() + 1 + indexCount - x, static_cast<uint8_t>(originalSize >> (x * 8)));
+					outBuffer.insert(outBuffer.begin() + 1 + indexCount - x, static_cast<value_type>(originalSize >> (x * 8)));
 				}
 
 				outBuffer.at(1) |= webSocketMaskBit;
@@ -249,6 +248,7 @@ namespace discord_core_api {
 			bool areWeResuming{};
 		};
 
+		/// @brief A websocket client, for communication via a tcp-connection.
 		class websocket_client : public websocket_core {
 		  public:
 			friend struct discord_core_api::on_voice_server_update_data;
@@ -305,9 +305,9 @@ namespace discord_core_api {
 			unordered_map<uint64_t, websocket_client> shardMap{};
 			std::deque<connection_package> connections{};
 			std::atomic_bool* doWeQuit{};
-			thread_wrapper taskThread{};
+			std::jthread taskThread{};
 
-			void run(stop_token);
+			void run(std::stop_token);
 		};
 
 	}// namespace

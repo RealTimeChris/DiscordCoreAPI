@@ -55,8 +55,8 @@ namespace discord_core_api {
 			d.guildId	= other.guildId;
 			d.selfDeaf	= other.selfDeaf;
 			d.selfMute	= other.selfMute;
-			excludedKeys.emplace("t");
-			excludedKeys.emplace("s");
+			jsonifierExcludedKeys.emplace("t");
+			jsonifierExcludedKeys.emplace("s");
 			op = 4;
 		}
 
@@ -79,8 +79,8 @@ namespace discord_core_api {
 			d.guildId	= other.guildId;
 			d.selfDeaf	= other.selfDeaf;
 			d.selfMute	= other.selfMute;
-			excludedKeys.emplace("t");
-			excludedKeys.emplace("s");
+			jsonifierExcludedKeys.emplace("t");
+			jsonifierExcludedKeys.emplace("s");
 			op = 4;
 		}
 
@@ -194,11 +194,11 @@ namespace discord_core_api {
 		id = newId;
 	}
 
-	bot_user::bot_user(user_data dataPackage, discord_core_internal::base_socket_agent* baseSocketAgentNew) : user_data(dataPackage) {
+	bot_user::bot_user(user_data& dataPackage, discord_core_internal::base_socket_agent* baseSocketAgentNew) : user_data(dataPackage) {
 		baseSocketAgent = baseSocketAgentNew;
 	}
 
-	void bot_user::updateVoiceStatus(update_voice_state_data& dataPackage) {
+	void bot_user::updateVoiceStatus(update_voice_state_data dataPackage) {
 		if (baseSocketAgent) {
 			jsonifier::string_base<uint8_t> string{};
 			uint64_t shardId = (dataPackage.guildId.operator const uint64_t&() >> 22) % discord_core_client::getInstance()->configManager.getTotalShardCount();
@@ -217,7 +217,7 @@ namespace discord_core_api {
 					auto serializer = data.operator discord_core_internal::etf_serializer();
 					string			= serializer.operator jsonifier::string_base<uint8_t>();
 				} else {
-					parser.serializeJson<true>(data, string);
+					parser.serializeJson(data, string);
 				}
 			} else {
 				discord_core_internal::websocket_message_data<update_voice_state_data> data{};
@@ -229,7 +229,7 @@ namespace discord_core_api {
 					auto serializer = data.operator discord_core_internal::etf_serializer();
 					string			= serializer.operator jsonifier::string_base<uint8_t>();
 				} else {
-					parser.serializeJson<true>(data, string);
+					parser.serializeJson(data, string);
 				}
 			}
 			discord_core_client::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].createHeader(string,
@@ -238,17 +238,17 @@ namespace discord_core_api {
 		}
 	}
 
-	void bot_user::updatePresence(update_presence_data& dataPackage) {
+	void bot_user::updatePresence(update_presence_data dataPackage) {
 		if (baseSocketAgent) {
 			jsonifier::string_base<uint8_t> string{};
 			uint64_t shardId = 0;
 			uint64_t basesocketAgentIndex{};
 			discord_core_internal::websocket_message_data<update_presence_data> data{};
 			data.d = dataPackage;
-			data.excludedKeys.emplace("s");
+			data.jsonifierExcludedKeys.emplace("s");
 			for (auto& value: data.d.activities) {
 				if (value.url == "") {
-					value.excludedKeys.emplace("url");
+					value.jsonifierExcludedKeys.emplace("url");
 				}
 			}
 			data.op = 3;
@@ -258,7 +258,7 @@ namespace discord_core_api {
 				auto serializer = data.operator discord_core_internal::etf_serializer();
 				string			= serializer.operator jsonifier::string_base<uint8_t>();
 			} else {
-				parser.serializeJson<true>(data, string);
+				parser.serializeJson(data, string);
 			}
 			discord_core_client::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].createHeader(string,
 				discord_core_client::getInstance()->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].dataOpCode);
@@ -271,18 +271,18 @@ namespace discord_core_api {
 		users::httpsClient		  = client;
 	}
 
-	co_routine<void> users::addRecipientToGroupDMAsync(add_recipient_to_group_dmdata dataPackage) {
+	co_routine<void> users::addRecipientToGroupDMAsync(const add_recipient_to_group_dmdata dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Recipient_To_Group_Dm };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "users::addRecipientToGroupDMAsync()";
 		users::httpsClient->submitWorkloadAndGetResult(std::move(workload));
 		co_return;
 	}
 
-	co_routine<void> users::removeRecipientFromGroupDMAsync(remove_recipient_from_group_dmdata dataPackage) {
+	co_routine<void> users::removeRecipientFromGroupDMAsync(const remove_recipient_from_group_dmdata dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Recipient_From_Group_Dm };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -292,7 +292,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> users::modifyCurrentUserVoiceStateAsync(modify_current_user_voice_state_data dataPackage) {
+	co_routine<void> users::modifyCurrentUserVoiceStateAsync(const modify_current_user_voice_state_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Current_User_Voice_State };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -302,7 +302,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> users::modifyUserVoiceStateAsync(modify_user_voice_state_data dataPackage) {
+	co_routine<void> users::modifyUserVoiceStateAsync(const modify_user_voice_state_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_User_Voice_State };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -325,7 +325,7 @@ namespace discord_core_api {
 		co_return cache[newId];
 	}
 
-	user_cache_data users::getCachedUser(get_user_data dataPackage) {
+	user_cache_data users::getCachedUser(const get_user_data dataPackage) {
 		if (cache.contains(dataPackage.userId)) {
 			return cache[dataPackage.userId];
 		} else {
@@ -333,7 +333,7 @@ namespace discord_core_api {
 		}
 	}
 
-	co_routine<user_data> users::getUserAsync(get_user_data dataPackage) {
+	co_routine<user_data> users::getUserAsync(const get_user_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_User };
 		co_await newThreadAwaitable<user_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -350,13 +350,13 @@ namespace discord_core_api {
 		co_return data;
 	}
 
-	co_routine<user_data> users::modifyCurrentUserAsync(modify_current_user_data dataPackage) {
+	co_routine<user_data> users::modifyCurrentUserAsync(const modify_current_user_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Current_User };
 		co_await newThreadAwaitable<user_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/users/@me";
 		workload.callStack	   = "users::modifyCurrentUserAsync()";
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		user_data returnData{};
 		users::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
 		co_return returnData;

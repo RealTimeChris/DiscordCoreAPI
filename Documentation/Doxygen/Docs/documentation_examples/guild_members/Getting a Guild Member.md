@@ -1,7 +1,7 @@
-Getting a Guild Member {#gettingaguildmember}
+Getting a Guild Member {#getting_a_guild_member}
 ============
-- Execute the, from the `guild_members::getCachedGuildMember()` (which collects it from the cache), or `guild_members::getGuildMemberAsync()` (which collects it from the discord servers) function, while passing to it a value of type `get_guild_member_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, from the `discord_core_api::guild_members::getCachedGuildMember()` (which collects it from the cache), or `discord_core_api::guild_members::getGuildMemberAsync()` (which collects it from the discord servers) function, while passing to it a value of type `discord_core_api::get_guild_member_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,13 +32,13 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_guild_member_data dataPackage;
+				get_guild_member_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.guildMemberId = args.eventData.getAuthorId();
 
 				auto guildMember01 = guild_members::getCachedGuildMember(dataPackage).get();
 
-				auto guildMember02 = guild_members::getGuildMemberAsync(const& dataPackage).get();
+				auto guildMember02 = guild_members::getGuildMemberAsync(const dataPackage).get();
 
 
 			} catch (...) {

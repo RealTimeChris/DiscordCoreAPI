@@ -66,9 +66,11 @@ namespace discord_core_api {
 
 			inline void initialize() {
 				for (int64_t enumOne = static_cast<int64_t>(https_workload_type::Unset); enumOne != static_cast<int64_t>(https_workload_type::Last); enumOne++) {
-					auto tempBucket = jsonifier::toString(std::chrono::duration_cast<nanoseconds>(hrclock::now().time_since_epoch()).count());
+					auto tempBucket = jsonifier::toString(std::chrono::duration_cast<nanoseconds>(sys_clock::now().time_since_epoch()).count());
 					buckets.emplace(static_cast<https_workload_type>(enumOne), tempBucket);
-					rateLimits.emplace(tempBucket, makeUnique<rate_limit_data>());
+					rateLimits.emplace(tempBucket, makeUnique<rate_limit_data>())
+						.getRawPtr()
+						->second->sampledTimeInMs.store(std::chrono::duration_cast<milliseconds>(sys_clock::now().time_since_epoch()));
 					std::this_thread::sleep_for(1ms);
 				}
 			}
@@ -76,14 +78,12 @@ namespace discord_core_api {
 			inline rate_limit_data* getEndpointAccess(https_workload_type workloadType) {
 				stop_watch<milliseconds> stopWatch{ milliseconds{ 25000 } };
 				stopWatch.reset();
+				auto targetTime =
+					std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(rateLimits[buckets[workloadType]]->sampledTimeInMs.load(std::memory_order_acquire)) +
+					std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(rateLimits[buckets[workloadType]]->sRemain.load(std::memory_order_acquire));
 				if (rateLimits[buckets[workloadType]]->getsRemaining.load(std::memory_order_acquire) <= 0) {
 					auto newNow = std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(sys_clock::now().time_since_epoch());
-					while ((newNow -
-							   std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(
-								   rateLimits[buckets[workloadType]]->sampledTimeInMs.load(std::memory_order_acquire)))
-							   .count() >=
-						std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(rateLimits[buckets[workloadType]]->sRemain.load(std::memory_order_acquire))
-							.count()) {
+					while ((newNow - targetTime).count() <= 0) {
 						if (stopWatch.hasTimeElapsed()) {
 							return nullptr;
 						}

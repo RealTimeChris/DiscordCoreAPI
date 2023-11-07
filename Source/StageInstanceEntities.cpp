@@ -54,13 +54,13 @@ namespace discord_core_api {
 		stage_instances::httpsClient = client;
 	}
 
-	co_routine<stage_instance_data> stage_instances::createStageInstanceAsync(create_stage_instance_data dataPackage) {
+	co_routine<stage_instance_data> stage_instances::createStageInstanceAsync(const create_stage_instance_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Stage_Instance };
 		co_await newThreadAwaitable<stage_instance_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/stage-instances";
 		workload.callStack	   = "stage_instances::createStageInstanceAsync()";
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
 		}
@@ -69,7 +69,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<stage_instance_data> stage_instances::getStageInstanceAsync(get_stage_instance_data dataPackage) {
+	co_routine<stage_instance_data> stage_instances::getStageInstanceAsync(const get_stage_instance_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Stage_Instance };
 		co_await newThreadAwaitable<stage_instance_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -80,12 +80,12 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<stage_instance_data> stage_instances::modifyStageInstanceAsync(modify_stage_instance_data dataPackage) {
+	co_routine<stage_instance_data> stage_instances::modifyStageInstanceAsync(const modify_stage_instance_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Stage_Instance };
 		co_await newThreadAwaitable<stage_instance_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/stage-instances/" + dataPackage.channelId;
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "stage_instances::modifyStageInstanceAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
@@ -95,7 +95,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> stage_instances::deleteStageInstanceAsync(delete_stage_instance_data dataPackage) {
+	co_routine<void> stage_instances::deleteStageInstanceAsync(const delete_stage_instance_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Stage_Instance };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;

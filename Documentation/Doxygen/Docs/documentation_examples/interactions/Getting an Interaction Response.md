@@ -1,6 +1,6 @@
-Getting an Interaction Response {#gettinganinteractionresponse}
+Getting an Interaction Response {#getting_an_interaction_response}
 ============
-- Execute the, `interactions::getInteractionResponseAsync()` function, while passing in a data structure of type `get_interaction_response_data`, with a return type of `message`.
+- Execute the, `discord_core_api::interactions::getInteractionResponseAsync()` function, while passing in a data structure of type `discord_core_api::get_interaction_response_data`, with a return type of `discord_core_api::message_data`.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -31,11 +31,11 @@ Getting an Interaction Response {#gettinganinteractionresponse}
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_interaction_response_data dataPackage;
+				get_interaction_response_data& dataPackage;
 				dataPackage.applicationId = getBotUser().id;
 				dataPackage.interactionToken = args.eventData.getInteractionToken();
 
-				auto interactionResponse = interactions::getInteractionResponseAsync(const& dataPackage).get();
+				auto interactionResponse = interactions::getInteractionResponseAsync(const dataPackage).get();
 
 
 			} catch (...) {

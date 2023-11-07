@@ -40,6 +40,7 @@
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
+#include <discordcoreapi/Utilities/UnicodeEmoji.hpp>
 
 namespace discord_core_api {
 
@@ -147,7 +148,7 @@ namespace discord_core_api {
 
 	user_cache_data guild_member_data::getUserData() {
 		if (user.id != 0) {
-			return users::getCachedUser(get_user_data{ .userId = user.id });
+			return users::getCachedUser({ .userId = user.id });
 		} else {
 			return {};
 		}
@@ -159,7 +160,7 @@ namespace discord_core_api {
 
 	user_cache_data guild_member_cache_data::getUserData() {
 		if (user.id != 0) {
-			return users::getCachedUser(get_user_data{ .userId = user.id });
+			return users::getCachedUser({ .userId = user.id });
 		} else {
 			return {};
 		}
@@ -186,8 +187,8 @@ namespace discord_core_api {
 
 	void guild_data::disconnect() {
 		discord_core_internal::websocket_message_data<update_voice_state_data> data{};
-		data.excludedKeys.emplace("t");
-		data.excludedKeys.emplace("s");
+		data.jsonifierExcludedKeys.emplace("t");
+		data.jsonifierExcludedKeys.emplace("s");
 		data.d.channelId = 0;
 		data.d.selfDeaf	 = false;
 		data.d.selfMute	 = false;
@@ -295,72 +296,72 @@ namespace discord_core_api {
 
 	void embed_image_data::generateExcludedKeys() {
 		if (width == 0) {
-			excludedKeys.emplace("width");
+			jsonifierExcludedKeys.emplace("width");
 		}
 		if (height == 0) {
-			excludedKeys.emplace("height");
+			jsonifierExcludedKeys.emplace("height");
 		}
 		if (proxyUrl == "") {
-			excludedKeys.emplace("proxy_url");
+			jsonifierExcludedKeys.emplace("proxy_url");
 		}
 	}
 
 	void embed_author_data::generateExcludedKeys() {
 		if (name == "") {
-			excludedKeys.emplace("name");
+			jsonifierExcludedKeys.emplace("name");
 		}
 		if (url == "") {
-			excludedKeys.emplace("url");
+			jsonifierExcludedKeys.emplace("url");
 		}
 		if (iconUrl == "") {
-			excludedKeys.emplace("icon_url");
+			jsonifierExcludedKeys.emplace("icon_url");
 		}
 		if (proxyIconUrl == "") {
-			excludedKeys.emplace("proxy_icon_url");
+			jsonifierExcludedKeys.emplace("proxy_icon_url");
 		}
 	}
 
 	void embed_data::generateExcludedKeys() {
 		if (fields.size() == 0) {
-			excludedKeys.emplace("fields");
+			jsonifierExcludedKeys.emplace("fields");
 		}
 		if (url == "") {
-			excludedKeys.emplace("url");
+			jsonifierExcludedKeys.emplace("url");
 		}
 		if (hexColorValue == 0) {
-			excludedKeys.emplace("color");
+			jsonifierExcludedKeys.emplace("color");
 		}
 		if (title == "") {
-			excludedKeys.emplace("title");
+			jsonifierExcludedKeys.emplace("title");
 		}
 		if (description == "") {
-			excludedKeys.emplace("description");
+			jsonifierExcludedKeys.emplace("description");
 		}
 		if (type == "") {
-			excludedKeys.emplace("type");
+			jsonifierExcludedKeys.emplace("type");
 		}
 		if (author.iconUrl == "" && author.name == "" && author.proxyIconUrl == "" && author.url == "") {
-			excludedKeys.emplace("author");
+			jsonifierExcludedKeys.emplace("author");
 		} else {
 			author.generateExcludedKeys();
 		}
 		if (video.proxyUrl == "" && video.height == 0 && video.width == 0 && video.url == "") {
-			excludedKeys.emplace("video");
+			jsonifierExcludedKeys.emplace("video");
 		}
 		if (footer.iconUrl == "" && footer.proxyIconUrl == "" && footer.text == "") {
-			excludedKeys.emplace("footer");
+			jsonifierExcludedKeys.emplace("footer");
 		}
 		if (image.height == 0 && image.width == 0 && image.proxyUrl == "" && image.url == "") {
-			excludedKeys.emplace("image");
+			jsonifierExcludedKeys.emplace("image");
 		}
 		if (provider.name == "" && provider.url == "") {
-			excludedKeys.emplace("provider");
+			jsonifierExcludedKeys.emplace("provider");
 		}
 		if (thumbnail.height == 0 && thumbnail.width == 0 && thumbnail.proxyUrl == "" && thumbnail.url == "") {
-			excludedKeys.emplace("thumbnail");
+			jsonifierExcludedKeys.emplace("thumbnail");
 		}
 		if (timeStamp == "") {
-			excludedKeys.emplace("timestamp");
+			jsonifierExcludedKeys.emplace("timestamp");
 		}
 	}
 
@@ -384,28 +385,28 @@ namespace discord_core_api {
 
 	void partial_emoji_data::generateExcludedKeys() {
 		if (name == "") {
-			excludedKeys.emplace("name");
+			jsonifierExcludedKeys.emplace("name");
 		}
 		if (id == 0) {
-			excludedKeys.emplace("id");
+			jsonifierExcludedKeys.emplace("id");
 		}
 	}
 
 	void emoji_data::generateExcludedKeys() {
 		if (id == 0) {
-			excludedKeys.emplace("id");
+			jsonifierExcludedKeys.emplace("id");
 		}
 		if (managed == false) {
-			excludedKeys.emplace("managed");
+			jsonifierExcludedKeys.emplace("managed");
 		}
 		if (name == "") {
-			excludedKeys.emplace("name");
+			jsonifierExcludedKeys.emplace("name");
 		}
 		if (roles.size() == 0) {
-			excludedKeys.emplace("roles");
+			jsonifierExcludedKeys.emplace("roles");
 		}
 		if (unicodeName.size() == 0) {
-			excludedKeys.emplace("unicode_name");
+			jsonifierExcludedKeys.emplace("unicode_name");
 		}
 	}
 
@@ -446,7 +447,7 @@ namespace discord_core_api {
 	input_event_data& input_event_data::operator=(input_event_data&& other) noexcept {
 		if (this != &other) {
 			interactionData				   = std::move(other.interactionData);
-			interactionData.member.guildId = interactionData.guildId;
+			interactionData->member.guildId = interactionData->guildId;
 			responseType = other.responseType;
 		}
 		return *this;
@@ -458,8 +459,8 @@ namespace discord_core_api {
 
 	input_event_data& input_event_data::operator=(const input_event_data& other) {
 		if (this != &other) {
-			interactionData				   = other.interactionData;
-			interactionData.member.guildId = interactionData.guildId;
+			interactionData					= makeUnique<interaction_data>(*other.interactionData);
+			interactionData->member.guildId = interactionData->guildId;
 			responseType	 = other.responseType;
 		}
 		return *this;
@@ -470,8 +471,8 @@ namespace discord_core_api {
 	}
 
 	input_event_data& input_event_data::operator=(const interaction_data& other) {
-		interactionData				   = other;
-		interactionData.member.guildId = interactionData.guildId;
+		interactionData					= makeUnique<interaction_data>(other);
+		interactionData->member.guildId = interactionData->guildId;
 		return *this;
 	}
 
@@ -480,24 +481,24 @@ namespace discord_core_api {
 	}
 
 	const user_data& input_event_data::getUserData() const {
-		if (interactionData.member.user.id != 0) {
-			return interactionData.member.user;
+		if (interactionData->member.user.id != 0) {
+			return interactionData->member.user;
 		} else {
-			return interactionData.user;
+			return interactionData->user;
 		}
 	}
 
 	const channel_data& input_event_data::getChannelData() const {
-		return interactionData.channel;
+		return interactionData->channel;
 	}
 
 	const guild_member_data& input_event_data::getGuildMemberData() const {
-		return interactionData.member;
+		return interactionData->member;
 	}
 
 	void interaction_callback_data::generateExcludedKeys() {
 		if (allowedMentions.parse.size() == 0 && allowedMentions.roles.size() == 0 && allowedMentions.users.size() == 0) {
-			excludedKeys.emplace("allowed_mentions");
+			jsonifierExcludedKeys.emplace("allowed_mentions");
 		}
 		for (auto& value: components) {
 			for (auto& value02: value.components) {
@@ -508,25 +509,35 @@ namespace discord_core_api {
 			value.generateExcludedKeys();
 		}
 		if (attachments.size() == 0) {
-			excludedKeys.emplace("attachments");
+			jsonifierExcludedKeys.emplace("attachments");
 		}
 		if (choices.size() == 0) {
-			excludedKeys.emplace("choices");
+			jsonifierExcludedKeys.emplace("choices");
 		}
 		if (flags == 0) {
-			excludedKeys.emplace("flags");
+			jsonifierExcludedKeys.emplace("flags");
 		}
 		if (content == "") {
-			excludedKeys.emplace("content");
+			jsonifierExcludedKeys.emplace("content");
 		}
 		if (customId == "") {
-			excludedKeys.emplace("custom_id");
+			jsonifierExcludedKeys.emplace("custom_id");
 		}
 		if (files.size() == 0) {
-			excludedKeys.emplace("files");
+			jsonifierExcludedKeys.emplace("files");
 		}
 		if (title == "") {
-			excludedKeys.emplace("title");
+			jsonifierExcludedKeys.emplace("title");
+		}
+	}
+
+	void action_row_data::generateExcludedKeys() {
+		if (components.size() == 0) {
+			jsonifierExcludedKeys.emplace("components");
+		} else {
+			for (auto& value: components) {
+				value.generateExcludedKeys();
+			}
 		}
 	}
 
@@ -534,64 +545,64 @@ namespace discord_core_api {
 		switch (type) {
 			case component_type::Button: {
 				if (customId == "") {
-					excludedKeys.emplace("custom_id");
+					jsonifierExcludedKeys.emplace("custom_id");
 				}
 				if (emoji.name == "") {
-					excludedKeys.emplace("emoji");
+					jsonifierExcludedKeys.emplace("emoji");
 				} else {
 					emoji.generateExcludedKeys();
 				}
 				if (label == "") {
-					excludedKeys.emplace("label");
+					jsonifierExcludedKeys.emplace("label");
 				}
 				if (placeholder == "") {
-					excludedKeys.emplace("placeholder");
+					jsonifierExcludedKeys.emplace("placeholder");
 				}
 				if (url == "") {
-					excludedKeys.emplace("url");
+					jsonifierExcludedKeys.emplace("url");
 				}
-				excludedKeys.emplace("options");
-				excludedKeys.emplace("channel_types");
-				excludedKeys.emplace("placeholder");
-				excludedKeys.emplace("min_values");
-				excludedKeys.emplace("max_values");
-				excludedKeys.emplace("min_length");
-				excludedKeys.emplace("max_length");
-				excludedKeys.emplace("required");
-				excludedKeys.emplace("value");
-				excludedKeys.emplace("title");
+				jsonifierExcludedKeys.emplace("options");
+				jsonifierExcludedKeys.emplace("channel_types");
+				jsonifierExcludedKeys.emplace("placeholder");
+				jsonifierExcludedKeys.emplace("min_values");
+				jsonifierExcludedKeys.emplace("max_values");
+				jsonifierExcludedKeys.emplace("min_length");
+				jsonifierExcludedKeys.emplace("max_length");
+				jsonifierExcludedKeys.emplace("required");
+				jsonifierExcludedKeys.emplace("value");
+				jsonifierExcludedKeys.emplace("title");
 				break;
 			}
 			case component_type::Text_Input: {
 				if (customId == "") {
-					excludedKeys.emplace("custom_id");
+					jsonifierExcludedKeys.emplace("custom_id");
 				}
 				if (label == "") {
-					excludedKeys.emplace("label");
+					jsonifierExcludedKeys.emplace("label");
 				}
 				if (maxLength == 0) {
-					excludedKeys.emplace("max_length");
+					jsonifierExcludedKeys.emplace("max_length");
 				}
 				if (minLength == 0) {
-					excludedKeys.emplace("min_length");
+					jsonifierExcludedKeys.emplace("min_length");
 				}
 				if (placeholder == "") {
-					excludedKeys.emplace("placeholder");
+					jsonifierExcludedKeys.emplace("placeholder");
 				}
 				if (title == "") {
-					excludedKeys.emplace("title");
+					jsonifierExcludedKeys.emplace("title");
 				}
 				if (value == "") {
-					excludedKeys.emplace("value");
+					jsonifierExcludedKeys.emplace("value");
 				}
-				excludedKeys.emplace("style");
-				excludedKeys.emplace("label");
-				excludedKeys.emplace("emoji");
-				excludedKeys.emplace("url");
-				excludedKeys.emplace("min_length");
-				excludedKeys.emplace("max_length");
-				excludedKeys.emplace("required");
-				excludedKeys.emplace("title");
+				jsonifierExcludedKeys.emplace("style");
+				jsonifierExcludedKeys.emplace("label");
+				jsonifierExcludedKeys.emplace("emoji");
+				jsonifierExcludedKeys.emplace("url");
+				jsonifierExcludedKeys.emplace("min_length");
+				jsonifierExcludedKeys.emplace("max_length");
+				jsonifierExcludedKeys.emplace("required");
+				jsonifierExcludedKeys.emplace("title");
 				break;
 			}
 			case component_type::Action_Row:
@@ -608,36 +619,36 @@ namespace discord_core_api {
 				[[fallthrough]];
 			default: {
 				if (customId == "") {
-					excludedKeys.emplace("custom_id");
+					jsonifierExcludedKeys.emplace("custom_id");
 				}
 				if (channelTypes.size() == 0) {
-					excludedKeys.emplace("channel_types");
+					jsonifierExcludedKeys.emplace("channel_types");
 				}
 				if (label == "") {
-					excludedKeys.emplace("label");
+					jsonifierExcludedKeys.emplace("label");
 				}
 				if (maxValues == 0) {
-					excludedKeys.emplace("max_values");
+					jsonifierExcludedKeys.emplace("max_values");
 				}
 				if (minValues == 0) {
-					excludedKeys.emplace("min_values");
+					jsonifierExcludedKeys.emplace("min_values");
 				}
 				if (options.size() == 0) {
-					excludedKeys.emplace("options");
+					jsonifierExcludedKeys.emplace("options");
 				}
 				if (placeholder == "") {
-					excludedKeys.emplace("placeholder");
+					jsonifierExcludedKeys.emplace("placeholder");
 				}
-				excludedKeys.emplace("style");
-				excludedKeys.emplace("label");
-				excludedKeys.emplace("emoji");
-				excludedKeys.emplace("url");
-				excludedKeys.emplace("min_length");
-				excludedKeys.emplace("max_length");
-				excludedKeys.emplace("required");
-				excludedKeys.emplace("value");
-				excludedKeys.emplace("title");
-				excludedKeys.emplace("placeholer");
+				jsonifierExcludedKeys.emplace("style");
+				jsonifierExcludedKeys.emplace("label");
+				jsonifierExcludedKeys.emplace("emoji");
+				jsonifierExcludedKeys.emplace("url");
+				jsonifierExcludedKeys.emplace("min_length");
+				jsonifierExcludedKeys.emplace("max_length");
+				jsonifierExcludedKeys.emplace("required");
+				jsonifierExcludedKeys.emplace("value");
+				jsonifierExcludedKeys.emplace("title");
+				jsonifierExcludedKeys.emplace("placeholer");
 				break;
 			}
 		}
@@ -651,67 +662,67 @@ namespace discord_core_api {
 			value.generateExcludedKeys();
 		}
 		if (maxValue == std::numeric_limits<int64_t>::min()) {
-			excludedKeys.emplace("max_value");
+			jsonifierExcludedKeys.emplace("max_value");
 		}
 		if (minValue == std::numeric_limits<int64_t>::max()) {
-			excludedKeys.emplace("min_value");
+			jsonifierExcludedKeys.emplace("min_value");
 		}
 		if (nameLocalizations.size() == 0) {
-			excludedKeys.emplace("name_localizations");
+			jsonifierExcludedKeys.emplace("name_localizations");
 		}
 		if (choices.size() == 0) {
-			excludedKeys.emplace("choices");
+			jsonifierExcludedKeys.emplace("choices");
 		}
 		if (options.size() == 0) {
-			excludedKeys.emplace("options");
+			jsonifierExcludedKeys.emplace("options");
 		}
 		if (!autocomplete) {
-			excludedKeys.emplace("autocomplete");
+			jsonifierExcludedKeys.emplace("autocomplete");
 		}
 		if (descriptionLocalizations.size() == 0) {
-			excludedKeys.emplace("description_localizations");
+			jsonifierExcludedKeys.emplace("description_localizations");
 		}
 		if (channelTypes.size() == 0) {
-			excludedKeys.emplace("channel_types");
+			jsonifierExcludedKeys.emplace("channel_types");
 		}
 	}
 
 	void application_command_option_choice_data::generateExcludedKeys() {
 		if (nameLocalizations.size() == 0) {
-			excludedKeys.emplace("name_localizations");
+			jsonifierExcludedKeys.emplace("name_localizations");
 		}
 	}
 
 	void application_command_data::generateExcludedKeys() {
 		if (descriptionLocalizations.size() == 0) {
-			excludedKeys.emplace("description_localizations");
+			jsonifierExcludedKeys.emplace("description_localizations");
 		}
 		if (nameLocalizations.size() == 0) {
-			excludedKeys.emplace("name_localizations");
+			jsonifierExcludedKeys.emplace("name_localizations");
 		}
 		if (id == 0) {
-			excludedKeys.emplace("id");
+			jsonifierExcludedKeys.emplace("id");
 		}
 		if (version == "") {
-			excludedKeys.emplace("version");
+			jsonifierExcludedKeys.emplace("version");
 		}
 		if (guildId == 0) {
-			excludedKeys.emplace("guild_id");
+			jsonifierExcludedKeys.emplace("guild_id");
 		}
 		for (auto& value: options) {
 			value.generateExcludedKeys();
 		}
 		if (options.size() == 0) {
-			excludedKeys.emplace("options");
+			jsonifierExcludedKeys.emplace("options");
 		}
 	}
 
 	const interaction_data& input_event_data::getInteractionData() const {
-		return interactionData;
+		return *interactionData;
 	}
 
 	const message_data& input_event_data::getMessageData() const {
-		return interactionData.message;
+		return interactionData->message;
 	}
 
 	respond_to_input_event_data::operator interaction_callback_data() const {
@@ -729,7 +740,7 @@ namespace discord_core_api {
 		return returnData;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::operator=(const interaction_data& dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::operator=(const interaction_data dataPackage) {
 		applicationId	 = dataPackage.applicationId;
 		messageId		 = dataPackage.message.id;
 		channelId		 = dataPackage.channelId;
@@ -739,20 +750,21 @@ namespace discord_core_api {
 		return *this;
 	};
 
-	respond_to_input_event_data::respond_to_input_event_data(const interaction_data& dataPackage) {
+	respond_to_input_event_data::respond_to_input_event_data(const interaction_data dataPackage) {
 		*this = dataPackage;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::operator=(const input_event_data& dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::operator=(const input_event_data dataPackage) {
 		applicationId	 = dataPackage.getInteractionData().applicationId;
 		interactionToken = dataPackage.getInteractionData().token;
-		channelId		 = dataPackage.interactionData.channelId;
+		channelId		 = dataPackage.interactionData->channelId;
 		interactionId	 = dataPackage.getInteractionData().id;
 		messageId		 = dataPackage.getMessageData().id;
+		type			 = dataPackage.responseType;
 		return *this;
 	}
 
-	respond_to_input_event_data::respond_to_input_event_data(const input_event_data& dataPackage) {
+	respond_to_input_event_data::respond_to_input_event_data(const input_event_data dataPackage) {
 		*this = dataPackage;
 	}
 
@@ -843,7 +855,7 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addAllowedMentions(const allowed_mentions_data& dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::addAllowedMentions(const allowed_mentions_data dataPackage) {
 		allowedMentions = dataPackage;
 		return *this;
 	}
@@ -853,12 +865,12 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addComponentRow(const action_row_data& dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::addComponentRow(const action_row_data dataPackage) {
 		components.emplace_back(dataPackage);
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addMessageEmbed(const embed_data& dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::addMessageEmbed(const embed_data dataPackage) {
 		embeds.emplace_back(dataPackage);
 		return *this;
 	}
@@ -975,17 +987,17 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	message_response_base& message_response_base::addAllowedMentions(const allowed_mentions_data& dataPackage) {
+	message_response_base& message_response_base::addAllowedMentions(const allowed_mentions_data dataPackage) {
 		allowedMentions = dataPackage;
 		return *this;
 	}
 
-	message_response_base& message_response_base::addComponentRow(const action_row_data& dataPackage) {
+	message_response_base& message_response_base::addComponentRow(const action_row_data dataPackage) {
 		components.emplace_back(dataPackage);
 		return *this;
 	}
 
-	message_response_base& message_response_base::addMessageEmbed(const embed_data& dataPackage) {
+	message_response_base& message_response_base::addMessageEmbed(const embed_data dataPackage) {
 		embeds.emplace_back(dataPackage);
 		return *this;
 	}
@@ -1042,7 +1054,7 @@ namespace discord_core_api {
 		subCommandName		= other.subCommandName;
 		commandName			= other.commandName;
 		optionsArgs			= other.optionsArgs;
-		eventData			= other.eventData;
+		eventData			= makeUnique<input_event_data>(*other.eventData);
 		return *this;
 	}
 
@@ -1051,23 +1063,23 @@ namespace discord_core_api {
 	}
 
 	command_data::command_data(const input_event_data& inputEventData) {
-		if (inputEventData.interactionData.data.name != "") {
-			commandName = inputEventData.interactionData.data.name;
+		if (inputEventData.interactionData->data.name != "") {
+			commandName = inputEventData.interactionData->data.name;
 		}
-		if (inputEventData.interactionData.data.targetId != 0) {
+		if (inputEventData.interactionData->data.targetId != 0) {
 			optionsArgs.values.emplace("target_id",
-				json_string_value{ .type = discord_core_internal::json_type::string_t, .value = inputEventData.interactionData.data.targetId.operator jsonifier::string() });
-		} else if (inputEventData.interactionData.data.targetId != 0) {
+				json_string_value{ .type = discord_core_internal::json_type::string_t, .value = inputEventData.interactionData->data.targetId.operator jsonifier::string() });
+		} else if (inputEventData.interactionData->data.targetId != 0) {
 			optionsArgs.values.emplace("target_id",
-				json_string_value{ .type = discord_core_internal::json_type::string_t, .value = inputEventData.interactionData.data.targetId.operator jsonifier::string() });
+				json_string_value{ .type = discord_core_internal::json_type::string_t, .value = inputEventData.interactionData->data.targetId.operator jsonifier::string() });
 		}
-		eventData = inputEventData;
-		for (auto& value: eventData.interactionData.data.options) {
+		eventData = makeUnique<input_event_data>(inputEventData);
+		for (auto& value: eventData->interactionData->data.options) {
 			json_string_value serializer{ .value = value.value.operator jsonifier::string() };
 			optionsArgs.values[value.name] = serializer;
 			parseCommandDataOption(optionsArgs.values, value);
 		}
-		for (auto& value: eventData.interactionData.data.options) {
+		for (auto& value: eventData->interactionData->data.options) {
 			if (value.type == application_command_option_type::Sub_Command) {
 				subCommandName = value.name;
 			}
@@ -1078,23 +1090,23 @@ namespace discord_core_api {
 	}
 
 	const interaction_data& command_data::getInteractionData() const {
-		return eventData.interactionData;
+		return *eventData->interactionData;
 	}
 
 	const guild_member_data& command_data::getGuildMemberData() const {
-		return eventData.getGuildMemberData();
+		return eventData->getGuildMemberData();
 	}
 
 	const channel_data& command_data::getChannelData() const {
-		return eventData.getChannelData();
+		return eventData->getChannelData();
 	}
 
 	const message_data& command_data::getMessageData() const {
-		return eventData.getMessageData();
+		return eventData->getMessageData();
 	}
 
 	const user_data& command_data::getUserData() const {
-		return eventData.getUserData();
+		return eventData->getUserData();
 	}
 
 	jsonifier::string command_data::getCommandName() const {
@@ -1110,35 +1122,35 @@ namespace discord_core_api {
 	}
 
 	const input_event_data& command_data::getInputEventData() const {
-		return eventData;
+		return *eventData;
 	}
 
 	base_function_arguments::base_function_arguments(const command_data& commanddataNew) : command_data{ commanddataNew } {};
 
 	move_through_message_pages_data moveThroughMessagePages(snowflake userID, input_event_data originalEvent, uint32_t currentPageIndex,
 		const jsonifier::vector<embed_data>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
-		move_through_message_pages_data returnData{};
+		unique_ptr<move_through_message_pages_data> returnData{ makeUnique<move_through_message_pages_data>() };
 		uint32_t newCurrentPageIndex = currentPageIndex;
 		stop_watch<milliseconds> stopWatch{ milliseconds{ waitForMaxMs } };
 		stopWatch.reset();
 		auto createResponseData	 = makeUnique<create_interaction_response_data>(originalEvent);
 		auto interactionResponse = makeUnique<respond_to_input_event_data>(originalEvent);
-		embed_data embedData{};
-		embedData.setColor("fefefe");
-		embedData.setTitle("__**permissions issue:**__");
-		embedData.setTimeStamp(getTimeAndDate());
-		embedData.setDescription("Sorry, but that button can only be pressed by <@" + userID + ">!");
-		createResponseData->addMessageEmbed(embedData);
+		auto embedData			 = makeUnique<embed_data>();
+		embedData->setColor("FEFEFE");
+		embedData->setTitle("__**Permissions Issue:**__");
+		embedData->setTimeStamp(getTimeAndDate());
+		embedData->setDescription("Sorry, but that button can only be pressed by <@" + userID + ">!");
+		createResponseData->addMessageEmbed(*embedData);
 		createResponseData->setResponseType(interaction_callback_type::Channel_Message_With_Source);
 		if (messageEmbeds.size() > 0) {
 			interactionResponse->addMessageEmbed(messageEmbeds[currentPageIndex]);
 		}
 		if (returnResult) {
-			interactionResponse->addButton(false, "select", "select", button_style::Success, "✅");
+			interactionResponse->addButton(false, "select", "Select", button_style::Success, unicode_emojis::x);
 		}
-		interactionResponse->addButton(false, "backwards", "prev page", button_style::Primary, "◀️");
-		interactionResponse->addButton(false, "forwards", "next page", button_style::Primary, "▶️");
-		interactionResponse->addButton(false, "exit", "exit", button_style::Danger, "❌");
+		interactionResponse->addButton(false, "backwards", "Prev Page", button_style::Primary, unicode_emojis::arrow_left);
+		interactionResponse->addButton(false, "forwards", "Next Page", button_style::Primary, unicode_emojis::arrow_right);
+		interactionResponse->addButton(false, "exit", "Exit", button_style::Danger, unicode_emojis::x);
 		interactionResponse->setResponseType(input_event_response_type::Edit_Interaction_Response);
 		originalEvent = input_events::respondToInputEventAsync(*interactionResponse).get();
 		while (!stopWatch.hasTimeElapsed()) {
@@ -1152,12 +1164,14 @@ namespace discord_core_api {
 				dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 				for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 					action_row_data actionRow{};
-					for (uint64_t y = 0; y < originalEvent.getMessageData().components.at(x).components.size(); ++y) {
-						component_data component = originalEvent.getMessageData().components.at(x).components.at(y);
-						component.disabled		 = true;
+					for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+						component_data component = originalEvent.getMessageData().components[x].components[y];
+						component.disabled		= true;
 						actionRow.components.emplace_back(component);
 					}
-					dataPackage02->addComponentRow(actionRow);
+					dataPackage02->addButton(false, "backwards", "Prev Page", button_style::Primary, unicode_emojis::arrow_left);
+					dataPackage02->addButton(false, "forwards", "Next Page", button_style::Primary, unicode_emojis::arrow_right);
+					dataPackage02->addButton(false, "exit", "Exit", button_style::Danger, unicode_emojis::x);
 				}
 				if (deleteAfter == true) {
 					input_event_data dataPackage03{ originalEvent };
@@ -1166,29 +1180,31 @@ namespace discord_core_api {
 					dataPackage02->setResponseType(input_event_response_type::Edit_Interaction_Response);
 					input_events::respondToInputEventAsync(*dataPackage02).get();
 				}
-				move_through_message_pages_data dataPackage03{};
-				dataPackage03.inputEventData = originalEvent;
-				dataPackage03.buttonId		 = "exit";
-				return dataPackage03;
+				unique_ptr<move_through_message_pages_data> dataPackage03{ makeUnique<move_through_message_pages_data>() };
+				dataPackage03->inputEventData = originalEvent;
+				dataPackage03->buttonId		  = "exit";
+				return *dataPackage03;
 
-			} else if (buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
+			} else if (buttonIntData[0].buttonId == "empty" || buttonIntData[0].buttonId == "exit") {
 				unique_ptr<respond_to_input_event_data> dataPackage02{ makeUnique<respond_to_input_event_data>(originalEvent) };
-				if (buttonIntData.at(0).buttonId == "empty") {
+				if (buttonIntData[0].buttonId == "empty") {
 					*dataPackage02 = originalEvent;
 				} else {
-					interactionData = makeUnique<interaction_data>(buttonIntData.at(0));
+					interactionData = makeUnique<interaction_data>(buttonIntData[0]);
 					*dataPackage02	= respond_to_input_event_data{ *interactionData };
 				}
 
 				dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 				for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 					action_row_data actionRow{};
-					for (uint64_t y = 0; y < originalEvent.getMessageData().components.at(x).components.size(); ++y) {
-						component_data component = originalEvent.getMessageData().components.at(x).components.at(y);
+					for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+						component_data component = originalEvent.getMessageData().components[x].components[y];
 						component.disabled		 = true;
 						actionRow.components.emplace_back(component);
 					}
-					dataPackage02->addComponentRow(actionRow);
+					dataPackage02->addButton(false, "backwards", "Prev Page", button_style::Primary, unicode_emojis::arrow_left);
+					dataPackage02->addButton(false, "forwards", "Next Page", button_style::Primary, unicode_emojis::arrow_right);
+					dataPackage02->addButton(false, "exit", "Exit", button_style::Danger, unicode_emojis::x);
 				}
 				if (deleteAfter == true) {
 					input_event_data dataPackage03{ originalEvent };
@@ -1197,47 +1213,49 @@ namespace discord_core_api {
 					dataPackage02->setResponseType(input_event_response_type::Edit_Interaction_Response);
 					input_events::respondToInputEventAsync(*dataPackage02).get();
 				}
-				move_through_message_pages_data dataPackage03{};
-				dataPackage03.inputEventData = originalEvent;
-				dataPackage03.buttonId		 = "exit";
-				return dataPackage03;
-			} else if (buttonIntData.at(0).buttonId == "forwards" || buttonIntData.at(0).buttonId == "backwards") {
-				if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
+				unique_ptr<move_through_message_pages_data> dataPackage03{ makeUnique<move_through_message_pages_data>() };
+				dataPackage03->inputEventData = originalEvent;
+				dataPackage03->buttonId		  = "exit";
+				return *dataPackage03;
+			} else if (buttonIntData[0].buttonId == "forwards" || buttonIntData[0].buttonId == "backwards") {
+				if (buttonIntData[0].buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
 					newCurrentPageIndex = 0;
-				} else if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
+				} else if (buttonIntData[0].buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
 					++newCurrentPageIndex;
-				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
+				} else if (buttonIntData[0].buttonId == "backwards" && (newCurrentPageIndex > 0)) {
 					--newCurrentPageIndex;
-				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
+				} else if (buttonIntData[0].buttonId == "backwards" && (newCurrentPageIndex == 0)) {
 					newCurrentPageIndex = static_cast<uint32_t>(messageEmbeds.size()) - 1;
 				}
-				interactionData	 = makeUnique<interaction_data>(buttonIntData.at(0));
+				interactionData	 = makeUnique<interaction_data>(buttonIntData[0]);
 				auto dataPackage = respond_to_input_event_data{ *interactionData };
 				dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 				for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 					action_row_data actionRow{};
-					for (uint64_t y = 0; y < originalEvent.getMessageData().components.at(x).components.size(); ++y) {
-						component_data component = originalEvent.getMessageData().components.at(x).components.at(y);
+					for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+						component_data component = originalEvent.getMessageData().components[x].components[y];
 						component.disabled		 = false;
 						actionRow.components.emplace_back(component);
 					}
-					dataPackage.addComponentRow(actionRow);
+					dataPackage.addButton(false, "backwards", "Prev Page", button_style::Primary, unicode_emojis::arrow_left);
+					dataPackage.addButton(false, "forwards", "Next Page", button_style::Primary, unicode_emojis::arrow_right);
+					dataPackage.addButton(false, "exit", "Exit", button_style::Danger, unicode_emojis::x);
 				}
 				dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 				input_events::respondToInputEventAsync(dataPackage).get();
-			} else if (buttonIntData.at(0).buttonId == "select") {
+			} else if (buttonIntData[0].buttonId == "select") {
 				if (deleteAfter == true) {
 					input_event_data dataPackage03{ originalEvent };
 					input_events::deleteInputEventResponseAsync(dataPackage03);
 				} else {
-					unique_ptr<interaction_data> interactionDataNew = makeUnique<interaction_data>(buttonIntData.at(0));
-					auto dataPackage								= respond_to_input_event_data{ *interactionDataNew };
+					unique_ptr<interaction_data> interactionDataNew = makeUnique<interaction_data>(buttonIntData[0]);
+					auto dataPackage							  = respond_to_input_event_data{ *interactionDataNew };
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 					for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 						action_row_data actionRow{};
-						for (uint64_t y = 0; y < originalEvent.getMessageData().components.at(x).components.size(); ++y) {
-							component_data component = originalEvent.getMessageData().components.at(x).components.at(y);
+						for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+							component_data component = originalEvent.getMessageData().components[x].components[y];
 							component.disabled		 = true;
 							actionRow.components.emplace_back(component);
 						}
@@ -1245,13 +1263,13 @@ namespace discord_core_api {
 					}
 					originalEvent = input_events::respondToInputEventAsync(dataPackage).get();
 				}
-				returnData.currentPageIndex = newCurrentPageIndex;
-				returnData.inputEventData	= originalEvent;
-				returnData.buttonId			= buttonIntData.at(0).buttonId;
-				return returnData;
+				returnData->currentPageIndex = newCurrentPageIndex;
+				returnData->inputEventData	= originalEvent;
+				returnData->buttonId		 = buttonIntData[0].buttonId;
+				return *returnData;
 			}
 		};
-		return returnData;
+		return *returnData;
 	};
 
 };

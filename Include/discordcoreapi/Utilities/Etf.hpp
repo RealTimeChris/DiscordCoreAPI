@@ -57,24 +57,27 @@ namespace discord_core_api {
 		/// @tparam return_type the type of the value to reverse.
 		/// @param net the value to reverse.
 		/// @return the reversed value.
-		template<typename return_type> inline return_type reverseByteOrder(return_type net) {
+		template<typename return_type> inline void reverseByteOrder(return_type& net) {
 			if constexpr (std::endian::native == std::endian::little) {
 				switch (sizeof(return_type)) {
 					case 2: {
-						return ntohsNew(net);
+						net = ntohsNew(net);
+						return;
 					}
 					case 4: {
-						return ntohlNew(net);
+						net = ntohlNew(net);
+						return;
 					}
 					case 8: {
-						return ntohllNew(net);
+						net = ntohllNew(net);
+						return;
 					}
 					default: {
-						return net;
+						return;
 					}
 				}
 			} else {
-				return net;
+				return;
 			}
 		}
 
@@ -84,7 +87,7 @@ namespace discord_core_api {
 		/// @param num the number whose bits are to be stored.
 		template<typename return_type, typename value_type> inline void storeBits(value_type* to, return_type num) {
 			const uint8_t byteSize{ 8 };
-			num = reverseByteOrder(num);
+			reverseByteOrder(num);
 
 			// store the bits of the number in the character array
 			for (uint64_t x = 0; x < sizeof(return_type); ++x) {
@@ -97,7 +100,7 @@ namespace discord_core_api {
 			/// @brief Constructs an etf_parse_error instance with a message and source location.
 			/// @param message the error message.
 			/// @param location the source location where the error occurred.
-			inline explicit etf_parse_error(jsonifier::string_view message, const std::source_location& location = std::source_location::current())
+			inline explicit etf_parse_error(jsonifier::string_view message, std::source_location location = std::source_location::current())
 				: dca_exception{ message, location } {};
 		};
 
@@ -156,7 +159,7 @@ namespace discord_core_api {
 				return_type newValue{};
 				std::memcpy(&newValue, dataBuffer + offSet, sizeof(return_type));
 				offSet += sizeof(return_type);
-				newValue = reverseByteOrder(newValue);
+				reverseByteOrder(newValue);
 				return newValue;
 			}
 
@@ -171,11 +174,22 @@ namespace discord_core_api {
 				currentSize += length;
 			}
 
+			/// @brief Write characters to the final json string.
+			/// @param data pointer to the data to be written.
+			/// @param length number of characters to write.
+			template<uint64_t size> inline void writeCharacters(const char (&data)[size]) {
+				if (finalString.size() < currentSize + size - 1) {
+					finalString.resize((finalString.size() + size - 1) * 2);
+				}
+				std::memcpy(finalString.data() + currentSize, data, size - 1);
+				currentSize += size - 1;
+			}
+
 			/// @brief Write characters from the buffer to the final json string.
 			/// @param length number of characters to write from the buffer.
 			inline void writeCharactersFromBuffer(uint32_t length) {
 				if (!length) {
-					writeCharacters("\"\"", 2);
+					writeCharacters("\"\"");
 					return;
 				}
 				if (offSet + static_cast<uint64_t>(length) > dataSize) {
@@ -188,16 +202,16 @@ namespace discord_core_api {
 				offSet += length;
 				if (length >= 3 && length <= 5) {
 					if (length == 3 && stringNew[0] == 'n' && stringNew[1] == 'i' && stringNew[2] == 'l') {
-						writeCharacters("null", 4);
+						writeCharacters("null");
 						return;
 					} else if (length == 4 && stringNew[0] == 'n' && stringNew[1] == 'u' && stringNew[2] == 'l' && stringNew[3] == 'l') {
-						writeCharacters("null", 4);
+						writeCharacters("null");
 						return;
 					} else if (length == 4 && stringNew[0] == 't' && stringNew[1] == 'r' && stringNew[2] == 'u' && stringNew[3] == 'e') {
-						writeCharacters("true", 4);
+						writeCharacters("true");
 						return;
 					} else if (length == 5 && stringNew[0] == 'f' && stringNew[1] == 'a' && stringNew[2] == 'l' && stringNew[3] == 's' && stringNew[4] == 'e') {
-						writeCharacters("false", 5);
+						writeCharacters("false");
 						return;
 					}
 				}
@@ -402,7 +416,7 @@ namespace discord_core_api {
 
 			/// @brief Parse etf data representing a nil value and convert to json null.
 			inline void parseNilExt() {
-				writeCharacters("[]", 2);
+				writeCharacters("[]");
 			}
 
 			/// @brief Parse etf data representing a small atom and convert to json string.
@@ -432,8 +446,7 @@ namespace discord_core_api {
 			/// @brief Constructor for etf_serialize_error.
 			/// @param message the error message.
 			/// @param location source location where the error occurred.
-			inline etf_serialize_error(jsonifier::string_view message, const std::source_location& location = std::source_location::current())
-				: dca_exception{ message, location } {};
+			inline etf_serialize_error(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 		};
 
 		/// @brief Enumeration for different json value types.
@@ -466,7 +479,7 @@ namespace discord_core_api {
 			inline etf_serializer() = default;
 
 			inline etf_serializer& operator=(etf_serializer&& data) noexcept {
-				destroyImpl();
+				destroy();
 				stringReal = std::move(data.stringReal);
 				type	   = data.type;
 				data.type  = json_type::null_t;
@@ -518,7 +531,7 @@ namespace discord_core_api {
 			}
 
 			inline etf_serializer& operator=(const etf_serializer& data) {
-				destroyImpl();
+				destroy();
 				switch (data.type) {
 					case json_type::object_t: {
 						setValue<json_type::object_t>(data.getObject());
@@ -637,6 +650,7 @@ namespace discord_core_api {
 			}
 
 			inline etf_serializer& operator=(json_type data) {
+				destroy();
 				switch (data) {
 					case json_type::object_t: {
 						setValue<json_type::object_t>();
@@ -727,64 +741,43 @@ namespace discord_core_api {
 				throw etf_serialize_error{ "Sorry, but this value's type is not array." };
 			}
 
-			inline void emplaceBack(const etf_serializer& other) {
+			inline void emplaceBack(const etf_serializer& rhs) {
 				if (type == json_type::null_t) {
 					setValue<json_type::array_t>();
 				}
 
 				if (type == json_type::array_t) {
-					getArray().emplace_back(other);
+					getArray().emplace_back(rhs);
 					return;
 				}
 				throw etf_serialize_error{ "Sorry, but this value's type is not array." };
 			}
 
-			inline bool_type operator==(const etf_serializer& lhs) const {
-				if (lhs.type != type) {
+			inline bool_type operator==(const etf_serializer& rhs) const {
+				if (rhs.type != type) {
 					return false;
 				}
 				switch (type) {
 					case json_type::object_t: {
-						if (!compareValues<json_type::object_t>(lhs)) {
-							return false;
-						}
-						break;
+						return *objectValue == *rhs.objectValue;
 					}
 					case json_type::array_t: {
-						if (!compareValues<json_type::array_t>(lhs)) {
-							return false;
-						}
-						break;
+						return *arrayValue == *rhs.arrayValue;
 					}
 					case json_type::string_t: {
-						if (!compareValues<json_type::string_t>(lhs)) {
-							return false;
-						}
-						break;
+						return *stringValue == *rhs.stringValue;
 					}
 					case json_type::float_t: {
-						if (!compareValues<json_type::float_t>(lhs)) {
-							return false;
-						}
-						break;
+						return *floatValue == *rhs.floatValue;
 					}
 					case json_type::uint_t: {
-						if (!compareValues<json_type::uint_t>(lhs)) {
-							return false;
-						}
-						break;
+						return *uintValue == *rhs.uintValue;
 					}
 					case json_type::int_t: {
-						if (!compareValues<json_type::int_t>(lhs)) {
-							return false;
-						}
-						break;
+						return *intValue == *rhs.intValue;
 					}
 					case json_type::bool_t: {
-						if (!compareValues<json_type::bool_t>(lhs)) {
-							return false;
-						}
-						break;
+						return *boolValue == *rhs.boolValue;
 					}
 					case json_type::null_t: {
 						break;
@@ -843,7 +836,7 @@ namespace discord_core_api {
 			}
 
 			inline ~etf_serializer() {
-				destroyImpl();
+				destroy();
 			}
 
 		  protected:
@@ -1052,7 +1045,7 @@ namespace discord_core_api {
 			}
 
 			template<json_type typeNew, typename... value_types> inline void setValue(value_types&&... args) {
-				destroyImpl();
+				destroy();
 				type = typeNew;
 				if constexpr (typeNew == json_type::object_t) {
 					allocator<object_type> alloc{};
@@ -1085,93 +1078,55 @@ namespace discord_core_api {
 				}
 			}
 
-			template<json_type typeNew> inline void destroy() {
-				if constexpr (typeNew == json_type::object_t) {
-					allocator<object_type> alloc{};
-					alloc.destroy(objectValue);
-					alloc.deallocate(static_cast<object_type*>(objectValue), 1);
-					objectValue = nullptr;
-				} else if constexpr (typeNew == json_type::array_t) {
-					allocator<array_type> alloc{};
-					alloc.destroy(arrayValue);
-					alloc.deallocate(static_cast<array_type*>(arrayValue), 1);
-					arrayValue = nullptr;
-				} else if constexpr (typeNew == json_type::string_t) {
-					allocator<string_type> alloc{};
-					alloc.destroy(stringValue);
-					alloc.deallocate(static_cast<string_type*>(stringValue), 1);
-					stringValue = nullptr;
-				} else if constexpr (typeNew == json_type::float_t) {
-					allocator<float_type> alloc{};
-					alloc.destroy(floatValue);
-					alloc.deallocate(static_cast<float_type*>(floatValue), 1);
-					floatValue = nullptr;
-				} else if constexpr (typeNew == json_type::uint_t) {
-					allocator<uint_type> alloc{};
-					alloc.destroy(uintValue);
-					alloc.deallocate(static_cast<uint_type*>(uintValue), 1);
-					uintValue = nullptr;
-				} else if constexpr (typeNew == json_type::int_t) {
-					allocator<int_type> alloc{};
-					alloc.destroy(intValue);
-					alloc.deallocate(static_cast<int_type*>(intValue), 1);
-					intValue = nullptr;
-				} else if constexpr (typeNew == json_type::bool_t) {
-					allocator<bool_type> alloc{};
-					alloc.destroy(boolValue);
-					alloc.deallocate(static_cast<bool_type*>(boolValue), 1);
-					boolValue = nullptr;
-				}
-			}
-
-			template<json_type typeNew> inline bool_type compareValues(const etf_serializer& other) const {
-				if constexpr (typeNew == json_type::object_t) {
-					return *objectValue == *other.objectValue;
-				} else if constexpr (typeNew == json_type::array_t) {
-					return *arrayValue == *other.arrayValue;
-				} else if constexpr (typeNew == json_type::string_t) {
-					return *stringValue == *other.stringValue;
-				} else if constexpr (typeNew == json_type::float_t) {
-					return *floatValue == *other.floatValue;
-				} else if constexpr (typeNew == json_type::uint_t) {
-					return *uintValue == *other.uintValue;
-				} else if constexpr (typeNew == json_type::int_t) {
-					return *intValue == *other.intValue;
-				} else if constexpr (typeNew == json_type::bool_t) {
-					return *boolValue == *other.boolValue;
-				} else {
-					return true;
-				}
-			}
-
-			inline void destroyImpl() {
+			inline void destroy() {
 				switch (type) {
 					case json_type::object_t: {
-						destroy<json_type::object_t>();
+						allocator<object_type> alloc{};
+						alloc.destroy(objectValue);
+						alloc.deallocate(static_cast<object_type*>(objectValue), 1);
+						objectValue = nullptr;
 						break;
 					}
 					case json_type::array_t: {
-						destroy<json_type::array_t>();
+						allocator<array_type> alloc{};
+						alloc.destroy(arrayValue);
+						alloc.deallocate(static_cast<array_type*>(arrayValue), 1);
+						arrayValue = nullptr;
 						break;
 					}
 					case json_type::string_t: {
-						destroy<json_type::string_t>();
+						allocator<string_type> alloc{};
+						alloc.destroy(stringValue);
+						alloc.deallocate(static_cast<string_type*>(stringValue), 1);
+						stringValue = nullptr;
 						break;
 					}
 					case json_type::float_t: {
-						destroy<json_type::float_t>();
+						allocator<float_type> alloc{};
+						alloc.destroy(floatValue);
+						alloc.deallocate(static_cast<float_type*>(floatValue), 1);
+						floatValue = nullptr;
 						break;
 					}
 					case json_type::uint_t: {
-						destroy<json_type::uint_t>();
+						allocator<uint_type> alloc{};
+						alloc.destroy(uintValue);
+						alloc.deallocate(static_cast<uint_type*>(uintValue), 1);
+						uintValue = nullptr;
 						break;
 					}
 					case json_type::int_t: {
-						destroy<json_type::int_t>();
+						allocator<int_type> alloc{};
+						alloc.destroy(intValue);
+						alloc.deallocate(static_cast<int_type*>(intValue), 1);
+						intValue = nullptr;
 						break;
 					}
 					case json_type::bool_t: {
-						destroy<json_type::bool_t>();
+						allocator<bool_type> alloc{};
+						alloc.destroy(boolValue);
+						alloc.deallocate(static_cast<bool_type*>(boolValue), 1);
+						boolValue = nullptr;
 						break;
 					}
 					case json_type::null_t: {

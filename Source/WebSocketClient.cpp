@@ -44,7 +44,7 @@ namespace discord_core_api {
 
 	namespace discord_core_internal {
 
-		event_converter::event_converter(jsonifier::string newEvent) {
+		event_converter::event_converter(const jsonifier::string& newEvent) {
 			eventValue = newEvent;
 		}
 
@@ -215,8 +215,7 @@ namespace discord_core_api {
 			}
 			currentState.store(websocket_state::upgrading, std::memory_order_release);
 			jsonifier::string sendString{ "GET " + relativePath + " HTTP/1.1\r\nHost: " + baseUrlNew +
-				"\r\nPragma: no-cache\r\nUser-agent: discord_core_api/1.0\r\nUpgrade: WebSocket\r\nConnection: " + "upgrade\r\nSec-WebSocket-key: " + generateBase64EncodedKey() +
-				"\r\nSec-WebSocket-Version: 13\r\n\r\n" };
+				"\r\nUpgrade: webSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n" };
 			tcpConnection.writeData(static_cast<jsonifier::string_view>(sendString), true);
 
 			if (tcpConnection.currentStatus != connection_status::NO_Error) {
@@ -235,9 +234,8 @@ namespace discord_core_api {
 				return false;
 			}
 			jsonifier::string webSocketTitle{ wsType == websocket_type::voice ? "voice websocket" : "WebSocket" };
-			message_printer::printSuccess<print_message_type::websocket>(jsonifier::string{ "sending " + webSocketTitle + " [" + jsonifier::toString(shard.at(0)) + "," +
-																			  jsonifier::toString(shard.at(1)) + "]" + jsonifier::string{ "'s message: " } } +
-				dataToSend);
+			message_printer::printSuccess<print_message_type::websocket>("sending " + webSocketTitle + " [" + jsonifier::toString(shard.at(0)) + "," +
+				jsonifier::toString(shard.at(1)) + "]" + jsonifier::string{ "'s message: " } + dataToSend);
 			std::unique_lock lock{ accessMutex };
 			if (areWeConnected()) {
 				tcpConnection.writeData(static_cast<jsonifier::string_view_base<uint8_t>>(dataToSend), priority);
@@ -276,7 +274,7 @@ namespace discord_core_api {
 					websocket_message_data<uint64_t> message{};
 					message.d  = lastNumberReceived;
 					message.op = 1;
-					parser.serializeJson<true>(message, string);
+					parser.serializeJson(message, string);
 				}
 				haveWeReceivedHeartbeatAck = false;
 				heartBeatStopWatch.reset();
@@ -345,7 +343,7 @@ namespace discord_core_api {
 						return true;
 					} break;
 					case websocket_op_code::Op_Close: {
-						uint16_t closeValue = currentMessage.at(2) & 0xff;
+						uint16_t closeValue = static_cast<uint16_t>(currentMessage.at(2) & 0xff);
 						closeValue <<= 8;
 						closeValue |= currentMessage.at(3) & 0xff;
 						jsonifier::string closeString{};
@@ -357,8 +355,8 @@ namespace discord_core_api {
 							closeString = static_cast<jsonifier::string>(wsClose.operator jsonifier::string_view());
 						}
 						jsonifier::string webSocketTitle = wsType == websocket_type::voice ? "voice websocket" : "WebSocket";
-						message_printer::printError<print_message_type::websocket>(jsonifier::string{ webSocketTitle + " [" + jsonifier::toString(shard.at(0)) + "," +
-							jsonifier::toString(shard.at(1)) + "]" + " closed; code: " + jsonifier::toString(closeValue) + ", " + closeString });
+						message_printer::printError<print_message_type::websocket>(webSocketTitle + " [" + jsonifier::toString(shard.at(0)) + "," +
+							jsonifier::toString(shard.at(1)) + "]" + " closed; code: " + jsonifier::toString(closeValue) + ", " + closeString);
 						return false;
 					} break;
 
@@ -408,8 +406,8 @@ namespace discord_core_api {
 				std::this_thread::sleep_for(1ms);
 			}
 			websocket_message_data<update_voice_state_data_dc> data01{};
-			data01.excludedKeys.emplace("t");
-			data01.excludedKeys.emplace("s");
+			data01.jsonifierExcludedKeys.emplace("t");
+			data01.jsonifierExcludedKeys.emplace("s");
 			data01.d.channelId = std::nullptr_t{};
 			data01.d.guildId   = doWeCollect.guildId;
 			data01.d.selfDeaf  = doWeCollect.selfDeaf;
@@ -418,8 +416,8 @@ namespace discord_core_api {
 			userId			   = doWeCollect.userId;
 
 			websocket_message_data<update_voice_state_data> data02{};
-			data02.excludedKeys.emplace("t");
-			data02.excludedKeys.emplace("s");
+			data02.jsonifierExcludedKeys.emplace("t");
+			data02.jsonifierExcludedKeys.emplace("s");
 			data02.d.channelId = doWeCollect.channelId;
 			data02.d.guildId   = doWeCollect.guildId;
 			data02.d.selfDeaf  = doWeCollect.selfDeaf;
@@ -430,7 +428,7 @@ namespace discord_core_api {
 			if (dataOpCode == websocket_op_code::Op_Binary) {
 				string = serializer.operator jsonifier::string_base<uint8_t>();
 			} else {
-				parser.serializeJson<true>(data01, string);
+				parser.serializeJson(data01, string);
 			}
 			createHeader(string, dataOpCode);
 			if (!sendMessage(string, true)) {
@@ -443,7 +441,7 @@ namespace discord_core_api {
 			if (dataOpCode == websocket_op_code::Op_Binary) {
 				string = serializer.operator jsonifier::string_base<uint8_t>();
 			} else {
-				parser.serializeJson<true>(data02, string);
+				parser.serializeJson(data02, string);
 			}
 			createHeader(string, dataOpCode);
 			areWeCollectingData.store(true, std::memory_order_release);
@@ -465,14 +463,14 @@ namespace discord_core_api {
 		}
 
 		uint64_t findInvalidJSONIndex(jsonifier::string_view_base<uint8_t> jsonStr) {
-			std::stack<char> stack;
+			std::stack<uint8_t> stack;
 			bool areWeInAString{ false };
 			jsonifier::string_base<uint8_t> stringNew{ jsonStr + '\0' };
 			uint64_t backslashCount{};
 			for (jsonifier::string_base<uint8_t>::iterator iter{ stringNew.begin() }; iter != stringNew.end(); ++iter) {
 				if (iter > stringNew.begin()) {
-					char cMinus1 = *(iter - 1);
-					char c		 = *iter;
+					uint8_t cMinus1 = *(iter - 1);
+					uint8_t c		= *iter;
 					backslashCount = 0;
 					if (c == '\\') {
 						backslashCount = countBackSlashes(iter, stringNew.end());
@@ -490,15 +488,15 @@ namespace discord_core_api {
 						stack.pop();
 					} else if ((c == '}' || c == ']' || c == '"') && !areWeInAString) {
 
-						char top = stack.top();
+						uint8_t top = stack.top();
 						stack.pop();
 
 						if ((c == '}' && top != '{') || (c == ']' && top != '[') || (c == '"' && top != '"')) {
-							return iter - stringNew.begin();
+							return static_cast<uint64_t>(iter - stringNew.begin());
 						}
 					}
 				} else {
-					char c = *iter;
+					uint8_t c = *iter;
 					if ((c == '{' || c == '[' || c == '"') && !areWeInAString) {
 						if (c == '"') {
 							areWeInAString = true;
@@ -508,11 +506,11 @@ namespace discord_core_api {
 						areWeInAString = false;
 						stack.pop();
 					} else if ((c == '}' || c == ']' || c == '"') && !areWeInAString) {
-						char top = stack.top();
+						uint8_t top = stack.top();
 						stack.pop();
 
 						if ((c == '}' && top != '{') || (c == ']' && top != '[') || (c == '"' && top != '"')) {
-							return iter - stringNew.begin();
+							return static_cast<uint64_t>(iter - stringNew.begin());
 						}
 					}
 				}
@@ -533,7 +531,7 @@ namespace discord_core_api {
 						try {
 							dataNew		   = etf_parser::parseEtfToJson(dataNew);
 							auto newString = jsonifier::string{ dataNew };
-							parser.parseJson<true, true>(message, newString);
+							parser.parseJson(message, newString);
 							if (auto result = parser.getErrors(); result.size() > 0) {
 								for (auto& valueNew: result) {
 									message_printer::printError<print_message_type::websocket>(valueNew.reportError() + ", for data:" + dataNew);
@@ -551,7 +549,7 @@ namespace discord_core_api {
 							throw dca_exception{ "Sorry, but that json data is invalid at index: " + jsonifier::toString(result) + " and it is: " + dataNew };
 						}
 #endif
-						parser.parseJson<true, true>(message, dataNew);
+						parser.parseJson(message, dataNew);
 						if (auto result = parser.getErrors(); result.size() > 0) {
 							for (auto& valueNew: result) {
 								message_printer::printError<print_message_type::websocket>(valueNew.reportError() + ", for data:" + dataNew);
@@ -562,8 +560,8 @@ namespace discord_core_api {
 					if (message.s != 0) {
 						lastNumberReceived = static_cast<uint32_t>(message.s);
 					}
-					message_printer::printSuccess<print_message_type::websocket>(jsonifier::string{ "Message received from websocket [" + jsonifier::toString(shard.at(0)) + "," +
-						jsonifier::toString(shard.at(1)) + jsonifier::string("]: ") + jsonifier::string{ dataNew } });
+					message_printer::printSuccess<print_message_type::websocket>("Message received from websocket [" + jsonifier::toString(shard.at(0)) + "," +
+						jsonifier::toString(shard.at(1)) + jsonifier::string("]: ") + jsonifier::string{ dataNew });
 					switch (static_cast<websocket_op_codes>(message.op)) {
 						case websocket_op_codes::dispatch: {
 							if (message.t != "") {
@@ -571,10 +569,10 @@ namespace discord_core_api {
 									case 1: {
 										websocket_message_data<ready_data> data{};
 										if (dataOpCode == websocket_op_code::Op_Text) {
-											data.d.excludedKeys.emplace("shard");
+											data.d.jsonifierExcludedKeys.emplace("shard");
 										}
 										currentState.store(websocket_state::authenticated, std::memory_order_release);
-										parser.parseJson<true, true>(data, dataNew);
+										parser.parseJson(data, dataNew);
 										if (auto result = parser.getErrors(); result.size() > 0) {
 											for (auto& valueNew: result) {
 												message_printer::printError<print_message_type::websocket>(valueNew.reportError());
@@ -1019,22 +1017,22 @@ namespace discord_core_api {
 						}
 						case websocket_op_codes::reconnect: {
 							message_printer::printError<print_message_type::websocket>(
-								jsonifier::string{ "Shard [" + jsonifier::toString(shard.at(0)) + "," + jsonifier::toString(shard.at(1)) + "]" + " reconnecting (type 7)!" });
+								"Shard [" + jsonifier::toString(shard.at(0)) + "," + jsonifier::toString(shard.at(1)) + "]" + " reconnecting (type 7)!");
 							areWeResuming = true;
 							tcpConnection.disconnect();
 							return true;
 						}
 						case websocket_op_codes::Invalid_Session: {
 							websocket_message_data<bool> data{};
-							parser.parseJson<true, true>(data, dataNew);
+							parser.parseJson(data, dataNew);
 							if (auto result = parser.getErrors(); result.size() > 0) {
 								for (auto& valueNew: result) {
 									message_printer::printError<print_message_type::websocket>(valueNew.reportError());
 								}
 							}
 							message_printer::printError<print_message_type::websocket>(
-								jsonifier::string{ "Shard [" + jsonifier::toString(shard.at(0)) + "," + jsonifier::toString(shard.at(1)) + "]" + " reconnecting (type 9)!" });
-							std::mt19937_64 randomEngine{ static_cast<uint64_t>(hrclock::now().time_since_epoch().count()) };
+								"Shard [" + jsonifier::toString(shard.at(0)) + "," + jsonifier::toString(shard.at(1)) + "]" + " reconnecting (type 9)!");
+							std::mt19937_64 randomEngine{ static_cast<uint64_t>(sys_clock::now().time_since_epoch().count()) };
 							uint64_t numOfMsToWait =
 								static_cast<uint64_t>(1000.0f + ((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * static_cast<double>(4000.0f)));
 							if (numOfMsToWait <= 5000 && numOfMsToWait > 0) {
@@ -1050,7 +1048,7 @@ namespace discord_core_api {
 						}
 						case websocket_op_codes::hello: {
 							websocket_message_data<hello_data> data{};
-							parser.parseJson<true, true>(data, dataNew);
+							parser.parseJson(data, dataNew);
 							if (auto result = parser.getErrors(); result.size() > 0) {
 								for (auto& valueNew: result) {
 									message_printer::printError<print_message_type::websocket>(valueNew.reportError());
@@ -1073,7 +1071,7 @@ namespace discord_core_api {
 									auto serializer = dataNewer.operator etf_serializer();
 									string			= serializer.operator jsonifier::string_base<uint8_t>();
 								} else {
-									parser.serializeJson<true>(dataNewer, string);
+									parser.serializeJson(dataNewer, string);
 								}
 								createHeader(string, dataOpCode);
 								currentState.store(websocket_state::Sending_Identify, std::memory_order_release);
@@ -1089,7 +1087,7 @@ namespace discord_core_api {
 								dataNewer.d.presence	= configManager->getPresenceData();
 								for (auto& value: dataNewer.d.presence.activities) {
 									if (value.url == "") {
-										value.excludedKeys.emplace("url");
+										value.jsonifierExcludedKeys.emplace("url");
 									}
 								}
 								dataNewer.op = 2;
@@ -1098,7 +1096,7 @@ namespace discord_core_api {
 									auto serializer = dataNewer.operator etf_serializer();
 									string			= serializer.operator jsonifier::string_base<uint8_t>();
 								} else {
-									parser.serializeJson<true>(dataNewer, string);
+									parser.serializeJson(dataNewer, string);
 								}
 								createHeader(string, dataOpCode);
 								currentState.store(websocket_state::Sending_Identify, std::memory_order_release);
@@ -1111,6 +1109,21 @@ namespace discord_core_api {
 						case websocket_op_codes::Heartbeat_ACK: {
 							haveWeReceivedHeartbeatAck = true;
 							break;
+						}
+						case websocket_op_codes::identify: {
+							[[fallthrough]];
+						}
+						case websocket_op_codes::Presence_Update: {
+							[[fallthrough]];
+						}
+						case websocket_op_codes::Voice_State_Update: {
+							[[fallthrough]];
+						}
+						case websocket_op_codes::resume: {
+							[[fallthrough]];
+						}
+						case websocket_op_codes::Request_Guild_Members: {
+							[[fallthrough]];
 						}
 						default: {
 							break;
@@ -1156,17 +1169,17 @@ namespace discord_core_api {
 
 		base_socket_agent::base_socket_agent(std::atomic_bool* doWeQuitNew) {
 			doWeQuit   = doWeQuitNew;
-			taskThread = thread_wrapper([this](stop_token token) {
+			taskThread = std::jthread([this](std::stop_token token) {
 				run(token);
 			});
 		}
 
 		void base_socket_agent::connect(websocket_client& value) {
 			jsonifier::string connectionUrl{ value.areWeResuming ? value.resumeUrl : discord_core_client::getInstance()->configManager.getConnectionAddress() };
-			message_printer::printSuccess<print_message_type::general>(jsonifier::string{ "Connecting shard " + jsonifier::toString(value.shard.at(0) + 1) + " of " +
+			message_printer::printSuccess<print_message_type::general>("Connecting shard " + jsonifier::toString(value.shard.at(0) + 1) + " of " +
 				jsonifier::toString(discord_core_client::getInstance()->configManager.getShardCountForThisProcess()) + jsonifier::string{ " shards for this process. (" } +
 				jsonifier::toString(value.shard.at(0) + 1) + " of " + jsonifier::toString(discord_core_client::getInstance()->configManager.getTotalShardCount()) +
-				jsonifier::string{ " shards total across all processes)" } });
+				jsonifier::string{ " shards total across all processes)" });
 			jsonifier::string relativePath{ "/?v=10&encoding=" +
 				jsonifier::string{ discord_core_client::getInstance()->configManager.getTextFormat() == text_format::etf ? "etf" : "json" } };
 
@@ -1179,7 +1192,7 @@ namespace discord_core_api {
 			discord_core_client::getInstance()->connectionStopWatch01.reset();
 		}
 
-		void base_socket_agent::run(stop_token token) {
+		void base_socket_agent::run(std::stop_token token) {
 			unordered_map<uint64_t, websocket_tcpconnection*> processIOMapNew{};
 			while (!discord_core_client::getInstance()->areWeReadyToConnect.load(std::memory_order_acquire)) {
 				std::this_thread::sleep_for(1ms);
@@ -1200,7 +1213,8 @@ namespace discord_core_api {
 				connect(value);
 				discord_core_client::getInstance()->currentlyConnectingShard.fetch_add(1, std::memory_order_release);
 			}
-			while (!token.stopRequested() && !doWeQuit->load(std::memory_order_acquire)) {
+			processIOMapNew.clear();
+			while (!token.stop_requested() && !doWeQuit->load(std::memory_order_acquire)) {
 				try {
 					for (auto& [key, value]: shardMap) {
 						if (value.areWeConnected()) {
@@ -1219,9 +1233,8 @@ namespace discord_core_api {
 							}
 							areWeConnected = true;
 						} else {
-							message_printer::printError<print_message_type::websocket>(
-								jsonifier::string{ "Connection lost for websocket [" + jsonifier::toString(value.shard.at(0)) + "," +
-									jsonifier::toString(discord_core_client::getInstance()->configManager.getTotalShardCount()) + "]... reconnecting." });
+							message_printer::printError<print_message_type::websocket>("Connection lost for websocket [" + jsonifier::toString(value.shard.at(0)) + "," +
+								jsonifier::toString(discord_core_client::getInstance()->configManager.getTotalShardCount()) + "]... reconnecting.");
 							std::this_thread::sleep_for(1s);
 							if (discord_core_client::getInstance()->connectionStopWatch01.hasTimeElapsed()) {
 								connect(value);

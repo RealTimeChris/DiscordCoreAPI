@@ -69,7 +69,7 @@ namespace discord_core_api {
 			{ 4014, voice_websocket_close_code::disconnected }, { 4015, voice_websocket_close_code::Voice_Server_Crashed },
 			{ 4016, voice_websocket_close_code::Unknown_Encryption_Mode } };
 
-		inline static unordered_map<voice_websocket_close_code, jsonifier::string_view> outputErrorValues{ { voice_websocket_close_code::unset, "unset." },
+		inline static unordered_map<voice_websocket_close_code, jsonifier::string> outputErrorValues{ { voice_websocket_close_code::unset, "unset." },
 			{ voice_websocket_close_code::Normal_Close, "normal close." }, { voice_websocket_close_code::Unknown_Opcode, "you sent an invalid opcode." },
 			{ voice_websocket_close_code::Failed_To_Decode, "you sent an invalid payload in your identifying to the gateway." },
 			{ voice_websocket_close_code::Not_Authenticated, "you sent a payload before identifying with the gateway." },
@@ -221,7 +221,7 @@ namespace discord_core_api {
 		friend class voice_connection;
 
 		voice_connection_bridge(unordered_map<uint64_t, unique_ptr<voice_user>>* voiceUsersPtrNew, jsonifier::string_base<uint8_t>& encryptionKeyNew, stream_type streamType,
-			jsonifier::string_view baseUrlNew, const uint16_t portNew, snowflake guildIdNew,
+			const jsonifier::string& baseUrlNew, const uint16_t portNew, snowflake guildIdNew,
 			std::coroutine_handle<discord_core_api::co_routine<void, false>::promise_type>* tokenNew);
 
 		inline void applyGainRamp(int64_t sampleCount);
@@ -253,7 +253,7 @@ namespace discord_core_api {
 	  public:
 		voice_udpconnection() = default;
 
-		voice_udpconnection(jsonifier::string_view baseUrlNew, uint16_t portNew, stream_type streamType, voice_connection* ptrNew,
+		voice_udpconnection(const jsonifier::string& baseUrlNew, uint16_t portNew, stream_type streamType, voice_connection* ptrNew,
 			std::coroutine_handle<discord_core_api::co_routine<void, false>::promise_type>* stopToken);
 
 		void handleAudioBuffer() override;
@@ -268,7 +268,7 @@ namespace discord_core_api {
 	 * \addtogroup voice_connection
 	 * @{
 	 */
-	/// @brief Voice_connection class - represents the connection to a given voice channel_data.
+	/// @brief voice_connection class - represents the connection to a given voice channel_data.
 	class DiscordCoreAPI_Dll voice_connection : public discord_core_internal::websocket_core {
 	  public:
 		friend class discord_core_internal::base_socket_agent;

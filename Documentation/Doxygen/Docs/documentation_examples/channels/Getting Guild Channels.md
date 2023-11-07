@@ -1,7 +1,7 @@
-Getting Guild Channels {#gettingguildchannels}
+Getting Guild Channels {#getting_guild_channels}
 ============
-- Execute the `channels::getGuildChannelsAsync()` function, while passing in a data structure of type `get_guild_channels_data`, with a return value of type `auto` or `vector<channel>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::channels::getGuildChannelsAsync()` function, while passing in a data structure of type `discord_core_api::get_guild_channels_data`, with a return value of type `auto` or `jsonifier::vector<discord_core_api::channel_data>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -34,7 +34,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			try {
 				vector<public channel> channels =
-					public channels::getGuildChannelsAsync(const {.guildId = args.eventData.getGuildId()}).get();
+					public discord_core_api::channels::getGuildChannelsAsync(const {.guildId = args.eventData.getGuildId()}).get();
 
 				for (const auto& value: channels) {
 					std::cout << "the name: " << value.name << std::endl;

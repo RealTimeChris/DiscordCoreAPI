@@ -174,7 +174,7 @@ namespace discord_core_api {
 		/// @brief Get all of the global application_commands for this bot.
 		/// @param dataPackage the info for acquiring the global_application_command_data.
 		/// @return a co_routine containing a vector<application_command_data>.
-		static co_routine<jsonifier::vector<application_command_data>> getGlobalApplicationCommandsAsync(get_global_application_commands_data dataPackage);
+		static co_routine<jsonifier::vector<application_command_data>> getGlobalApplicationCommandsAsync(const get_global_application_commands_data dataPackage);
 
 		/// @brief Create a global application_command_data for this bot.
 		/// @param dataPackage a create_global_application_command_data structure.
@@ -184,27 +184,28 @@ namespace discord_core_api {
 		/// @brief Get a single global application_command_data for this bot.
 		/// @param dataPackage a get_global_application_command_data structure.
 		/// @return a co_routine containing an application_command_data.
-		static co_routine<application_command_data> getGlobalApplicationCommandAsync(get_global_application_command_data dataPackage);
+		static co_routine<application_command_data> getGlobalApplicationCommandAsync(const get_global_application_command_data dataPackage);
 
 		/// @brief Edit a global application_command_data for this bot.
 		/// @param dataPackage an edit_global_application_command_data structure.
 		/// @return a co_routine containing an application_command_data.
-		static co_routine<application_command_data> editGlobalApplicationCommandAsync(edit_global_application_command_data dataPackage);
+		static co_routine<application_command_data> editGlobalApplicationCommandAsync(const edit_global_application_command_data dataPackage);
 
 		/// @brief Delete a global application_command_data for this bot.
 		/// @param dataPackage a delete_global_application_command_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteGlobalApplicationCommandAsync(delete_global_application_command_data dataPackage);
+		static co_routine<void> deleteGlobalApplicationCommandAsync(const delete_global_application_command_data dataPackage);
 
 		/// @brief Bulk overwrites a collection of global application_commands.
 		/// @param dataPackage a bulk_overwrite_global_application_commands_data structure.
 		/// @return a co_routine containing a vector<application_command_data>.
-		static co_routine<jsonifier::vector<application_command_data>> bulkOverwriteGlobalApplicationCommandsAsync(bulk_overwrite_global_application_commands_data dataPackage);
+		static co_routine<jsonifier::vector<application_command_data>> bulkOverwriteGlobalApplicationCommandsAsync(
+			const bulk_overwrite_global_application_commands_data dataPackage);
 
 		/// @brief Get all of the guild application_commands for a single guild for this bot.
 		/// @param dataPackage a get_guild_application_commands_data structure.
 		/// @return a co_routine containing a vector<application_command_data>.
-		static co_routine<jsonifier::vector<application_command_data>> getGuildApplicationCommandsAsync(get_guild_application_commands_data dataPackage);
+		static co_routine<jsonifier::vector<application_command_data>> getGuildApplicationCommandsAsync(const get_guild_application_commands_data dataPackage);
 
 		/// @brief Create a guild application_command_data for a single server for this bot.
 		/// @param dataPackage a create_guild_application_command_data structure.
@@ -214,38 +215,39 @@ namespace discord_core_api {
 		/// @brief Get a single guild application_command_data for a single server for this bot.
 		/// @param dataPackage a get_guild_application_command_data structure.
 		/// @return a co_routine containing an application_command_data.
-		static co_routine<application_command_data> getGuildApplicationCommandAsync(get_guild_application_command_data dataPackage);
+		static co_routine<application_command_data> getGuildApplicationCommandAsync(const get_guild_application_command_data dataPackage);
 
 		/// @brief Edit a single guild application_command_data for a single server for this bot.
 		/// @param dataPackage an edit_guild_application_command_data structure.
 		/// @return a co_routine containing an application_command_data.
-		static co_routine<application_command_data> editGuildApplicationCommandAsync(edit_guild_application_command_data dataPackage);
+		static co_routine<application_command_data> editGuildApplicationCommandAsync(const edit_guild_application_command_data dataPackage);
 
 		/// @brief Delete a single guild application_command_data for a single server for this bot.
 		/// @param dataPackage a delete_guild_application_command_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteGuildApplicationCommandAsync(delete_guild_application_command_data dataPackage);
+		static co_routine<void> deleteGuildApplicationCommandAsync(const delete_guild_application_command_data dataPackage);
 
 		/// @brief Bulkoverwrites some guild application_commands for this bot.
 		/// @param dataPackage a bulk_overwrite_guild_application_commands_data structure.
 		/// @return a co_routine containing a vector<application_command_data>.
-		static co_routine<jsonifier::vector<application_command_data>> bulkOverwriteGuildApplicationCommandsAsync(bulk_overwrite_guild_application_commands_data dataPackage);
+		static co_routine<jsonifier::vector<application_command_data>> bulkOverwriteGuildApplicationCommandsAsync(const bulk_overwrite_guild_application_commands_data dataPackage);
 
 		/// @brief Gets guild application_command_data permissions for a single server on this bot.
 		/// @param dataPackage a get_guild_application_command_permissions_data structure.
 		/// @return a co_routine containing a vector<guild_application_command_permissions_data>.
 		static co_routine<jsonifier::vector<guild_application_command_permissions_data>> getGuildApplicationCommandPermissionsAsync(
-			get_guild_application_command_permissions_data dataPackage);
+			const get_guild_application_command_permissions_data dataPackage);
 
 		/// @brief Get application_command_data permissions for a single command on this bot.
 		/// @param dataPackage a get_application_command_permissions_data structure.
 		/// @return a co_routine containing a guild_application_command_permissions_data.
-		static co_routine<guild_application_command_permissions_data> getApplicationCommandPermissionsAsync(get_application_command_permissions_data dataPackage);
+		static co_routine<guild_application_command_permissions_data> getApplicationCommandPermissionsAsync(const get_application_command_permissions_data dataPackage);
 
 		/// @brief Edit guild application_command_data permissions for a server on this bot.
 		/// @param dataPackage an edit_guild_application_command_permissions_data structure.
 		/// @return a co_routine containing a guild_application_command_permissions_data.
-		static co_routine<guild_application_command_permissions_data> editGuildApplicationCommandPermissionsAsync(edit_guild_application_command_permissions_data dataPackage);
+		static co_routine<guild_application_command_permissions_data> editGuildApplicationCommandPermissionsAsync(
+			const edit_guild_application_command_permissions_data dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;

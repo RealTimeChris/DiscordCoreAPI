@@ -109,32 +109,32 @@ namespace discord_core_api {
 		/// @brief Gets a list of a given guild's scheduled events.
 		/// @param dataPackage a get_guild_scheduled_eventsstructure.
 		/// @return a co_routine containing a vector<guild_scheduled_event_data>.
-		static co_routine<jsonifier::vector<guild_scheduled_event_data>> getGuildScheduledEventsAsync(get_guild_scheduled_events_data dataPackage);
+		static co_routine<jsonifier::vector<guild_scheduled_event_data>> getGuildScheduledEventsAsync(const get_guild_scheduled_events_data dataPackage);
 
 		/// @brief Creates a new guild_scheduled_event_data within a chosen guild.
 		/// @param dataPackage a create_guild_scheduled_event_data structure.
 		/// @return a co_routine containing a guild_scheduled_event_data.
-		static co_routine<guild_scheduled_event_data> createGuildScheduledEventAsync(create_guild_scheduled_event_data dataPackage);
+		static co_routine<guild_scheduled_event_data> createGuildScheduledEventAsync(const create_guild_scheduled_event_data dataPackage);
 
 		/// @brief Collects a single guild_scheduled_event_data.
 		/// @param dataPackage a get_guild_scheduled_event_data structure.
 		/// @return a co_routine containing a guild_scheduled_event_data.
-		static co_routine<guild_scheduled_event_data> getGuildScheduledEventAsync(get_guild_scheduled_event_data dataPackage);
+		static co_routine<guild_scheduled_event_data> getGuildScheduledEventAsync(const get_guild_scheduled_event_data dataPackage);
 
 		/// @brief Modifies a single guild_scheduled_event_data.
 		/// @param dataPackage a modify_guild_scheduled_event_data structure.
 		/// @return a co_routine containing a guild_scheduled_event_data.
-		static co_routine<guild_scheduled_event_data> modifyGuildScheduledEventAsync(modify_guild_scheduled_event_data dataPackage);
+		static co_routine<guild_scheduled_event_data> modifyGuildScheduledEventAsync(const modify_guild_scheduled_event_data dataPackage);
 
 		/// @brief Deletes a single guild_scheduled_event_data.
 		/// @param dataPackage a delete_guild_scheduled_event_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteGuildScheduledEventAsync(delete_guild_scheduled_event_data dataPackage);
+		static co_routine<void> deleteGuildScheduledEventAsync(const delete_guild_scheduled_event_data dataPackage);
 
 		/// @brief Collects a list of users for a given guild_scheduled_event_data.
 		/// @param dataPackage a get_guild_scheduled_event_users_data structure.
 		/// @return a co_routine containing a vector<guild_scheduled_event_user>.
-		static co_routine<jsonifier::vector<guild_scheduled_event_user_data>> getGuildScheduledEventUsersAsync(get_guild_scheduled_event_users_data dataPackage);
+		static co_routine<jsonifier::vector<guild_scheduled_event_user_data>> getGuildScheduledEventUsersAsync(const get_guild_scheduled_event_users_data dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;

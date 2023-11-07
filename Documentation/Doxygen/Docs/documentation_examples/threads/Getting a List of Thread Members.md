@@ -1,7 +1,7 @@
-Getting a List of Thread Members {#gettingalistofthreadmembers}
+Getting a List of Thread Members {#getting_a_list_of_thread_members}
 ============
-- Execute the, `threads::getThreadMembersAsync()` function, while passing in a value of type `get_thread_members_data`, with a return value of type `auto` or `vector<thread_member_data>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::threads::getThreadMembersAsync()` function, while passing in a value of type `discord_core_api::get_thread_members_data`, with a return value of type `auto` or `jsonifier::vector<thread_member_data>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,10 +32,10 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_thread_members_data dataPackage;
+				get_thread_members_data& dataPackage;
 				dataPackage.channelId = "909444594146639913";
 
-				auto newThreadMembers = threads::getThreadMembersAsync(const& dataPackage).get();
+				auto newThreadMembers = threads::getThreadMembersAsync(const dataPackage).get();
 
 
 			} catch (...) {

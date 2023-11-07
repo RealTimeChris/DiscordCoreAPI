@@ -131,7 +131,7 @@ namespace discord_core_api {
 			: public ring_buffer_interface<ring_buffer_interface<std::unwrap_ref_decay_t<value_type_new>, 1024 * 16>, slice_count> {
 		  public:
 			using base_type		= ring_buffer_interface<ring_buffer_interface<std::unwrap_ref_decay_t<value_type_new>, 1024 * 16>, slice_count>;
-			using value_type	= ring_buffer_interface<std::unwrap_ref_decay_t<value_type_new>, 1024 * 16>::value_type;
+			using value_type	= typename ring_buffer_interface<std::unwrap_ref_decay_t<value_type_new>, 1024 * 16>::value_type;
 			using const_pointer = const value_type*;
 			using pointer		= value_type*;
 			using size_type		= uint64_t;

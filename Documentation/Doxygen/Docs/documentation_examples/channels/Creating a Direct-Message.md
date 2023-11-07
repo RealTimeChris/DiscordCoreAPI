@@ -1,7 +1,7 @@
-Creating a Direct-Message {#creatingadm}
+Creating a Direct-Message {#creating_a_dm}
 ============
-- Execute the, `channels::createDMChannelAsync()` function, while passing in a data structure of type `create_dmchannel_data`, with a return value of type `auto` or `channel`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::channels::createDMChannelAsync()` function, while passing in a data structure of type `discord_core_api::create_dmchannel_data`, with a return value of type `auto` or `discord_core_api::channel_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -35,7 +35,7 @@ namespace discord_core_api {
 				create_dmchannel_data dataPackage;
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				channel dmChannel = channels::createDMChannelAsync(const& dataPackage).get();
+				channel dmChannel = discord_core_api::channels::createDMChannelAsync(const dataPackage).get();
 
 
 			} catch (...) {

@@ -68,12 +68,12 @@ namespace discord_core_api {
 		threads::httpsClient = client;
 	}
 
-	co_routine<thread_data> threads::startThreadWithMessageAsync(start_thread_with_message_data dataPackage) {
+	co_routine<thread_data> threads::startThreadWithMessageAsync(const start_thread_with_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Thread_With_Message };
 		co_await newThreadAwaitable<thread_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/threads";
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "threads::startThreadWithMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
@@ -83,12 +83,12 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<thread_data> threads::startThreadWithoutMessageAsync(start_thread_without_message_data dataPackage) {
+	co_routine<thread_data> threads::startThreadWithoutMessageAsync(const start_thread_without_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Thread_Without_Message };
 		co_await newThreadAwaitable<thread_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/threads";
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "threads::startThreadWithoutMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
@@ -98,12 +98,12 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<thread_data> threads::startThreadInForumChannelAsync(start_thread_in_forum_channel_data dataPackage) {
+	co_routine<thread_data> threads::startThreadInForumChannelAsync(const start_thread_in_forum_channel_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Thread_In_Forum_Channel };
 		co_await newThreadAwaitable<thread_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/channels/" + dataPackage.channelId + "/threads";
-		parser.serializeJson<true>(dataPackage, workload.content);
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "threads::startThreadInForumChannelAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["x-audit-log-reason"] = dataPackage.reason;
@@ -113,7 +113,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> threads::joinThreadAsync(join_thread_data dataPackage) {
+	co_routine<void> threads::joinThreadAsync(const join_thread_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Self_In_Thread };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
@@ -123,7 +123,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> threads::addThreadMemberAsync(add_thread_member_data dataPackage) {
+	co_routine<void> threads::addThreadMemberAsync(const add_thread_member_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Thread_Member };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
@@ -133,7 +133,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> threads::leaveThreadAsync(leave_thread_data dataPackage) {
+	co_routine<void> threads::leaveThreadAsync(const leave_thread_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Self_From_Thread };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -143,7 +143,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> threads::removeThreadMemberAsync(remove_thread_member_data dataPackage) {
+	co_routine<void> threads::removeThreadMemberAsync(const remove_thread_member_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Thread_Member };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -153,7 +153,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<thread_member_data> threads::getThreadMemberAsync(get_thread_member_data dataPackage) {
+	co_routine<thread_member_data> threads::getThreadMemberAsync(const get_thread_member_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Thread_Member };
 		co_await newThreadAwaitable<thread_member_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -164,7 +164,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<thread_member_data>> threads::getThreadMembersAsync(get_thread_members_data dataPackage) {
+	co_routine<jsonifier::vector<thread_member_data>> threads::getThreadMembersAsync(const get_thread_members_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Thread_Members };
 		co_await newThreadAwaitable<jsonifier::vector<thread_member_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -175,7 +175,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<active_threads_data> threads::getActiveThreadsAsync(get_active_threads_data dataPackage) {
+	co_routine<active_threads_data> threads::getActiveThreadsAsync(const get_active_threads_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Active_Threads };
 		co_await newThreadAwaitable<active_threads_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -186,7 +186,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<archived_threads_data> threads::getPublicArchivedThreadsAsync(get_public_archived_threads_data dataPackage) {
+	co_routine<archived_threads_data> threads::getPublicArchivedThreadsAsync(const get_public_archived_threads_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Public_Archived_Threads };
 		co_await newThreadAwaitable<archived_threads_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -205,7 +205,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<archived_threads_data> threads::getPrivateArchivedThreadsAsync(get_private_archived_threads_data dataPackage) {
+	co_routine<archived_threads_data> threads::getPrivateArchivedThreadsAsync(const get_private_archived_threads_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Private_Archived_Threads };
 		co_await newThreadAwaitable<archived_threads_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -224,7 +224,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<archived_threads_data> threads::getJoinedPrivateArchivedThreadsAsync(get_joined_private_archived_threads_data dataPackage) {
+	co_routine<archived_threads_data> threads::getJoinedPrivateArchivedThreadsAsync(const get_joined_private_archived_threads_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Joined_Private_Archived_Threads };
 		co_await newThreadAwaitable<archived_threads_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -243,7 +243,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<active_threads_data> threads::getActiveGuildThreadsAsync(get_active_guild_threads_data dataPackage) {
+	co_routine<active_threads_data> threads::getActiveGuildThreadsAsync(const get_active_guild_threads_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Active_Threads };
 		co_await newThreadAwaitable<active_threads_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;

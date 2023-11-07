@@ -1,7 +1,7 @@
-Removing a Guild Ban {#removingaguildban}
+Removing a Guild Ban {#removing_a_guild_ban}
 ============
-- Execute the, `guilds::removeGuildBanAsync()` function, while passing in a value of type `remove_guild_ban_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guilds::removeGuildBanAsync()` function, while passing in a value of type `discord_core_api::remove_guild_ban_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				remove_guild_ban_data dataPackage01;
+				remove_guild_ban_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.userId = "869276807394902066";
 				dataPackage01.reason = "testing purposes!";

@@ -96,7 +96,7 @@ namespace discord_core_api {
 
 	/// @brief For removing a guild_member from a chosen guild.
 	struct remove_guild_member_data {
-		snowflake guildMemberId{};///< Snowflake of the chosen guild_member_data to kick.
+		snowflake guildMemberId{};///< snowflake of the chosen guild_member_data to kick.
 		jsonifier::string reason{};///< Reason for kicking the guild_member_data.
 		snowflake guildId{};///< Guild from which to kick the chosen guild_member_data.
 	};
@@ -130,47 +130,47 @@ namespace discord_core_api {
 		/// @brief Collects a guild_member from the discord servers.
 		/// @param dataPackage a get_guild_member_data structure.
 		/// @return a co_routine containing a guild_member.
-		static co_routine<guild_member_data> getGuildMemberAsync(get_guild_member_data dataPackage);
+		static co_routine<guild_member_data> getGuildMemberAsync(const get_guild_member_data dataPackage);
 
 		/// @brief Collects a guild_member from the library's cache.
 		/// @param dataPackage a get_guild_member_data structure.
 		/// @return a co_routine containing a guild_member.
-		static guild_member_cache_data getCachedGuildMember(get_guild_member_data dataPackage);
+		static guild_member_cache_data getCachedGuildMember(const get_guild_member_data dataPackage);
 
 		/// @brief Lists all of the guild_members of a chosen guild.
 		/// @param dataPackage a list_guild_members_data structure.
 		/// @return a co_routine containing a vector<guild_members>.
-		static co_routine<jsonifier::vector<guild_member_data>> listGuildMembersAsync(list_guild_members_data dataPackage);
+		static co_routine<jsonifier::vector<guild_member_data>> listGuildMembersAsync(const list_guild_members_data dataPackage);
 
 		/// @brief Searches for a list of guild_members of a chosen guild.
 		/// @param dataPackage a search_guild_members_data structure.
 		/// @return a co_routine containing a vector<guild_members>.
-		static co_routine<jsonifier::vector<guild_member_data>> searchGuildMembersAsync(search_guild_members_data dataPackage);
+		static co_routine<jsonifier::vector<guild_member_data>> searchGuildMembersAsync(const search_guild_members_data dataPackage);
 
 		/// @brief Adds a guild_member to a chosen guild.
 		/// @param dataPackage an add_guild_member_data structure.
 		/// @return a co_routine containing a vector<guild_members>.
-		static co_routine<guild_member_data> addGuildMemberAsync(add_guild_member_data dataPackage);
+		static co_routine<guild_member_data> addGuildMemberAsync(const add_guild_member_data dataPackage);
 
 		/// @brief Modifies a guild_member's properties.
 		/// @param dataPackage a modify_guild_member_data structure.
 		/// @return a co_routine containing a guild_member.
-		static co_routine<guild_member_data> modifyGuildMemberAsync(modify_guild_member_data dataPackage);
+		static co_routine<guild_member_data> modifyGuildMemberAsync(const modify_guild_member_data dataPackage);
 
 		/// @brief Modifies the current guild_member_data's properties.
 		/// @param dataPackage a modify_current_guild_member_data structure.
 		/// @return a co_routine containing a guild_member.
-		static co_routine<guild_member_data> modifyCurrentGuildMemberAsync(modify_current_guild_member_data dataPackage);
+		static co_routine<guild_member_data> modifyCurrentGuildMemberAsync(const modify_current_guild_member_data dataPackage);
 
 		/// @brief Removes a chosen guild_member_data from a chosen guild.
 		/// @param dataPackage a remove_guild_member_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> removeGuildMemberAsync(remove_guild_member_data dataPackage);
+		static co_routine<void> removeGuildMemberAsync(const remove_guild_member_data dataPackage);
 
 		/// @brief Times-out a chosen guild_member_data from a chosen guild.
 		/// @param dataPackage a timeout_guild_member_data structure.
 		/// @return a co_routine containing guild_member_data.
-		static co_routine<guild_member_data> timeoutGuildMemberAsync(timeout_guild_member_data dataPackage);
+		static co_routine<guild_member_data> timeoutGuildMemberAsync(const timeout_guild_member_data dataPackage);
 
 		template<typename voice_state_type> inline static void insertVoiceState(voice_state_type&& voiceState) {
 			if (doWeCacheVoiceStatesBool) {
@@ -190,6 +190,9 @@ namespace discord_core_api {
 			}
 		}
 
+		/// @brief Collect a given guild_member's voice state data.
+		/// @param voiceState A two-id-key representing their user-id and guild-id.
+		/// @return voice_state_data_light The guild_member's voice_state_data.
 		static voice_state_data_light getVoiceStateData(const two_id_key& voiceState);
 
 		static void removeGuildMember(const two_id_key& guildMemberId);

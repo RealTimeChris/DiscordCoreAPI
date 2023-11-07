@@ -27,11 +27,11 @@ namespace discord_core_api {
 
 		void execute(base_function_arguments& newArgs) {
 			try {
-				channel channel = channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
+				channel channel = discord_core_api::channels::getCachedChannel({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				guild guild = guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get();
+				guild_data guild_data = guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get();
 
-				discord_guild discordGuild(guild);
+				discord_guild discordGuild(guild_data);
 
 				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
@@ -39,7 +39,7 @@ namespace discord_core_api {
 					return;
 				}
 
-				guild_member guildMember =
+				guild_member_data guildMember =
 					guild_members::getCachedGuildMember({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
 				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
@@ -50,29 +50,29 @@ namespace discord_core_api {
 				loadPlaylist(discordGuild);
 				embed_data newEmbed{};
 				newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
-				newEmbed.setDescription("__**title:**__ [" + song_api::getCurrentSong(guild.id).songTitle + "](" + song_api::getCurrentSong(guild.id).viewUrl + ")" +
-					"\n__**description:**__ " + song_api::getCurrentSong(guild.id).description + "\n__**duration:**__ " + song_api::getCurrentSong(guild.id).duration +
-					"\n__**added by:**__ <@!" + jsonifier::toString(song_api::getCurrentSong(guild.id).addedByUserId) + "> (" + song_api::getCurrentSong(guild.id).addedByUserName + ")");
-				newEmbed.setImage(song_api::getCurrentSong(guild.id).thumbnailUrl);
+				newEmbed.setDescription("__**title:**__ [" + song_api::getCurrentSong(guild_data.id).songTitle + "](" + song_api::getCurrentSong(guild_data.id).viewUrl + ")" +
+					"\n__**description:**__ " + song_api::getCurrentSong(guild_data.id).description + "\n__**duration:**__ " + song_api::getCurrentSong(guild_data.id).duration +
+					"\n__**added by:**__ <@!" + jsonifier::toString(song_api::getCurrentSong(guild_data.id).addedByUserId) + "> (" + song_api::getCurrentSong(guild_data.id).addedByUserName + ")");
+				newEmbed.setImage(song_api::getCurrentSong(guild_data.id).thumbnailUrl);
 				newEmbed.setTimeStamp(getTimeAndDate());
 				newEmbed.setTitle("__**now playing:**__");
 				newEmbed.setColor(discordGuild.data.borderColor);
-				if (song_api::isLoopAllEnabled(guild.id) && song_api::isLoopSongEnabled(guild.id)) {
+				if (song_api::isLoopAllEnabled(guild_data.id) && song_api::isLoopSongEnabled(guild_data.id)) {
 					newEmbed.setFooter("✅ loop-all, ✅ loop-song");
 				}
-				if (!song_api::isLoopAllEnabled(guild.id) && song_api::isLoopSongEnabled(guild.id)) {
+				if (!song_api::isLoopAllEnabled(guild_data.id) && song_api::isLoopSongEnabled(guild_data.id)) {
 					newEmbed.setFooter("❌ loop-all, ✅ loop-song");
 				}
-				if (song_api::isLoopAllEnabled(guild.id) && !song_api::isLoopSongEnabled(guild.id)) {
+				if (song_api::isLoopAllEnabled(guild_data.id) && !song_api::isLoopSongEnabled(guild_data.id)) {
 					newEmbed.setFooter("✅ loop-all, ❌ loop-song");
 				}
-				if (!song_api::isLoopAllEnabled(guild.id) && !song_api::isLoopSongEnabled(guild.id)) {
+				if (!song_api::isLoopAllEnabled(guild_data.id) && !song_api::isLoopSongEnabled(guild_data.id)) {
 					newEmbed.setFooter("❌ loop-all, ❌ loop-song");
 				}
-				respond_to_input_event_data dataPackage(newArgs.eventData);
+				respond_to_input_event_data& dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 				dataPackage.addMessageEmbed(newEmbed);
-				auto newEvent02 = input_events::respondToInputEventAsync(const& dataPackage).get();
+				auto newEvent02 = input_events::respondToInputEventAsync(const dataPackage).get();
 
 
 				return;

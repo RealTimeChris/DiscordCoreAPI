@@ -1,7 +1,7 @@
-Editing a Message {#editingamessage}
+Editing a Message {#editing_a_message}
 ============
-- Execute the, `messages::editMessageAsync()` function, while passing in a data structure of type `edit_message_data`, with a return value of type `message`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::messages::editMessageAsync()` function, while passing in a data structure of type `discord_core_api::edit_message_data`, with a return value of type `discord_core_api::message_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,10 +32,10 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				edit_message_data dataPackage {args.eventData};
+				edit_message_data& dataPackage {args.eventData};
 				dataPackage.addContent("test editing content!");
 
-				message newMessage = messages::editMessageAsync(const& dataPackage).get();
+				message newMessage = messages::editMessageAsync(const dataPackage).get();
 
 
 			} catch (...) {

@@ -1,7 +1,7 @@
-Creating a Global Application Command {#createglobalcommand}
+Creating a Global Application Command {#create_global_command}
 ============
-- Execute the `application_commands::createGlobalApplicationCommandAsync()`, while passing in a data structure of type `create_global_application_command_data` (important #1: notes on which kind of types to set can be found [here](https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups).), with a return value of type `auto` or `application_command`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::application_commands::createGlobalApplicationCommandAsync()`, while passing in a data structure of type `discord_core_api::create_global_application_command_data` (important #1: notes on which kind of types to set can be found [here](https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups).), with a return value of type `auto` or `discord_core_api::application_command_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 // register_application_commands.hpp- registers the slash commands of this bot.
@@ -34,7 +34,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& argsNew) {
 			try {
-				channel channel = channels::getCachedChannel({ .channelId = argsNew.eventData.getChannelId() }).get();
+				channel channel = discord_core_api::channels::getCachedChannel({ .channelId = argsNew.eventData.getChannelId() }).get();
 
 				bool areWeInADm = areWeInADM(argsNew.eventData, channel);
 
@@ -44,9 +44,9 @@ namespace discord_core_api {
 
 				input_events::deleteInputEventResponseAsync(const argsNew.eventData).get();
 
-				respond_to_input_event_data dataPackage(argsNew.eventData);
+				respond_to_input_event_data& dataPackage(argsNew.eventData);
 				dataPackage.setResponseType(input_event_response_type::Deferred_Response);
-				auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
+				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 				
 				create_global_application_command_data registerApplicationCommandsCommandData;
 				registerApplicationCommandsCommandData.dmPermission = true;
