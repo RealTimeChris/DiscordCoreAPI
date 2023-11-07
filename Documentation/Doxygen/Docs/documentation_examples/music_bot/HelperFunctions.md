@@ -56,7 +56,7 @@ Helper Functions {#HelperFunctions}
 		return isItFound;
 	}
 
-	bool checkIfWeHaveControl(input_event_data eventData, discord_guild guildData, guild_member guildMember) {
+	bool checkIfWeHaveControl(input_event_data eventData, discord_guild guildData, guild_member_data guildMember) {
 		if (guildData.data.djRoleId == 0) {
 			return true;
 		}
@@ -87,7 +87,7 @@ Helper Functions {#HelperFunctions}
 		return doWeHaveControl;
 	}
 
-	bool checkForBotCommanderStatus(guild_member guildMember, discord_user discordUser) {
+	bool checkForBotCommanderStatus(guild_member_data guildMember, discord_user discordUser) {
 		bool areWeACommander;
 		for (auto& value: discordUser.data.botCommanders) {
 			if (guildMember.user.id == value) {
@@ -99,7 +99,7 @@ Helper Functions {#HelperFunctions}
 		return false;
 	}
 
-	bool doWeHaveAdminPermissions(base_function_arguments args, input_event_data eventData, discord_guild discordGuild, channel channel, guild_member guildMember,
+	bool doWeHaveAdminPermissions(base_function_arguments args, input_event_data eventData, discord_guild discordGuild, channel channel, guild_member_data guildMember,
 								  bool displayResponse = true) {
 		bool doWeHaveAdmin = guildMember.permissions.checkForPermission(guildMember, channel, permission_types::administrator);
 

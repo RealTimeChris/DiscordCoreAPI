@@ -29,10 +29,12 @@
 /// \file CoRoutineThreadPool.hpp
 #pragma once
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/Utilities/HttpsClient.hpp>
+#include <discordcoreapi/Utilities/UnboundedMessageBlock.hpp>
 #include <discordcoreapi/Utilities/ThreadWrapper.hpp>
 #include <coroutine>
+#include <deque>
+
+using namespace std::literals;
 
 namespace discord_core_api {
 
@@ -66,10 +68,9 @@ namespace discord_core_api {
 		};
 
 		/// @brief A class representing a coroutine-based thread pool.
-		class co_routine_thread_pool : protected discord_core_api::unordered_map<uint64_t, worker_thread> {
+		class co_routine_thread_pool : protected std::vector<worker_thread> {
 		  public:
-			using map_type = discord_core_api::unordered_map<uint64_t, worker_thread>;
-			friend class discord_core_api::discord_core_client;
+			using map_type = std::vector<worker_thread>;
 
 			/// @brief Constructor to create a coroutine thread pool. initializes the worker threads.
 			inline co_routine_thread_pool() : threadCount(std::thread::hardware_concurrency()) {
@@ -77,9 +78,9 @@ namespace discord_core_api {
 					currentIndex.fetch_add(1, std::memory_order_release);
 					currentCount.fetch_add(1, std::memory_order_release);
 					uint64_t indexNew = currentIndex.load(std::memory_order_acquire);
-					getMap().emplace(indexNew, worker_thread());
-					getMap()[indexNew].thread = thread_wrapper([=, this](stop_token stopToken) {
-						threadFunction(stopToken, indexNew);
+					getMap().emplace_back(worker_thread());
+					getMap().back().thread = thread_wrapper([=, this]() {
+						threadFunction(indexNew);
 					});
 				}
 			}
@@ -91,12 +92,12 @@ namespace discord_core_api {
 				uint64_t currentLowestValue{ std::numeric_limits<uint64_t>::max() };
 				uint64_t currentLowestIndex{ std::numeric_limits<uint64_t>::max() };
 				std::shared_lock lock01{ workerAccessMutex };
-				for (auto& [key, value]: getMap()) {
-					if (!value.areWeCurrentlyWorking.load(std::memory_order_acquire)) {
+				for (auto iter = getMap().begin(); iter != getMap().end(); ++iter) {
+					if (!iter->areWeCurrentlyWorking.load(std::memory_order_acquire)) {
 						areWeAllBusy = false;
-						if (value.tasks.size() < currentLowestValue) {
-							currentLowestValue = value.tasks.size();
-							currentLowestIndex = key;
+						if (iter->tasks.size() < currentLowestValue) {
+							currentLowestValue = static_cast<uint64_t>(iter->tasks.size());
+							currentLowestIndex = static_cast<uint64_t>(iter - getMap().begin());
 						}
 						break;
 					}
@@ -107,67 +108,66 @@ namespace discord_core_api {
 					uint64_t indexNew = currentIndex.load(std::memory_order_acquire);
 					lock01.unlock();
 					std::unique_lock lock02{ workerAccessMutex };
-					getMap().emplace(indexNew, worker_thread());
-					getMap()[indexNew].thread = thread_wrapper([=, this](stop_token stopToken) {
-						threadFunction(stopToken, indexNew);
+					getMap().emplace_back(worker_thread());
+					getMap().back().thread = thread_wrapper([=, this]() {
+						threadFunction(indexNew);
 					});
 					lock02.unlock();
 				} else {
-					getMap()[currentLowestIndex].tasks.send(std::move(coro));
+					getMap().at(currentLowestIndex).tasks.send(std::move(coro));
 				}
+			}
+
+			~co_routine_thread_pool() {
+				areWeStopping.store(true, std::memory_order_release);
+				std::unique_lock lock{ workerAccessMutex };
 			}
 
 		  protected:
 			std::shared_mutex workerAccessMutex{};///< Shared mutex for worker thread access.
 			std::atomic_uint64_t currentCount{};///< current count of worker threads.
 			std::atomic_uint64_t currentIndex{};///< current index of worker threads.
+			std::atomic_bool areWeStopping{};
 			const uint64_t threadCount{};///< Total thread count.
 
 			/// @brief Thread function for each worker thread.
 			/// @param stopToken the stop token for the thread.
 			/// @param index the index of the worker thread.
-			inline void threadFunction(stop_token stopToken, uint64_t index) {
-				while (!stopToken.stopRequested()) {
-					if (!getMap().contains(index)) {
+			inline void threadFunction(uint64_t index) {
+				while (!areWeStopping.load(std::memory_order_acquire)) {
+					if (getMap().size() <= index) {
 						return;
 					}
 					std::coroutine_handle<> coroHandle{};
-					if (getMap()[index].tasks.tryReceive(coroHandle)) {
-						getMap()[index].areWeCurrentlyWorking.store(true, std::memory_order_release);
+					if (getMap().at(index).tasks.tryReceive(coroHandle)) {
+						getMap().at(index).areWeCurrentlyWorking.store(true, std::memory_order_release);
 						try {
 							coroHandle();
 							while (!coroHandle.done()) {
 								std::this_thread::sleep_for(1ms);
 							}
 						} catch (const std::runtime_error& error) {
-							message_printer::printError<print_message_type::general>(error.what());
+							std::cout << error.what() << std::endl;
 						}
-						if (!contains(index)) {
+						if (getMap().size() <= index) {
 							return;
 						}
-						getMap()[index].areWeCurrentlyWorking.store(false, std::memory_order_release);
+						getMap().at(index).areWeCurrentlyWorking.store(false, std::memory_order_release);
 					}
 					if (currentCount.load(std::memory_order_acquire) > threadCount) {
 						uint64_t extraWorkers{ currentCount.load(std::memory_order_acquire) - threadCount };
 						while (extraWorkers > 0) {
 							--extraWorkers;
 							size_type currentHighestIndex{};
-							for (const auto& [key, value]: *this) {
+							for (uint64_t key = 0; key < getMap().size(); ++key) {
 								if (key > currentHighestIndex) {
 									currentHighestIndex = key;
 								}
 							}
 							std::unique_lock lock{ workerAccessMutex };
-							auto oldThread = begin() + currentHighestIndex;
-							if (oldThread->second.thread.joinable()) {
-								oldThread->second.thread.requestStop();
-								oldThread->second.thread.detach();
-								currentCount.fetch_sub(1, std::memory_order_release);
-								getMap().erase(oldThread->first);
-							}
 						}
 					}
-					std::this_thread::sleep_for(nanoseconds{ 100000 });
+					std::this_thread::sleep_for(std::chrono::nanoseconds{ 100000 });
 				}
 			}
 

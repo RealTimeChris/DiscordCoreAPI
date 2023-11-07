@@ -1,10 +1,10 @@
 General Usage {#general_usage}
 ============
 
-* \subpage runningcommand
+* \subpage running_a_command
 
-* \subpage runningfunctiontimer
+* \subpage running_a_function_on_a_timer
 
-* \subpage listeningforevent
+* \subpage listening_for_an_event
 
-* \subpage usingmessagecollector
+* \subpage using_a_message_collector

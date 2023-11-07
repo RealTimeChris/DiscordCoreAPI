@@ -1,7 +1,7 @@
-Getting a Message {#gettingamessage}
+Getting a Message {#getting_a_message}
 ============
-- Execute the, `messages::getMessageAsync()` function, while passing in a data structure of type `get_message_data`, with a return value of type `auto`, or, `message`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::messages::getMessageAsync()` function, while passing in a data structure of type `discord_core_api::get_message_data`, with a return value of type `auto`, or, `discord_core_api::message_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_message_data dataPackage;
+				get_message_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.id = args.eventData.getMessageId();
 

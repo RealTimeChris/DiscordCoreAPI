@@ -1,4 +1,4 @@
-Music-Bot Guide {#MusicBotGuide}
+Music-Bot Guide {#music_bot_guide}
 ============
 * \subpage Introduction
 

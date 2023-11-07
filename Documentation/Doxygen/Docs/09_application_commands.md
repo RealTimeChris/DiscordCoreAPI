@@ -1,33 +1,33 @@
 Application-Commands {#application_commands}
 ============
-* \subpage getglobalcommands
+* \subpage get_global_commands
 
-* \subpage createglobalcommand
+* \subpage create_global_command
 
-* \subpage getglobalcommand
+* \subpage get_global_command
 
-* \subpage editglobalcommand
+* \subpage edit_global_command
 
-* \subpage deleteglobalcommand
+* \subpage delete_global_command
 
-* \subpage bulkoverwriteglobalcommands
+* \subpage bulk_overwrite_global_commands
 
-* \subpage getguildcommands
+* \subpage get_guild_commands
 
-* \subpage createguildcommand
+* \subpage create_guild_command
 
-* \subpage getguildcommand
+* \subpage get_guild_command
 
-* \subpage editguildcommand
+* \subpage edit_guild_command
 
-* \subpage deleteguildcommand
+* \subpage delete_guild_command
 
-* \subpage bulkoverwriteguildcommands
+* \subpage bulk_overwrite_guild_commands
 
-* \subpage getguildcommandpermissions
+* \subpage get_guild_command_permissions
 
-* \subpage getsinglecommandpermissions
+* \subpage get_single_command_permissions
 
-* \subpage editguildcommandpermissions
+* \subpage edit_guild_command_permissions
 
-* \subpage batcheditguildcommandpermissions
+* \subpage batch_edit_guild_command_permissions

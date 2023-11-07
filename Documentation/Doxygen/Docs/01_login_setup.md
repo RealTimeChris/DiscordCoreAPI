@@ -1,8 +1,8 @@
 Login/Setup {#login_setup}
 ============
 
-* \subpage beginnernotes
+* \subpage beginner_notes
 
-* \subpage logininstantiation
+* \subpage login_and_instantiation
 
-* \subpage addingcommand
+* \subpage adding_a_command

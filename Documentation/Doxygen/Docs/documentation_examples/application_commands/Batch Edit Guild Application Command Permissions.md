@@ -1,7 +1,7 @@
-Batch Editing Guild Application Command's Permissions {#batcheditguildcommandpermissions}
+Batch Editing Guild Application Command's Permissions {#batch_edit_guild_command_permissions}
 ============
-- Execute the `application_commands::batchEditGuildApplicationCommandPermissionsAsync()` function, while passing in a data structure of type `batch_edit_guild_application_command_permissions_data`, with a return value of type `auto` or `jsonifier::vector<guild_application_command_permissions_data>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::application_commands::batchEditGuildApplicationCommandPermissionsAsync()` function, while passing in a data structure of type `discord_core_api::batch_edit_guild_application_command_permissions_data`, with a return value of type `auto` or `jsonifier::vector<guild_application_command_permissions_data>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -33,7 +33,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			input_events::deleteInputEventResponseAsync(const args.eventData).get();
 
-			batch_edit_guild_application_command_permissions_data dataPackage01;
+			batch_edit_guild_application_command_permissions_data& dataPackage01;
 			jsonifier::vector<edit_guild_application_command_permissions_data> dataPackage02 {
 				{.permissions = {{.type = application_command_permission_type::user, .permission = false, .id = "859853159115259905"}},
 				 .commandName = "selldrugs"}};

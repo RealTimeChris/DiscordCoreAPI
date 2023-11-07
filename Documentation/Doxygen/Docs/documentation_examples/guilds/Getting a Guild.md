@@ -1,7 +1,7 @@
-Getting a Guild {#gettingaguild}
+Getting a Guild {#getting_a_guild}
 ============
-- Execute the, `guilds::getCachedGuild()` (which collects it from the cache), or `guilds::getGuildAsync()` (which collects it from the discord servers) function, while passing to it a data structure of type `get_guild_data`, with a return value of `guild`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guilds::getCachedGuild()` (which collects it from the cache), or `discord_core_api::guilds::getGuildAsync()` (which collects it from the discord servers) function, while passing to it a data structure of type `discord_core_api::get_guild_data`, with a return value of `discord_core_api::guild_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -31,9 +31,9 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			guild guild01 = guilds::getCachedGuild({args.eventData.getGuildId()}).get();
+			guild_data guild01 = guilds::getCachedGuild({args.eventData.getGuildId()}).get();
 
-			guild guild02 = guilds::getGuildAsync(const {args.eventData.getGuildId()}).get();
+			guild_data guild02 = guilds::getGuildAsync(const {args.eventData.getGuildId()}).get();
 		}
 	};
 }

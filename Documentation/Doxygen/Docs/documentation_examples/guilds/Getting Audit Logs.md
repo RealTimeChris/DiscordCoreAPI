@@ -1,7 +1,7 @@
-Getting Audit Logs {#gettingauditlogs}
+Getting Audit Logs {#getting_audit_logs}
 ============
-- Execute the, `guilds::getGuildAuditLogsAsync()` function, while passing in a data structure of type `get_guild_audit_logs_data` with a return value of type `auto` or `audit_log_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guilds::getGuildAuditLogsAsync()` function, while passing in a data structure of type `discord_core_api::get_guild_audit_logs_data` with a return value of type `auto` or `discord_core_api::audit_log_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -31,7 +31,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			get_guild_audit_logs_data dataPackage;
+			get_guild_audit_logs_data& dataPackage;
 			dataPackage.actionType = audit_log_event::MEMBER_BAN_ADD;
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.limit = 25;

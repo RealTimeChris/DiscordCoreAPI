@@ -1,7 +1,7 @@
-Getting a Guild Template {#gettingaguildtemplate}
+Getting a Guild Template {#getting_a_guild_template}
 ============
-- Execute the, `guilds::getGuildTemplateAsync()` function, while passing in a value of type `get_guild_template_data`, with a return value of type `auto` or `guild_template_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guilds::getGuildTemplateAsync()` function, while passing in a value of type `discord_core_api::get_guild_template_data`, with a return value of type `auto` or `discord_core_api::guild_template_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_guild_template_data dataPackage01;
+				get_guild_template_data& dataPackage01;
 				dataPackage01.templateCode = "ym_rr2bj5_ny_yx";
 
 				auto responseData = guilds::getGuildTemplateAsync(const dataPackage01).get();

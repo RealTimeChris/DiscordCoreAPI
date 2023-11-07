@@ -191,11 +191,11 @@ namespace discord_core_api {
 			/// @brief Collects a number from the data.
 			/// @return The collected number.
 			inline int64_t collectNumber() {
-				int32_t read{}, n{ 1 };
+				uint64_t read{}, n{ 1 };
 				uint64_t total{};
 				total = static_cast<uint8_t>(data.at(currentPosition++));
 
-				read = 8 - ffLog2Tab[total];
+				read = 8ULL - ffLog2Tab[total];
 
 				total ^= 1ULL << ffLog2Tab[total];
 				while (n++ < read) {
@@ -216,39 +216,14 @@ namespace discord_core_api {
 			}
 		};
 
-		/// @brief A class representing an Opus packet.
-		class opus_packet {
-		  public:
-			inline opus_packet() = default;
-
-			/// @brief Constructor for opus_packet.
-			/// @param newData The data for the Opus packet.
-			inline opus_packet(jsonifier::vector<uint8_t> newData) {
-				dataVal = newData;
-			};
-
-			/// @brief Returns the size of the Opus packet data.
-			/// @return The size of the Opus packet data.
-			inline uint64_t size() {
-				return dataVal.size();
-			}
-
-			/// @brief Returns a pointer to the Opus packet data.
-			/// @return A pointer to the Opus packet data.
-			inline auto data() {
-				return dataVal.data();
-			}
-
-		  protected:
-			jsonifier::vector<uint8_t> dataVal{};///< The data for the Opus packet.
-		};
+		using opus_packet = jsonifier::vector<uint8_t>;
 
 		/// @brief A class representing an Ogg page for demuxing.
 		class ogg_page {
 		  public:
 			/// @brief Constructor for ogg_page.
 			/// @param newData The data for the Ogg page.
-			inline ogg_page(jsonifier::vector<uint8_t>& newData) {
+			inline ogg_page(jsonifier::vector<uint8_t>&& newData) {
 				data = std::move(newData);
 				verifyAsOggPage();
 				getSegmentData();
@@ -261,11 +236,9 @@ namespace discord_core_api {
 				if (segmentTable.size() > 0) {
 					auto newSpace = static_cast<uint64_t>(segmentTable.front());
 					segmentTable.pop_front();
-					jsonifier::vector<uint8_t> returnValue{};
-					returnValue.resize(newSpace);
-					std::memcpy(returnValue.data(), data.data() + currentPosition, newSpace);
+					newPacket.resize(newSpace);
+					std::memcpy(newPacket.data(), data.data() + currentPosition, newSpace);
 					currentPosition += newSpace;
-					newPacket = returnValue;
 					return true;
 				} else {
 					return false;
@@ -276,8 +249,8 @@ namespace discord_core_api {
 			inline void getSegmentData() {
 				segmentCount = data.at(26);
 				currentPosition += 27;
-				for (int32_t x{}; x < segmentCount; ++x) {
-					int32_t packetLength{ data.at(27ULL + x) };
+				for (uint64_t x{}; x < segmentCount; ++x) {
+					uint64_t packetLength{ data.at(27ULL + x) };
 					while (data.at(27ULL + x) == 255) {
 						++x;
 						packetLength += data.at(27ULL + x);
@@ -295,11 +268,11 @@ namespace discord_core_api {
 			}
 
 		  protected:
-			std::deque<int32_t> segmentTable{};///< Segment table storing Opus packet sizes.
+			std::deque<uint64_t> segmentTable{};///< Segment table storing Opus packet sizes.
 			jsonifier::vector<uint8_t> data{};///< The data for the Ogg page.
 			uint64_t totalPacketSize{};///< Total size of Opus packets in the page.
 			uint64_t currentPosition{};///< Current position in the page data.
-			int32_t segmentCount{};///< Number of segments in the Ogg page.
+			uint64_t segmentCount{};///< Number of segments in the Ogg page.
 
 			/// @brief Verifies that the data represents a valid Ogg page.
 			inline void verifyAsOggPage() {
@@ -347,13 +320,13 @@ namespace discord_core_api {
 							jsonifier::vector<uint8_t> newerString{};
 							newerString.resize(nextOggPos - oggPos);
 							std::memcpy(newerString.data(), data.data() + oggPos, nextOggPos - oggPos);
-							pages.emplace_back(newerString);
+							pages.emplace_back(std::move(newerString));
 							pos = nextOggPos;
 						} else {
 							jsonifier::vector<uint8_t> newerString{};
 							newerString.resize(inputData.size() - collectedLength);
 							std::memcpy(newerString.data(), data.data() + oggPos, inputData.size() - collectedLength);
-							pages.emplace_back(newerString);
+							pages.emplace_back(std::move(newerString));
 							pos = collectedLength;
 							break;
 						}
@@ -361,7 +334,7 @@ namespace discord_core_api {
 						jsonifier::vector<uint8_t> newerString{};
 						newerString.resize(inputData.size() - collectedLength);
 						std::memcpy(newerString.data(), data.data() + oggPos, inputData.size() - collectedLength);
-						pages.emplace_back(newerString);
+						pages.emplace_back(std::move(newerString));
 						break;
 					}
 				}
@@ -380,8 +353,8 @@ namespace discord_core_api {
 			}
 
 		  protected:
-			jsonifier::string_base<uint8_t> data{};///< Input data for demuxing.
 			std::deque<audio_frame_data> frames{};///< Queue to store collected audio frames.
+			jsonifier::vector<uint8_t> data{};///< Input data for demuxing.
 			std::deque<opus_packet> packets{};///< Queue to store Opus packets.
 			std::deque<ogg_page> pages{};///< Queue to store Ogg pages.
 
@@ -404,7 +377,7 @@ namespace discord_core_api {
 					opus_packet newPacket = packets.front();
 					packets.pop_front();
 					audio_frame_data newFrame{};
-					newFrame += jsonifier::string_view_base<uint8_t>{ newPacket.data(), newPacket.size() };
+					newFrame += newPacket;
 					newFrame.currentSize = static_cast<int64_t>(newPacket.size());
 					newFrame.type		 = audio_frame_type::encoded;
 					frames.emplace_back(std::move(newFrame));

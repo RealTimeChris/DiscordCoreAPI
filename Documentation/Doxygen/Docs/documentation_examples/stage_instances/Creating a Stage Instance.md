@@ -1,7 +1,7 @@
-Creating a Stage Instance {#creatingastageinstance}
+Creating a Stage Instance {#creating_a_stage_instance}
 =============
-- Execute the, `stage_instances::createStageInstanceAsync()` function, while passing in a value of type `create_stage_instance_data`, with a return value of type `auto` or `stage_instance`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::stage_instances::createStageInstanceAsync()` function, while passing in a value of type `discord_core_api::create_stage_instance_data`, with a return value of type `auto` or `discord_core_api::stage_instance`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				create_stage_instance_data dataPackage;
+				create_stage_instance_data& dataPackage;
 				dataPackage.privacyLevel = stage_instance_privacy_level::GUILD_ONLY;
 				dataPackage.channelId = "914726178022101052";
 				dataPackage.reason = "testing purposes!";

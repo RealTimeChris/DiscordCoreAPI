@@ -153,57 +153,57 @@ namespace discord_core_api {
 		/// @brief Creates a reaction_data on a message.
 		/// @param dataPackage a create_reaction_data structure.
 		/// @return a co_routine containing a reaction_data.
-		static co_routine<reaction_data> createReactionAsync(create_reaction_data dataPackage);
+		static co_routine<reaction_data> createReactionAsync(const create_reaction_data& dataPackage);
 
 		/// @brief Deletes your own reactions from a given message_data.
 		/// @param dataPackage a delete_own_reaction_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteOwnReactionAsync(delete_own_reaction_data dataPackage);
+		static co_routine<void> deleteOwnReactionAsync(const delete_own_reaction_data& dataPackage);
 
 		/// @brief Deletes all of the reactions by a specific user_data from a given message_data.
 		/// @param dataPackage a delete_user_reaction_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteUserReactionAsync(delete_user_reaction_data dataPackage);
+		static co_routine<void> deleteUserReactionAsync(const delete_user_reaction_data& dataPackage);
 
 		/// @brief Get a list of users that reacted with this emoji. returns An array of user objects on success.
 		/// @param dataPackage a get_reactions_data structure.
 		/// @return a co_routine containing a jsonifier::vector<user_data>.
-		static co_routine<jsonifier::vector<user_data>> getReactionsAsync(get_reactions_data dataPackage);
+		static co_routine<jsonifier::vector<user_data>> getReactionsAsync(const get_reactions_data& dataPackage);
 
 		/// @brief Deletes all of the reactions from a given message_data.
 		/// @param dataPackage a delete_all_reactions_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteAllReactionsAsync(delete_all_reactions_data dataPackage);
+		static co_routine<void> deleteAllReactionsAsync(const delete_all_reactions_data& dataPackage);
 
 		/// @brief Deletes all of the reactions by a specific emoji from a given message_data.
 		/// @param dataPackage a delete_reactions_by_emoji_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteReactionsByEmojiAsync(delete_reactions_by_emoji_data dataPackage);
+		static co_routine<void> deleteReactionsByEmojiAsync(const delete_reactions_by_emoji_data& dataPackage);
 
 		/// @brief Collects a list of guild emoji from a chosen guild.
 		/// @param dataPackage a get_emoji_list_data structure.
 		/// @return a co_routine containing a jsonifier::vector<emoji_data>.
-		static co_routine<jsonifier::vector<emoji_data>> getEmojiListAsync(get_emoji_list_data dataPackage);
+		static co_routine<jsonifier::vector<emoji_data>> getEmojiListAsync(const get_emoji_list_data& dataPackage);
 
 		/// @brief Collects a single guild emoji from a chosen guild.
 		/// @param dataPackage a get_guild_emoji_data structure.
 		/// @return a co_routine containing an emoji_data.
-		static co_routine<emoji_data> getGuildEmojiAsync(get_guild_emoji_data dataPackage);
+		static co_routine<emoji_data> getGuildEmojiAsync(const get_guild_emoji_data& dataPackage);
 
 		/// @brief Creates a single guild emoji within a chosen guild.
 		/// @param dataPackage a create_guild_emoji_data structure.
 		/// @return a co_routine containing an emoji_data.
-		static co_routine<emoji_data> createGuildEmojiAsync(create_guild_emoji_data dataPackage);
+		static co_routine<emoji_data> createGuildEmojiAsync(create_guild_emoji_data& dataPackage);
 
 		/// @brief Modifies a single guild emoji within a chosen guild.
 		/// @param dataPackage a modify_guild_emoji_data structure.
 		/// @return a co_routine containing an emoji_data.
-		static co_routine<emoji_data> modifyGuildEmojiAsync(modify_guild_emoji_data dataPackage);
+		static co_routine<emoji_data> modifyGuildEmojiAsync(const modify_guild_emoji_data& dataPackage);
 
 		/// @brief Deletes a single guild emoji within a chosen guild.
 		/// @param dataPackage a delete_guild_emoji_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteGuildEmojiAsync(delete_guild_emoji_data dataPackage);
+		static co_routine<void> deleteGuildEmojiAsync(const delete_guild_emoji_data& dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;

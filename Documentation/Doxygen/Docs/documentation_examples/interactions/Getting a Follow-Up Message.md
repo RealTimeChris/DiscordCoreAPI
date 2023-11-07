@@ -1,6 +1,6 @@
-Getting a Follow-Up Message {#gettingafollowupmessage}
+Getting a Follow-Up Message {#getting_a_follow_up_message}
 ============
-- Execute the, `interactions::getFollowUpMessageAsync()` function and execute it, while passing in a data structure of type `get_follow_up_message_data`, with a return value of type `auto` or `message`.
+- Execute the, `discord_core_api::interactions::getFollowUpMessageAsync()` function and execute it, while passing in a data structure of type `discord_core_api::get_follow_up_message_data`, with a return value of type `auto` or `discord_core_api::message_data`.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -31,7 +31,7 @@ Getting a Follow-Up Message {#gettingafollowupmessage}
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_follow_up_message_data dataPackage;
+				get_follow_up_message_data& dataPackage;
 				dataPackage.applicationId = getBotUser().id;
 				dataPackage.interactionToken = args.eventData.getInteractionToken();
 				dataPackage.interactionToken = args.eventData.getMessageId();

@@ -389,6 +389,8 @@ namespace discord_core_api {
 
 		audio_frame_data& operator+=(jsonifier::string_view_base<uint8_t>);
 
+		audio_frame_data& operator+=(jsonifier::vector<uint8_t>);
+
 		inline bool operator==(const audio_frame_data& rhs) const {
 			return currentSize == rhs.currentSize && data == rhs.data;
 		}

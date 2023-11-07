@@ -1,3 +1,3 @@
-Listing Auto-Moderation-Rules {#listautomoderationrules}
+Listing Auto-Moderation-Rules {#list_auto_moderation_rules}
 ============
-[For now it is here.](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/source/auto_moderation_entities.cpp#l53)
+[For now it is here.](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/AutoModerationEntities.cpp#L53)

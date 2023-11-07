@@ -1,7 +1,7 @@
-Deleting a Stage Instance {#deletingastageinstance}
+Deleting a Stage Instance {#deleting_a_stage_instance}
 ============
-- Execute the, `stage_instances::deleteStageInstanceAsync()` function, while passing in a value of type `delete_stage_instance_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::stage_instances::deleteStageInstanceAsync()` function, while passing in a value of type `discord_core_api::delete_stage_instance_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				delete_stage_instance_data dataPackage;
+				delete_stage_instance_data& dataPackage;
 				dataPackage.channelId = "914726178022101052";
 				dataPackage.reason = "testing!";
 

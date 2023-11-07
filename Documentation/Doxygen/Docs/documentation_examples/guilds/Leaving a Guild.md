@@ -1,7 +1,7 @@
-Leaving a Guild {#leavingaguild}
+Leaving a Guild {#leaving_a_guild}
 ============
-- Execute the, `guilds::leaveGuildAsync()` function, while passing in a value of type `leave_guild_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guilds::leaveGuildAsync()` function, while passing in a value of type `discord_core_api::leave_guild_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				leave_guild_data dataPackage;
+				leave_guild_data& dataPackage;
 				dataPackage.guildId = "GUIILD_ID_HERE";
 
 				guilds::leaveGuildAsync(const& dataPackage).get();

@@ -1,4 +1,4 @@
-Documentation/Examples {#documentation_examples}
+C++ Discord Bot Documentation/Examples {#documentation_examples}
 ============
 - \subpage login_setup
 - \subpage general_usage
@@ -8,9 +8,9 @@ Documentation/Examples {#documentation_examples}
 - \subpage modals
 - \subpage voice_connections
 - \subpage application_commands
+- \subpage auto_moderation_rules
 - \subpage channels
 - \subpage guilds
-- \subpage auto_moderation_rules
 - \subpage guild_members
 - \subpage guild_scheduled_events
 - \subpage input_events

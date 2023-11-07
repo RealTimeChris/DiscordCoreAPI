@@ -1,7 +1,7 @@
-Getting Channel Messages {#gettingchannelmessages}
+Getting Channel Messages {#getting_channel_messages}
 ===========
-- Execute the, `messages::getMessagesAsync()` function, while passing in a data structure of type `get_messages_data`, with a return value of type `auto`, or, `vector<message>`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::messages::getMessagesAsync()` function, while passing in a data structure of type `discord_core_api::get_messages_data`, with a return value of type `auto`, or, `jsonifier::vector<message>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_messages_data dataPackage;
+				get_messages_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.afterThisId = args.eventData.getMessageId();
 

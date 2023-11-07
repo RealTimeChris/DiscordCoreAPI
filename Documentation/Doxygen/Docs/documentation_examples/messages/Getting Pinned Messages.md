@@ -1,8 +1,8 @@
-Getting Pinned Messages {#gettingpinnedmessages}
+Getting Pinned Messages {#getting_pinned_messages}
 ============
 
-- Execute the, `messages::getPinnedMessagesAsync()` function, while passing in a value of type `get_pinned_messages_data`, with a return value of type `auto` or `vector<message>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::messages::getPinnedMessagesAsync()` function, while passing in a value of type `discord_core_api::get_pinned_messages_data`, with a return value of type `auto` or `jsonifier::vector<message>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -33,7 +33,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_pinned_messages_data dataPackage;
+				get_pinned_messages_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
 				vector<message> messagesVector = messages::getPinnedMessagesAsync(const& dataPackage).get();

@@ -1,7 +1,7 @@
-Getting a Direct-Message Channel {#gettingdmchannel}
+Getting a Direct-Message Channel {#getting_dm_channel}
 ============
-- Execute the `channels::createDMChannelAsync()` (which collects it from the discord servers)function, while passing to it a data structure of type `create_dmchannel_data`, or simply `{ .userId = targetuseridhere}`, with a return value of `auto` or `discord_core_api:channel`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::channels::createDMChannelAsync()` (which collects it from the discord servers)function, while passing to it a data structure of type `discord_core_api::create_dmchannel_data`, or simply `discord_core_api::{ .userId = targetuseridhere}`, with a return value of `auto` or `discord_core_api:channel`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -31,7 +31,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(std::unique_pt<barse_function_arguments> args) {
-			channel channel = channels::createDMChannelAsync(const {.userId = args.eventData.getAuthorId()}).get();
+			channel channel = discord_core_api::channels::createDMChannelAsync(const {.userId = args.eventData.getAuthorId()}).get();
 		}
 	};
 }

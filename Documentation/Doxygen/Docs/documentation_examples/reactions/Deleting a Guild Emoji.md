@@ -1,7 +1,7 @@
-Deleting a Guild Emoji {#deletingaguildemoji}
+Deleting a Guild Emoji {#deleting_a_guild_emoji}
 ============
-- Execute the, `reactions::deleteGuildEmojiAsync()` function, while passing in a value of type `delete_guild_emoji_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::reactions::deleteGuildEmojiAsync()` function, while passing in a value of type `discord_core_api::delete_guild_emoji_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,12 +32,12 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_emoji_list_data dataPackage00 { };
+				get_emoji_list_data& dataPackage00 { };
 				dataPackage00.guildId = args.eventData.getGuildId();
 
 				auto emojiList = reactions::getEmojiListAsync(const dataPackage00).get();
 
-				delete_guild_emoji_data dataPackage;
+				delete_guild_emoji_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.emojiId = emojiList[0].id;
 				dataPackage.reason = "reason for deleting!";

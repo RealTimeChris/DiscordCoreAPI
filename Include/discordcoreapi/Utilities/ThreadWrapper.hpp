@@ -34,8 +34,6 @@
 
 namespace discord_core_api {
 
-	class counted_atomic_bool : public reference_counter, public std::atomic_bool {};
-
 	namespace discord_core_internal {
 
 		/**
@@ -48,7 +46,7 @@ namespace discord_core_api {
 		  public:
 			/// @brief Constructor that takes a counted_ptr to a std::atomic_bool.
 			/// @param theBool the counted_ptr to a std::atomic_bool.
-			inline stop_token(const counted_ptr<counted_atomic_bool>& theBool) {
+			inline stop_token(const counted_ptr<std::atomic_bool>& theBool) {
 				atomicBoolPtr = theBool;
 			}
 
@@ -70,7 +68,7 @@ namespace discord_core_api {
 			}
 
 		  protected:
-			counted_ptr<counted_atomic_bool> atomicBoolPtr{};///< Pointer to the managed std::atomic_bool.
+			counted_ptr<std::atomic_bool> atomicBoolPtr{};///< Pointer to the managed std::atomic_bool.
 		};
 
 		/// @brief A wrapper class for managing threads with stopping capability.
@@ -84,7 +82,7 @@ namespace discord_core_api {
 			/// @return the new thread_wrapper instance.
 			inline thread_wrapper& operator=(thread_wrapper&& other) noexcept {
 				currentThread.swap(other.currentThread);
-				atomicBool.swap(other.atomicBool);
+				std::swap(atomicBool, other.atomicBool);
 				return *this;
 			}
 
@@ -101,8 +99,17 @@ namespace discord_core_api {
 			/// @tparam function the type of the callable object.
 			/// @param functionNew the callable object to be executed by the thread.
 			template<typename function_type> inline thread_wrapper(function_type&& functionNew) {
+				currentThread = std::thread([=, function = std::forward<function_type>(functionNew)]() {
+					function();
+				});
+			}
+
+			/// @brief Constructor that takes a callable object.
+			/// @tparam function the type of the callable object.
+			/// @param functionNew the callable object to be executed by the thread.
+			template<> inline thread_wrapper(std::function<void(stop_token)>&& functionNew) {
 				currentThread = std::thread(
-					[&, function = std::forward<function_type>(functionNew)](stop_token stopToken) {
+					[=, function = (functionNew)](stop_token stopToken) {
 						function(stopToken);
 					},
 					atomicBool);
@@ -154,7 +161,7 @@ namespace discord_core_api {
 			}
 
 		  protected:
-			counted_ptr<counted_atomic_bool> atomicBool{ makeCounted<counted_atomic_bool>() };///< Managed atomic bool for stopping control.
+			counted_ptr<std::atomic_bool> atomicBool{ makeCounted<std::atomic_bool>() };///< Managed atomic bool for stopping control.
 			std::thread currentThread{};///< Managed thread.
 		};
 		/**@}*/

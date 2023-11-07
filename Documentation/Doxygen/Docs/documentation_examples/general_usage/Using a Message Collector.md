@@ -1,9 +1,9 @@
-Using a Message Collector {#usingmessagecollector}
+Using a Message Collector {#using_a_message_collector}
 ============
-- first, define a filtering function-which is one that takes a `message` as its one argument, that returns A `bool`. define it so that if it returns true, the message is "collected".
-- instantiate the `message_collector<message>` class with arguments to define how many messages are collected, for how long in milliseconds the collection runs, a userId, and the filter function.
-- Execute the `message_collector<message>::collectMessages` function.
-- this function returns A struct of type `message_collector<message>`, which contains a vector of collected `message`s.
+- first, define a filtering function-which is one that takes a `discord_core_api::message_data` as its one argument, that returns A `bool`. define it so that if it returns true, the message is "collected".
+- instantiate the `discord_core_api::object_collector<discord_core_api::message_data>` class with arguments to define how many messages are collected, for how long in milliseconds the collection runs, a userId, and the filter function.
+- Execute the `discord_core_api::object_collector<discord_core_api::message_data>::collectObjects` function.
+- this function returns A struct of type `discord_core_api::object_collector<discord_core_api::message_data>`, which contains a vector of collected `discord_core_api::message_data`s.
  
 ```cpp
 function<bool(message)> messageFilter = [=](message message)-> bool {
@@ -14,10 +14,10 @@ function<bool(message)> messageFilter = [=](message message)-> bool {
 	}
                     };
 message_collector<message> messageCollector;
-auto returnedMessages = messageCollector.collectMessages(1, 120000, messageFilter);
+auto returnedMessages = messageCollector.collectObjects(1, 120000, messageFilter);
 if (returnedMessages.messages.size() == 0) {
 	msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-	msgEmbeds = Update_MessageEmbeds(song_api::getPlaylist(guild.id), discordGuild, newEvent, args.eventData, currentPageIndex);
+	msgEmbeds = Update_MessageEmbeds(song_api::getPlaylist(guild_data.id), discordGuild, newEvent, args.eventData, currentPageIndex);
 	doWeQuit = true;
 	break;
 }

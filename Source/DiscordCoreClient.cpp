@@ -121,7 +121,7 @@ namespace discord_core_api {
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
 		message_printer::initialize(configManager);
-		if (!discord_core_internal::sslcontext_holder::initialize()) {
+		if (!discord_core_internal::ssl_context_holder::initialize()) {
 			message_printer::printError<print_message_type::general>("Failed to initialize the SSL_CTX structure!");
 			return;
 		}

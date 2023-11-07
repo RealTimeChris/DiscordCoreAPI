@@ -1,7 +1,7 @@
-Getting User Connections {#gettinguserconnections}
+Getting User Connections {#getting_user_connections}
 ============
-- Execute the, `users::getUserConnectionsAsync()` function, with a return value of type `auto` or `vector<connection_data>`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::users::getUserConnectionsAsync()` function, with a return value of type `auto` or `jsonifier::vector<connection_data>`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.

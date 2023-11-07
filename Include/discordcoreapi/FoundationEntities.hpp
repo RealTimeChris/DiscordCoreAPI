@@ -2369,7 +2369,7 @@ namespace discord_core_api {
 		template<typename value_type> friend class get_user_image_url;
 		friend class discord_core_client;
 
-		bot_user(user_data dataPackage, discord_core_internal::base_socket_agent* pBaseBaseSocketAgentNew);
+		bot_user(user_data& dataPackage, discord_core_internal::base_socket_agent* pBaseBaseSocketAgentNew);
 
 		/// @brief Updates the bot's current voice-status. joins/leaves a channel, and/or self deafens/mutes.
 		/// @param dataPackage the new voice_state_data.
@@ -2533,6 +2533,7 @@ namespace discord_core_api {
 
 		bool areWeConnected();
 
+		/// \brief For disconnecting from the current guild's voice channel.
 		void disconnect();
 	};
 
@@ -2584,6 +2585,7 @@ namespace discord_core_api {
 
 		bool areWeConnected();
 
+		/// \brief For disconnecting from the current guild's voice channel.
 		void disconnect();
 	};
 

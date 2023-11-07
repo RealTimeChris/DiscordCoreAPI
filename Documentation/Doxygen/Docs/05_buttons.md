@@ -1,5 +1,5 @@
 Buttons {#buttons}
 ============
-* \subpage instantiatingcreatingbutton
+* \subpage creating_a_button
 
-* \subpage collectingbuttoninput
+* \subpage collecting_button_input

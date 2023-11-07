@@ -1,7 +1,7 @@
-Removing a Guild Role {#removingaguildrole}
+Removing a Guild Role {#removing_a_guild_role}
 =============
-- Execute the, `roles::removeGuildRoleAsync()` function, while passing in a value of type `remove_guild_role_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::roles::removeGuildRoleAsync()` function, while passing in a value of type `discord_core_api::remove_guild_role_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				remove_guild_role_data dataPackage01;
+				remove_guild_role_data& dataPackage01;
 				dataPackage01.roleId = "886366417316896799";
 				dataPackage01.reason = "testing!";
 				dataPackage01.guildId = args.eventData.getGuildId();

@@ -1,7 +1,7 @@
-Bulk Deleting Messages {#bulkdeletingmessages}
+Bulk Deleting Messages {#bulk_deleting_messages}
 ============
-- Execute the, `messages::deleteMessagesBulkAsync()` function, while passing in a data structure of type `delete_messages_bulk_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::messages::deleteMessagesBulkAsync()` function, while passing in a data structure of type `discord_core_api::delete_messages_bulk_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				delete_messages_bulk_data dataPackage;
+				delete_messages_bulk_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				vector<string> messageIds { };
 				messageIds.emplace_back(args.eventData.getMessageId());

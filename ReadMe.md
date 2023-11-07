@@ -1,11 +1,11 @@
 # DiscordCoreAPI
-[![Codacy Badge](https://img.shields.io/codacy/grade/1e5ae970aed34d0b96249cdfd02099cf?color=lightblue&label=Code%20Quality&style=flat)](https://www.codacy.com/gh/RealTimeChris/DiscordCoreAPI/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RealTimeChris/DiscordCoreAPI&amp;utm_campaign=Badge_Grade)
-[![Discord](https://img.shields.io/discord/931640556814237706?color=red&label=Discord%20Server&style=flat)](https://discord.gg/adgMqeBuhP)
-![Commit Activity](https://img.shields.io/github/commit-activity/y/realtimechris/discordcoreapi?color=green&label=Commits&style=flat)
-[![Lines of Code](https://sloc.xyz/github/realtimechris/discordcoreapi)](https://github.com/RealTimeChris/DiscordCoreAPI/)
+[![Codacy Badge](https://img.shields.io/codacy/grade/1e5ae970aed34d0b96249cdfd02099cf?color=lightblue&label=Code%20Quality&style=plastic)](https://www.codacy.com/gh/RealTimeChris/DiscordCoreAPI/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RealTimeChris/DiscordCoreAPI&amp;utm_campaign=Badge_Grade)
+[![Discord](https://img.shields.io/discord/931640556814237706?color=red&label=Discord%20Server&style=plastic)](https://discord.gg/adgMqeBuhP)
+![Commit Activity](https://img.shields.io/github/commit-activity/y/realtimechris/discordcoreapi?color=green&label=Commits&style=plastic)
+![Lines of Code](https://tokei.rs/b1/github/RealTimeChris/DiscordCoreAPI?color=light-blue&label=Lines%20Of%20Code%20&style=plastic)
 
-Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/HttpsClient.cpp#L364),
-[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketClient.cpp#L434), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L322) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
+Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/HttpsClient.hpp#L241),
+[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/WebSocketClient.hpp#L175), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/VoiceConnection.hpp#L272) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 <p align="center"><a href="http://discordcoreapi.com" target="_blank"><img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true" 
 alt="DiscordCoreAPI WebSite" width="500"/></p>
@@ -106,9 +106,9 @@ std::cout << "CHANNEL NAME: " + newChannel.name << std::endl;
    
 ## A Unified "Input-Event" System
 ----
-- User interactions (Application Commands, Message Commands, User Commands) are accepted via the `EventManager::onInputEventCreation` event.
-- They can all be responded to using the `InputEvents::respondToInputEventAsync()` function.
-- Alternatively you can implement your own input-event handling by using the raw `EventManager::onInteractionCreation` or `EventManager::onMessageCreation` events.
+- User interactions (Application Commands, Message Commands, User Commands) are accepted via the `event_manager::onInputEventCreation` event.
+- They can all be responded to using the `input_events::respondToInputEventAsync()` function.
+- Alternatively you can implement your own input-event handling by using the raw `event_manager::onInteractionCreation` or `event_manager::onMessageCreation` events.
 ```cpp
 EmbedData newEmbed{};
 newEmbed.setAuthor(args.eventData.getUserName(), args.eventData.getAvatarURL());
@@ -120,8 +120,8 @@ newEmbed.setColor(discordGuild.data.borderColor);
 RespondToInputEventData dataPackage{ args.eventData };
 dataPackage.addMessageEmbed(newEmbed);
 dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
-InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage);
-InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
+InputEventData newEvent = input_events::respondToInputEvent(dataPackage);
+input_events::deleteInputEventResponseAsync(const newEvent, 20000).get();
 ```
 
 # Build Instructions (Full-Vcpkg)

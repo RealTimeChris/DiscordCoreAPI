@@ -1,7 +1,7 @@
-Creating a Reaction {#creatingareaction}
+Creating a Reaction {#creating_a_reaction}
 ============
-- Execute the, `reactions::createReactionAsync()` function, while passing in a data structure of type `create_reaction_data`, with a return value of type `auto`, or, `reaction`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::reactions::createReactionAsync()` function, while passing in a data structure of type `discord_core_api::create_reaction_data`, with a return value of type `auto`, or, `discord_core_api::reaction`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				create_reaction_data dataPackage;
+				create_reaction_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.emojiName = "😆";

@@ -147,7 +147,7 @@ namespace discord_core_api {
 
 	user_cache_data guild_member_data::getUserData() {
 		if (user.id != 0) {
-			return users::getCachedUser(get_user_data{ .userId = user.id });
+			return users::getCachedUser({ .userId = user.id });
 		} else {
 			return {};
 		}
@@ -159,7 +159,7 @@ namespace discord_core_api {
 
 	user_cache_data guild_member_cache_data::getUserData() {
 		if (user.id != 0) {
-			return users::getCachedUser(get_user_data{ .userId = user.id });
+			return users::getCachedUser({ .userId = user.id });
 		} else {
 			return {};
 		}
@@ -1191,7 +1191,7 @@ namespace discord_core_api {
 					dataPackage02->addComponentRow(actionRow);
 				}
 				if (deleteAfter == true) {
-					input_event_data dataPackage03{ originalEvent };
+					input_event_data& dataPackage03{ originalEvent };
 					input_events::deleteInputEventResponseAsync(dataPackage03);
 				} else {
 					dataPackage02->setResponseType(input_event_response_type::Edit_Interaction_Response);

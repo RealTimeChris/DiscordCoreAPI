@@ -46,27 +46,27 @@ namespace discord_core_api {
 	concept map_container_iterator_t = std::same_as<typename unordered_map<key_type, value_type>::iterator, std::decay_t<map_iterator>>;
 
 	template<typename key_type_new, typename value_type_new> class unordered_map : protected hash_policy<unordered_map<key_type_new, value_type_new>>,
-																				   protected jsonifier_internal::alloc_wrapper<pair<key_type_new, value_type_new>>,
-																				   protected object_compare {
-	  public:
-		using mapped_type	  = value_type_new;
-		using key_type		  = key_type_new;
-		using reference		  = mapped_type&;
-		using value_type	  = pair<key_type, mapped_type>;
+		protected jsonifier_internal::alloc_wrapper<pair<key_type_new, value_type_new>>,
+		protected object_compare {
+	public:
+		using mapped_type = value_type_new;
+		using key_type = key_type_new;
+		using reference = mapped_type&;
+		using value_type = pair<key_type, mapped_type>;
 		using const_reference = const mapped_type&;
-		using size_type		  = uint64_t;
-		using object_compare  = object_compare;
+		using size_type = uint64_t;
+		using object_compare = object_compare;
 		using hash_policy_new = hash_policy<unordered_map<key_type, mapped_type>>;
-		using key_hasher	  = hash_policy_new;
-		using iterator		  = hash_iterator<unordered_map<key_type, mapped_type>>;
-		using const_iterator  = hash_iterator<const unordered_map<key_type, mapped_type>>;
-		using allocator		  = jsonifier_internal::alloc_wrapper<value_type>;
+		using key_hasher = hash_policy_new;
+		using iterator = hash_iterator<unordered_map<key_type, mapped_type>>;
+		using const_iterator = hash_iterator<const unordered_map<key_type, mapped_type>>;
+		using allocator = jsonifier_internal::alloc_wrapper<value_type>;
 
 		friend hash_policy_new;
 		friend iterator;
 		friend const_iterator;
 
-		inline unordered_map(){};
+		inline unordered_map() {};
 
 		inline unordered_map& operator=(unordered_map&& other) noexcept {
 			if (this != &other) {
@@ -85,7 +85,7 @@ namespace discord_core_api {
 				reset();
 
 				reserve(other.capacity());
-				for (const auto& [key, value]: other) {
+				for (const auto& [key, value] : other) {
 					emplace(key, value);
 				}
 			}
@@ -98,7 +98,7 @@ namespace discord_core_api {
 
 		inline unordered_map(std::initializer_list<value_type> list) {
 			reserve(list.size());
-			for (auto& value: list) {
+			for (auto& value : list) {
 				emplace(std::move(value.first), std::move(value.second));
 			}
 		};
@@ -142,7 +142,7 @@ namespace discord_core_api {
 		template<typename key_type_newer> inline const_reference at(key_type_newer&& key) const {
 			auto iter = find(std::forward<key_type_newer>(key));
 			if (iter == end()) {
-				throw dca_exception{ "Sorry, but an object by that key doesn't exist in this map." };
+				throw std::runtime_error{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
 			return iter->second;
 		}
@@ -150,7 +150,7 @@ namespace discord_core_api {
 		template<typename key_type_newer> inline reference at(key_type_newer&& key) {
 			auto iter = find(std::forward<key_type_newer>(key));
 			if (iter == end()) {
-				throw dca_exception{ "Sorry, but an object by that key doesn't exist in this map." };
+				throw std::runtime_error{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
 			return iter->second;
 		}
@@ -277,8 +277,8 @@ namespace discord_core_api {
 			reset();
 		};
 
-	  protected:
-		jsonifier::vector<int8_t> sentinelVector{};
+	protected:
+		std::vector<int8_t> sentinelVector{};
 		int8_t maxLookAheadDistance{ 0 };
 		size_type capacityVal{};
 		size_type sizeVal{};
@@ -289,14 +289,17 @@ namespace discord_core_api {
 				resize(capacityVal + 1);
 			}
 			auto currentIndex = getHashPolicy().indexForHash(key);
+			std::cout << "CURRENT INDEX: " << currentIndex << "CURRENT CAPACITY: " << sentinelVector.size() << std::endl;
+			std::cout << "CURRENT INDEX: " << currentIndex << "CURRENT CAPACITY: " << sentinelVector.at(currentIndex) << std::endl;
 			for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 				if (sentinelVector[currentIndex] == 0) {
 					getAlloc().construct(std::addressof(data[currentIndex]), value_type{ std::forward<key_type_newer>(key), std::forward<mapped_type_new>(value)... });
 					sentinelVector[currentIndex] = 1;
 					sizeVal++;
 					return { this, currentIndex };
-				} else if (sentinelVector[currentIndex] > 0 && object_compare()(data[currentIndex].first, key)) {
-					if constexpr ((( !std::is_void_v<mapped_type_new> ) || ...)) {
+				}
+				else if (sentinelVector[currentIndex] > 0 && object_compare()(data[currentIndex].first, key)) {
+					if constexpr (((!std::is_void_v<mapped_type_new>) || ...)) {
 						data[currentIndex].second = mapped_type{ std::forward<mapped_type_new>(value)... };
 					}
 					return { this, currentIndex };
@@ -317,17 +320,17 @@ namespace discord_core_api {
 		inline void resize(size_type capacityNew) {
 			auto newSize = getHashPolicy().nextPowerOfTwo(capacityNew);
 			if (newSize > capacityVal) {
-				jsonifier::vector<int8_t> oldSentinelVector = std::move(sentinelVector);
-				auto oldMaxLookAheadDistance				= maxLookAheadDistance;
-				auto oldCapacity							= capacityVal;
-				auto oldSize								= sizeVal;
-				auto oldPtr									= data;
-				maxLookAheadDistance						= getHashPolicy().computeMaxLookAheadDistance(newSize);
-				sizeVal										= 0;
-				data										= getAlloc().allocate(newSize + 1 + maxLookAheadDistance);
+				std::vector<int8_t> oldSentinelVector = std::move(sentinelVector);
+				auto oldMaxLookAheadDistance = maxLookAheadDistance;
+				auto oldCapacity = capacityVal;
+				auto oldSize = sizeVal;
+				auto oldPtr = data;
+				maxLookAheadDistance = getHashPolicy().computeMaxLookAheadDistance(newSize);
+				sizeVal = 0;
+				data = getAlloc().allocate(newSize + 1 + maxLookAheadDistance);
 				sentinelVector.resize(newSize + 1 + maxLookAheadDistance);
 				sentinelVector[newSize + maxLookAheadDistance] = -1;
-				capacityVal									   = newSize;
+				capacityVal = newSize;
 				for (size_type x = 0, y = 0; y < oldSize; ++x) {
 					if (oldSentinelVector.at(x) > 0) {
 						++y;
@@ -349,9 +352,9 @@ namespace discord_core_api {
 				}
 				getAlloc().deallocate(data, capacityVal + 1 + maxLookAheadDistance);
 				sentinelVector.clear();
-				sizeVal		= 0;
+				sizeVal = 0;
 				capacityVal = 0;
-				data		= nullptr;
+				data = nullptr;
 			}
 		}
 	};

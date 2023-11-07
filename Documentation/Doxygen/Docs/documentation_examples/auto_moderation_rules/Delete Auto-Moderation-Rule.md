@@ -1,3 +1,3 @@
-Deleting an Auto-Moderation-Rule {#deleteautomoderationrule}
+Deleting an Auto-Moderation-Rule {#delete_auto_moderation_rule}
 ============
-[For now it is here.](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/source/auto_moderation_entities.cpp#l99)
+[For now it is here.](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/AutoModerationEntities.cpp#L99)

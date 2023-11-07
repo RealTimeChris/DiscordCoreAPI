@@ -1,5 +1,5 @@
 Modals {#modals}
 ============
-* \subpage instantiatingcreatingmodal
+* \subpage creating_a_modal
 
-* \subpage collectingmodalinput
+* \subpage collecting_modal_input

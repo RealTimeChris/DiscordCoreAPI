@@ -1,7 +1,7 @@
-Crossposting a Message {#crosspostingamessage}
+Crossposting a Message {#crossposting_a_message}
 ============
-- Execute the, `messages::crosspostMessageAsync()` function, while passing in a data structure of type `crosspost_message_data`, with a return value of type `auto`, or, `message`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::messages::crosspostMessageAsync()` function, while passing in a data structure of type `discord_core_api::crosspost_message_data`, with a return value of type `auto`, or, `discord_core_api::message_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				crosspost_message_data dataPackage;
+				crosspost_message_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.messageId = args.eventData.getMessageId();
 

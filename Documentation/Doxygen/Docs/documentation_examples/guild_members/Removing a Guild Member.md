@@ -1,7 +1,7 @@
-Removing a Guild Member {#removingaguildmember}
+Removing a Guild Member {#removing_a_guild_member}
 ============
-- Execute the, `guild_members::removeGuildMemberAsync()` function, while passing in a value of type `remove_guild_member_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::guild_members::removeGuildMemberAsync()` function, while passing in a value of type `discord_core_api::remove_guild_member_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				remove_guild_member_data dataPackage01;
+				remove_guild_member_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				if (args.argumentsArray.size() > 0) {
 					dataPackage01.guildMemberId = args.argumentsArray[0];

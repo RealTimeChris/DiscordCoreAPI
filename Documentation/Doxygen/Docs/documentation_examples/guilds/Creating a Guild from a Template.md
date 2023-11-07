@@ -1,7 +1,7 @@
-Creating a Guild From a Guild Template {#creatingaguildfromaguildtemplate}
+Creating a Guild From a Guild Template {#creating_a_guild_from_a_guild_template}
 ============
-- execue the, `guilds::createGuildFromGuildTemplateAsync()` function, while passing in a value of type `create_guild_from_guild_template_data`, with a return value of type `auto` or `guild`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- execue the, `discord_core_api::guilds::createGuildFromGuildTemplateAsync()` function, while passing in a value of type `discord_core_api::create_guild_from_guild_template_data`, with a return value of type `auto` or `discord_core_api::guild_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,13 +32,13 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				create_guild_from_guild_template_data dataPackage01;
+				create_guild_from_guild_template_data& dataPackage01;
 				dataPackage01.templateCode = "ym_rr2bj5_ny_yx";
-				dataPackage01.name = "test guild!";
+				dataPackage01.name = "test guild_data!";
 
 				auto responseData = guilds::createGuildFromGuildTemplateAsync(const dataPackage01).get();
 
-				std::cout << "guild name: " << responseData.name << std::endl;
+				std::cout << "guild_data name: " << responseData.name << std::endl;
 
 
 			} catch (...) {

@@ -220,7 +220,7 @@ namespace discord_core_api {
 		channels::httpsClient			= client;
 	}
 
-	co_routine<channel_data> channels::getChannelAsync(get_channel_data dataPackage) {
+	co_routine<channel_data> channels::getChannelAsync(const get_channel_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Channel };
 		co_await newThreadAwaitable<channel_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -237,7 +237,7 @@ namespace discord_core_api {
 		co_return data;
 	}
 
-	channel_cache_data channels::getCachedChannel(get_channel_data dataPackage) {
+	channel_cache_data channels::getCachedChannel(const get_channel_data& dataPackage) {
 		if (channels::cache.contains(dataPackage.channelId)) {
 			return cache[dataPackage.channelId];
 		} else {
@@ -245,7 +245,7 @@ namespace discord_core_api {
 		}
 	}
 
-	co_routine<channel_data> channels::modifyChannelAsync(modify_channel_data dataPackage) {
+	co_routine<channel_data> channels::modifyChannelAsync(const modify_channel_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Channel };
 		co_await newThreadAwaitable<channel_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -266,7 +266,7 @@ namespace discord_core_api {
 		co_return data;
 	}
 
-	co_routine<void> channels::deleteOrCloseChannelAsync(delete_or_close_channel_data dataPackage) {
+	co_routine<void> channels::deleteOrCloseChannelAsync(const delete_or_close_channel_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Channel };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -279,7 +279,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> channels::editChannelPermissionOverwritesAsync(edit_channel_permission_overwrites_data dataPackage) {
+	co_routine<void> channels::editChannelPermissionOverwritesAsync(const edit_channel_permission_overwrites_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Channel_Permission_Overwrites };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
@@ -293,7 +293,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<invite_data>> channels::getChannelInvitesAsync(get_channel_invites_data dataPackage) {
+	co_routine<jsonifier::vector<invite_data>> channels::getChannelInvitesAsync(const get_channel_invites_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Channel_Invites };
 		co_await newThreadAwaitable<jsonifier::vector<invite_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -304,7 +304,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<invite_data> channels::createChannelInviteAsync(create_channel_invite_data dataPackage) {
+	co_routine<invite_data> channels::createChannelInviteAsync(const create_channel_invite_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Channel_Invite };
 		co_await newThreadAwaitable<invite_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -319,7 +319,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> channels::deleteChannelPermissionOverwritesAsync(delete_channel_permission_overwrites_data dataPackage) {
+	co_routine<void> channels::deleteChannelPermissionOverwritesAsync(const delete_channel_permission_overwrites_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Channel_Permission_Overwrites };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -332,7 +332,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<channel_data> channels::followNewsChannelAsync(follow_news_channel_data dataPackage) {
+	co_routine<channel_data> channels::followNewsChannelAsync(const follow_news_channel_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Follow_News_Channel };
 		co_await newThreadAwaitable<channel_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -344,7 +344,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> channels::triggerTypingIndicatorAsync(trigger_typing_indicator_data dataPackage) {
+	co_routine<void> channels::triggerTypingIndicatorAsync(const trigger_typing_indicator_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Trigger_Typing_Indicator };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -354,7 +354,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<channel_data>> channels::getGuildChannelsAsync(get_guild_channels_data dataPackage) {
+	co_routine<jsonifier::vector<channel_data>> channels::getGuildChannelsAsync(const get_guild_channels_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Channels };
 		co_await newThreadAwaitable<jsonifier::vector<channel_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -365,7 +365,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<channel_data> channels::createGuildChannelAsync(create_guild_channel_data dataPackage) {
+	co_routine<channel_data> channels::createGuildChannelAsync(const create_guild_channel_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Guild_Channel };
 		co_await newThreadAwaitable<channel_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -380,7 +380,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> channels::modifyGuildChannelPositionsAsync(modify_guild_channel_positions_data dataPackage) {
+	co_routine<void> channels::modifyGuildChannelPositionsAsync(const modify_guild_channel_positions_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Channel_Positions };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -394,7 +394,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<channel_data> channels::createDMChannelAsync(create_dmchannel_data dataPackage) {
+	co_routine<channel_data> channels::createDMChannelAsync(const create_dmchannel_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Create_User_Dm };
 		co_await newThreadAwaitable<channel_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;

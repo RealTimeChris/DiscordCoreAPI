@@ -1,7 +1,7 @@
-Edit Channel Permission Overwrites {#editingpermissionoverwrites}
+Edit Channel Permission Overwrites {#editing_permission_overwrites}
 =============
-- Execute the `channels::editChannelPermissionOverwritesAsync()` function, while passing it a data structure of type `edit_channel_permission_overwrites_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::channels::editChannelPermissionOverwritesAsync()` function, while passing it a data structure of type `discord_core_api::edit_channel_permission_overwrites_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -31,7 +31,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			edit_channel_permission_overwrites_data dataPackage;
+			edit_channel_permission_overwrites_data& dataPackage;
 			dataPackage.allow = permissions_converter::addPermissionsToString(
 				dataPackage.allow, vector<permission> {permission::Add_Reactions, permission::Manage_Messages});
 			dataPackage.deny = permissions_converter::removePermissionsFromString(
@@ -40,7 +40,7 @@ namespace discord_core_api {
 			dataPackage.type = permission_overwrites_type::user;
 			dataPackage.roleOrUserId = args.eventData.getAuthorId();
 
-			channels::editChannelPermissionOverwritesAsync(const& dataPackage).get();
+			discord_core_api::channels::editChannelPermissionOverwritesAsync(const& dataPackage).get();
 		}
 	};
 }
