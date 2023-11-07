@@ -35,7 +35,7 @@
 
 namespace discord_core_api {
 
-	co_routine<input_event_data> input_events::respondToInputEventAsync(respond_to_input_event_data dataPackage) {
+	co_routine<input_event_data> input_events::respondToInputEventAsync(const respond_to_input_event_data& dataPackage) {
 		co_await newThreadAwaitable<input_event_data>();
 		if (dataPackage.type == input_event_response_type::unset) {
 			throw dca_exception("input_events::respondToInputEventAsync() error: please set an "
@@ -112,7 +112,7 @@ namespace discord_core_api {
 		co_return input_event_data();
 	}
 
-	co_routine<void> input_events::deleteInputEventResponseAsync(input_event_data& dataPackage, uint32_t timeDelayNew) {
+	co_routine<void> input_events::deleteInputEventResponseAsync(const input_event_data& dataPackage, uint32_t timeDelayNew) {
 		input_event_data newPackage = dataPackage;
 		co_await newThreadAwaitable<void>();
 		if (newPackage.responseType == input_event_response_type::Follow_Up_Message || newPackage.responseType == input_event_response_type::Edit_Follow_Up_Message ||

@@ -321,7 +321,7 @@ namespace discord_core_api {
 		stopWatchNew.reset();
 	}
 
-	co_routine<audit_log_data> guilds::getGuildAuditLogsAsync(get_guild_audit_logs_data dataPackage) {
+	co_routine<audit_log_data> guilds::getGuildAuditLogsAsync(const get_guild_audit_logs_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Audit_Logs };
 		co_await newThreadAwaitable<audit_log_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -359,7 +359,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_data> guilds::createGuildAsync(create_guild_data dataPackage) {
+	co_routine<guild_data> guilds::createGuildAsync(const create_guild_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Guild };
 		co_await newThreadAwaitable<guild_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -379,7 +379,7 @@ namespace discord_core_api {
 		return returnData;
 	}
 
-	co_routine<guild_data> guilds::getGuildAsync(get_guild_data dataPackage) {
+	co_routine<guild_data> guilds::getGuildAsync(const get_guild_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild };
 		co_await newThreadAwaitable<guild_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -397,7 +397,7 @@ namespace discord_core_api {
 		co_return data;
 	}
 
-	guild_cache_data guilds::getCachedGuild(get_guild_data dataPackage) {
+	guild_cache_data guilds::getCachedGuild(const get_guild_data& dataPackage) {
 		if (guilds::cache.contains(dataPackage.guildId)) {
 			return cache[dataPackage.guildId];
 		} else {
@@ -405,7 +405,7 @@ namespace discord_core_api {
 		}
 	}
 
-	co_routine<guild_preview_data> guilds::getGuildPreviewAsync(get_guild_preview_data dataPackage) {
+	co_routine<guild_preview_data> guilds::getGuildPreviewAsync(const get_guild_preview_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Preview };
 		co_await newThreadAwaitable<guild_preview_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -416,7 +416,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_data> guilds::modifyGuildAsync(modify_guild_data dataPackage) {
+	co_routine<guild_data> guilds::modifyGuildAsync(const modify_guild_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild };
 		co_await newThreadAwaitable<guild_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -437,7 +437,7 @@ namespace discord_core_api {
 		co_return data;
 	}
 
-	co_routine<void> guilds::deleteGuildAsync(delete_guild_data dataPackage) {
+	co_routine<void> guilds::deleteGuildAsync(const delete_guild_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -447,7 +447,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<ban_data>> guilds::getGuildBansAsync(get_guild_bans_data dataPackage) {
+	co_routine<jsonifier::vector<ban_data>> guilds::getGuildBansAsync(const get_guild_bans_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Bans };
 		co_await newThreadAwaitable<jsonifier::vector<ban_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -474,7 +474,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<ban_data> guilds::getGuildBanAsync(get_guild_ban_data dataPackage) {
+	co_routine<ban_data> guilds::getGuildBanAsync(const get_guild_ban_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Ban };
 		co_await newThreadAwaitable<ban_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -485,7 +485,7 @@ namespace discord_core_api {
 		co_return std::move(data);
 	}
 
-	co_routine<void> guilds::createGuildBanAsync(create_guild_ban_data dataPackage) {
+	co_routine<void> guilds::createGuildBanAsync(const create_guild_ban_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Guild_Ban };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
@@ -499,7 +499,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> guilds::removeGuildBanAsync(remove_guild_ban_data dataPackage) {
+	co_routine<void> guilds::removeGuildBanAsync(const remove_guild_ban_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild_Ban };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -512,7 +512,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<guild_prune_count_data> guilds::getGuildPruneCountAsync(get_guild_prune_count_data dataPackage) {
+	co_routine<guild_prune_count_data> guilds::getGuildPruneCountAsync(const get_guild_prune_count_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Prune_Count };
 		co_await newThreadAwaitable<guild_prune_count_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -543,7 +543,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_prune_count_data> guilds::beginGuildPruneAsync(begin_guild_prune_data dataPackage) {
+	co_routine<guild_prune_count_data> guilds::beginGuildPruneAsync(const begin_guild_prune_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Guild_Prune };
 		co_await newThreadAwaitable<guild_prune_count_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -558,7 +558,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<voice_region_data>> guilds::getGuildVoiceRegionsAsync(get_guild_voice_regions_data dataPackage) {
+	co_routine<jsonifier::vector<voice_region_data>> guilds::getGuildVoiceRegionsAsync(const get_guild_voice_regions_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Voice_Regions };
 		co_await newThreadAwaitable<jsonifier::vector<voice_region_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -569,7 +569,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<invite_data>> guilds::getGuildInvitesAsync(get_guild_invites_data dataPackage) {
+	co_routine<jsonifier::vector<invite_data>> guilds::getGuildInvitesAsync(const get_guild_invites_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Invites };
 		co_await newThreadAwaitable<jsonifier::vector<invite_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -581,7 +581,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<integration_data>> guilds::getGuildIntegrationsAsync(get_guild_integrations_data dataPackage) {
+	co_routine<jsonifier::vector<integration_data>> guilds::getGuildIntegrationsAsync(const get_guild_integrations_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Integrations };
 		co_await newThreadAwaitable<jsonifier::vector<integration_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -592,7 +592,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> guilds::deleteGuildIntegrationAsync(delete_guild_integration_data dataPackage) {
+	co_routine<void> guilds::deleteGuildIntegrationAsync(const delete_guild_integration_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild_Integration };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -605,7 +605,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<guild_widget_data> guilds::getGuildWidgetSettingsAsync(get_guild_widget_settings_data dataPackage) {
+	co_routine<guild_widget_data> guilds::getGuildWidgetSettingsAsync(const get_guild_widget_settings_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Widget_Settings };
 		co_await newThreadAwaitable<guild_widget_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -616,7 +616,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_widget_data> guilds::modifyGuildWidgetAsync(modify_guild_widget_data dataPackage) {
+	co_routine<guild_widget_data> guilds::modifyGuildWidgetAsync(const modify_guild_widget_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Widget };
 		co_await newThreadAwaitable<guild_widget_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -631,7 +631,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_widget_data> guilds::getGuildWidgetAsync(get_guild_widget_data dataPackage) {
+	co_routine<guild_widget_data> guilds::getGuildWidgetAsync(const get_guild_widget_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Widget };
 		co_await newThreadAwaitable<guild_widget_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -642,7 +642,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<invite_data> guilds::getGuildVanityInviteAsync(get_guild_vanity_invite_data dataPackage) {
+	co_routine<invite_data> guilds::getGuildVanityInviteAsync(const get_guild_vanity_invite_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Vanity_Invite };
 		co_await newThreadAwaitable<invite_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -653,7 +653,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_widget_image_data> guilds::getGuildWidgetImageAsync(get_guild_widget_image_data dataPackage) {
+	co_routine<guild_widget_image_data> guilds::getGuildWidgetImageAsync(const get_guild_widget_image_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Widget_Image };
 		co_await newThreadAwaitable<guild_widget_image_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -686,7 +686,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<welcome_screen_data> guilds::getGuildWelcomeScreenAsync(get_guild_welcome_screen_data dataPackage) {
+	co_routine<welcome_screen_data> guilds::getGuildWelcomeScreenAsync(const get_guild_welcome_screen_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Welcome_Screen };
 		co_await newThreadAwaitable<welcome_screen_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -697,7 +697,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<welcome_screen_data> guilds::modifyGuildWelcomeScreenAsync(modify_guild_welcome_screen_data dataPackage) {
+	co_routine<welcome_screen_data> guilds::modifyGuildWelcomeScreenAsync(const modify_guild_welcome_screen_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Welcome_Screen };
 		co_await newThreadAwaitable<welcome_screen_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -712,7 +712,7 @@ namespace discord_core_api {
 		co_return returnData;
 	};
 
-	co_routine<guild_template_data> guilds::getGuildTemplateAsync(get_guild_template_data dataPackage) {
+	co_routine<guild_template_data> guilds::getGuildTemplateAsync(const get_guild_template_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Template };
 		co_await newThreadAwaitable<guild_template_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -723,7 +723,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_data> guilds::createGuildFromGuildTemplateAsync(create_guild_from_guild_template_data dataPackage) {
+	co_routine<guild_data> guilds::createGuildFromGuildTemplateAsync(const create_guild_from_guild_template_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Guild_From_Guild_Template };
 		co_await newThreadAwaitable<guild_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -735,7 +735,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<guild_template_data>> guilds::getGuildTemplatesAsync(get_guild_templates_data dataPackage) {
+	co_routine<jsonifier::vector<guild_template_data>> guilds::getGuildTemplatesAsync(const get_guild_templates_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Templates };
 		co_await newThreadAwaitable<jsonifier::vector<guild_template_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -746,7 +746,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_template_data> guilds::createGuildTemplateAsync(create_guild_template_data dataPackage) {
+	co_routine<guild_template_data> guilds::createGuildTemplateAsync(const create_guild_template_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Guild_Template };
 		co_await newThreadAwaitable<guild_template_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -758,7 +758,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_template_data> guilds::syncGuildTemplateAsync(sync_guild_template_data dataPackage) {
+	co_routine<guild_template_data> guilds::syncGuildTemplateAsync(const sync_guild_template_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Guild_Template };
 		co_await newThreadAwaitable<guild_template_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
@@ -769,7 +769,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_template_data> guilds::modifyGuildTemplateAsync(modify_guild_template_data dataPackage) {
+	co_routine<guild_template_data> guilds::modifyGuildTemplateAsync(const modify_guild_template_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Template };
 		co_await newThreadAwaitable<guild_template_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -781,7 +781,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> guilds::deleteGuildTemplateAsync(delete_guild_template_data dataPackage) {
+	co_routine<void> guilds::deleteGuildTemplateAsync(const delete_guild_template_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild_Template };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -791,7 +791,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<invite_data> guilds::getInviteAsync(get_invite_data dataPackage) {
+	co_routine<invite_data> guilds::getInviteAsync(const get_invite_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Invite };
 		co_await newThreadAwaitable<invite_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -819,7 +819,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> guilds::deleteInviteAsync(delete_invite_data dataPackage) {
+	co_routine<void> guilds::deleteInviteAsync(const delete_invite_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Invite };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -832,7 +832,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<guild_data>> guilds::getCurrentUserGuildsAsync(get_current_user_guilds_data dataPackage) {
+	co_routine<jsonifier::vector<guild_data>> guilds::getCurrentUserGuildsAsync(const get_current_user_guilds_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Current_User_Guilds };
 		co_await newThreadAwaitable<jsonifier::vector<guild_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -859,7 +859,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> guilds::leaveGuildAsync(leave_guild_data dataPackage) {
+	co_routine<void> guilds::leaveGuildAsync(const leave_guild_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Leave_Guild };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;

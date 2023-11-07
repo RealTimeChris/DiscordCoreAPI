@@ -1,9 +1,9 @@
-Running a Function on a Timer {#runningfunctiontimer}
+Running a Function on a Timer {#running_a_function_on_a_timer}
 ============
-- create a function who's argument is of type `discord_core_client*`, with a return type of `void`.
-- create a data value of type `jsonifier::vector<repeated_function_data>`.
-- create a data value of type `repeated_function_data`, and fill out its members, and stuff it inside the vector. be sure to set `repeated` to true if you would like the function call to be recurring.
-- pass this vector as a member that is a part of the `discord_core_client_config` structure as an argument to the `discord_core_client` constructor - now the functions it contains will run on a schedule defined by the `intervalInMs` member of the data structure.
+- create a function who's argument is of type `discord_core_api::discord_core_client*`, with a return type of `void`.
+- create a data value of type `jsonifier::vector<discord_core_api::repeated_function_data>`.
+- create a data value of type `discord_core_api::repeated_function_data`, and fill out its members, and stuff it inside the vector. be sure to set `discord_core_api::repeated` to true if you would like the function call to be recurring.
+- pass this vector as a member that is a part of the `discord_core_api::discord_core_client_config` structure as an argument to the `discord_core_api::discord_core_client` constructor - now the functions it contains will run on a schedule defined by the `discord_core_api::intervalInMs` member of the data structure.
 - do this with as many functions as you would like!
 
 ```cpp
@@ -21,7 +21,7 @@ void onBoot00(discord_core_client* args) {
 }
 
 int32_t main() {
-	jsonifier::vector<repeated_function_data> functionVector{};
+	jsonifier::vector<discord_core_api::repeated_function_data> functionVector{};
 	repeated_function_data function01{};
 	function01.function = &onBoot00;
 	function01.intervalInMs = 150;

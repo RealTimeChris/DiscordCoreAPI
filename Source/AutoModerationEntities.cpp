@@ -55,7 +55,7 @@ namespace discord_core_api {
 		auto_moderation_rules::httpsClient = https_client_new;
 	}
 
-	co_routine<jsonifier::vector<auto_moderation_rule_data>> auto_moderation_rules::listAutoModerationRulesForGuildAsync(list_auto_moderation_rules_for_guild_data dataPackage) {
+	co_routine<jsonifier::vector<auto_moderation_rule_data>> auto_moderation_rules::listAutoModerationRulesForGuildAsync(const list_auto_moderation_rules_for_guild_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Auto_Moderation_Rules };
 		co_await newThreadAwaitable<jsonifier::vector<auto_moderation_rule_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -66,7 +66,7 @@ namespace discord_core_api {
 		co_return std::move(returnVector);
 	}
 
-	co_routine<auto_moderation_rule_data> auto_moderation_rules::getAutoModerationRuleAsync(get_auto_moderation_rule_data dataPackage) {
+	co_routine<auto_moderation_rule_data> auto_moderation_rules::getAutoModerationRuleAsync(const get_auto_moderation_rule_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Auto_Moderation_Rule };
 		co_await newThreadAwaitable<auto_moderation_rule_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -77,7 +77,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<auto_moderation_rule_data> auto_moderation_rules::createAutoModerationRuleAsync(create_auto_moderation_rule_data dataPackage) {
+	co_routine<auto_moderation_rule_data> auto_moderation_rules::createAutoModerationRuleAsync(const create_auto_moderation_rule_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Auto_Moderation_Rule };
 		co_await newThreadAwaitable<auto_moderation_rule_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -89,7 +89,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<auto_moderation_rule_data> auto_moderation_rules::modifyAutoModerationRuleAsync(modify_auto_moderation_rule_data dataPackage) {
+	co_routine<auto_moderation_rule_data> auto_moderation_rules::modifyAutoModerationRuleAsync(const modify_auto_moderation_rule_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Auto_Moderation_Rule };
 		co_await newThreadAwaitable<auto_moderation_rule_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -101,7 +101,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> auto_moderation_rules::deleteAutoModerationRuleAsync(delete_auto_moderation_rule_data dataPackage) {
+	co_routine<void> auto_moderation_rules::deleteAutoModerationRuleAsync(const delete_auto_moderation_rule_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Auto_Moderation_Rule };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;

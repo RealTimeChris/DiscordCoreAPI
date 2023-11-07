@@ -1,7 +1,7 @@
-Getting Current User Application Info {#gettingcurrentuserapplicationinfo}
+Getting Current User Application Info {#getting_current_user_application_info}
 ===========
-- Execute the, `users::getCurrentUserApplicationInfoAsync()` function, with a return value of type `auto` or `application_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::users::getCurrentUserApplicationInfoAsync()` function, with a return value of type `auto` or `discord_core_api::application_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.

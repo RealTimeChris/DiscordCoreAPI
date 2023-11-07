@@ -1,7 +1,7 @@
-Getting Current User Authorization Info {#gettingcurrentuserauthorizationinfo}
+Getting Current User Authorization Info {#getting_current_user_authorization_info}
 ============
-- Execute the, `users::getCurrentUserAuthorizationInfoAsync()` function, with a return value of type `auto` or `authorization_info_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::users::getCurrentUserAuthorizationInfoAsync()` function, with a return value of type `auto` or `discord_core_api::authorization_info_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.

@@ -148,7 +148,7 @@ namespace discord_core_api {
 		guild_members::httpsClient				 = client;
 	}
 
-	co_routine<guild_member_data> guild_members::getGuildMemberAsync(get_guild_member_data dataPackage) {
+	co_routine<guild_member_data> guild_members::getGuildMemberAsync(const get_guild_member_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Member };
 		co_await newThreadAwaitable<guild_member_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -168,7 +168,7 @@ namespace discord_core_api {
 		co_return data;
 	}
 
-	guild_member_cache_data guild_members::getCachedGuildMember(get_guild_member_data dataPackage) {
+	guild_member_cache_data guild_members::getCachedGuildMember(const get_guild_member_data& dataPackage) {
 		guild_member_cache_data data{};
 		data.user.id = dataPackage.guildMemberId;
 		data.guildId = dataPackage.guildId;
@@ -180,7 +180,7 @@ namespace discord_core_api {
 		}
 	}
 
-	co_routine<jsonifier::vector<guild_member_data>> guild_members::listGuildMembersAsync(list_guild_members_data dataPackage) {
+	co_routine<jsonifier::vector<guild_member_data>> guild_members::listGuildMembersAsync(const list_guild_members_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Members };
 		co_await newThreadAwaitable<jsonifier::vector<guild_member_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -199,7 +199,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<guild_member_data>> guild_members::searchGuildMembersAsync(search_guild_members_data dataPackage) {
+	co_routine<jsonifier::vector<guild_member_data>> guild_members::searchGuildMembersAsync(const search_guild_members_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Search_Guild_Members };
 		co_await newThreadAwaitable<jsonifier::vector<guild_member_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -218,7 +218,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_member_data> guild_members::addGuildMemberAsync(add_guild_member_data dataPackage) {
+	co_routine<guild_member_data> guild_members::addGuildMemberAsync(const add_guild_member_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Guild_Member };
 		co_await newThreadAwaitable<guild_member_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
@@ -230,7 +230,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_member_data> guild_members::modifyCurrentGuildMemberAsync(modify_current_guild_member_data dataPackage) {
+	co_routine<guild_member_data> guild_members::modifyCurrentGuildMemberAsync(const modify_current_guild_member_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Current_Guild_Member };
 		co_await newThreadAwaitable<guild_member_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -245,7 +245,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<guild_member_data> guild_members::modifyGuildMemberAsync(modify_guild_member_data dataPackage) {
+	co_routine<guild_member_data> guild_members::modifyGuildMemberAsync(const modify_guild_member_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Member };
 		co_await newThreadAwaitable<guild_member_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -269,7 +269,7 @@ namespace discord_core_api {
 		co_return data;
 	}
 
-	co_routine<void> guild_members::removeGuildMemberAsync(remove_guild_member_data dataPackage) {
+	co_routine<void> guild_members::removeGuildMemberAsync(const remove_guild_member_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild_Member };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -282,7 +282,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<guild_member_data> guild_members::timeoutGuildMemberAsync(timeout_guild_member_data dataPackage) {
+	co_routine<guild_member_data> guild_members::timeoutGuildMemberAsync(const timeout_guild_member_data& dataPackage) {
 		co_await newThreadAwaitable<guild_member_data>();
 		guild_member_data guildMember = guild_members::getCachedGuildMember({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId });
 		modify_guild_member_data dataPackage01{};

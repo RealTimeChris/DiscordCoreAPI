@@ -110,7 +110,7 @@ namespace discord_core_api {
 			static constexpr uint8_t headerSize{ 12 };
 			static constexpr uint8_t version{ 0x80 };
 			static constexpr uint8_t flags{ 0x78 };
-			char header[headerSize]{};
+			uint8_t header[headerSize]{};
 			discord_core_internal::storeBits(header, version);
 			discord_core_internal::storeBits(header + 1, flags);
 			discord_core_internal::storeBits(header + 2, sequence);
@@ -124,7 +124,7 @@ namespace discord_core_api {
 			if (data.size() < numOfBytes) {
 				data.resize(numOfBytes);
 			}
-			for (int8_t x = 0; x < headerSize; ++x) {
+			for (uint8_t x = 0; x < headerSize; ++x) {
 				data.at(x) = static_cast<uint8_t>(header[x]);
 			}
 			if (crypto_secretbox_easy(data.data() + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium, keys.data()) != 0) {
@@ -226,7 +226,7 @@ namespace discord_core_api {
 
 	void voice_connection_bridge::mixAudio() {
 		opus_int32 voiceUserCountReal{};
-		uint64_t decodedSize{};
+		int64_t decodedSize{};
 		std::fill(upSampledVector.data(), upSampledVector.data() + upSampledVector.size(), 0);
 		for (auto& [key, value]: *voiceUsersPtr) {
 			jsonifier::string_view_base<uint8_t> payload{ value->extractPayload() };
@@ -270,7 +270,7 @@ namespace discord_core_api {
 						message_printer::printError<print_message_type::websocket>(error.what());
 					}
 					if (decodedData.size() > 0) {
-						decodedSize = std::max(decodedSize, decodedData.size());
+						decodedSize = static_cast<int64_t>(std::max(static_cast<uint64_t>(decodedSize), decodedData.size()));
 						++voiceUserCountReal;
 						auto newPtr	  = decodedData.data();
 						auto newerPtr = upSampledVector.data();
@@ -286,10 +286,10 @@ namespace discord_core_api {
 			voiceUserCountAverage += voiceUserCountReal;
 			endGain = 1.0f / voiceUserCountAverage;
 			applyGainRamp(decodedSize);
-			if (resampleVector.size() < decodedSize * 2) {
-				resampleVector.resize(decodedSize * 2);
+			if (resampleVector.size() < static_cast<uint64_t>(decodedSize) * 2) {
+				resampleVector.resize(static_cast<uint64_t>(decodedSize) * 2);
 			}
-			std::memcpy(resampleVector.data(), downSampledVector.data(), decodedSize * 2);
+			std::memcpy(resampleVector.data(), downSampledVector.data(), static_cast<uint64_t>(decodedSize) * 2);
 			writeData(jsonifier::string_view_base<uint8_t>{ resampleVector.data(), static_cast<uint64_t>(decodedSize * 2) });
 			currentGain = endGain;
 		}
@@ -741,7 +741,7 @@ namespace discord_core_api {
 							} else if (xferAudioData.type == audio_frame_type::raw_pcm) {
 								intervalCount			 = nanoseconds{ static_cast<uint64_t>(static_cast<double>(xferAudioData.currentSize / bytesPerSample) /
 									   static_cast<double>(sampleRatePerSecond) * static_cast<double>(nsPerSecond)) };
-								uint64_t framesPerSecond = 1000 / msPerPacket;
+								uint64_t framesPerSecond = 1000 / static_cast<uint64_t>(msPerPacket);
 								frameSize				 = std::min(bytesPerSample * sampleRatePerSecond / framesPerSecond, xferAudioData.data.size());
 							} else {
 								intervalCount = nanoseconds{ 20000000 };
@@ -798,7 +798,7 @@ namespace discord_core_api {
 							waitTime	  = targetTime - hrclock::now();
 							waitTimeCount = waitTime.count();
 							if (waitTimeCount > 0 && waitTimeCount < intervalCount.count()) {
-								spinLock(waitTimeCount);
+								spinLock(static_cast<uint64_t>(waitTimeCount));
 							}
 							if (udpConnection.areWeStillConnected()) {
 								udpConnection.writeData(frame);

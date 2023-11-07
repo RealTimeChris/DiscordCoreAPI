@@ -1,7 +1,7 @@
-Deleting/Closing a Channel {#deletingchannel}
+Deleting/Closing a Channel {#deleting_channel}
 ============
-- Execute the `channels::deleteOrCloseChannelAsync()` function, while passing in a data structure of type `delete_or_close_channel_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the `discord_core_api::channels::deleteOrCloseChannelAsync()` function, while passing in a data structure of type `discord_core_api::delete_or_close_channel_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,11 +32,11 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				delete_or_close_channel_data dataPackage;
+				delete_or_close_channel_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.reason = "deleting!";
 
-				channels::deleteOrCloseChannelAsync(const& dataPackage).get();
+				discord_core_api::channels::deleteOrCloseChannelAsync(const& dataPackage).get();
 
 
 			} catch (...) {

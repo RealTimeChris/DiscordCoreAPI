@@ -1,7 +1,7 @@
-Deleting a Guild Scheduled Event {#deletingaguildscheduledevent}
+Deleting a Guild Scheduled Event {#deleting_a_guild_scheduled_event}
 ============
-- Execute the, from the `guild_scheduled_events::deleteGuildScheduledEventAsync()` function, while passing in a value of type `delete_guild_scheduled_event_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, from the `discord_core_api::guild_scheduled_events::deleteGuildScheduledEventAsync()` function, while passing in a value of type `discord_core_api::delete_guild_scheduled_event_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,12 +32,12 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_guild_scheduled_events_data dataPackage01;
+				get_guild_scheduled_events_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.withUserCount = true;
 				auto responseData01 = guild_scheduled_events::getGuildScheduledEventsAsync(const dataPackage01).get();
 
-				delete_guild_scheduled_event_data dataPackage;
+				delete_guild_scheduled_event_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.guildScheduledEventId = responseData01[0].id;
 

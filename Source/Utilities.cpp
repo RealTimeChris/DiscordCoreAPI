@@ -200,6 +200,17 @@ namespace discord_core_api {
 		return *this;
 	}
 
+	audio_frame_data& audio_frame_data::operator+=(jsonifier::vector<uint8_t> other) {
+		if (other.size() > 0) {
+			if (data.size() < other.size()) {
+				data.resize(other.size());
+			}
+			std::memcpy(data.data(), other.data(), other.size());
+		}
+		currentSize = static_cast<int64_t>(other.size());
+		return *this;
+	}
+
 	void audio_frame_data::clearData() {
 		type		= audio_frame_type::unset;
 		currentSize = 0;
@@ -579,9 +590,9 @@ namespace discord_core_api {
 	}
 
 	void spinLock(uint64_t timeInNsToSpinLockFor) {
-		uint64_t startTime = std::chrono::duration_cast<nanoseconds>(hrclock::now().time_since_epoch()).count();
-		uint64_t timePassed{};
-		while (timePassed < timeInNsToSpinLockFor) {
+		int64_t startTime = std::chrono::duration_cast<nanoseconds>(hrclock::now().time_since_epoch()).count();
+		int64_t timePassed{};
+		while (timePassed < static_cast<int64_t>(timeInNsToSpinLockFor)) {
 			timePassed = std::chrono::duration_cast<nanoseconds>(hrclock::now().time_since_epoch()).count() - startTime;
 		}
 	}

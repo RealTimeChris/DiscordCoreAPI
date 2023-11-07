@@ -1,6 +1,6 @@
-Editing a Follow-Up Message {#editingafollowupmessage}
+Editing a Follow-Up Message {#editing_a_follow_up_message}
 ============
-- Execute the, `input_events::respondToInputEventAsync()` function, while passing in a data structure of type `respond_to_input_event_data` with a type set	to `input_event_response_type::Edit_Follow_Up_Message`,	with a return value of type `auto` or `unique_ptr<input_event_data>`.
+- Execute the, `discord_core_api::input_events::respondToInputEventAsync()` function, while passing in a data structure of type `discord_core_api::respond_to_input_event_data` with a type set	to `discord_core_api::input_event_response_type::Edit_Follow_Up_Message`,	with a return value of type `auto` or `discord_core_api::unique_ptr<input_event_data>`.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -31,7 +31,7 @@ Editing a Follow-Up Message {#editingafollowupmessage}
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				respond_to_input_event_data dataPackage {args.eventData};
+				respond_to_input_event_data& dataPackage {args.eventData};
 				dataPackage.type = input_event_response_type::follow_up_message_edit;
 				dataPackage.addContent("this is a test response message!");
 				auto responseData = input_events::respondToInputEventAsync(const& dataPackage);

@@ -1,7 +1,7 @@
-Removing a User from a Thread {#removingauserfromathread}
+Removing a User from a Thread {#removing_a_user_from_a_thread}
 ============
-- Execute the, `threads::removeThreadMemberAsync()` function, while passing in a value of type `remove_thread_member_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::threads::removeThreadMemberAsync()` function, while passing in a value of type `discord_core_api::remove_thread_member_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				remove_thread_member_data dataPackage;
+				remove_thread_member_data& dataPackage;
 				dataPackage.channelId = "909407162776834069";
 				dataPackage.userId = args.eventData.getAuthorId();
 

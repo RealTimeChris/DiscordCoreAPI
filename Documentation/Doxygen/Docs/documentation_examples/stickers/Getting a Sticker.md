@@ -1,7 +1,7 @@
-Getting a Sticker {#gettingasticker}
+Getting a Sticker {#getting_a_sticker}
 ============
-- Execute the, `stickers::getStickerAsync()` function, while passing in a value of type `get_sticker_data`, with a return value of type `auto` or `sticker`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::stickers::getStickerAsync()` function, while passing in a value of type `discord_core_api::get_sticker_data`, with a return value of type `auto` or `discord_core_api::sticker`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_sticker_data dataPackage;
+				get_sticker_data& dataPackage;
 				dataPackage.stickerId = "YOUR_STICKER_ID_HERE";
 
 				auto responseData = stickers::getStickerAsync(const& dataPackage).get();

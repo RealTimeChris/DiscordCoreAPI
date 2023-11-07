@@ -1,7 +1,7 @@
-Deleting a Guild Sticker {#deletingaguildsticker}
+Deleting a Guild Sticker {#deleting_a_guild_sticker}
 ============
-- Execute the, `stickers::deleteGuildStickerAsync()` function, while passing in a value of type `delete_guild_sticker_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::stickers::deleteGuildStickerAsync()` function, while passing in a value of type `discord_core_api::delete_guild_sticker_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,11 +32,11 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_guild_stickers_data dataPackage01;
+				get_guild_stickers_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				auto resultVector = stickers::getGuildStickersAsync(const dataPackage01).get();
 
-				delete_guild_sticker_data dataPackage;
+				delete_guild_sticker_data& dataPackage;
 				dataPackage.reason = "testing purposes!";
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.stickerId = resultVector[0].id;

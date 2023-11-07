@@ -29,10 +29,12 @@
 /// \file CoRoutineThreadPool.hpp
 #pragma once
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/Utilities/HttpsClient.hpp>
+#include <discordcoreapi/Utilities/UnboundedMessageBlock.hpp>
 #include <discordcoreapi/Utilities/ThreadWrapper.hpp>
 #include <coroutine>
+#include <deque>
+
+using namespace std::literals;
 
 namespace discord_core_api {
 
@@ -68,8 +70,9 @@ namespace discord_core_api {
 		/// @brief A class representing a coroutine-based thread pool.
 		class co_routine_thread_pool : protected discord_core_api::unordered_map<uint64_t, worker_thread> {
 		  public:
-			using map_type = discord_core_api::unordered_map<uint64_t, worker_thread>;
 			friend class discord_core_api::discord_core_client;
+
+			using map_type = discord_core_api::unordered_map<uint64_t, worker_thread>;
 
 			/// @brief Constructor to create a coroutine thread pool. initializes the worker threads.
 			inline co_routine_thread_pool() : threadCount(std::thread::hardware_concurrency()) {
@@ -78,7 +81,7 @@ namespace discord_core_api {
 					currentCount.fetch_add(1, std::memory_order_release);
 					uint64_t indexNew = currentIndex.load(std::memory_order_acquire);
 					getMap().emplace(indexNew, worker_thread());
-					getMap()[indexNew].thread = thread_wrapper([=, this](stop_token stopToken) {
+					getMap().at(indexNew).thread = thread_wrapper([=,this](stop_token& stopToken) {
 						threadFunction(stopToken, indexNew);
 					});
 				}
@@ -108,12 +111,12 @@ namespace discord_core_api {
 					lock01.unlock();
 					std::unique_lock lock02{ workerAccessMutex };
 					getMap().emplace(indexNew, worker_thread());
-					getMap()[indexNew].thread = thread_wrapper([=, this](stop_token stopToken) {
+					getMap().at(indexNew).thread = thread_wrapper([=, this](stop_token& stopToken) {
 						threadFunction(stopToken, indexNew);
 					});
 					lock02.unlock();
 				} else {
-					getMap()[currentLowestIndex].tasks.send(std::move(coro));
+					getMap().at(currentLowestIndex).tasks.send(std::move(coro));
 				}
 			}
 
@@ -126,26 +129,26 @@ namespace discord_core_api {
 			/// @brief Thread function for each worker thread.
 			/// @param stopToken the stop token for the thread.
 			/// @param index the index of the worker thread.
-			inline void threadFunction(stop_token stopToken, uint64_t index) {
+			inline void threadFunction(stop_token& stopToken, uint64_t index) {
 				while (!stopToken.stopRequested()) {
 					if (!getMap().contains(index)) {
 						return;
 					}
 					std::coroutine_handle<> coroHandle{};
-					if (getMap()[index].tasks.tryReceive(coroHandle)) {
-						getMap()[index].areWeCurrentlyWorking.store(true, std::memory_order_release);
+					if (getMap().at(index).tasks.tryReceive(coroHandle)) {
+						getMap().at(index).areWeCurrentlyWorking.store(true, std::memory_order_release);
 						try {
 							coroHandle();
 							while (!coroHandle.done()) {
 								std::this_thread::sleep_for(1ms);
 							}
 						} catch (const std::runtime_error& error) {
-							message_printer::printError<print_message_type::general>(error.what());
+							std::cout << error.what() << std::endl;
 						}
 						if (!contains(index)) {
 							return;
 						}
-						getMap()[index].areWeCurrentlyWorking.store(false, std::memory_order_release);
+						getMap().at(index).areWeCurrentlyWorking.store(false, std::memory_order_release);
 					}
 					if (currentCount.load(std::memory_order_acquire) > threadCount) {
 						uint64_t extraWorkers{ currentCount.load(std::memory_order_acquire) - threadCount };
@@ -167,7 +170,7 @@ namespace discord_core_api {
 							}
 						}
 					}
-					std::this_thread::sleep_for(nanoseconds{ 100000 });
+					std::this_thread::sleep_for(std::chrono::nanoseconds{ 100000 });
 				}
 			}
 

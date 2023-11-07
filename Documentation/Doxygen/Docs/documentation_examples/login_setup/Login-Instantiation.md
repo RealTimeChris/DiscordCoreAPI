@@ -1,10 +1,10 @@
-Login/Instantiation {#logininstantiation}
+Login/Instantiation {#login_and_instantiation}
 ============
-- <u><b>note for sharding:</b></u> make sure to set the `sharding_options` options of the `discord_core_client_config` structure.
+- <u><b>note for sharding:</b></u> make sure to set the `discord_core_api::sharding_options` options of the `discord_core_api::discord_core_client_config` structure.
 - install the dependencies, and `#include <index.hpp>`.
 - create a string with your bot's token.
-- create an object of type `discord_core_client`, using an instance of `discord_core_client_config` as the argument - being sure to at least set the `discord_core_client_config::botToken` member of it.
-- run the `discord_core_client::runBot()` function.
+- create an object of type `discord_core_api::discord_core_client`, using an instance of `discord_core_api::discord_core_client_config` as the argument - being sure to at least set the `discord_core_api::discord_core_client_config::botToken` member of it.
+- run the `discord_core_api::discord_core_client::runBot()` function.
 
 ```cpp
 /// main.cpp-main entry point.

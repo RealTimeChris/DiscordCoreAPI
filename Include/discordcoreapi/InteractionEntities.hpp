@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// InteractionEntities.hpp - Header for the interaction related classes and
+/// InteractionEntities.hpp - Header for the interaction_data related classes and
 /// structs. may 28, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file InteractionEntities.hpp
@@ -297,7 +297,7 @@ namespace discord_core_api {
 	 * @{
 	 */
 
-	/// @brief An interface class for the interaction related discord endpoints.
+	/// @brief An interface class for the interaction_data related discord endpoints.
 	class DiscordCoreAPI_Dll interactions {
 	  public:
 		friend class discord_core_internal::base_socket_agent;
@@ -310,55 +310,55 @@ namespace discord_core_api {
 		/// @brief Creates a response to an input interaction.
 		/// @param dataPackage a create_interaction_response_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> createInteractionResponseAsync(create_interaction_response_data dataPackage);
+		static co_routine<message_data> createInteractionResponseAsync(create_interaction_response_data& dataPackage);
 
 		/// @brief Collects an interaction response.
 		/// @param dataPackage a get_interaction_response_data structure.
 		/// @return A co_routine containing an interaction_response_data.
-		static co_routine<message_data> getInteractionResponseAsync(get_interaction_response_data dataPackage);
+		static co_routine<message_data> getInteractionResponseAsync(const get_interaction_response_data& dataPackage);
 
 		/// @brief Edits an interaction response.
 		/// @param dataPackage a edit_interaction_response_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> editInteractionResponseAsync(edit_interaction_response_data dataPackage);
+		static co_routine<message_data> editInteractionResponseAsync(edit_interaction_response_data& dataPackage);
 
 		/// @brief Deletes an interaction respnose.
 		/// @param dataPackage a delete_interaction_response_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteInteractionResponseAsync(delete_interaction_response_data dataPackage);
+		static co_routine<void> deleteInteractionResponseAsync(const delete_interaction_response_data& dataPackage);
 
 		/// @brief Creates a follow up message to an input interaction.
 		/// @param dataPackage a create_follow_up_message_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> createFollowUpMessageAsync(create_follow_up_message_data dataPackage);
+		static co_routine<message_data> createFollowUpMessageAsync(create_follow_up_message_data& dataPackage);
 
 		/// @brief Creates a follow up message to an input interaction.
 		/// @param dataPackage a create_follow_up_message_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> getFollowUpMessageAsync(get_follow_up_message_data dataPackage);
+		static co_routine<message_data> getFollowUpMessageAsync(const get_follow_up_message_data& dataPackage);
 
 		/// @brief Edits a follow up message_data.
 		/// @param dataPackage a edit_follow_up_message_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> editFollowUpMessageAsync(edit_follow_up_message_data dataPackage);
+		static co_routine<message_data> editFollowUpMessageAsync(const edit_follow_up_message_data& dataPackage);
 
 		/// @brief Deletes a follow up message_data.
 		/// @param dataPackage a delete_follow_up_message_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteFollowUpMessageAsync(delete_follow_up_message_data dataPackage);
+		static co_routine<void> deleteFollowUpMessageAsync(const delete_follow_up_message_data& dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;
 
-		static message_data createInteractionResponse(create_interaction_response_data dataPackage);
+		static message_data createInteractionResponse(create_interaction_response_data& dataPackage);
 
-		static message_data editInteractionResponse(edit_interaction_response_data dataPackage);
+		static message_data editInteractionResponse(edit_interaction_response_data& dataPackage);
 
-		static message_data getInteractionResponse(get_interaction_response_data dataPackage);
+		static message_data getInteractionResponse(get_interaction_response_data& dataPackage);
 
-		static message_data createFollowUpMessage(create_follow_up_message_data dataPackage);
+		static message_data createFollowUpMessage(create_follow_up_message_data& dataPackage);
 
-		static message_data editFollowUpMessage(edit_follow_up_message_data dataPackage);
+		static message_data editFollowUpMessage(edit_follow_up_message_data& dataPackage);
 	};
 
 	/**@}*/

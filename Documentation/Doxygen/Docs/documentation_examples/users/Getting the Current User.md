@@ -1,7 +1,7 @@
-Getting the Current User {#gettingthecurrentuser}
+Getting the Current User {#getting_the_current_user}
 ============
-- Execute the, `users::getCurrentUserAsync()` function, with a return value of type `auto` or `user`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::users::getCurrentUserAsync()` function, with a return value of type `auto` or `discord_core_api::user`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.

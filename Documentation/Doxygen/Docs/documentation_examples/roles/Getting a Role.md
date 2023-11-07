@@ -1,7 +1,7 @@
-Getting a Role {#gettingarole}
+Getting a Role {#getting_a_role}
 =============
-- Execute the, `roles::getCachedRole()` (which collects it from the cache), or `roles::getRoleAsync()` (which collects it from the discord servers) function, while passing in a value of type `get_role_data`.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the, `discord_core_api::roles::getCachedRole()` (which collects it from the cache), or `discord_core_api::roles::getRoleAsync()` (which collects it from the discord servers) function, while passing in a value of type `discord_core_api::get_role_data`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -31,7 +31,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			get_role_data dataPackage;
+			get_role_data& dataPackage;
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.roleId = "YOUR_ROLE_ID_HERE";
 

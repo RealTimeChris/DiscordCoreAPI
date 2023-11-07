@@ -12,7 +12,7 @@ void onBoot00(discord_core_api::discord_core_client* args) {
 	//theUser.writeDataToDB(discord_core_api::managerAgent);
 }
 
-discord_core_api::co_routine<void> onGuildCreation(discord_core_api::on_guild_creation_data dataPackage) { 
+discord_core_api::co_routine<void, true> onGuildCreation(discord_core_api::on_guild_creation_data dataPackage) {
 	co_await discord_core_api::newThreadAwaitable<void>();
 	//DiscordCoreAPI::DiscordGuild discordGuild{ discord_core_api::managerAgent, dataPackage.value };
 	//discordGuild.getDataFromDB(discord_core_api::managerAgent);
@@ -24,11 +24,11 @@ int32_t main() {
 	jsonifier::string botToken = "";
 	jsonifier::vector<discord_core_api::repeated_function_data> functionVector{};
 	functionVector.reserve(5);
-	discord_core_api::repeated_function_data function01{}; 
+	discord_core_api::repeated_function_data function01{};
 	function01.function		= onBoot00;
 	function01.intervalInMs = 2500;
 	function01.repeated		= false;
-	functionVector.emplace_back(function01); 
+	functionVector.emplace_back(function01);
 	discord_core_api::sharding_options shardOptions{};
 	shardOptions.numberOfShardsForThisProcess = 1;
 	shardOptions.totalNumberOfShards		  = 1;
@@ -52,11 +52,11 @@ int32_t main() {
 	clientConfig.functionsToExecute				= functionVector;
 	jsonifier::vector<discord_core_api::activity_data> activities{};
 	discord_core_api::activity_data activity{};
-	activity.name  = "/help for my commands!";
+	activity.name = "/help for my commands!";
 	activity.type = discord_core_api::activity_type::custom;
 	activities.emplace_back(activity);
-	clientConfig.presenceData.activities = activities; 
-	auto result							 = clientConfig.presenceData.operator discord_core_api::discord_core_internal::etf_serializer(); 
+	clientConfig.presenceData.activities = activities;
+	auto result							 = clientConfig.presenceData.operator discord_core_api::discord_core_internal::etf_serializer();
 	clientConfig.presenceData.afk		 = false;
 	clientConfig.textFormat				 = discord_core_api::text_format::etf;
 	clientConfig.presenceData.since		 = 0;

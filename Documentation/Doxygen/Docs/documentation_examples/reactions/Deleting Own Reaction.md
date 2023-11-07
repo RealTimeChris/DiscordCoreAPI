@@ -1,7 +1,7 @@
-Deleting Own Reaction {#deletingownreaction}
+Deleting Own Reaction {#deleting_own_reaction}
 ============
-- Execute the, `reactions::deleteOwnReactionAsync()` function, while passing in a data structure of type `delete_own_reaction_data`, with a return value of type `void`.
-- call the function with `.get()` added to the end in order to wait for its return value now.
+- Execute the, `discord_core_api::reactions::deleteOwnReactionAsync()` function, while passing in a data structure of type `discord_core_api::delete_own_reaction_data`, with a return value of type `void`.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for its return value now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				delete_own_reaction_data dataPackage;
+				delete_own_reaction_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.emojiName = "😆";

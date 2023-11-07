@@ -1,7 +1,7 @@
-Deleting a Guild Application Command {#deleteguildcommand}
+Deleting a Guild Application Command {#delete_guild_command}
 =============
-- Execute the `application_commands::deleteGuildApplicationCommandAsync()` function, while passing in a data structure of type `delete_guild_application_command_data`, with no return value.
-- call the function with `.get()` added to the end in order to wait for the results now.
+- Execute the `discord_core_api::application_commands::deleteGuildApplicationCommandAsync()` function, while passing in a data structure of type `discord_core_api::delete_guild_application_command_data`, with no return value.
+- call the function with `discord_core_api::co_routine::get()` added to the end in order to wait for the results now.
 
 ```cpp
 /// Test.hpp -header for the "test" command.
@@ -33,7 +33,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			input_events::deleteInputEventResponseAsync(const args.eventData);
 
-			delete_guild_application_command_data dataPackage01;
+			delete_guild_application_command_data& dataPackage01;
 			dataPackage01.name = "botinfo";
 			dataPackage01.guildId = args.eventData.getGuildId();
 

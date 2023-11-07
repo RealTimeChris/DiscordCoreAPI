@@ -28,11 +28,11 @@ namespace discord_core_api {
 
 		void execute(base_function_arguments& newArgs) {
 			try {
-				channel channel = channels::getCachedChannel({ newArgs.eventData.getChannelId() }).get();
+				channel channel = discord_core_api::channels::getCachedChannel({ newArgs.eventData.getChannelId() }).get();
 
-				guild guild = guilds::getCachedGuild({ newArgs.eventData.getGuildId() }).get();
-				discord_guild discordGuild(guild);
-				guild_member guildMember =
+				guild_data guild_data = guilds::getCachedGuild({ newArgs.eventData.getGuildId() }).get();
+				discord_guild discordGuild(guild_data);
+				guild_member_data guildMember =
 					guild_members::getCachedGuildMember({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 				bool doWeHaveAdminPermission = doWeHaveAdminPermissions(newArgs, newArgs.eventData, discordGuild, channel, guildMember);
 
@@ -51,7 +51,7 @@ namespace discord_core_api {
 							messageEmbed.setTimeStamp(getTimeAndDate());
 							messageEmbed.setDescription(msgString);
 							messageEmbed.setTitle("__**already listed:**__");
-							respond_to_input_event_data dataPackage(newArgs.eventData);
+							respond_to_input_event_data& dataPackage(newArgs.eventData);
 							dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 							dataPackage.addMessageEmbed(messageEmbed);
 							auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
@@ -68,7 +68,7 @@ namespace discord_core_api {
 					messageEmbed.setTimeStamp(getTimeAndDate());
 					messageEmbed.setDescription("------\n**you've succesfully added <#" + jsonifier::toString(channelID) + "> to your list of accepted music channels!**\n------");
 					messageEmbed.setTitle("__**music channel added:**__");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
@@ -97,7 +97,7 @@ namespace discord_core_api {
 						messageEmbed.setTimeStamp(getTimeAndDate());
 						messageEmbed.setDescription(msgString2);
 						messageEmbed.setTitle("__**missing from list:**__");
-						respond_to_input_event_data dataPackage(newArgs.eventData);
+						respond_to_input_event_data& dataPackage(newArgs.eventData);
 						dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 						dataPackage.addMessageEmbed(messageEmbed);
 						auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
@@ -111,7 +111,7 @@ namespace discord_core_api {
 					messageEmbed.setTimeStamp(getTimeAndDate());
 					messageEmbed.setDescription(msgString);
 					messageEmbed.setTitle("__**music channel removed:**__");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
@@ -143,7 +143,7 @@ namespace discord_core_api {
 					messageEmbed.setTimeStamp(getTimeAndDate());
 					messageEmbed.setDescription(msgString);
 					messageEmbed.setTitle("__**music channels removed:**__");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();
@@ -166,7 +166,7 @@ namespace discord_core_api {
 					messageEmbed.setTimeStamp(getTimeAndDate());
 					messageEmbed.setDescription(msgString);
 					messageEmbed.setTitle("__**music channels enabled:**__");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const& dataPackage).get();

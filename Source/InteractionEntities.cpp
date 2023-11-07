@@ -23,7 +23,7 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-/// InteractionEntities.cpp - Source file for the interaction related classes and structs.
+/// InteractionEntities.cpp - Source file for the interaction_data related classes and structs.
 /// May 28, 2021
 /// https://discordcoreapi.com
 /// \file InteractionEntities.cpp
@@ -450,7 +450,7 @@ namespace discord_core_api {
 		interactionPackage.interactionId	= dataPackage.interactionId;
 	}
 
-	co_routine<message_data> interactions::createInteractionResponseAsync(create_interaction_response_data dataPackage) {
+	co_routine<message_data> interactions::createInteractionResponseAsync(create_interaction_response_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Interaction_Response };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -474,7 +474,7 @@ namespace discord_core_api {
 		}
 	}
 
-	message_data interactions::getInteractionResponse(get_interaction_response_data dataPackage) {
+	message_data interactions::getInteractionResponse(get_interaction_response_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Interaction_Response };
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
 		workload.relativePath  = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
@@ -485,7 +485,7 @@ namespace discord_core_api {
 	}
 
 
-	co_routine<message_data> interactions::getInteractionResponseAsync(get_interaction_response_data dataPackage) {
+	co_routine<message_data> interactions::getInteractionResponseAsync(const get_interaction_response_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Interaction_Response };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -496,7 +496,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> interactions::editInteractionResponseAsync(edit_interaction_response_data dataPackage) {
+	co_routine<message_data> interactions::editInteractionResponseAsync(edit_interaction_response_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Interaction_Response };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -514,7 +514,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> interactions::deleteInteractionResponseAsync(delete_interaction_response_data dataPackage) {
+	co_routine<void> interactions::deleteInteractionResponseAsync(const delete_interaction_response_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Interaction_Response };
 		co_await newThreadAwaitable<void>();
 		std::this_thread::sleep_for(milliseconds{ dataPackage.timeDelay });
@@ -525,7 +525,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<message_data> interactions::createFollowUpMessageAsync(create_follow_up_message_data dataPackage) {
+	co_routine<message_data> interactions::createFollowUpMessageAsync(create_follow_up_message_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Followup_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -543,7 +543,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> interactions::getFollowUpMessageAsync(get_follow_up_message_data dataPackage) {
+	co_routine<message_data> interactions::getFollowUpMessageAsync(const get_follow_up_message_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Followup_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -554,7 +554,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> interactions::editFollowUpMessageAsync(edit_follow_up_message_data dataPackage) {
+	co_routine<message_data> interactions::editFollowUpMessageAsync(const edit_follow_up_message_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Followup_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -572,7 +572,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> interactions::deleteFollowUpMessageAsync(delete_follow_up_message_data dataPackage) {
+	co_routine<void> interactions::deleteFollowUpMessageAsync(const delete_follow_up_message_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Followup_Message };
 		co_await newThreadAwaitable<void>();
 		std::this_thread::sleep_for(milliseconds{ dataPackage.timeDelay });
@@ -584,7 +584,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	message_data interactions::createInteractionResponse(create_interaction_response_data dataPackage) {
+	message_data interactions::createInteractionResponse(create_interaction_response_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Interaction_Response };
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
@@ -607,7 +607,7 @@ namespace discord_core_api {
 		}
 	}
 
-	message_data interactions::editInteractionResponse(edit_interaction_response_data dataPackage) {
+	message_data interactions::editInteractionResponse(edit_interaction_response_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Interaction_Response };
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
@@ -624,7 +624,7 @@ namespace discord_core_api {
 		return returnData;
 	}
 
-	message_data interactions::createFollowUpMessage(create_follow_up_message_data dataPackage) {
+	message_data interactions::createFollowUpMessage(create_follow_up_message_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Followup_Message };
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
@@ -641,7 +641,7 @@ namespace discord_core_api {
 		return returnData;
 	}
 
-	message_data interactions::editFollowUpMessage(edit_follow_up_message_data dataPackage) {
+	message_data interactions::editFollowUpMessage(edit_follow_up_message_data& dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Followup_Message };
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
 		workload.relativePath  = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
