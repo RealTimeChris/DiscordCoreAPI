@@ -36,7 +36,7 @@ namespace discord_core_api {
 															  {.guildMemberId = args.eventData.getAuthorId(), .guildId = args.eventData.getGuildId()})
 															  .get();
 
-				remove_recipient_from_group_dmdata dataPackage;
+				remove_recipient_from_group_dmdata& dataPackage;
 				dataPackage.userId = args.eventData.getAuthorId();
 				dataPackage.channelId = "DM_CHANNEL_ID_HERE";
 

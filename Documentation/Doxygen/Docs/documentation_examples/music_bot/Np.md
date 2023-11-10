@@ -69,7 +69,7 @@ namespace discord_core_api {
 				if (!song_api::isLoopAllEnabled(guild_data.id) && !song_api::isLoopSongEnabled(guild_data.id)) {
 					newEmbed.setFooter("❌ loop-all, ❌ loop-song");
 				}
-				respond_to_input_event_data dataPackage(newArgs.eventData);
+				respond_to_input_event_data& dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 				dataPackage.addMessageEmbed(newEmbed);
 				auto newEvent02 = input_events::respondToInputEventAsync(const dataPackage).get();

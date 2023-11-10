@@ -33,7 +33,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			auto globalApplicationCommands = application_commands::getGlobalApplicationCommandsAsync().get();
 
-			get_global_application_command_data dataPackage;
+			get_global_application_command_data& dataPackage;
 			dataPackage.commandId = globalApplicationCommands.at(0).data.id;
 
 			auto globalApplicationCommand = application_commands::getGlobalApplicationCommandAsync(const dataPackage).get();

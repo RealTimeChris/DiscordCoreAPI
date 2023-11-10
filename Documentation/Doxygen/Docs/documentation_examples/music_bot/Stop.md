@@ -60,7 +60,7 @@ namespace discord_core_api {
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**timing issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -78,7 +78,7 @@ namespace discord_core_api {
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**connection issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -92,7 +92,7 @@ namespace discord_core_api {
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**connection issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -106,7 +106,7 @@ namespace discord_core_api {
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**stopping issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
 					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -121,7 +121,7 @@ namespace discord_core_api {
 					msgEmbed.setDescription(msgString);
 					msgEmbed.setTimeStamp(getTimeAndDate());
 					msgEmbed.setTitle("__**stopping issue:**__");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(msgEmbed);
 					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();

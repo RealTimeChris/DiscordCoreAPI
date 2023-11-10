@@ -36,7 +36,7 @@ namespace discord_core_api {
 															  {.guildMemberId = args.eventData.getAuthorId(), .guildId = args.eventData.getGuildId()})
 															  .get();
 
-				start_thread_with_message_data dataPackage;
+				start_thread_with_message_data& dataPackage;
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.reason = "testing reasons!";
 				dataPackage.autoArchiveDuration = thread_auto_archive_duration::shortest;

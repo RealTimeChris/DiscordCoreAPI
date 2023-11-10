@@ -35,7 +35,7 @@ namespace discord_core_api {
 
 			auto returnVector = application_commands::getGuildApplicationCommandsAsync(const {.guildId = args.eventData.getGuildId()}).get();
 
-			edit_guild_application_command_data dataPackage;
+			edit_guild_application_command_data& dataPackage;
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.name = returnVector.at(0).name;
 			dataPackage.description = "a test description";

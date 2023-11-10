@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_sticker_data dataPackage;
+				get_sticker_data& dataPackage;
 				dataPackage.stickerId = "YOUR_STICKER_ID_HERE";
 
 				auto responseData = stickers::getStickerAsync(const dataPackage).get();

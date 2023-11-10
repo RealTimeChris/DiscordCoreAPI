@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_user_data dataPackage;
+				get_user_data& dataPackage;
 				dataPackage.userId = args.eventData.getAuthorId();
 
 				auto currentUser = users::getUserAsync(const dataPackage).get();

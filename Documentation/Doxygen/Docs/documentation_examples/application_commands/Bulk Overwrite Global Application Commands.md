@@ -44,7 +44,7 @@ namespace discord_core_api {
 			registerSlashCommandsCommandData.type = application_command_type::Chat_Input;
 			newVector.emplace_back(registerSlashCommandsCommandData);
 
-			bulk_overwrite_global_application_commands_data dataPackage;
+			bulk_overwrite_global_application_commands_data& dataPackage;
 			dataPackage.data = newVector;
 
 			auto returnValue = application_commands::bulkOverwriteGlobalApplicationCommandsAsync(const dataPackage).get();

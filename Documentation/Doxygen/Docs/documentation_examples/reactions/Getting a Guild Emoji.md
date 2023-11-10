@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_emoji_list_data dataPackage;
+				get_emoji_list_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
 				auto emojiList = reactions::getEmojiListAsync(const dataPackage).get();

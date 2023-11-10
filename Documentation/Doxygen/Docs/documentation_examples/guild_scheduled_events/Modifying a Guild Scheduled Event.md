@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage01.withUserCount = true;
 				auto responseData01 = guild_scheduled_events::getGuildScheduledEventsAsync(const dataPackage01).get();
 
-				modify_guild_scheduled_event_data dataPackage;
+				modify_guild_scheduled_event_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.guildScheduledEventId = responseData01[0].id;
 				dataPackage.channelId = "914726178022101052";

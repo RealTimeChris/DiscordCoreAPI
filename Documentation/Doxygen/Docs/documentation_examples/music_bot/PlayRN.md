@@ -61,7 +61,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**timing issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(*newEmbed);
 					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -72,7 +72,7 @@ namespace discord_core_api {
 				previousPlayedTime = std::chrono::duration_cast<milliseconds>(hrclock::now().time_since_epoch()).count();
 				play::timeOfLastPlay.insert_or_assign(newEvent.getGuildId(), previousPlayedTime);
 
-				respond_to_input_event_data dataPackage(newEvent);
+				respond_to_input_event_data& dataPackage(newEvent);
 				dataPackage.setResponseType(input_event_response_type::Deferred_Response);
 				newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 				voice_state_data voiceStateData{};
@@ -85,7 +85,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**playing issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -104,7 +104,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**connection issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -124,7 +124,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**playing issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -142,7 +142,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**playing issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -158,7 +158,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**playing issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -380,7 +380,7 @@ namespace discord_core_api {
 					} else if (!song_api::isLoopAllEnabled(guild_data.id) && !song_api::isLoopSongEnabled(guild_data.id)) {
 						newEmbed->setFooter("❌ loop-all, ❌ loop-song");
 					}
-					respond_to_input_event_data dataPackage{ newEvent };
+					respond_to_input_event_data& dataPackage{ newEvent };
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(*newEmbed);
 					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();

@@ -63,7 +63,7 @@ namespace discord_core_api {
 				savePlaylist(discordGuild);
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**looping-all change:**__");
-				respond_to_input_event_data dataPackage(newArgs.eventData);
+				respond_to_input_event_data& dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
 				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();

@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_thread_members_data dataPackage;
+				get_thread_members_data& dataPackage;
 				dataPackage.channelId = "909444594146639913";
 
 				auto newThreadMembers = threads::getThreadMembersAsync(const dataPackage).get();

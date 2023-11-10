@@ -37,7 +37,7 @@ namespace discord_core_api {
 
 				auto emojiList = reactions::getEmojiListAsync(const dataPackage00).get();
 
-				modify_guild_emoji_data dataPackage;
+				modify_guild_emoji_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.emojiId = emojiList[0].id;
 				dataPackage.reason = "testing purposes";

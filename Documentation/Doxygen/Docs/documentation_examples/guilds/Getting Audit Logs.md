@@ -31,7 +31,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			get_guild_audit_logs_data dataPackage;
+			get_guild_audit_logs_data& dataPackage;
 			dataPackage.actionType = audit_log_event::MEMBER_BAN_ADD;
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.limit = 25;

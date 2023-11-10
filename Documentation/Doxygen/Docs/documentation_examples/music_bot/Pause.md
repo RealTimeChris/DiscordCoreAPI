@@ -58,7 +58,7 @@ namespace discord_core_api {
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**connection issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
 					input_events::respondToInputEventAsync(const dataPackage).get();
@@ -72,7 +72,7 @@ namespace discord_core_api {
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**connection issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -86,7 +86,7 @@ namespace discord_core_api {
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**pausing issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -100,7 +100,7 @@ namespace discord_core_api {
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**pausing issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -115,7 +115,7 @@ namespace discord_core_api {
 				msgEmbed.setDescription("\n------\n__**songs remaining in queue:**__ " + jsonifier::toString(song_api::getPlaylist(guild_data.id).songQueue.size()) + "\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**paused playback:**__");
-				respond_to_input_event_data dataPackage(newArgs.eventData);
+				respond_to_input_event_data& dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
 				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();

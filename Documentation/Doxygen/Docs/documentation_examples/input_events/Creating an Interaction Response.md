@@ -32,7 +32,7 @@ Creating an Interaction Response {#creating_an_input_event_response}
 		virtual void execute(base_function_arguments& args) {
 			input_events::deleteInputEventResponseAsync(const args.eventData).get();
 
-			respond_to_input_event_data dataPackage {args.eventData};
+			respond_to_input_event_data& dataPackage {args.eventData};
 			dataPackage.type = input_event_response_type::Deferred_Response;
 			input_events::respondToInputEventAsync(const dataPackage);
 

@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_messages_data dataPackage;
+				get_messages_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.afterThisId = args.eventData.getMessageId();
 

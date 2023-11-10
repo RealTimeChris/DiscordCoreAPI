@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_active_threads_data dataPackage;
+				get_active_threads_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
 				auto threadsVector = threads::getActiveThreadsAsync(const dataPackage).get();

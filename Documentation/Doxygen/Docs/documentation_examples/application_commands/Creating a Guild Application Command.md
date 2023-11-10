@@ -32,7 +32,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			input_events::deleteInputEventResponseAsync(const args.eventData).get();
 
-			create_guild_application_command_data dataPackage;
+			create_guild_application_command_data& dataPackage;
 			dataPackage.description = "displays info about the current bot.";
 			dataPackage.name = "botinfo";
 			dataPackage.type = application_command_type::Chat_Input;

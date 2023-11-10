@@ -32,7 +32,7 @@ Instantiating/Creating a Modal-Input {#creating_a_modal}
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				respond_to_input_event_data dataPackage {args.eventData};
+				respond_to_input_event_data& dataPackage {args.eventData};
 				dataPackage.addModal("test modal", "test_modal", "test modal small", "test_modal", true, 1, 46, text_input_style::paragraph, "test modal",
 									 "test_modal");
 				dataPackage.type = input_event_response_type::Interaction_Response;

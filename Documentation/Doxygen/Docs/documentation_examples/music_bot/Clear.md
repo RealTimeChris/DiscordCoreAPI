@@ -57,7 +57,7 @@ namespace discord_core_api {
 				msgEmbed.setDescription("\n------\n__**you have cleared the song queue!**__\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**queue cleared:**__");
-				respond_to_input_event_data dataPackage(newArgs.eventData);
+				respond_to_input_event_data& dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
 				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();

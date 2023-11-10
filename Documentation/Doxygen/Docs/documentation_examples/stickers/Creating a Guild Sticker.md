@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				create_guild_sticker_data dataPackage;
+				create_guild_sticker_data& dataPackage;
 				dataPackage.reason = "testing purposes!";
 				dataPackage.description = "testing sticker";
 				dataPackage.guildId = args.eventData.getGuildId();

@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				modify_user_voice_state_data dataPackage;
+				modify_user_voice_state_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.suppress = false;

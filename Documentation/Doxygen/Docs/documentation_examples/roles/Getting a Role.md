@@ -31,7 +31,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			get_role_data dataPackage;
+			get_role_data& dataPackage;
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.roleId = "YOUR_ROLE_ID_HERE";
 

@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_thread_member_data dataPackage;
+				get_thread_member_data& dataPackage;
 				dataPackage.channelId = "909435143561809953";
 				dataPackage.userId = args.eventData.getAuthorId();
 

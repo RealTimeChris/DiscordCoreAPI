@@ -30,7 +30,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-				respond_to_input_event_data dataPackage {args.eventData};
+				respond_to_input_event_data& dataPackage {args.eventData};
 				dataPackage.addContent("test message!");
 				dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response)
 				input_events::respondToInputEventAsync(const dataPackage);

@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_joined_private_archived_threads_data dataPackage;
+				get_joined_private_archived_threads_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.limit = 2;
 

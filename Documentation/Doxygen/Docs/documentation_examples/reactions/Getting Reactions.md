@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_reactions_data dataPackage;
+				get_reactions_data& dataPackage;
 				dataPackage.afterId = args.eventData.getAuthorId();
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.emoji = "😆";

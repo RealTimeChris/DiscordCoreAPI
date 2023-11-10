@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				create_guild_emoji_data dataPackage;
+				create_guild_emoji_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.name = "testemoji";
 				dataPackage.type = image_type::jpg;

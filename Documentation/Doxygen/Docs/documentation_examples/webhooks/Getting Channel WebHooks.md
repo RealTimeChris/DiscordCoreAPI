@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_channel_web_hooks_data dataPackage;
+				get_channel_web_hooks_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
 				auto newWebHooks = discord_core_api::web_hooks::getChannelWebHooksAsync(const dataPackage).get();

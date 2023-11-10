@@ -142,7 +142,7 @@ namespace discord_core_api {
 		template<typename key_type_newer> inline const_reference at(key_type_newer&& key) const {
 			auto iter = find(std::forward<key_type_newer>(key));
 			if (iter == end()) {
-				throw dca_exception{ "Sorry, but an object by that key doesn't exist in this map." };
+				throw std::runtime_error{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
 			return iter->second;
 		}
@@ -150,7 +150,7 @@ namespace discord_core_api {
 		template<typename key_type_newer> inline reference at(key_type_newer&& key) {
 			auto iter = find(std::forward<key_type_newer>(key));
 			if (iter == end()) {
-				throw dca_exception{ "Sorry, but an object by that key doesn't exist in this map." };
+				throw std::runtime_error{ "Sorry, but an object by that key doesn't exist in this map." };
 			}
 			return iter->second;
 		}
@@ -289,6 +289,8 @@ namespace discord_core_api {
 				resize(capacityVal + 1);
 			}
 			auto currentIndex = getHashPolicy().indexForHash(key);
+			std::cout << "CURRENT INDEX: " << currentIndex << "CURRENT CAPACITY: " << sentinelVector.size() << std::endl;
+			std::cout << "CURRENT INDEX: " << currentIndex << "CURRENT CAPACITY: " << sentinelVector.at(currentIndex) << std::endl;
 			for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
 				if (sentinelVector[currentIndex] == 0) {
 					getAlloc().construct(std::addressof(data[currentIndex]), value_type{ std::forward<key_type_newer>(key), std::forward<mapped_type_new>(value)... });

@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				join_thread_data dataPackage;
+				join_thread_data& dataPackage;
 				dataPackage.channelId = "909400437902413896";
 
 				threads::joinThreadAsync(const dataPackage).get();

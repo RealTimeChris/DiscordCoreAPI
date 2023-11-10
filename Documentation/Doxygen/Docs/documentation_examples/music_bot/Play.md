@@ -33,7 +33,7 @@ namespace discord_core_api {
 			newEmbed->setTimeStamp(getTimeAndDate());
 			newEmbed->setTitle("__**playing new songs:**__");
 			newEmbed->setColor("fefefe");
-			respond_to_input_event_data dataPackage(returnData.inputEventData);
+			respond_to_input_event_data& dataPackage(returnData.inputEventData);
 			dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 			dataPackage.addMessageEmbed(*newEmbed);
 			auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -106,7 +106,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**timing issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -115,7 +115,7 @@ namespace discord_core_api {
 					return;
 				}
 
-				respond_to_input_event_data dataPackage(newArgs.eventData);
+				respond_to_input_event_data& dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Deferred_Response);
 				newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 
@@ -131,7 +131,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**playing issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -149,7 +149,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**connection issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -168,7 +168,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**playing issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -191,7 +191,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**search issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -389,7 +389,7 @@ namespace discord_core_api {
 						newEmbed->setTitle("__**playing issue:**__");
 						newEmbed->setColor(discordGuild.data.borderColor);
 						embedsFromSearch.emplace_back(*newEmbed);
-						respond_to_input_event_data dataPackage(newEvent);
+						respond_to_input_event_data& dataPackage(newEvent);
 						dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 						dataPackage.addMessageEmbed(*newEmbed);
 						auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -407,7 +407,7 @@ namespace discord_core_api {
 					newEmbed->setTitle("__**playing issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
 					embedsFromSearch.emplace_back(*newEmbed);
-					respond_to_input_event_data dataPackage(newEvent);
+					respond_to_input_event_data& dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
 					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();

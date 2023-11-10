@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				modify_stage_instance_data dataPackage;
+				modify_stage_instance_data& dataPackage;
 				dataPackage.channelId = "914726178022101052";
 				dataPackage.privacyLevel = stage_instance_privacy_level::GUILD_ONLY;
 				dataPackage.reason = "testing!";

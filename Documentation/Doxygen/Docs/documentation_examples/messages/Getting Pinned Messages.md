@@ -33,7 +33,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_pinned_messages_data dataPackage;
+				get_pinned_messages_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
 				vector<message> messagesVector = messages::getPinnedMessagesAsync(const dataPackage).get();

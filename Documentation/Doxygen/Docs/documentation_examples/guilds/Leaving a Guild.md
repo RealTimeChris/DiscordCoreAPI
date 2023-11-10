@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				leave_guild_data dataPackage;
+				leave_guild_data& dataPackage;
 				dataPackage.guildId = "GUIILD_ID_HERE";
 
 				guilds::leaveGuildAsync(const dataPackage).get();

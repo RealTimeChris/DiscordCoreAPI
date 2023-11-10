@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				edit_message_data dataPackage {args.eventData};
+				edit_message_data& dataPackage {args.eventData};
 				dataPackage.addContent("test editing content!");
 
 				message newMessage = messages::editMessageAsync(const dataPackage).get();

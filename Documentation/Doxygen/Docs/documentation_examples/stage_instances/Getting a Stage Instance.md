@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_stage_instance_data dataPackage;
+				get_stage_instance_data& dataPackage;
 				dataPackage.channelId = "914726178022101052";
 
 				auto responseData = stage_instances::getStageInstanceAsync(const dataPackage).get();

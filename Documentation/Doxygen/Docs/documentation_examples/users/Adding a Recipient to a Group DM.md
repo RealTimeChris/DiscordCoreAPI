@@ -36,7 +36,7 @@ namespace discord_core_api {
 															  {.guildMemberId = args.eventData.getAuthorId(), .guildId = args.eventData.getGuildId()})
 															  .get();
 
-				add_recipient_to_group_dmdata dataPackage;
+				add_recipient_to_group_dmdata& dataPackage;
 				dataPackage.userId = args.eventData.getAuthorId();
 				dataPackage.channelId = "DM_CHANNEL_ID_HERE";
 				dataPackage.token = "YOUR_ACCESS_TOKEN_HERE";

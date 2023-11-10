@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				modify_current_user_data dataPackage;
+				modify_current_user_data& dataPackage;
 				dataPackage.userName = "MBot_GameHouse";
 
 				auto currentUser = users::modifyCurrentUserAsync(const dataPackage).get();

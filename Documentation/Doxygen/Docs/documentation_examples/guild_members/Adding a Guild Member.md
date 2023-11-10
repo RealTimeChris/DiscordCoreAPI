@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				add_guild_member_data dataPackage;
+				add_guild_member_data& dataPackage;
 				dataPackage.accessToken = "YOUR_ACCESS_TOKEN_HERE";
 				dataPackage.userId = args.eventData.getAuthorId();
 				dataPackage.guildId = args.eventData.getGuildId();

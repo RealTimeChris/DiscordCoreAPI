@@ -44,7 +44,7 @@ namespace discord_core_api {
 
 				input_events::deleteInputEventResponseAsync(const argsNew.eventData).get();
 
-				respond_to_input_event_data dataPackage(argsNew.eventData);
+				respond_to_input_event_data& dataPackage(argsNew.eventData);
 				dataPackage.setResponseType(input_event_response_type::Deferred_Response);
 				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
 				

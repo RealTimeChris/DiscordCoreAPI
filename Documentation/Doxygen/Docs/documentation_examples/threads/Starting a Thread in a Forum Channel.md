@@ -33,7 +33,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& newArgs) {
 			try {
 				
-				start_thread_in_forum_channel_data dataPackage;
+				start_thread_in_forum_channel_data& dataPackage;
 				dataPackage.channelId = newArgs.eventData.getChannelId();
 				dataPackage.message.content = "testing";
 				dataPackage.name = "the test thread";

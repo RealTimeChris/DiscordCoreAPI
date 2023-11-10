@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage01.guildId = args.eventData.getGuildId();
 				auto resultVector = stickers::getGuildStickersAsync(const dataPackage01).get();
 
-				modify_guild_sticker_data dataPackage;
+				modify_guild_sticker_data& dataPackage;
 				dataPackage.reason = "testing purposes!";
 				dataPackage.description = "testing sticker";
 				dataPackage.guildId = args.eventData.getGuildId();

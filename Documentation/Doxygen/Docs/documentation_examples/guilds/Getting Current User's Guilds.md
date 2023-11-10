@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_current_user_guilds_data dataPackage;
+				get_current_user_guilds_data& dataPackage;
 				dataPackage.limit = 2;
 
 				auto currentOutput = guilds::getCurrentUserGuildsAsync(const dataPackage).get();

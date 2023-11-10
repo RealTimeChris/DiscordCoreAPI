@@ -31,7 +31,7 @@ Getting an Interaction Response {#getting_an_interaction_response}
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_interaction_response_data dataPackage;
+				get_interaction_response_data& dataPackage;
 				dataPackage.applicationId = getBotUser().id;
 				dataPackage.interactionToken = args.eventData.getInteractionToken();
 

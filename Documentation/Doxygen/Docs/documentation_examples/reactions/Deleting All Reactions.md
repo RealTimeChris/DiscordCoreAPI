@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				delete_all_reactions_data dataPackage;
+				delete_all_reactions_data& dataPackage;
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.channelId = args.eventData.getChannelId();
 

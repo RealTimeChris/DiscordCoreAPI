@@ -51,7 +51,7 @@ namespace discord_core_api {
 							messageEmbed.setTimeStamp(getTimeAndDate());
 							messageEmbed.setDescription(msgString);
 							messageEmbed.setTitle("__**already listed:**__");
-							respond_to_input_event_data dataPackage(newArgs.eventData);
+							respond_to_input_event_data& dataPackage(newArgs.eventData);
 							dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 							dataPackage.addMessageEmbed(messageEmbed);
 							auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -68,7 +68,7 @@ namespace discord_core_api {
 					messageEmbed.setTimeStamp(getTimeAndDate());
 					messageEmbed.setDescription("------\n**you've succesfully added <#" + jsonifier::toString(channelID) + "> to your list of accepted music channels!**\n------");
 					messageEmbed.setTitle("__**music channel added:**__");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -97,7 +97,7 @@ namespace discord_core_api {
 						messageEmbed.setTimeStamp(getTimeAndDate());
 						messageEmbed.setDescription(msgString2);
 						messageEmbed.setTitle("__**missing from list:**__");
-						respond_to_input_event_data dataPackage(newArgs.eventData);
+						respond_to_input_event_data& dataPackage(newArgs.eventData);
 						dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 						dataPackage.addMessageEmbed(messageEmbed);
 						auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -111,7 +111,7 @@ namespace discord_core_api {
 					messageEmbed.setTimeStamp(getTimeAndDate());
 					messageEmbed.setDescription(msgString);
 					messageEmbed.setTitle("__**music channel removed:**__");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -143,7 +143,7 @@ namespace discord_core_api {
 					messageEmbed.setTimeStamp(getTimeAndDate());
 					messageEmbed.setDescription(msgString);
 					messageEmbed.setTitle("__**music channels removed:**__");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
@@ -166,7 +166,7 @@ namespace discord_core_api {
 					messageEmbed.setTimeStamp(getTimeAndDate());
 					messageEmbed.setDescription(msgString);
 					messageEmbed.setTitle("__**music channels enabled:**__");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
 					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();

@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				create_web_hook_data dataPackage;
+				create_web_hook_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.name = "TEST_WEBHOOK";
 

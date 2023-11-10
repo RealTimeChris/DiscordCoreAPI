@@ -32,7 +32,7 @@ Instantiating/Creating a Button {#creating_a_button}
 		virtual void execute(base_function_arguments& args) {
 			input_events::deleteInputEventResponseAsync(const args.eventData).get();
 
-			respond_to_input_event_data dataPackage {args.eventData};
+			respond_to_input_event_data& dataPackage {args.eventData};
 			dataPackage.addButton(false, "test_button", "test button", "✅", button_style::danger);
 			dataPackage.addContent("test response");
 			dataPackage.addMessageEmbed(embed_data {.description = "testing!", .title = "test title"});

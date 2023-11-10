@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				delete_message_data dataPackage;
+				delete_message_data& dataPackage;
 				dataPackage.timeDelay = 500;
 				dataPackage.messageData = args.eventData.getMessageData();
 

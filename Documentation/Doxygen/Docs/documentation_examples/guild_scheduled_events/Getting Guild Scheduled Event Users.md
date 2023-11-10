@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage01.withUserCount = true;
 				auto responseData01 = guild_scheduled_events::getGuildScheduledEventsAsync(const dataPackage01).get();
 
-				get_guild_scheduled_event_users_data dataPackage;
+				get_guild_scheduled_event_users_data& dataPackage;
 				dataPackage.limit = 50;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.withMember = true;

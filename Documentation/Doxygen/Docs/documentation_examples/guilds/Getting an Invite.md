@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_guild_invites_data dataPackage;
+				get_guild_invites_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
 				auto responseVector = guilds::getGuildInvitesAsync(const dataPackage).get();

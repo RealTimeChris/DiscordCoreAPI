@@ -31,7 +31,7 @@ Getting a Follow-Up Message {#getting_a_follow_up_message}
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				get_follow_up_message_data dataPackage;
+				get_follow_up_message_data& dataPackage;
 				dataPackage.applicationId = getBotUser().id;
 				dataPackage.interactionToken = args.eventData.getInteractionToken();
 				dataPackage.interactionToken = args.eventData.getMessageId();

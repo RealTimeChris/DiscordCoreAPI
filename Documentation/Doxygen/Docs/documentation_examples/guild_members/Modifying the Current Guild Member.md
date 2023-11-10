@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				modify_current_guild_member_data dataPackage;
+				modify_current_guild_member_data& dataPackage;
 				dataPackage.reason = "testing purposes";
 				dataPackage.nick = "test nick!";
 				dataPackage.guildId = args.eventData.getGuildId();

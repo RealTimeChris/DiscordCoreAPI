@@ -31,7 +31,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			edit_global_application_command_data dataPackage;
+			edit_global_application_command_data& dataPackage;
 			dataPackage.description = "displays info about the current bot.";
 			dataPackage.name = "botinfo";
 

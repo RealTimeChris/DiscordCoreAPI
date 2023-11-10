@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				create_guild_scheduled_event_data dataPackage;
+				create_guild_scheduled_event_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.channelId = "914726178022101052";
 				dataPackage.description = "test description";

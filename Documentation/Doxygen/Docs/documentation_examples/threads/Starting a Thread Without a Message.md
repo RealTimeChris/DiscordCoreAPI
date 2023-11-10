@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				start_thread_without_message_data dataPackage;
+				start_thread_without_message_data& dataPackage;
 				dataPackage.invitable = true;
 				dataPackage.type = thread_type::GUILD_PUBLIC_THREAD;
 				dataPackage.reason = "testing reasons!";

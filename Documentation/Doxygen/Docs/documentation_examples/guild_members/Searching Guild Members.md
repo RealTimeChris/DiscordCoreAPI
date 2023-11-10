@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				search_guild_members_data dataPackage;
+				search_guild_members_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.limit = 20;
 				dataPackage.query = "real";

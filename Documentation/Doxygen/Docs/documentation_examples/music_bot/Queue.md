@@ -38,7 +38,7 @@ namespace discord_core_api {
 			newEmbed->setDescription("__**react with ✅ to edit the contents of the current page. react with ❌ to exit!**__").fields = msgEmbedFields[y];
 			newMsgEmbeds.emplace_back(*newEmbed);
 		}
-		respond_to_input_event_data dataPackage(originalEvent);
+		respond_to_input_event_data& dataPackage(originalEvent);
 		dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 		dataPackage.addMessageEmbed(newMsgEmbeds[currentPageIndex]);
 		dataPackage.addContent("");
@@ -100,7 +100,7 @@ namespace discord_core_api {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**empty playlist:**__");
 					newEmbed->setDescription("------\n__**sorry, but there is nothing here to display!**__\n------");
-					respond_to_input_event_data dataPackage(newArgs.eventData);
+					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(*newEmbed);
 					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();

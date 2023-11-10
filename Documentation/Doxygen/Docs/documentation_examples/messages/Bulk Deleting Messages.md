@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				delete_messages_bulk_data dataPackage;
+				delete_messages_bulk_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				vector<string> messageIds { };
 				messageIds.emplace_back(args.eventData.getMessageId());
