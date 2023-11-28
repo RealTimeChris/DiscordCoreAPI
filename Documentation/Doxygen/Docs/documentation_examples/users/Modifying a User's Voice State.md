@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage.suppress = false;
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				users::modifyUserVoiceStateAsync(const dataPackage).get();
+				users::modifyUserVoiceStateAsync(dataPackage).get();
 
 
 			} catch (...) {

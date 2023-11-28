@@ -37,7 +37,7 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::execute_web_hook_data> {
 		using value_type				 = discord_core_api::execute_web_hook_data;
-		static constexpr auto parseValue = createObject("threadId", &value_type::threadId, "wait", &value_type::wait, "attachments", &value_type::attachments, "components",
+		static constexpr auto parseValue = createValue("threadId", &value_type::threadId, "wait", &value_type::wait, "attachments", &value_type::attachments, "components",
 			&value_type::components, "allowedMentions", &value_type::allowedMentions, "embeds", &value_type::embeds, "files", &value_type::files, "webhookToken",
 			&value_type::webhookToken, "avatarUrl", &value_type::avatarUrl, "username", &value_type::userName, "customId", &value_type::customId, "webHookId",
 			&value_type::webHookId, "content", &value_type::content, "title", &value_type::title, "flags", &value_type::flags, "tts", &value_type::tts);
@@ -45,25 +45,25 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::create_web_hook_data> {
 		using value_type				 = discord_core_api::create_web_hook_data;
-		static constexpr auto parseValue = createObject("channelId", &value_type::channelId, "avatar", &value_type::avatar, "name", &value_type::name);
+		static constexpr auto parseValue = createValue("channelId", &value_type::channelId, "avatar", &value_type::avatar, "name", &value_type::name);
 	};
 
 	template<> struct core<discord_core_api::modify_web_hook_data> {
 		using value_type = discord_core_api::modify_web_hook_data;
 		static constexpr auto parseValue =
-			createObject("channelId", &value_type::channelId, "webHookId", &value_type::webHookId, "avatar", &value_type::avatar, "name", &value_type::name);
+			createValue("channelId", &value_type::channelId, "webHookId", &value_type::webHookId, "avatar", &value_type::avatar, "name", &value_type::name);
 	};
 
 	template<> struct core<discord_core_api::modify_web_hook_with_token_data> {
 		using value_type				 = discord_core_api::modify_web_hook_with_token_data;
-		static constexpr auto parseValue = createObject("webhookToken", &value_type::webhookToken, "channelId", &value_type::channelId, "webHookId", &value_type::webHookId,
+		static constexpr auto parseValue = createValue("webhookToken", &value_type::webhookToken, "channelId", &value_type::channelId, "webHookId", &value_type::webHookId,
 			"avatar", &value_type::avatar, "name", &value_type::name);
 	};
 
 	template<> struct core<discord_core_api::edit_web_hook_data> {
 		using value_type = discord_core_api::edit_web_hook_data;
 		static constexpr auto parseValue =
-			createObject("threadId", &value_type::threadId, "wait", &value_type::wait, "attachments", &value_type::attachments, "components", &value_type::components,
+			createValue("threadId", &value_type::threadId, "wait", &value_type::wait, "attachments", &value_type::attachments, "components", &value_type::components,
 				"allowedMentions", &value_type::allowedMentions, "embeds", &value_type::embeds, "files", &value_type::files, "webhookToken", &value_type::webhookToken, "avatarUrl",
 				&value_type::avatarUrl, "username", &value_type::userName, "customId", &value_type::customId, "webHookId", &value_type::webHookId, "content", &value_type::content,
 				"title", &value_type::title, "flags", &value_type::flags, "tts", &value_type::tts, "message_id", &value_type::messageId, "thread_id", &value_type::threadId);
@@ -240,7 +240,7 @@ namespace discord_core_api {
 		discord_core_api::web_hooks::httpsClient = client;
 	}
 
-	co_routine<web_hook_data> discord_core_api::web_hooks::createWebHookAsync(const create_web_hook_data dataPackage) {
+	co_routine<web_hook_data> discord_core_api::web_hooks::createWebHookAsync(create_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Webhook };
 		co_await newThreadAwaitable<web_hook_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -252,7 +252,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<web_hook_data>> discord_core_api::web_hooks::getChannelWebHooksAsync(const get_channel_web_hooks_data dataPackage) {
+	co_routine<jsonifier::vector<web_hook_data>> discord_core_api::web_hooks::getChannelWebHooksAsync(get_channel_web_hooks_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Channel_Webhooks };
 		co_await newThreadAwaitable<jsonifier::vector<web_hook_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -263,7 +263,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<jsonifier::vector<web_hook_data>> discord_core_api::web_hooks::getGuildWebHooksAsync(const get_guild_web_hooks_data dataPackage) {
+	co_routine<jsonifier::vector<web_hook_data>> discord_core_api::web_hooks::getGuildWebHooksAsync(get_guild_web_hooks_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Webhooks };
 		co_await newThreadAwaitable<jsonifier::vector<web_hook_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -274,7 +274,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<web_hook_data> discord_core_api::web_hooks::getWebHookAsync(const get_web_hook_data dataPackage) {
+	co_routine<web_hook_data> discord_core_api::web_hooks::getWebHookAsync(get_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Webhook };
 		co_await newThreadAwaitable<web_hook_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -285,7 +285,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<web_hook_data> discord_core_api::web_hooks::getWebHookWithTokenAsync(const get_web_hook_with_token_data dataPackage) {
+	co_routine<web_hook_data> discord_core_api::web_hooks::getWebHookWithTokenAsync(get_web_hook_with_token_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Webhook_With_Token };
 		co_await newThreadAwaitable<web_hook_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -296,7 +296,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<web_hook_data> discord_core_api::web_hooks::modifyWebHookAsync(const modify_web_hook_data dataPackage) {
+	co_routine<web_hook_data> discord_core_api::web_hooks::modifyWebHookAsync(modify_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Webhook };
 		co_await newThreadAwaitable<web_hook_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -308,7 +308,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<web_hook_data> discord_core_api::web_hooks::modifyWebHookWithTokenAsync(const modify_web_hook_with_token_data dataPackage) {
+	co_routine<web_hook_data> discord_core_api::web_hooks::modifyWebHookWithTokenAsync(modify_web_hook_with_token_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Webhook_With_Token };
 		co_await newThreadAwaitable<web_hook_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -320,7 +320,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> discord_core_api::web_hooks::deleteWebHookAsync(const delete_web_hook_data dataPackage) {
+	co_routine<void> discord_core_api::web_hooks::deleteWebHookAsync(delete_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Webhook };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -330,7 +330,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> discord_core_api::web_hooks::deleteWebHookWithTokenAsync(const delete_web_hook_with_token_data dataPackage) {
+	co_routine<void> discord_core_api::web_hooks::deleteWebHookWithTokenAsync(delete_web_hook_with_token_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Webhook_With_Token };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -340,7 +340,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<message_data> discord_core_api::web_hooks::executeWebHookAsync(const execute_web_hook_data dataPackage) {
+	co_routine<message_data> discord_core_api::web_hooks::executeWebHookAsync(execute_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Execute_Webhook };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -367,7 +367,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> discord_core_api::web_hooks::getWebHookMessageAsync(const get_web_hook_message_data dataPackage) {
+	co_routine<message_data> discord_core_api::web_hooks::getWebHookMessageAsync(get_web_hook_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Webhook_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -381,7 +381,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<message_data> discord_core_api::web_hooks::editWebHookMessageAsync(const edit_web_hook_data dataPackage) {
+	co_routine<message_data> discord_core_api::web_hooks::editWebHookMessageAsync(edit_web_hook_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Webhook_Message };
 		co_await newThreadAwaitable<message_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -402,7 +402,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> discord_core_api::web_hooks::deleteWebHookMessageAsync(const delete_web_hook_message_data dataPackage) {
+	co_routine<void> discord_core_api::web_hooks::deleteWebHookMessageAsync(delete_web_hook_message_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Webhook_Message };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;

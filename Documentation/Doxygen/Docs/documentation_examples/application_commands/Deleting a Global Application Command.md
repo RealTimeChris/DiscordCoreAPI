@@ -33,7 +33,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			delete_global_application_command_data& dataPackage;
 			dataPackage.name = "testcommandname";
-			application_commands::deleteGlobalApplicationCommandAsync(const dataPackage).get();
+			application_commands::deleteGlobalApplicationCommandAsync(dataPackage).get();
 		}
 	};
 }

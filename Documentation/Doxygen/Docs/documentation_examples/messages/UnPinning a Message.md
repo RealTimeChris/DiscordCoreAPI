@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.messageId = "909216949471428659";
 
-				messages::unpinMessageAsync(const dataPackage).get();
+				messages::unpinMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

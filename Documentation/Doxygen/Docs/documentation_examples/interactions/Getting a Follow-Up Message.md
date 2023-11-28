@@ -35,7 +35,7 @@ Getting a Follow-Up Message {#getting_a_follow_up_message}
 				dataPackage.applicationId = getBotUser().id;
 				dataPackage.interactionToken = args.eventData.getInteractionToken();
 				dataPackage.interactionToken = args.eventData.getMessageId();
-				auto responseData = interactions::getFollowUpMessageAsync(const dataPackage);
+				auto responseData = interactions::getFollowUpMessageAsync(dataPackage);
 
 			} catch (...) {
 				rethrowException("test::execute() error: ");

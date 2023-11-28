@@ -35,13 +35,13 @@ namespace discord_core_api {
 				get_guild_web_hooks_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto newWebHooks = discord_core_api::web_hooks::getGuildWebHooksAsync(const dataPackage).get();
+				auto newWebHooks = discord_core_api::web_hooks::getGuildWebHooksAsync(dataPackage).get();
 
 				delete_web_hook_with_token_data& dataPackage01;
 				dataPackage01.webHookId = newWebHooks[0].id;
 				dataPackage01.webhookToken = newWebHooks[0].token;
 
-				discord_core_api::web_hooks::deleteWebHookWithTokenAsync(const dataPackage01).get();
+				discord_core_api::web_hooks::deleteWebHookWithTokenAsync(dataPackage01).get();
 
 
 			} catch (...) {

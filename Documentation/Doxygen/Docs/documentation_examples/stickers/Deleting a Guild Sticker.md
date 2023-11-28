@@ -34,14 +34,14 @@ namespace discord_core_api {
 			try {
 				get_guild_stickers_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
-				auto resultVector = stickers::getGuildStickersAsync(const dataPackage01).get();
+				auto resultVector = stickers::getGuildStickersAsync(dataPackage01).get();
 
 				delete_guild_sticker_data& dataPackage;
 				dataPackage.reason = "testing purposes!";
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.stickerId = resultVector[0].id;
 
-				stickers::deleteGuildStickerAsync(const dataPackage).get();
+				stickers::deleteGuildStickerAsync(dataPackage).get();
 
 
 			} catch (...) {

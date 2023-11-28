@@ -35,20 +35,20 @@ namespace discord_core_api {
 				get_guild_web_hooks_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto newWebHooks = discord_core_api::web_hooks::getGuildWebHooksAsync(const dataPackage).get();
+				auto newWebHooks = discord_core_api::web_hooks::getGuildWebHooksAsync(dataPackage).get();
 
 				execute_web_hook_data& dataPackage01 {newWebHooks[0]};
 				dataPackage01.addContent("test content");
 				dataPackage01.wait = true;
 
-				auto newMessage = discord_core_api::web_hooks::executeWebHookAsync(const dataPackage01).get();
+				auto newMessage = discord_core_api::web_hooks::executeWebHookAsync(dataPackage01).get();
 
 				get_web_hook_data& dataPackage02;
 				dataPackage02.webHookId = newWebHooks[0].id;
 				dataPackage02.webhookToken = newWebHooks[0].token;
 				dataPackage02.messageId = newMessage.id;
 
-				auto newMessage02 = discord_core_api::web_hooks::getWebHookMessageAsync(const dataPackage02).get();
+				auto newMessage02 = discord_core_api::web_hooks::getWebHookMessageAsync(dataPackage02).get();
 
 				std::cout << "message id: " << newMessage02.id << std::endl;
 
@@ -56,7 +56,7 @@ namespace discord_core_api {
 				dataPackage03.addContent("newer contents!");
 				dataPackage03.messageId = newMessage02.id;
 
-				auto newMessage03 = discord_core_api::web_hooks::editWebHookMessageAsync(const dataPackage03).get();
+				auto newMessage03 = discord_core_api::web_hooks::editWebHookMessageAsync(dataPackage03).get();
 
 
 			} catch (...) {

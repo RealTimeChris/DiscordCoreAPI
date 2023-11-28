@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_templates_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto responseVector = guilds::getGuildTemplatesAsync(const dataPackage).get();
+				auto responseVector = guilds::getGuildTemplatesAsync(dataPackage).get();
 
 				modify_guild_template_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
@@ -43,7 +43,7 @@ namespace discord_core_api {
 				dataPackage01.name = "test name!";
 				dataPackage01.templateCode = responseVector[0].code;
 
-				auto responseData = guilds::modifyGuildTemplateAsync(const dataPackage01).get();
+				auto responseData = guilds::modifyGuildTemplateAsync(dataPackage01).get();
 
 				std::cout << "the name: " << responseData.name << std::endl;
 

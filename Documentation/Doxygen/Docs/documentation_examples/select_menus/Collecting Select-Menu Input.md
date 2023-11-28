@@ -35,7 +35,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData).get();
+			input_events::deleteInputEventResponseAsync(args.eventData).get();
 
 			select_option_data selectOption;
 			selectOption.label = "select menu";
@@ -50,14 +50,14 @@ namespace discord_core_api {
 			dataPackage.addMessageEmbed(embed_data {.description = "testing!", .title = "test title"});
 			dataPackage.type = input_event_response_type::Interaction_Response;
 
-			auto inputEventData = input_events::respondToInputEventAsync(const dataPackage);
+			auto inputEventData = input_events::respondToInputEventAsync(dataPackage);
 
 			select_menu_collector selectMenuCollector {inputEventData};
 			auto results = selectMenuCollector.collectSelectMenuData(true, 120000, 3, getBotUser().id).get();
 			for (const auto& value: results) {
 				std::cout << value.userId << std::endl;
 			}
-			input_events::deleteInputEventResponseAsync(const inputEventData).get();
+			input_events::deleteInputEventResponseAsync(inputEventData).get();
 		}
 	};
 }

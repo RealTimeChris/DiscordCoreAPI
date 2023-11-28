@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.emojiName = "😆";
 
-				reactions::deleteOwnReactionAsync(const dataPackage).get();
+				reactions::deleteOwnReactionAsync(dataPackage).get();
 
 
 			} catch (...) {

@@ -42,11 +42,11 @@ namespace discord_core_api {
 					return;
 				}
 
-				input_events::deleteInputEventResponseAsync(const argsNew.eventData).get();
+				input_events::deleteInputEventResponseAsync(argsNew.eventData).get();
 
 				respond_to_input_event_data& dataPackage(argsNew.eventData);
 				dataPackage.setResponseType(input_event_response_type::Deferred_Response);
-				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+				auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 				
 				create_global_application_command_data registerApplicationCommandsCommandData;
 				registerApplicationCommandsCommandData.dmPermission = true;
@@ -54,7 +54,7 @@ namespace discord_core_api {
 				registerApplicationCommandsCommandData.type = application_command_type::Chat_Input;
 				registerApplicationCommandsCommandData.description = "register the programmatically designated slash commands.";
 				registerApplicationCommandsCommandData.name = "registerapplicationcommands";
-				application_commands::createGlobalApplicationCommandAsync(const registerApplicationCommandsCommandData);
+				application_commands::createGlobalApplicationCommandAsync(registerApplicationCommandsCommandData);
 
 				create_global_application_command_data createTestData;
 				createTestData.dmPermission = true;
@@ -62,7 +62,7 @@ namespace discord_core_api {
 				createTestData.type = application_command_type::Chat_Input;
 				createTestData.name = "test";
 				createTestData.description = "test command.";
-				application_commands::createGlobalApplicationCommandAsync(const createTestData).get();
+				application_commands::createGlobalApplicationCommandAsync(createTestData).get();
 
 				embed_data msgEmbed;
 				msgEmbed.setAuthor(argsNew.eventData.getUserName(), argsNew.eventData.getAvatarUrl());
@@ -73,7 +73,7 @@ namespace discord_core_api {
 				respond_to_input_event_data responseData(newEvent);
 				responseData.setResponseType(input_event_response_type::Edit_Interaction_Response);
 				responseData.addMessageEmbed(msgEmbed);
-				auto event = input_events::respondToInputEventAsync(const responseData).get();
+				auto event = input_events::respondToInputEventAsync(responseData).get();
 				return;
 			} catch (...) {
 				reportException("register_application_commands::execute()");

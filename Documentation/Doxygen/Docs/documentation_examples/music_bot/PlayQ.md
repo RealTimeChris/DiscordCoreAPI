@@ -68,13 +68,13 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(*newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
 				respond_to_input_event_data dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Deferred_Response);
-				newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+				newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 
 				previousPlayedTime = std::chrono::duration_cast<milliseconds>(sys_clock::now().time_since_epoch()).count();
 				play_q::timeOfLastPlay.insert_or_assign(newArgs.eventData.getGuildId(), previousPlayedTime);
@@ -92,11 +92,11 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
-					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newerEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Follow_Up_Message);
-					newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
-					input_events::deleteInputEventResponseAsync(const newEvent).get();
-					input_events::deleteInputEventResponseAsync(const newerEvent, 20000);
+					newerEvent = input_events::respondToInputEventAsync(dataPackage).get();
+					input_events::deleteInputEventResponseAsync(newEvent).get();
+					input_events::deleteInputEventResponseAsync(newerEvent, 20000);
 					return;
 				}
 
@@ -113,11 +113,11 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
-					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newerEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Follow_Up_Message);
-					newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
-					input_events::deleteInputEventResponseAsync(const newEvent).get();
-					input_events::deleteInputEventResponseAsync(const newerEvent, 20000);
+					newerEvent = input_events::respondToInputEventAsync(dataPackage).get();
+					input_events::deleteInputEventResponseAsync(newEvent).get();
+					input_events::deleteInputEventResponseAsync(newerEvent, 20000);
 					return;
 				}
 
@@ -131,11 +131,11 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
-					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newerEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Follow_Up_Message);
-					newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
-					input_events::deleteInputEventResponseAsync(const newEvent).get();
-					input_events::deleteInputEventResponseAsync(const newerEvent, 20000);
+					newerEvent = input_events::respondToInputEventAsync(dataPackage).get();
+					input_events::deleteInputEventResponseAsync(newEvent).get();
+					input_events::deleteInputEventResponseAsync(newerEvent, 20000);
 					return;
 				}
 
@@ -149,11 +149,11 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
-					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newerEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Follow_Up_Message);
-					newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
-					input_events::deleteInputEventResponseAsync(const newEvent).get();
-					input_events::deleteInputEventResponseAsync(const newerEvent, 20000);
+					newerEvent = input_events::respondToInputEventAsync(dataPackage).get();
+					input_events::deleteInputEventResponseAsync(newEvent).get();
+					input_events::deleteInputEventResponseAsync(newerEvent, 20000);
 					return;
 				}
 
@@ -169,11 +169,11 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
-					auto newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newerEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Follow_Up_Message);
-					newerEvent = input_events::respondToInputEventAsync(const dataPackage).get();
-					input_events::deleteInputEventResponseAsync(const newEvent).get();
-					input_events::deleteInputEventResponseAsync(const newerEvent, 20000);
+					newerEvent = input_events::respondToInputEventAsync(dataPackage).get();
+					input_events::deleteInputEventResponseAsync(newEvent).get();
+					input_events::deleteInputEventResponseAsync(newerEvent, 20000);
 					return;
 				}
 
@@ -201,7 +201,7 @@ namespace discord_core_api {
 							unique_ptr<embed_data> newEmbed{ makeUnique<embed_data>() };
 							if (!eventData.wasItAFail) {
 								if (!song_api::sendNextSong(guildMember)) {
-									input_events::deleteInputEventResponseAsync(const newEvent);
+									input_events::deleteInputEventResponseAsync(newEvent);
 									song_api::play(guildMember.guildId);
 									co_return;
 								}
@@ -230,7 +230,7 @@ namespace discord_core_api {
 								}
 								create_message_data& dataPackage02(channelId);
 								dataPackage02.addMessageEmbed(*newEmbed);
-								messages::createMessageAsync(const dataPackage02).get();
+								messages::createMessageAsync(dataPackage02).get();
 							} else {
 								guild_member_data guildMemberNew{ eventData.guildMember };
 								song_api::sendNextSong(guildMemberNew);
@@ -259,7 +259,7 @@ namespace discord_core_api {
 								}
 								create_message_data& dataPackage02(channelId);
 								dataPackage02.addMessageEmbed(*newEmbed);
-								messages::createMessageAsync(const dataPackage02).get();
+								messages::createMessageAsync(dataPackage02).get();
 
 								if (!song_api::areWeCurrentlyPlaying(eventData.guild_data.id)) {
 									newEmbed->setAuthor(eventData.guildMember.userName, eventData.guildMember.avatar);
@@ -286,7 +286,7 @@ namespace discord_core_api {
 									}
 									create_message_data& dataPackage03(channelId);
 									dataPackage03.addMessageEmbed(*newEmbed);
-									messages::createMessageAsync(const dataPackage03).get();
+									messages::createMessageAsync(dataPackage03).get();
 								}
 							}
 							savePlaylist(discordGuild);
@@ -308,7 +308,7 @@ namespace discord_core_api {
 							}
 							create_message_data& dataPackage02(channelId);
 							dataPackage02.addMessageEmbed(*newEmbed);
-							messages::createMessageAsync(const dataPackage02).get();
+							messages::createMessageAsync(dataPackage02).get();
 						}
 						co_return;
 					};
@@ -316,7 +316,7 @@ namespace discord_core_api {
 				}
 				if (song_api::isThereAnySongs(guild_data.id)) {
 					if (!song_api::sendNextSong(guildMember)) {
-						input_events::deleteInputEventResponseAsync(const newEvent);
+						input_events::deleteInputEventResponseAsync(newEvent);
 						return;
 					}
 					savePlaylist(discordGuild);
@@ -343,7 +343,7 @@ namespace discord_core_api {
 					respond_to_input_event_data dataPackage(newEvent);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(*newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					song_api::play(guild_data.id);
 				}
 				return;

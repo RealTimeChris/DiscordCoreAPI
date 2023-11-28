@@ -41,7 +41,7 @@ namespace discord_core_api {
 			dataPackage01.guildId = args.eventData.getGuildId();
 			dataPackage01.guildMemberId = args.eventData.getAuthorId();
 
-			guild_member_data guildMember01 = guild_members::modifyGuildMemberAsync(const dataPackage01).get();
+			guild_member_data guildMember01 = guild_members::modifyGuildMemberAsync(dataPackage01).get();
 		}
 	};
 }

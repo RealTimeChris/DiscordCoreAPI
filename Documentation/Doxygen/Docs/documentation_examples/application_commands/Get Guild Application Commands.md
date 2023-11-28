@@ -31,12 +31,12 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData).get();
+			input_events::deleteInputEventResponseAsync(args.eventData).get();
 
 			get_guild_application_commands_data& dataPackage;
 			dataPackage.guildId = args.eventData.getGuildId();
 
-			auto returnVector = application_commands::getGuildApplicationCommandsAsync(const dataPackage).get();
+			auto returnVector = application_commands::getGuildApplicationCommandsAsync(dataPackage).get();
 
 			for (const auto& value: returnVector) {
 				std::cout << value.name << std::endl;

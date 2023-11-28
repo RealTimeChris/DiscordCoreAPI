@@ -31,7 +31,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(std::unique_pt<barse_function_arguments> args) {
-			channel channel = discord_core_api::channels::createDMChannelAsync(const {.userId = args.eventData.getAuthorId()}).get();
+			channel channel = discord_core_api::channels::createDMChannelAsync({.userId = args.eventData.getAuthorId()}).get();
 		}
 	};
 }

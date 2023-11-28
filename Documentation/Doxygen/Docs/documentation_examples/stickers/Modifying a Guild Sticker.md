@@ -34,7 +34,7 @@ namespace discord_core_api {
 			try {
 				get_guild_stickers_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
-				auto resultVector = stickers::getGuildStickersAsync(const dataPackage01).get();
+				auto resultVector = stickers::getGuildStickersAsync(dataPackage01).get();
 
 				modify_guild_sticker_data& dataPackage;
 				dataPackage.reason = "testing purposes!";
@@ -44,7 +44,7 @@ namespace discord_core_api {
 				dataPackage.tags = "testing";
 				dataPackage.stickerId = resultVector[0].id;
 
-				auto responseData = stickers::modifyGuildStickerAsync(const dataPackage).get();
+				auto responseData = stickers::modifyGuildStickerAsync(dataPackage).get();
 
 				std::cout << "the name: " << responseData.name << std::endl;
 

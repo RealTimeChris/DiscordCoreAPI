@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_template_data& dataPackage01;
 				dataPackage01.templateCode = "ym_rr2bj5_ny_yx";
 
-				auto responseData = guilds::getGuildTemplateAsync(const dataPackage01).get();
+				auto responseData = guilds::getGuildTemplateAsync(dataPackage01).get();
 
 				std::cout << "user name: " << responseData.creator.userName << std::endl;
 

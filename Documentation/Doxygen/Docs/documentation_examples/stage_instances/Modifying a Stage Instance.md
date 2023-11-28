@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage.reason = "testing!";
 				dataPackage.topic = "new topic!";
 
-				auto responseData = stage_instances::modifyStageInstanceAsync(const dataPackage).get();
+				auto responseData = stage_instances::modifyStageInstanceAsync(dataPackage).get();
 
 				std::cout << "the topic: " << responseData.topic << std::endl;
 

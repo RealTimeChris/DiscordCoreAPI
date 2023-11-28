@@ -37,32 +37,32 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::voice_session_description_data> {
 		using value_type				 = discord_core_api::voice_session_description_data;
-		static constexpr auto parseValue = createObject("secret_key", &value_type::secretKey);
+		static constexpr auto parseValue = createValue("secret_key", &value_type::secretKey);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::websocket_message_data<discord_core_api::speaking_data>> {
 		using value_type				 = discord_core_api::discord_core_internal::websocket_message_data<discord_core_api::speaking_data>;
-		static constexpr auto parseValue = createObject("d", &value_type::d);
+		static constexpr auto parseValue = createValue("d", &value_type::d);
 	};
 
 	template<> struct core<discord_core_api::speaking_data> {
 		using value_type				 = discord_core_api::speaking_data;
-		static constexpr auto parseValue = createObject("ssrc", &value_type::ssrc, "user_id", &value_type::userId);
+		static constexpr auto parseValue = createValue("ssrc", &value_type::ssrc, "user_id", &value_type::userId);
 	};
 
 	template<> struct core<discord_core_api::voice_connection_hello_data> {
 		using value_type				 = discord_core_api::voice_connection_hello_data;
-		static constexpr auto parseValue = createObject("heartbeat_interval", &value_type::heartBeatInterval);
+		static constexpr auto parseValue = createValue("heartbeat_interval", &value_type::heartBeatInterval);
 	};
 
 	template<> struct core<discord_core_api::voice_user_disconnect_data> {
 		using value_type				 = discord_core_api::voice_user_disconnect_data;
-		static constexpr auto parseValue = createObject("user_id", &value_type::userId);
+		static constexpr auto parseValue = createValue("user_id", &value_type::userId);
 	};
 
 	template<> struct core<discord_core_api::voice_socket_ready_data> {
 		using value_type				 = discord_core_api::voice_socket_ready_data;
-		static constexpr auto parseValue = createObject("modes", &value_type::modes, "ip", &value_type::ip, "port", &value_type::port, "ssrc", &value_type::ssrc);
+		static constexpr auto parseValue = createValue("modes", &value_type::modes, "ip", &value_type::ip, "port", &value_type::port, "ssrc", &value_type::ssrc);
 	};
 
 }
@@ -919,7 +919,7 @@ namespace discord_core_api {
 		}
 		inputString.insert(inputString.begin(), inputStringFirst.begin(), inputStringFirst.end());
 		inputString			   = inputString.substr(8);
-		const auto endLineFind = inputString.find(static_cast<char>('\u0000'), 6);
+		const auto endLineFind = inputString.find(static_cast<uint8_t>('\u0000'), static_cast<uint64_t>(6));
 		if (endLineFind != jsonifier::string::npos) {
 			inputString = inputString.substr(0, endLineFind);
 		}

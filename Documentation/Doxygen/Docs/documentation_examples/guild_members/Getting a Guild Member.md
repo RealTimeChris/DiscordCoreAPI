@@ -38,7 +38,7 @@ namespace discord_core_api {
 
 				auto guildMember01 = guild_members::getCachedGuildMember(dataPackage).get();
 
-				auto guildMember02 = guild_members::getGuildMemberAsync(const dataPackage).get();
+				auto guildMember02 = guild_members::getGuildMemberAsync(dataPackage).get();
 
 
 			} catch (...) {

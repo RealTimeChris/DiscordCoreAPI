@@ -48,7 +48,7 @@ namespace discord_core_api {
 			dataPackage.responseData = newVector;
 			dataPackage.guildId = args.eventData.getGuildId();
 
-			auto returnValue = application_commands::bulkOverwriteGuildApplicationCommandsAsync(const dataPackage).get();
+			auto returnValue = application_commands::bulkOverwriteGuildApplicationCommandsAsync(dataPackage).get();
 
 			for (const auto& value: returnValue) {
 				std::cout << "command name: " << value.name << std::endl;

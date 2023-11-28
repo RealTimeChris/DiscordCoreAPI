@@ -251,7 +251,7 @@ namespace discord_core_api {
 		  public:
 			https_client(jsonifier::string_view botTokenNew);
 
-			template<typename value_type, typename string_type> void getParseErrors(jsonifier::jsonifier_core& parser, value_type& value, string_type& stringNew) {
+			template<typename value_type, typename string_type> void getParseErrors(jsonifier::jsonifier_core<false>& parser, value_type& value, string_type& stringNew) {
 				parser.parseJson(value, stringNew);
 				if (auto result = parser.getErrors(); result.size() > 0) {
 					for (auto& valueNew: result) {

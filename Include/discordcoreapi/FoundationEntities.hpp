@@ -2746,6 +2746,8 @@ namespace discord_core_api {
 
 		operator interaction_callback_data() const;
 
+		inline respond_to_input_event_data() noexcept = default;
+
 		respond_to_input_event_data& operator=(const interaction_data dataPackage);
 
 		respond_to_input_event_data(const interaction_data dataPackage);

@@ -32,7 +32,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			channel channel = discord_core_api::channels::getCachedChannel({args.eventData.getChannelId()}).get();
 
-			channel channel = discord_core_api::channels::getChannelAsync(const {args.eventData.getChannelId()}).get();
+			channel channel = discord_core_api::channels::getChannelAsync({args.eventData.getChannelId()}).get();
 		}
 	};
 }

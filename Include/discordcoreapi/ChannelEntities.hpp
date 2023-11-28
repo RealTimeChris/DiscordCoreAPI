@@ -167,72 +167,72 @@ namespace discord_core_api {
 		/// @brief Collects a channel from the discord servers.
 		/// @param dataPackage a get_channel_data structure.
 		/// @return a co_routine containing a channel.
-		static co_routine<channel_data> getChannelAsync(const get_channel_data dataPackage);
+		static co_routine<channel_data> getChannelAsync(get_channel_data dataPackage);
 
 		/// @brief Collects a channel from the library's cache.
 		/// @param dataPackage a get_channel_data structure.
 		/// @return a co_routine containing a channel.
-		static channel_cache_data getCachedChannel(const get_channel_data dataPackage);
+		static channel_cache_data getCachedChannel(get_channel_data dataPackage);
 
 		/// @brief Modifies a channel's properties.
 		/// @param dataPackage a modify_channel_data structure.
 		/// @return a co_routine containing a channel.
-		static co_routine<channel_data> modifyChannelAsync(const modify_channel_data dataPackage);
+		static co_routine<channel_data> modifyChannelAsync(modify_channel_data dataPackage);
 
 		/// @brief Delete a channel, or close a protected message.
 		/// @param dataPackage a delete_or_close_channel_data structure.
 		/// @return a co_routine containing a channel.
-		static co_routine<void> deleteOrCloseChannelAsync(const delete_or_close_channel_data dataPackage);
+		static co_routine<void> deleteOrCloseChannelAsync(delete_or_close_channel_data dataPackage);
 
 		/// @brief Edit the given jsonifier::string overwrites for a given user or role_data.
 		/// @param dataPackage an edit_channel_permission_overwrites_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> editChannelPermissionOverwritesAsync(const edit_channel_permission_overwrites_data dataPackage);
+		static co_routine<void> editChannelPermissionOverwritesAsync(edit_channel_permission_overwrites_data dataPackage);
 
 		/// @brief Collects a vector of the invites to a given channel.
 		/// @param dataPackage a get_channel_invites_data structure.
 		/// @return a co_routine containing a jsonifier::vector<invite_data>.
-		static co_routine<jsonifier::vector<invite_data>> getChannelInvitesAsync(const get_channel_invites_data dataPackage);
+		static co_routine<jsonifier::vector<invite_data>> getChannelInvitesAsync(get_channel_invites_data dataPackage);
 
 		/// @brief Creates an invite to a selected channel_data.
 		/// @param dataPackage a create_channel_invite_data structure.
 		/// @return a co_routine containing an invite_data.
-		static co_routine<invite_data> createChannelInviteAsync(const create_channel_invite_data dataPackage);
+		static co_routine<invite_data> createChannelInviteAsync(create_channel_invite_data dataPackage);
 
 		/// @brief Delete the given jsonifier::string overwrites for a given user or role_data.
 		/// @param dataPackage a delete_channel_permission_overwrites_data structure
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteChannelPermissionOverwritesAsync(const delete_channel_permission_overwrites_data dataPackage);
+		static co_routine<void> deleteChannelPermissionOverwritesAsync(delete_channel_permission_overwrites_data dataPackage);
 
 		/// @brief Follows a given new channel_data with another channel_data.
 		/// @param dataPackage a follow_news_channel_data structure.
 		/// @return a co_routine containing a channel.
-		static co_routine<channel_data> followNewsChannelAsync(const follow_news_channel_data dataPackage);
+		static co_routine<channel_data> followNewsChannelAsync(follow_news_channel_data dataPackage);
 
 		/// @brief Triggers the typing indicator for the bot in the given channel.
 		/// @param dataPackage a trigger_typing_indicator_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> triggerTypingIndicatorAsync(const trigger_typing_indicator_data dataPackage);
+		static co_routine<void> triggerTypingIndicatorAsync(trigger_typing_indicator_data dataPackage);
 
 		/// @brief Collects a list of channels from a chosen guild_data.
 		/// @param dataPackage a get_guild_channels_data structure.
 		/// @return a co_routine containing a jsonifier::vector<channel_data>.
-		static co_routine<jsonifier::vector<channel_data>> getGuildChannelsAsync(const get_guild_channels_data dataPackage);
+		static co_routine<jsonifier::vector<channel_data>> getGuildChannelsAsync(get_guild_channels_data dataPackage);
 
 		/// @brief Creates a new channel_data within a chosen guild_data.
 		/// @param dataPackage a create_guild_channel_data structure.
 		/// @return a co_routine containing a channel.
-		static co_routine<channel_data> createGuildChannelAsync(const create_guild_channel_data dataPackage);
+		static co_routine<channel_data> createGuildChannelAsync(create_guild_channel_data dataPackage);
 
 		/// @brief Re-orders the channel_data positions, within a chosen guild_data.
 		/// @param dataPackage a modify_guild_channel_positions_data  structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> modifyGuildChannelPositionsAsync(const modify_guild_channel_positions_data dataPackage);
+		static co_routine<void> modifyGuildChannelPositionsAsync(modify_guild_channel_positions_data dataPackage);
 
 		/// @brief Collect a direct-message_data channel between the bot and the user_data.
 		/// @param dataPackage a create_dmchannel_data structure.
 		/// @return a co_routine containing a channel.
-		static co_routine<channel_data> createDMChannelAsync(const create_dmchannel_data dataPackage);
+		static co_routine<channel_data> createDMChannelAsync(create_dmchannel_data dataPackage);
 
 		/// @brief Collect a list of voice regions that are usable for the rtc-region option of a given channel.
 		/// @return a co_routine containing a voice_region_data_vector.

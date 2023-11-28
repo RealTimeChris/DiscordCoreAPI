@@ -31,13 +31,13 @@ Connecting To/Disconnecting From a Voice Channel {#connecting_and_disconnecting}
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData);
+			input_events::deleteInputEventResponseAsync(args.eventData);
 
 			guild_member_data guildMember =
-				guild_members::getGuildMemberAsync(const {.guildMemberId = args.eventData.getAuthorId(), .guildId = args.eventData.getGuildId()})
+				guild_members::getGuildMemberAsync({.guildMemberId = args.eventData.getAuthorId(), .guildId = args.eventData.getGuildId()})
 					.get();
 
-			guild_data guild_data = guilds::getGuildAsync(const {.guildId = args.eventData.getGuildId()}).get();
+			guild_data guild_data = guilds::getGuildAsync({.guildId = args.eventData.getGuildId()}).get();
 
 			auto voiceConnection = guild_data.connectToVoice(guildMember.voiceData.channelId);
 

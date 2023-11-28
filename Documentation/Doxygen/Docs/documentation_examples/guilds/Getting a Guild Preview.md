@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_preview_data& dataPackage00;
 				dataPackage00.guildId = args.eventData.getGuildId();
 
-				auto guild_data = guilds::getGuildPreviewAsync(const dataPackage00).get();
+				auto guild_data = guilds::getGuildPreviewAsync(dataPackage00).get();
 
 				std::cout << "the name: " << guild_data.name << std::endl;
 

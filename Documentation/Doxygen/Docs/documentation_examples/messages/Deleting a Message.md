@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.timeDelay = 500;
 				dataPackage.messageData = args.eventData.getMessageData();
 
-				messages::deleteMessageAsync(const dataPackage).get();
+				messages::deleteMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

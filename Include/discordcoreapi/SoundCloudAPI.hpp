@@ -84,13 +84,13 @@ namespace discord_core_api {
 			jsonifier::string url{};
 		};
 
-		struct media {
-			jsonifier::vector<transcoding> transcodings{};
-		};
-
 		struct second_download_url {
 			jsonifier::string url{};
 		};
+
+		struct media {
+			std::vector<transcoding> transcodings{};
+		}; 
 
 		struct raw_sound_cloud_song {
 			jsonifier::string trackAuthorization{};
@@ -106,14 +106,7 @@ namespace discord_core_api {
 			jsonifier::vector<raw_sound_cloud_song> collection{};
 		};
 
-		struct visual {
-			jsonifier::string visualUrl{};
-			int64_t entryTime{};
-			jsonifier::string urn{};
-		};
-
 		struct data_class {
-			discord_core_api::discord_core_internal::media media{};
 			jsonifier::string trackAuthorization{};
 			jsonifier::string description{};
 			jsonifier::string artworkUrl{};
@@ -121,17 +114,16 @@ namespace discord_core_api {
 			jsonifier::string viewUrl{};
 			jsonifier::string title{};
 			int64_t duration{};
-			jsonifier::string url{};
-			int64_t id{};
+			media mediaVal{};
 		};
 
 		struct welcome_element {
+			jsonifier::raw_json_data data{};
 			jsonifier::string hydratable{};
-			data_class data{};
 		};
 
-		struct final_data {
-			jsonifier::vector<welcome_element> data{};
+		struct welcome {
+			std::vector<welcome_element> data{};
 		};
 	};
-}
+};

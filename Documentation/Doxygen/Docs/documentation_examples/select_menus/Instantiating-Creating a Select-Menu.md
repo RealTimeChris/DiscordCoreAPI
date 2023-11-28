@@ -31,7 +31,7 @@ Instantiating/Creating a Select-Menu {#creating_a_select_menu}
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData).get();
+			input_events::deleteInputEventResponseAsync(args.eventData).get();
 
 			select_option_data selectOption;
 			selectOption.label = "select menu";
@@ -46,7 +46,7 @@ Instantiating/Creating a Select-Menu {#creating_a_select_menu}
 			dataPackage.addMessageEmbed(embed_data {.description = "testing!", .title = "test title"});
 			dataPackage.type = input_event_response_type::Interaction_Response;
 
-			auto inputEventData = input_events::respondToInputEventAsync(const dataPackage);
+			auto inputEventData = input_events::respondToInputEventAsync(dataPackage);
 		}
 	};
 }

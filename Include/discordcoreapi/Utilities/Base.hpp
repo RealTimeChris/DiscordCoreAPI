@@ -157,7 +157,7 @@ using namespace std::literals;
 
 namespace discord_core_api {
 
-	inline thread_local jsonifier::jsonifier_core parser{};
+	inline thread_local jsonifier::jsonifier_core<false> parser{};
 
 	template<typename value_type> using stop_watch = jsonifier_internal::stop_watch<value_type>;
 	using sys_clock								   = std::chrono::system_clock;
@@ -706,7 +706,7 @@ namespace discord_core_api {
 						return *this;
 					}
 				}
-				id = jsonifier::strToUint64(other.data());
+				id = jsonifier::strToUint64(other);
 			}
 			return *this;
 		}

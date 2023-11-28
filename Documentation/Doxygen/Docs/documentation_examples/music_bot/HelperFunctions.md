@@ -19,7 +19,7 @@ Helper Functions {#HelperFunctions}
 				unique_ptr<respond_to_input_event_data> responseData(makeUnique<respond_to_input_event_data>(eventData));
 				responseData->setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 				responseData->addMessageEmbed(*msgEmbed);
-				auto event01 = input_events::respondToInputEventAsync(const *responseData);
+				auto event01 = input_events::respondToInputEventAsync(*responseData);
 			}
 			return true;
 		}
@@ -50,7 +50,7 @@ Helper Functions {#HelperFunctions}
 				replyMessageData->addMessageEmbed(*msgEmbed);
 				;
 				replyMessageData->setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
-				input_events::respondToInputEventAsync(const *replyMessageData);
+				input_events::respondToInputEventAsync(*replyMessageData);
 			}
 		}
 		return isItFound;
@@ -63,7 +63,7 @@ Helper Functions {#HelperFunctions}
 		bool doWeHaveControl = false;
 		discord_guild_member guildMemberData(guildMember);
 
-		auto myRoles = roles::getGuildMemberRolesAsync(const {.guildMember = guildMember, .guildId = guildData.data.guildId}).get();
+		auto myRoles = roles::getGuildMemberRolesAsync({.guildMember = guildMember, .guildId = guildData.data.guildId}).get();
 
 		for (const auto& value: myRoles) {
 			if (value.id == guildData.data.djRoleId) {
@@ -82,7 +82,7 @@ Helper Functions {#HelperFunctions}
 			unique_ptr<respond_to_input_event_data> dataPackage(makeUnique<respond_to_input_event_data>(eventData));
 			dataPackage->addMessageEmbed(*msgEmbed);
 			dataPackage->setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
-			input_events::respondToInputEventAsync(const *dataPackage);
+			input_events::respondToInputEventAsync(*dataPackage);
 		}
 		return doWeHaveControl;
 	}
@@ -125,7 +125,7 @@ Helper Functions {#HelperFunctions}
 			unique_ptr<respond_to_input_event_data> dataPackage(makeUnique<respond_to_input_event_data>(eventData));
 			dataPackage->addMessageEmbed(*msgEmbed);
 			dataPackage->setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
-			input_events::respondToInputEventAsync(const *dataPackage);
+			input_events::respondToInputEventAsync(*dataPackage);
 		}
 		return false;
 	}

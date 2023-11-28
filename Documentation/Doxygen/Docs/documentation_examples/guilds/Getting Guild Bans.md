@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_bans_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto guildBans = guilds::getGuildBansAsync(const dataPackage01).get();
+				auto guildBans = guilds::getGuildBansAsync(dataPackage01).get();
 
 				for (const auto& value: guildBans) {
 					std::cout << "the ban name: " << value.user.userName << std::endl;

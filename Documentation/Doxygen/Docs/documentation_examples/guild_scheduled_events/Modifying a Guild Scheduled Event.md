@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_scheduled_events_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.withUserCount = true;
-				auto responseData01 = guild_scheduled_events::getGuildScheduledEventsAsync(const dataPackage01).get();
+				auto responseData01 = guild_scheduled_events::getGuildScheduledEventsAsync(dataPackage01).get();
 
 				modify_guild_scheduled_event_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
@@ -49,7 +49,7 @@ namespace discord_core_api {
 				dataPackage.status = guild_scheduled_event_status::scheduled;
 				dataPackage.entityMetadata.location = "here or there!";
 
-				auto responseData = guild_scheduled_events::modifyGuildScheduledEventAsync(const dataPackage).get();
+				auto responseData = guild_scheduled_events::modifyGuildScheduledEventAsync(dataPackage).get();
 
 				std::cout << "the name: " << responseData.name << std::endl;
 

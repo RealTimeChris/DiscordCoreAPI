@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.limit = 20;
 				dataPackage.query = "real";
 
-				auto guildMembers = guild_members::searchGuildMembersAsync(const dataPackage).get();
+				auto guildMembers = guild_members::searchGuildMembersAsync(dataPackage).get();
 
 				for (const auto& value: guildMembers) {
 					std::cout << "the name: " << value.user.userName << std::endl;

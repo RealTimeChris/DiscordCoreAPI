@@ -31,13 +31,13 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData);
+			input_events::deleteInputEventResponseAsync(args.eventData);
 
 			delete_guild_application_command_data& dataPackage01;
 			dataPackage01.name = "botinfo";
 			dataPackage01.guildId = args.eventData.getGuildId();
 
-			application_commands::deleteGuildApplicationCommandAsync(const dataPackage01).get();
+			application_commands::deleteGuildApplicationCommandAsync(dataPackage01).get();
 		}
 	};
 }

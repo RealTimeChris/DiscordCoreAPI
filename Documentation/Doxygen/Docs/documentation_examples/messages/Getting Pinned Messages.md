@@ -36,7 +36,7 @@ namespace discord_core_api {
 				get_pinned_messages_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				vector<message> messagesVector = messages::getPinnedMessagesAsync(const dataPackage).get();
+				vector<message> messagesVector = messages::getPinnedMessagesAsync(dataPackage).get();
 
 				for (const auto& value: messagesVector) {
 					std::cout << "the id: " << value.id << std::endl;

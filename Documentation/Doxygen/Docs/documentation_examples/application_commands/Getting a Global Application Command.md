@@ -36,7 +36,7 @@ namespace discord_core_api {
 			get_global_application_command_data& dataPackage;
 			dataPackage.commandId = globalApplicationCommands.at(0).data.id;
 
-			auto globalApplicationCommand = application_commands::getGlobalApplicationCommandAsync(const dataPackage).get();
+			auto globalApplicationCommand = application_commands::getGlobalApplicationCommandAsync(dataPackage).get();
 
 			std::cout << globalApplicationCommand.data.name << std::endl;
 		}

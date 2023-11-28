@@ -35,7 +35,7 @@ namespace discord_core_api {
 				join_thread_data& dataPackage;
 				dataPackage.channelId = "909400437902413896";
 
-				threads::joinThreadAsync(const dataPackage).get();
+				threads::joinThreadAsync(dataPackage).get();
 
 
 			} catch (...) {

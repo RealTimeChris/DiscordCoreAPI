@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_roles_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto rolesVector = roles::getGuildRolesAsync(const dataPackage01).get();
+				auto rolesVector = roles::getGuildRolesAsync(dataPackage01).get();
 
 				for (const auto& value: rolesVector) {
 					std::cout << "role name: " << value.name << std::endl;

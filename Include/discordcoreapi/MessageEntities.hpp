@@ -206,52 +206,52 @@ namespace discord_core_api {
 		/// @brief Collects a collection of message from the discord servers
 		/// @param dataPackage a get_messages_data structure.
 		/// @return A co_routine containing a jsonifier::vector<message_data>.
-		static co_routine<jsonifier::vector<message_data>> getMessagesAsync(const get_messages_data dataPackage);
+		static co_routine<jsonifier::vector<message_data>> getMessagesAsync(get_messages_data dataPackage);
 
 		/// @brief Collects a message from the discord servers.
 		/// @param dataPackage a get_message_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> getMessageAsync(const get_message_data dataPackage);
+		static co_routine<message_data> getMessageAsync(get_message_data dataPackage);
 
 		/// @brief Creates a new message_data.
 		/// @param dataPackage a create_message_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> createMessageAsync(const create_message_data dataPackage);
+		static co_routine<message_data> createMessageAsync(create_message_data dataPackage);
 
 		/// @brief Crossposts a message from a news channel_data to the following channels.
 		/// @param dataPackage a crosspost_message_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<message_data> crosspostMessageAsync(const crosspost_message_data dataPackage);
+		static co_routine<message_data> crosspostMessageAsync(crosspost_message_data dataPackage);
 
 		/// @brief Edit a message.
 		/// @param dataPackage an edit_message_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> editMessageAsync(const edit_message_data dataPackage);
+		static co_routine<message_data> editMessageAsync(edit_message_data dataPackage);
 
 		/// @brief Deletes a message.
 		/// @param dataPackage a delete_message_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteMessageAsync(const delete_message_data dataPackage);
+		static co_routine<void> deleteMessageAsync(delete_message_data dataPackage);
 
 		/// @brief Deletes a collection of messages.
 		/// @param dataPackage a delete_messages_bulk_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteMessagesBulkAsync(const delete_messages_bulk_data dataPackage);
+		static co_routine<void> deleteMessagesBulkAsync(delete_messages_bulk_data dataPackage);
 
 		/// @brief Collects a collection of pinned messages from the discord servers.
 		/// @param dataPackage a get_pinned_messages_data structure.
 		/// @return A co_routine containing a jsonifier::vector<message_data>.
-		static co_routine<jsonifier::vector<message_data>> getPinnedMessagesAsync(const get_pinned_messages_data dataPackage);
+		static co_routine<jsonifier::vector<message_data>> getPinnedMessagesAsync(get_pinned_messages_data dataPackage);
 
 		/// @brief Pins a message to a given channel.
 		/// @param dataPackage a pin_message_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> pinMessageAsync(const pin_message_data dataPackage);
+		static co_routine<void> pinMessageAsync(pin_message_data dataPackage);
 
 		/// @brief Unpins a message from a given channel.
 		/// @param dataPackage an unpin_message_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> unpinMessageAsync(const unpin_message_data dataPackage);
+		static co_routine<void> unpinMessageAsync(unpin_message_data dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;

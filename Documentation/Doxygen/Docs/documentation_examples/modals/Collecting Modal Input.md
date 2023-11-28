@@ -35,13 +35,13 @@ Collecting Modal Input {#collecting_modal_input}
 				dataPackage.addModal("test modal", "test_modal", "test modal small", "test_modal", true, 1, 46, text_input_style::paragraph, "test modal",
 									 "test_modal");
 				dataPackage.type = input_event_response_type::Interaction_Response;
-				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+				auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 				modal_collector modalCollector {newEvent};
 				auto modalReturnData = modalCollector.collectModalData(120000).get();
 				respond_to_input_event_data& dataPackage03 {modalReturnData};
 				dataPackage03.addContent(modalReturnData.value);
 				dataPackage03.type = input_event_response_type::Interaction_Response;
-				input_events::respondToInputEventAsync(const dataPackage03);
+				input_events::respondToInputEventAsync(dataPackage03);
 
 
 			} catch (...) {

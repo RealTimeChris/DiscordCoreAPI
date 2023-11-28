@@ -30,17 +30,17 @@ Editing an Interaction Response {#editing_an_interaction_response}
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData).get();
+			input_events::deleteInputEventResponseAsync(args.eventData).get();
 
 			respond_to_input_event_data& dataPackage02 {args.eventData};
 			dataPackage02.type = input_event_response_type::Ephemeral_Interaction_Response;
 			dataPackage02.addContent("test response");
-			auto inputEventData = input_events::respondToInputEventAsync(const dataPackage02).get();
+			auto inputEventData = input_events::respondToInputEventAsync(dataPackage02).get();
 
 			respond_to_input_event_data& dataPackage03 {inputEventData};
 			dataPackage03.type = input_event_response_type::Edit_Interaction_Response;
 			dataPackage03.addContent("test response, edited!");
-			input_events::respondToInputEventAsync(const dataPackage03).get();
+			input_events::respondToInputEventAsync(dataPackage03).get();
 		}
 	};
 }

@@ -35,13 +35,13 @@ namespace discord_core_api {
 				get_guild_scheduled_events_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.withUserCount = true;
-				auto responseData01 = guild_scheduled_events::getGuildScheduledEventsAsync(const dataPackage01).get();
+				auto responseData01 = guild_scheduled_events::getGuildScheduledEventsAsync(dataPackage01).get();
 
 				delete_guild_scheduled_event_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.guildScheduledEventId = responseData01[0].id;
 
-				guild_scheduled_events::deleteGuildScheduledEventAsync(const dataPackage).get();
+				guild_scheduled_events::deleteGuildScheduledEventAsync(dataPackage).get();
 
 
 			} catch (...) {

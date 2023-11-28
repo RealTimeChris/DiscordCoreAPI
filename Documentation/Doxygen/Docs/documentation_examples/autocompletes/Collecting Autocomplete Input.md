@@ -19,10 +19,10 @@ void theAutoCompleteFunction(on_auto_complete_entry_data dataPackage) {
 	if (dataPackage.inputEvent.getInteractionData().data.applicationCommandData.options[0].valueString.find("tes") != jsonifier::string::npos) {
 		dataPackageNew.setAutoCompleteChoice("the test value", "test_value_name");
 		dataPackageNew.setResponseType(input_event_response_type::Application_Command_AutoComplete_Result);
-		input_events::respondToInputEventAsync(const dataPackageNew).get();
+		input_events::respondToInputEventAsync(dataPackageNew).get();
 	} else {
 		dataPackageNew.setResponseType(input_event_response_type::Application_Command_AutoComplete_Result);
-		input_events::respondToInputEventAsync(const dataPackageNew).get();
+		input_events::respondToInputEventAsync(dataPackageNew).get();
 	}
 }
 

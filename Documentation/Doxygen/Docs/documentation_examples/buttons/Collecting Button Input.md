@@ -35,21 +35,21 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData).get();
+			input_events::deleteInputEventResponseAsync(args.eventData).get();
 
 			respond_to_input_event_data& dataPackage {args.eventData};
 			dataPackage.addButton(false, "test_button", "test button", "✅", button_style::danger);
 			dataPackage.addContent("test response");
 			dataPackage.addMessageEmbed(embed_data {.description = "testing!", .title = "test title"});
 			dataPackage.type = input_event_response_type::Interaction_Response;
-			auto inputEventData = input_events::respondToInputEventAsync(const dataPackage).get();
+			auto inputEventData = input_events::respondToInputEventAsync(dataPackage).get();
 
 			button_collector buttonCollector {inputEventData};
 			auto results = buttonCollector.collectButtonData(false, 2334, 1, "").get();
 			for (const auto& value: results) {
 				std::cout << value.userId << std::endl;
 			}
-			input_events::deleteInputEventResponseAsync(const inputEventData).get();
+			input_events::deleteInputEventResponseAsync(inputEventData).get();
 		}
 	};
 }

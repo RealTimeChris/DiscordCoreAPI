@@ -31,13 +31,13 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData).get();
+			input_events::deleteInputEventResponseAsync(args.eventData).get();
 
 			get_guild_application_command_permissions_data& dataPackage02;
 			dataPackage02.guildId = args.eventData.getGuildId();
 			dataPackage02.applicationId = discord_core_client::getInstance()->getBotUser().id;
 
-			auto returnValue = application_commands::getApplicationCommandPermissionsAsync(const dataPackage02).get();
+			auto returnValue = application_commands::getApplicationCommandPermissionsAsync(dataPackage02).get();
 
 			std::cout << returnValue.applicationId << std::endl;
 		}

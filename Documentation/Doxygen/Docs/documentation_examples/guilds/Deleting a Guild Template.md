@@ -35,13 +35,13 @@ namespace discord_core_api {
 				get_guild_templates_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto responseVector = guilds::getGuildTemplatesAsync(const dataPackage).get();
+				auto responseVector = guilds::getGuildTemplatesAsync(dataPackage).get();
 
 				delete_guild_template_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.templateCode = responseVector[0].code;
 
-				guilds::deleteGuildTemplateAsync(const dataPackage01).get();
+				guilds::deleteGuildTemplateAsync(dataPackage01).get();
 
 				std::cout << "the name: " << responseData.name << std::endl;
 

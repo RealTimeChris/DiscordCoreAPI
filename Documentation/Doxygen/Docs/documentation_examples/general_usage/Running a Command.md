@@ -33,7 +33,7 @@ namespace discord_core_api {
 				respond_to_input_event_data& dataPackage {args.eventData};
 				dataPackage.addContent("test message!");
 				dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response)
-				input_events::respondToInputEventAsync(const dataPackage);
+				input_events::respondToInputEventAsync(dataPackage);
 		}
 	};
 }

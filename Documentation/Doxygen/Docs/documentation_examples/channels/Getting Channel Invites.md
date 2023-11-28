@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_channel_invites_data dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				vector<discord_core_api::invite_data> channelInvites = discord_core_api::channels::getChannelInvitesAsync(const dataPackage).get();
+				vector<discord_core_api::invite_data> channelInvites = discord_core_api::channels::getChannelInvitesAsync(dataPackage).get();
 
 				std::cout << "the invites: " << std::endl;
 				for (const auto& value: channelInvites) {

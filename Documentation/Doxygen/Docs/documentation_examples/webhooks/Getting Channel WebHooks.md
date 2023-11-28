@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_channel_web_hooks_data& dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				auto newWebHooks = discord_core_api::web_hooks::getChannelWebHooksAsync(const dataPackage).get();
+				auto newWebHooks = discord_core_api::web_hooks::getChannelWebHooksAsync(dataPackage).get();
 
 				for (auto& value: newWebHooks) {
 					std::cout << "the name: " << value.name << std::endl;

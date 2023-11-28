@@ -37,7 +37,7 @@ namespace discord_core_api {
 					if (value.name == "newer test guild_data two!") {
 						delete_guild_data dataPackage;
 						dataPackage.guildId = value.id;
-						guilds::deleteGuildAsync(const dataPackage).get();
+						guilds::deleteGuildAsync(dataPackage).get();
 					};
 				}
 

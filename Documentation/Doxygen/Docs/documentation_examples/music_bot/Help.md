@@ -107,10 +107,10 @@ namespace discord_core_api {
 					if (isItFirst) {
 						responseData.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 						isItFirst = false;
-						newEvent01 = input_events::respondToInputEventAsync(const responseData).get();
+						newEvent01 = input_events::respondToInputEventAsync(responseData).get();
 					} else {
 						responseData.setResponseType(input_event_response_type::Edit_Interaction_Response);
-						newEvent01 = input_events::respondToInputEventAsync(const responseData).get();
+						newEvent01 = input_events::respondToInputEventAsync(responseData).get();
 					}
 					unique_ptr<button_collector> button{ makeUnique<button_collector>(newEvent01) };
 					auto buttonData = button->collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
@@ -143,7 +143,7 @@ namespace discord_core_api {
 							respond_to_input_event_data responseData03(*buttonData.at(0).interactionData);
 							responseData03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 							responseData03.addMessageEmbed(msgEmbed00);
-							newEvent = input_events::respondToInputEventAsync(const responseData03).get();
+							newEvent = input_events::respondToInputEventAsync(responseData03).get();
 							break;
 						}
 						counter02 = 0;
@@ -153,7 +153,7 @@ namespace discord_core_api {
 								break;
 							}
 						}
-						newEvent = input_events::respondToInputEventAsync(const editInteractionResponseData00.at(counter02)).get();
+						newEvent = input_events::respondToInputEventAsync(editInteractionResponseData00.at(counter02)).get();
 					} else {
 						break;
 					}
@@ -177,7 +177,7 @@ namespace discord_core_api {
 							numberEmojiId.emplace_back(customId);
 						}
 						responseData02.addButton(false, "exit", "exit", button_style::danger, "❌");
-						newEvent = input_events::respondToInputEventAsync(const responseData02).get();
+						newEvent = input_events::respondToInputEventAsync(responseData02).get();
 						continue;
 					}
 
@@ -186,19 +186,19 @@ namespace discord_core_api {
 					responseData02.addMessageEmbed(newEmbed);
 					responseData02.addButton(false, "back", "back", button_style::success, "🔙");
 					responseData02.addButton(false, "exit", "exit", button_style::success, "❌");
-					newEvent = input_events::respondToInputEventAsync(const responseData02).get();
+					newEvent = input_events::respondToInputEventAsync(responseData02).get();
 					auto buttonReturnData02 = button_collector{ newEvent01 }.collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					if (buttonReturnData02.at(0).buttonId == "back") {
 						responseData = respond_to_input_event_data{ *buttonReturnData02.at(0).interactionData };
 						responseData.setResponseType(input_event_response_type::Deferred_Response);
-						auto interactionData = input_events::respondToInputEventAsync(const responseData).get().getInteractionData();
+						auto interactionData = input_events::respondToInputEventAsync(responseData).get().getInteractionData();
 						responseData = respond_to_input_event_data{ interactionData };
 						continue;
 					} else if (buttonReturnData02.at(0).buttonId == "exit" || buttonReturnData02.at(0).buttonId == "empty") {
 						respond_to_input_event_data responseData03(*buttonReturnData02.at(0).interactionData);
 						responseData03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 						responseData03.addMessageEmbed(newEmbed);
-						newEvent = input_events::respondToInputEventAsync(const responseData03).get();
+						newEvent = input_events::respondToInputEventAsync(responseData03).get();
 						break;
 					}
 				}

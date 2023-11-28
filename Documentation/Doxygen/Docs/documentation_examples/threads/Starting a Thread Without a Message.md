@@ -40,7 +40,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.threadName = "new thread";
 
-				channel newThread = threads::startThreadWithoutMessageAsync(const dataPackage).get();
+				channel newThread = threads::startThreadWithoutMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

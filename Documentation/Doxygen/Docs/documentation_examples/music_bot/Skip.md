@@ -64,7 +64,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
@@ -85,7 +85,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
@@ -100,7 +100,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
@@ -114,7 +114,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage02(newArgs.eventData);
 					dataPackage02.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage02.addMessageEmbed(newEmbed);
-					input_events::respondToInputEventAsync(const dataPackage02).get();
+					input_events::respondToInputEventAsync(dataPackage02).get();
 
 					return;
 				}
@@ -130,7 +130,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage02(newArgs.eventData);
 					dataPackage02.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage02.addMessageEmbed(msgEmbed);
-					input_events::respondToInputEventAsync(const dataPackage02).get();
+					input_events::respondToInputEventAsync(dataPackage02).get();
 
 					return;
 				}
@@ -146,7 +146,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage02(newArgs.eventData);
 					dataPackage02.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage02.addMessageEmbed(msgEmbed02);
-					input_events::respondToInputEventAsync(const dataPackage02).get();
+					input_events::respondToInputEventAsync(dataPackage02).get();
 
 					return;
 				} else {
@@ -161,7 +161,7 @@ namespace discord_core_api {
 						respond_to_input_event_data& dataPackage02(newArgs.eventData);
 						dataPackage02.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 						dataPackage02.addMessageEmbed(msgEmbed02);
-						auto newEvent02 = input_events::respondToInputEventAsync(const dataPackage02).get();
+						auto newEvent02 = input_events::respondToInputEventAsync(dataPackage02).get();
 						song_api::skip(guildMember);
 						savePlaylist(discordGuild);
 					} else if (!song_api::isThereAnySongs(guild_data.id)) {
@@ -183,7 +183,7 @@ namespace discord_core_api {
 						respond_to_input_event_data& dataPackage02(newArgs.eventData);
 						dataPackage02.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 						dataPackage02.addMessageEmbed(newEmbed);
-						input_events::respondToInputEventAsync(const dataPackage02).get();
+						input_events::respondToInputEventAsync(dataPackage02).get();
 						return;
 					} else {
 						jsonifier::string msgString = "------\n**there's no music playing to be skipped!**\n------";
@@ -196,7 +196,7 @@ namespace discord_core_api {
 						respond_to_input_event_data& dataPackage02(newArgs.eventData);
 						dataPackage02.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 						dataPackage02.addMessageEmbed(msgEmbed02);
-						input_events::respondToInputEventAsync(const dataPackage02).get();
+						input_events::respondToInputEventAsync(dataPackage02).get();
 						return;
 					}
 				}

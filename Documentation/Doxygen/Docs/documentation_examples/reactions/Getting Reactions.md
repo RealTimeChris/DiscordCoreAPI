@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage.emoji = "😆";
 				dataPackage.limit = 50;
 
-				vector<user> usersResponse = reactions::getReactionsAsync(const dataPackage).get();
+				vector<user> usersResponse = reactions::getReactionsAsync(dataPackage).get();
 
 
 			} catch (...) {

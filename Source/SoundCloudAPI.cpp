@@ -39,44 +39,44 @@ namespace jsonifier {
 	template<> struct core<discord_core_api::discord_core_internal::data_class> {
 		using value_type = discord_core_api::discord_core_internal::data_class;
 		static constexpr auto parseValue =
-			createObject("artwork_url", &value_type::artworkUrl, "description", &value_type::description, "duration", &value_type::duration, "media", &value_type::media, "title",
+			createValue("artwork_url", &value_type::artworkUrl, "description", &value_type::description, "duration", &value_type::duration, "media", &value_type::mediaVal, "title",
 				&value_type::title, "track_authorization", &value_type::trackAuthorization, "avatar_url", &value_type::avatarUrl, "permalink_url", &value_type::viewUrl);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::welcome_element> {
-		using value_type					 = discord_core_api::discord_core_internal::welcome_element;
-		static constexpr auto parseValue = createObject("data", &value_type::data, "hydratable", &value_type::hydratable);
+		using value_type				 = discord_core_api::discord_core_internal::welcome_element;
+		static constexpr auto parseValue = createValue("data", &value_type::data, "hydratable", &value_type::hydratable);
 	};
 
-	template<> struct core<discord_core_api::discord_core_internal::final_data> {
-		using value_type					 = discord_core_api::discord_core_internal::final_data;
-		static constexpr auto parseValue = createObject("data", &value_type::data);
+	template<> struct core<discord_core_api::discord_core_internal::welcome> {
+		using value_type				 = discord_core_api::discord_core_internal::welcome;
+		static constexpr auto parseValue = createScalarValue(&value_type::data);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::media> {
-		using value_type					 = discord_core_api::discord_core_internal::media;
-		static constexpr auto parseValue = createObject("transcodings", &value_type::transcodings);
+		using value_type				 = discord_core_api::discord_core_internal::media;
+		static constexpr auto parseValue = createValue("transcodings", &value_type::transcodings);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::second_download_url> {
-		using value_type					 = discord_core_api::discord_core_internal::second_download_url;
-		static constexpr auto parseValue = createObject("url", &value_type::url);
+		using value_type				 = discord_core_api::discord_core_internal::second_download_url;
+		static constexpr auto parseValue = createValue("url", &value_type::url);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::transcoding> {
-		using value_type					 = discord_core_api::discord_core_internal::transcoding;
-		static constexpr auto parseValue = createObject("preset", &value_type::preset, "url", &value_type::url);
+		using value_type				 = discord_core_api::discord_core_internal::transcoding;
+		static constexpr auto parseValue = createValue("preset", &value_type::preset, "url", &value_type::url);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::raw_sound_cloud_song> {
-		using value_type					 = discord_core_api::discord_core_internal::raw_sound_cloud_song;
-		static constexpr auto parseValue = createObject("artwork_url", &value_type::artworkUrl, "description", &value_type::description, "duration", &value_type::duration, "media",
+		using value_type				 = discord_core_api::discord_core_internal::raw_sound_cloud_song;
+		static constexpr auto parseValue = createValue("artwork_url", &value_type::artworkUrl, "description", &value_type::description, "duration", &value_type::duration, "media",
 			&value_type::mediaVal, "title", &value_type::title, "track_authorization", &value_type::trackAuthorization, "permalink_url", &value_type::viewUrl);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::sound_cloud_search_results> {
-		using value_type					 = discord_core_api::discord_core_internal::sound_cloud_search_results;
-		static constexpr auto parseValue = createObject("collection", &value_type::collection);
+		using value_type				 = discord_core_api::discord_core_internal::sound_cloud_search_results;
+		static constexpr auto parseValue = createValue("collection", &value_type::collection);
 	};
 }
 
@@ -102,71 +102,72 @@ namespace discord_core_api {
 			try {
 				https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Search_Results };
 				dataPackage.baseUrl						  = "https://soundcloud.com/";
-				dataPackage.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36";
+				dataPackage.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36";
 				dataPackage.relativePath				  = songQuery;
 				dataPackage.workloadClass				  = https_workload_class::Get;
 				https_response_data returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));
 				song results{};
-				auto findValue = returnData.responseData.find("<script>window.__sc_hydration = ");
-				jsonifier::string addedString{ "{\"data\":" };
+				auto findValue = returnData.responseData.find("window.__sc_hydration = ");
 				if (findValue != jsonifier::string::npos) {
-					returnData.responseData = returnData.responseData.substr(findValue + jsonifier::string{ "<script>window.__sc_hydration = " }.size(),
-						returnData.responseData.find(";</script>") -
-							(returnData.responseData.find("<script>window.__sc_hydration = ") + jsonifier::string{ "<script>window.__sc_hydration = " }.size()));
-					addedString += returnData.responseData + "}";
+					returnData.responseData = returnData.responseData.substr(findValue + jsonifier::string{ "window.__sc_hydration = " }.size(),
+						returnData.responseData.find("</script>") -
+							(returnData.responseData.find("window.__sc_hydration = ") + jsonifier::string{ "window.__sc_hydration = " }.size()));
 				}
-				final_data resultsNew{};
-				parser.parseJson(resultsNew, addedString);
+				welcome resultsNew{};
+				parser.parseJson(resultsNew, returnData.responseData);
 				jsonifier::string avatarUrl{};
+				
 				for (auto& value: resultsNew.data) {
-					if (value.hydratable == "user") {
-						avatarUrl = value.data.avatarUrl;
-					}
-				}
-				for (auto& value: resultsNew.data) {
-					if (value.hydratable == "sound") {
-						if (value.data.title == "") {
-							continue;
-						}
-						bool isItFound{};
-						for (auto& valueNew: value.data.media.transcodings) {
-							if (valueNew.preset == "opus_0_0") {
-								isItFound				 = true;
-								results.firstDownloadUrl = valueNew.url;
-								results.songId			 = valueNew.url;
+					if (value.data.getType() == jsonifier_internal::json_type::Object) {
+						auto newObject = value.data.operator jsonifier::raw_json_data::object_type();
+						avatarUrl	   = newObject["avatarUrl"].operator jsonifier::string();
+						if (value.hydratable == "sound") {
+							if (newObject["title"].operator jsonifier::string() == "") {
+								continue;
 							}
-						}
-						if (isItFound) {
-							jsonifier::string newString = value.data.title;
-							if (newString.size() > 0) {
-								if (newString.size() > 256) {
-									newString = newString.substr(0, 256);
+							bool isItFound{};
+							for (auto& valueNew:
+								newObject["media"].operator jsonifier::raw_json_data::object_type()["transcodings"].operator jsonifier::raw_json_data::array_type()) {
+								if (valueNew.operator jsonifier::raw_json_data::object_type()["preset"].operator jsonifier::string() == "opus_0_0") {
+									isItFound				 = true;
+									results.firstDownloadUrl = valueNew.operator jsonifier::raw_json_data::object_type()["url"].operator jsonifier::string();
+									results.songId			 = valueNew.operator jsonifier::raw_json_data::object_type()["url"].operator jsonifier::string();
 								}
-								results.songTitle = utf8MakeValid(newString);
 							}
-							newString = value.data.description;
-							if (newString.size() > 0) {
-								if (newString.size() > 256) {
-									newString = newString.substr(0, 256);
+							if (isItFound) {
+								jsonifier::string newString = newObject["title"].operator jsonifier::string();
+								if (newString.size() > 0) {
+									if (newString.size() > 256) {
+										newString = newString.substr(0, 256);
+									}
+									results.songTitle = utf8MakeValid(newString);
 								}
-								results.description = utf8MakeValid(newString);
-								results.description += "...";
-							}
-							newString = value.data.artworkUrl;
-							if (newString.size() > 0) {
-								results.thumbnailUrl = newString;
-							}
-							results.viewUrl	 = value.data.viewUrl;
-							results.duration = time_stamp::convertMsToDurationString(static_cast<uint64_t>(value.data.duration));
-							results.firstDownloadUrl += "?client_id=" + sound_cloud_request_builder::clientId + "&track_authorization=" + value.data.trackAuthorization;
-							if (value.data.artworkUrl.find("-") != jsonifier::string::npos) {
-								jsonifier::string newerString = value.data.artworkUrl.substr(0, value.data.artworkUrl.findLastOf("-") + 1);
-								newerString += "t500x500.jpg";
-								results.thumbnailUrl = newerString;
-							} else if (avatarUrl.find("-") != jsonifier::string::npos) {
-								jsonifier::string newerString = avatarUrl.substr(0, avatarUrl.findLastOf("-") + 1);
-								newerString += "t500x500.jpg";
-								results.thumbnailUrl = newerString;
+								newString = newObject["description"].operator jsonifier::string();
+								if (newString.size() > 0) {
+									if (newString.size() > 256) {
+										newString = newString.substr(0, 256);
+									}
+									results.description = utf8MakeValid(newString);
+									results.description += "...";
+								}
+								newString = newObject["artwork_url"].operator jsonifier::string();
+								if (newString.size() > 0) {
+									results.thumbnailUrl = utf8MakeValid(newString);
+								}
+								results.viewUrl	 = newObject["permalink_url"].operator jsonifier::string();
+								results.duration = time_stamp::convertMsToDurationString(static_cast<uint64_t>(newObject["duration"].operator uint64_t()));
+								results.firstDownloadUrl +=
+									"?client_id=" + sound_cloud_request_builder::clientId + "&track_authorization=" + newObject["track_authorization"].operator jsonifier::string();
+								if (newObject["artwork_url"].operator jsonifier::string().find("-") != jsonifier::string::npos) {
+									jsonifier::string newerString =
+										newObject["artwork_url"].operator jsonifier::string().substr(0, newObject["artwork_url"].operator jsonifier::string().findLastOf("-") + 1);
+									newerString += "t500x500.jpg";
+									results.thumbnailUrl = newerString;
+								} else if (avatarUrl.find("-") != jsonifier::string::npos) {
+									jsonifier::string newerString = avatarUrl.substr(0, avatarUrl.findLastOf("-") + 1);
+									newerString += "t500x500.jpg";
+									results.thumbnailUrl = newerString;
+								}
 							}
 						}
 					}
@@ -195,7 +196,7 @@ namespace discord_core_api {
 				}
 				https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Search_Results };
 				dataPackage.baseUrl						  = baseUrl02;
-				dataPackage.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36";
+				dataPackage.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36";
 				dataPackage.relativePath				  = "/search?q=" + urlEncode(songQuery) + "&facet=model&client_id=" + sound_cloud_request_builder::clientId;
 				dataPackage.workloadClass				  = https_workload_class::Get;
 				https_response_data returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));

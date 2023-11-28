@@ -33,7 +33,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			guild_data guild01 = guilds::getCachedGuild({args.eventData.getGuildId()}).get();
 
-			guild_data guild02 = guilds::getGuildAsync(const {args.eventData.getGuildId()}).get();
+			guild_data guild02 = guilds::getGuildAsync({args.eventData.getGuildId()}).get();
 		}
 	};
 }

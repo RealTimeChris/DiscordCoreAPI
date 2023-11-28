@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.channelId = "909435143561809953";
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				auto newThreadMember = threads::getThreadMemberAsync(const dataPackage).get();
+				auto newThreadMember = threads::getThreadMemberAsync(dataPackage).get();
 
 
 			} catch (...) {

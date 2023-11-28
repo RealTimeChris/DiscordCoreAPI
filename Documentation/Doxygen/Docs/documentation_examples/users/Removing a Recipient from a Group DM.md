@@ -40,7 +40,7 @@ namespace discord_core_api {
 				dataPackage.userId = args.eventData.getAuthorId();
 				dataPackage.channelId = "DM_CHANNEL_ID_HERE";
 
-				users::removeRecipientFromGroupDMAsync(const dataPackage).get();
+				users::removeRecipientFromGroupDMAsync(dataPackage).get();
 
 
 			} catch (...) {

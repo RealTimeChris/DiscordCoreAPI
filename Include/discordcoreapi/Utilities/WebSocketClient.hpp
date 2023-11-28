@@ -171,7 +171,7 @@ namespace discord_core_api {
 
 		enum class websocket_state { connecting = 0, upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, authenticated = 4, disconnected = 5 };
 
-		class DiscordCoreAPI_Dll websocket_core : public etf_parser {
+		class DiscordCoreAPI_Dll websocket_core {
 		  public:
 			friend class discord_core_api::voice_connection;
 			friend class websocket_tcpconnection;

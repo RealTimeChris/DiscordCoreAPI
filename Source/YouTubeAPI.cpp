@@ -41,108 +41,108 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::discord_core_internal::user> {
 		using value_type				 = discord_core_api::discord_core_internal::user;
-		static constexpr auto parseValue = createObject("lockedSafetyMode", &value_type::lockedSafetyMode);
+		static constexpr auto parseValue = createValue("lockedSafetyMode", &value_type::lockedSafetyMode);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::request> {
 		using value_type				 = discord_core_api::discord_core_internal::request;
-		static constexpr auto parseValue = createObject("useSsl", &value_type::useSsl);
+		static constexpr auto parseValue = createValue("useSsl", &value_type::useSsl);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::you_tube_request_client> {
 		using value_type = discord_core_api::discord_core_internal::you_tube_request_client;
 		static constexpr auto parseValue =
-			createObject("clientName", &value_type::clientName, "androidSdkVersion", &value_type::androidSdkVersion, "clientVersion", &value_type::clientVersion, "hl",
+			createValue("clientName", &value_type::clientName, "androidSdkVersion", &value_type::androidSdkVersion, "clientVersion", &value_type::clientVersion, "hl",
 				&value_type::hl, "gl", &value_type::gl, "osName", &value_type::osName, "osVersion", &value_type::osVersion, "platform", &value_type::platform);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::you_tube_request_context> {
 		using value_type = discord_core_api::discord_core_internal::you_tube_request_context;
 		static constexpr auto parseValue =
-			createObject("client", &value_type::client, "captionParams", &value_type::captionParams, "request", &value_type::requestVal, "user", &value_type::userVal);
+			createValue("client", &value_type::client, "captionParams", &value_type::captionParams, "request", &value_type::requestVal, "user", &value_type::userVal);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::you_tube_request> {
 		using value_type				 = discord_core_api::discord_core_internal::you_tube_request;
-		static constexpr auto parseValue = createObject("videoId", &value_type::videoId, "contentCheckOk", &value_type::contentCheckOk, "racyCheckOk", &value_type::racyCheckOk,
+		static constexpr auto parseValue = createValue("videoId", &value_type::videoId, "contentCheckOk", &value_type::contentCheckOk, "racyCheckOk", &value_type::racyCheckOk,
 			"context", &value_type::context, "playlistId", &value_type::playlistId, "params", &value_type::params);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::thumbnail_element> {
 		using value_type				 = discord_core_api::discord_core_internal::thumbnail_element;
-		static constexpr auto parseValue = createObject("url", &value_type::url, "width", &value_type::width);
+		static constexpr auto parseValue = createValue("url", &value_type::url, "width", &value_type::width);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::video_details_thumbnail> {
 		using value_type				 = discord_core_api::discord_core_internal::video_details_thumbnail;
-		static constexpr auto parseValue = createObject("thumbnails", &value_type::thumbnails);
+		static constexpr auto parseValue = createValue("thumbnails", &value_type::thumbnails);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::video_details> {
 		using value_type				 = discord_core_api::discord_core_internal::video_details;
-		static constexpr auto parseValue = createObject("title", &value_type::title, "videoId", &value_type::videoId, "thumbnail", &value_type::thumbnail, "shortDescription",
+		static constexpr auto parseValue = createValue("title", &value_type::title, "videoId", &value_type::videoId, "thumbnail", &value_type::thumbnail, "shortDescription",
 			&value_type::shortDescription, "lengthSeconds", &value_type::lengthSeconds);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::format> {
 		using value_type = discord_core_api::discord_core_internal::format;
 		static constexpr auto parseValue =
-			createObject("url", &value_type::url, "mimeType", &value_type::mimeType, "bitrate", &value_type::bitrate, "contentLength", &value_type::contentLength);
+			createValue("url", &value_type::url, "mimeType", &value_type::mimeType, "bitrate", &value_type::bitrate, "contentLength", &value_type::contentLength);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::streaming_data> {
 		using value_type				 = discord_core_api::discord_core_internal::streaming_data;
-		static constexpr auto parseValue = createObject("adaptiveFormats", &value_type::adaptiveFormats);
+		static constexpr auto parseValue = createValue("adaptiveFormats", &value_type::adaptiveFormats);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::data> {
 		using value_type				 = discord_core_api::discord_core_internal::data;
-		static constexpr auto parseValue = createObject("streamingData", &value_type::streamingData, "videoDetails", &value_type::videoDetails);
+		static constexpr auto parseValue = createValue("streamingData", &value_type::streamingData, "videoDetails", &value_type::videoDetails);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::video_renderer> {
 		using value_type				 = discord_core_api::discord_core_internal::video_renderer;
-		static constexpr auto parseValue = createObject("videoId", &value_type::videoId);
+		static constexpr auto parseValue = createValue("videoId", &value_type::videoId);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::video_renderer_type> {
 		using value_type				 = discord_core_api::discord_core_internal::video_renderer_type;
-		static constexpr auto parseValue = createObject("videoRenderer", &value_type::videoRenderer);
+		static constexpr auto parseValue = createValue("videoRenderer", &value_type::videoRenderer);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::item_section_renderer_contents> {
 		using value_type				 = discord_core_api::discord_core_internal::item_section_renderer_contents;
-		static constexpr auto parseValue = createObject("contents", &value_type::contents);
+		static constexpr auto parseValue = createValue("contents", &value_type::contents);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::item_section_renderer> {
 		using value_type				 = discord_core_api::discord_core_internal::item_section_renderer;
-		static constexpr auto parseValue = createObject("itemSectionRenderer", &value_type::itemSectionRendererContents);
+		static constexpr auto parseValue = createValue("itemSectionRenderer", &value_type::itemSectionRendererContents);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::section_list_renderer> {
 		using value_type				 = discord_core_api::discord_core_internal::section_list_renderer;
-		static constexpr auto parseValue = createObject("contents", &value_type::contents);
+		static constexpr auto parseValue = createValue("contents", &value_type::contents);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::primary_contents> {
 		using value_type				 = discord_core_api::discord_core_internal::primary_contents;
-		static constexpr auto parseValue = createObject("sectionListRenderer", &value_type::sectionListRenderer);
+		static constexpr auto parseValue = createValue("sectionListRenderer", &value_type::sectionListRenderer);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::two_column_search_results_renderer> {
 		using value_type				 = discord_core_api::discord_core_internal::two_column_search_results_renderer;
-		static constexpr auto parseValue = createObject("primaryContents", &value_type::primaryContents);
+		static constexpr auto parseValue = createValue("primaryContents", &value_type::primaryContents);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::contents01> {
 		using value_type				 = discord_core_api::discord_core_internal::contents01;
-		static constexpr auto parseValue = createObject("twoColumnSearchResultsRenderer", &value_type::twoColumnSearchResultsRenderer);
+		static constexpr auto parseValue = createValue("twoColumnSearchResultsRenderer", &value_type::twoColumnSearchResultsRenderer);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::you_tube_search_results> {
 		using value_type				 = discord_core_api::discord_core_internal::you_tube_search_results;
-		static constexpr auto parseValue = createObject("contents", &value_type::contents);
+		static constexpr auto parseValue = createValue("contents", &value_type::contents);
 	};
 }
 
@@ -182,7 +182,8 @@ namespace discord_core_api {
 				searchResults.emplace_back(collectSingleResult(theId));
 				return searchResults;
 			}
-			dataPackage.baseUrl			   = baseUrl;
+			dataPackage.baseUrl						  = baseUrl;
+			dataPackage.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36";
 			dataPackage.relativePath	   = "/results?search_query=" + urlEncode(searchQuery);
 			dataPackage.workloadClass	   = https_workload_class::Get;
 			https_response_data returnData = submitWorkloadAndGetResult(std::move(dataPackage));
@@ -198,6 +199,9 @@ namespace discord_core_api {
 				newString						 = newString.substr(0, newString.find(stringSequence));
 				you_tube_search_results youtubeSearchResults{};
 				parser.parseJson(youtubeSearchResults, newString);
+				for (auto& value: parser.getErrors()) {
+					message_printer::printError<print_message_type::https>(value.reportError());
+				}
 				for (auto& value: youtubeSearchResults.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents) {
 					for (auto& value02: value.itemSectionRendererContents.contents) {
 						if (value02.videoRenderer.videoId != "") {
@@ -235,6 +239,9 @@ namespace discord_core_api {
 				data dataNew{};
 				jsonifier::vector<format> potentialFormats{};
 				parser.parseJson(dataNew, responseData.responseData);
+				for (auto& value: parser.getErrors()) {
+					message_printer::printError<print_message_type::https>(value.reportError());
+				}
 				for (auto& value: dataNew.streamingData.adaptiveFormats) {
 					if (value.mimeType == "audio/webm; codecs=\"opus\"") {
 						potentialFormats.emplace_back(value);

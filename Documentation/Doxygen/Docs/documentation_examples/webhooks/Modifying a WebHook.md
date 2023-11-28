@@ -35,13 +35,13 @@ namespace discord_core_api {
 				get_guild_web_hooks_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto newWebHooks = discord_core_api::web_hooks::getGuildWebHooksAsync(const dataPackage).get();
+				auto newWebHooks = discord_core_api::web_hooks::getGuildWebHooksAsync(dataPackage).get();
 
 				modify_web_hook_data& dataPackage01;
 				dataPackage01.webHookId = newWebHooks[0].id;
 				dataPackage01.name = "new test name";
 
-				auto newWebHook = discord_core_api::web_hooks::modifyWebHookAsync(const dataPackage01).get();
+				auto newWebHook = discord_core_api::web_hooks::modifyWebHookAsync(dataPackage01).get();
 
 
 			} catch (...) {

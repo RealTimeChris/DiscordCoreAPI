@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_web_hooks_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto newWebHooks = discord_core_api::web_hooks::getGuildWebHooksAsync(const dataPackage).get();
+				auto newWebHooks = discord_core_api::web_hooks::getGuildWebHooksAsync(dataPackage).get();
 
 				modify_web_hook_with_token_data& dataPackage01;
 				dataPackage01.webhookToken = newWebHooks[0].token;
@@ -43,7 +43,7 @@ namespace discord_core_api {
 				dataPackage01.name = "new test name";
 				dataPackage01.channelId = args.eventData.getChannelId();
 
-				auto newWebHook = discord_core_api::web_hooks::modifyWebHookWithTokenAsync(const dataPackage01).get();
+				auto newWebHook = discord_core_api::web_hooks::modifyWebHookWithTokenAsync(dataPackage01).get();
 
 
 			} catch (...) {

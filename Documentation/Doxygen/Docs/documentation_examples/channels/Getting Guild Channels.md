@@ -34,7 +34,7 @@ namespace discord_core_api {
 		virtual void execute(base_function_arguments& args) {
 			try {
 				vector<public channel> channels =
-					public discord_core_api::channels::getGuildChannelsAsync(const {.guildId = args.eventData.getGuildId()}).get();
+					public discord_core_api::channels::getGuildChannelsAsync({.guildId = args.eventData.getGuildId()}).get();
 
 				for (const auto& value: channels) {
 					std::cout << "the name: " << value.name << std::endl;

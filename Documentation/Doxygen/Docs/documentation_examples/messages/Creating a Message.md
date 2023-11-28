@@ -35,7 +35,7 @@ namespace discord_core_api {
 				create_message_data& dataPackage {args.eventData};
 				dataPackage.addContent("test content");
 
-				message responseMessages = messages::createMessageAsync(const dataPackage).get();
+				message responseMessages = messages::createMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

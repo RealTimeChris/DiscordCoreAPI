@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.limit = 20;
 
-				auto guildMembers = guild_members::listGuildMembersAsync(const dataPackage).get();
+				auto guildMembers = guild_members::listGuildMembersAsync(dataPackage).get();
 
 				for (const auto& value: guildMembers) {
 					std::cout << "the name: " << value.user.userName << std::endl;

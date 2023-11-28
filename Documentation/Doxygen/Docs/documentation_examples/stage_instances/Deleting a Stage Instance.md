@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.channelId = "914726178022101052";
 				dataPackage.reason = "testing!";
 
-				stage_instances::deleteStageInstanceAsync(const dataPackage).get();
+				stage_instances::deleteStageInstanceAsync(dataPackage).get();
 
 
 			} catch (...) {

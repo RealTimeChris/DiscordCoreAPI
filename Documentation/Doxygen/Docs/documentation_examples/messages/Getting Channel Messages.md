@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.afterThisId = args.eventData.getMessageId();
 
-				auto responseMessages = messages::getMessagesAsync(const dataPackage).get();
+				auto responseMessages = messages::getMessagesAsync(dataPackage).get();
 
 
 			} catch (...) {

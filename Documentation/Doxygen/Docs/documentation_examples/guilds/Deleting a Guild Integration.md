@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage01.integrationId = "INTEGRATION_ID_HERE";
 				dataPackage01.reason = "testing purposes!";
 
-				guilds::deleteGuildIntegrationAsync(const dataPackage01).get();
+				guilds::deleteGuildIntegrationAsync(dataPackage01).get();
 
 
 			} catch (...) {

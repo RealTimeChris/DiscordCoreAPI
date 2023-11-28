@@ -34,7 +34,7 @@ Editing a Follow-Up Message {#editing_a_follow_up_message}
 				respond_to_input_event_data& dataPackage {args.eventData};
 				dataPackage.type = input_event_response_type::follow_up_message_edit;
 				dataPackage.addContent("this is a test response message!");
-				auto responseData = input_events::respondToInputEventAsync(const dataPackage);
+				auto responseData = input_events::respondToInputEventAsync(dataPackage);
 
 			} catch (...) {
 				rethrowException("test::execute() error: ");

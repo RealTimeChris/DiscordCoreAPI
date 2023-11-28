@@ -38,7 +38,7 @@ namespace discord_core_api {
 				messageIds.emplace_back(args.eventData.getMessageId());
 				dataPackage.messageIds = messageIds;
 
-				messages::deleteMessagesBulkAsync(const dataPackage).get();
+				messages::deleteMessagesBulkAsync(dataPackage).get();
 
 
 			} catch (...) {

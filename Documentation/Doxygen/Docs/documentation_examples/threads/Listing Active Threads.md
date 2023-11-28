@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_active_threads_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto threadsVector = threads::getActiveThreadsAsync(const dataPackage).get();
+				auto threadsVector = threads::getActiveThreadsAsync(dataPackage).get();
 
 				for (const auto& value: threadsVector.threads) {
 					std::cout << "the name: " << value.name << std::endl;

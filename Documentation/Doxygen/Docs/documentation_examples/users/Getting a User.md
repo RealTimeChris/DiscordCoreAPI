@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_user_data& dataPackage;
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				auto currentUser = users::getUserAsync(const dataPackage).get();
+				auto currentUser = users::getUserAsync(dataPackage).get();
 
 				std::cout << currentUser.userName << std::endl;
 

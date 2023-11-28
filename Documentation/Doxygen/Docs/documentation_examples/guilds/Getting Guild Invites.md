@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_invites_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = guilds::getGuildInvitesAsync(const dataPackage01).get();
+				auto responseData = guilds::getGuildInvitesAsync(dataPackage01).get();
 
 				for (const auto& value: responseData) {
 					std::cout << value.code << std::endl;

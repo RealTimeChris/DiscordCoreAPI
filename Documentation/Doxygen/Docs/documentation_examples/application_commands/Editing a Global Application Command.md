@@ -35,7 +35,7 @@ namespace discord_core_api {
 			dataPackage.description = "displays info about the current bot.";
 			dataPackage.name = "botinfo";
 
-			auto globalApplicationCommand = application_commands::editGlobalApplicationCommandAsync(const dataPackage).get();
+			auto globalApplicationCommand = application_commands::editGlobalApplicationCommandAsync(dataPackage).get();
 
 			std::cout << globalApplicationCommand.data.name << std::endl;
 		}

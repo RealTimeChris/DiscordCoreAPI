@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.targetChannelId = args.eventData.getChannelId();
 				dataPackage.channelId = "34565656332236657533";
 
-				channel followChannel = discord_core_api::channels::followNewsChannelAsync(const dataPackage).get();
+				channel followChannel = discord_core_api::channels::followNewsChannelAsync(dataPackage).get();
 
 			} catch (...) {
 				rethrowException("test::execute()");

@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_vanity_invite_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = guilds::getGuildVanityInviteAsync(const dataPackage01).get();
+				auto responseData = guilds::getGuildVanityInviteAsync(dataPackage01).get();
 
 				std::cout << boolalpha << responseData.code << std::endl;
 

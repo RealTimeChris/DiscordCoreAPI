@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage01.reason = "testing!";
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				roles::removeGuildRoleAsync(const dataPackage01).get();
+				roles::removeGuildRoleAsync(dataPackage01).get();
 
 
 			} catch (...) {
