@@ -50,7 +50,7 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::discord_core_internal::welcome> {
 		using value_type				 = discord_core_api::discord_core_internal::welcome;
-		static constexpr auto parseValue = createScalarValue(&value_type::data);
+		static constexpr auto parseValue = createValue(&value_type::data);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::media> {
@@ -118,7 +118,7 @@ namespace discord_core_api {
 				jsonifier::string avatarUrl{};
 				
 				for (auto& value: resultsNew.data) {
-					if (value.data.getType() == jsonifier_internal::json_type::Object) {
+					if (value.data.getType() == jsonifier::json_type::Object) {
 						auto newObject = value.data.operator jsonifier::raw_json_data::object_type();
 						avatarUrl	   = newObject["avatarUrl"].operator jsonifier::string();
 						if (value.hydratable == "sound") {
@@ -201,7 +201,7 @@ namespace discord_core_api {
 				dataPackage.workloadClass				  = https_workload_class::Get;
 				https_response_data returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));
 				sound_cloud_search_results resultsNew{};
-				parser.parseJson(resultsNew, returnData.responseData);
+				parser.parseJson<true>(resultsNew, returnData.responseData);
 				for (auto& value: resultsNew.collection) {
 					song songNew{};
 					if (value.title == "") {
@@ -272,7 +272,7 @@ namespace discord_core_api {
 				https_response_data results					= submitWorkloadAndGetResult(std::move(dataPackage01));
 				second_download_url downloadUrl{};
 				song newerSong{ songNew };
-				parser.parseJson(downloadUrl, results.responseData);
+				parser.parseJson<true>(downloadUrl, results.responseData);
 				newerSong.secondDownloadUrl = downloadUrl.url;
 				if (newerSong.secondDownloadUrl.find("/playlist") != jsonifier::string::npos) {
 					https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Download_Links };

@@ -65,21 +65,21 @@ namespace discord_core_api {
 namespace jsonifier_internal {
 
 	template<typename value_type>
-	concept snowflake_t = std::same_as<discord_core_api::snowflake, jsonifier::concepts::unwrap<value_type>>;
+	concept snowflake_t = std::same_as<discord_core_api::snowflake, jsonifier::concepts::unwrap_t<value_type>>;
 
 	template<snowflake_t value_type_new> struct serialize_impl<value_type_new> {
 		template<snowflake_t value_type, jsonifier::concepts::buffer_like iterator_type>
-		inline static void op(value_type&& value, iterator_type&& iter, uint64_t& index) {
+		inline static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serialize::op(newString, iter, index);
+			serialize::impl(newString, iter, index);
 		}
 	};
 
 	template<snowflake_t value_type_new> struct parse_impl<value_type_new> {
-		template<snowflake_t value_type, jsonifier::concepts::is_fwd_iterator iterator> inline static void op(value_type&& value, iterator&& iter) {
+		template<snowflake_t value_type, jsonifier::concepts::is_fwd_iterator iterator> inline static void impl(value_type&& value, iterator&& iter) {
 			jsonifier::raw_json_data newString{};
-			parse::op(newString, iter);
-			if (newString.getType() == jsonifier_internal::json_type::String) {
+			parse::impl(newString, iter);
+			if (newString.getType() == jsonifier::json_type::String) {
 				value = newString.operator jsonifier::string();
 			} else {
 				value = newString.operator uint64_t();
@@ -88,20 +88,20 @@ namespace jsonifier_internal {
 	};
 
 	template<typename value_type>
-	concept time_stamp_t = std::same_as<discord_core_api::time_stamp, jsonifier::concepts::unwrap<value_type>>;
+	concept time_stamp_t = std::same_as<discord_core_api::time_stamp, jsonifier::concepts::unwrap_t<value_type>>;
 
 	template<time_stamp_t value_type_new> struct serialize_impl<value_type_new> {
 		template<time_stamp_t value_type, jsonifier::concepts::buffer_like iterator_type>
-		inline static void op(value_type&& value, iterator_type&& iter, uint64_t& index) {
+		inline static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serialize::op(newString, iter, index);
+			serialize::impl(newString, iter, index);
 		}
 	};
 
 	template<time_stamp_t value_type_new> struct parse_impl<value_type_new> {
-		template<time_stamp_t value_type, jsonifier::concepts::is_fwd_iterator iterator> inline static void op(value_type&& value, iterator&& iter) {
+		template<time_stamp_t value_type, jsonifier::concepts::is_fwd_iterator iterator> inline static void impl(value_type&& value, iterator&& iter) {
 			jsonifier::string newString{};
-			parse::op(newString, iter);
+			parse::impl(newString, iter);
 			value = static_cast<jsonifier::string>(newString);
 		};
 	};
@@ -622,7 +622,7 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::file> {
 		using value_type				 = discord_core_api::file;
-		static constexpr auto parseValue = createScalarValue(&value_type::data);
+		static constexpr auto parseValue = createValue(&value_type::data);
 	};
 
 	template<> struct core<discord_core_api::allowed_mentions_data> {

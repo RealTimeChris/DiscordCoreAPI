@@ -63,7 +63,7 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::modify_guild_channel_positions_data> {
 		using value_type				 = discord_core_api::modify_guild_channel_positions_data;
-		static constexpr auto parseValue = createScalarValue(&value_type::modifyChannelData);
+		static constexpr auto parseValue = createValue(&value_type::modifyChannelData);
 	};
 
 	template<> struct core<discord_core_api::modify_channel_data> {

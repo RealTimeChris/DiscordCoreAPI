@@ -100,7 +100,7 @@ namespace discord_core_api {
 			/// @brief Constructs an etf_parse_error instance with a message and source location.
 			/// @param message the error message.
 			/// @param location the source location where the error occurred.
-			inline explicit etf_parse_error(jsonifier::string_view message, std::source_location location = std::source_location::current())
+			inline explicit etf_parse_error(const jsonifier::string_view& message, std::source_location location = std::source_location::current())
 				: dca_exception{ message, location } {};
 		};
 
@@ -446,7 +446,7 @@ namespace discord_core_api {
 			/// @brief Constructor for etf_serialize_error.
 			/// @param message the error message.
 			/// @param location source location where the error occurred.
-			inline etf_serialize_error(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+			inline etf_serialize_error(const jsonifier::string_view& message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 		};
 
 		/// @brief Enumeration for different json value types.
