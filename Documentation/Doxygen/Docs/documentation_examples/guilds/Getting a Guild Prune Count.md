@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage01.roles.emplace_back("860075141818744853");
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = guilds::getGuildPruneCountAsync(const dataPackage01).get();
+				auto responseData = guilds::getGuildPruneCountAsync(dataPackage01).get();
 
 				std::cout << responseData.count << std::endl;
 

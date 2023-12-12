@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.nick = "real_time chris";
 
-				auto guildMember = guild_members::addGuildMemberAsync(const dataPackage).get();
+				auto guildMember = guild_members::addGuildMemberAsync(dataPackage).get();
 
 				std::cout << "the name: " << guildMember.user.userName << std::endl;
 

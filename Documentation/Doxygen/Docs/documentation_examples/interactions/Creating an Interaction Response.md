@@ -29,21 +29,21 @@ Creating an Interaction Response {#creating_an_interaction_response}
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData).get();
+			input_events::deleteInputEventResponseAsync(args.eventData).get();
 
 			respond_to_input_event_data& dataPackage {args.eventData};
 			dataPackage.type = input_event_response_type::Deferred_Response;
-			input_events::respondToInputEventAsync(const dataPackage);
+			input_events::respondToInputEventAsync(dataPackage);
 
 			respond_to_input_event_data& dataPackage01 {args.eventData};
 			dataPackage01.type = input_event_response_type::Interaction_Response;
 			dataPackage01.addContent("test response");
-			input_events::respondToInputEventAsync(const dataPackage01);
+			input_events::respondToInputEventAsync(dataPackage01);
 
 			respond_to_input_event_data& dataPackage02 {args.eventData};
 			dataPackage02.type = input_event_response_type::Ephemeral_Interaction_Response;
 			dataPackage02.addContent("test response");
-			input_events::respondToInputEventAsync(const dataPackage02);
+			input_events::respondToInputEventAsync(dataPackage02);
 		}
 	};
 }

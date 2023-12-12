@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.reason = "testing purposes!";
 
-				vector<discord_core_api::channel_data> channels = discord_core_api::channels::getGuildChannelsAsync(const {.guildId = args.eventData.getGuildId()}).get();
+				vector<discord_core_api::channel_data> channels = discord_core_api::channels::getGuildChannelsAsync({.guildId = args.eventData.getGuildId()}).get();
 
 				for (const auto& value: channels) {
 					if (value.type == channel_type::GUILD_CATEGORY) {
@@ -47,7 +47,7 @@ namespace discord_core_api {
 					}
 				}
 
-				channel channel = discord_core_api::channels::createGuildChannelAsync(const dataPackage).get();
+				channel channel = discord_core_api::channels::createGuildChannelAsync(dataPackage).get();
 
 				std::cout << "the name: " << channel.name << std::endl;
 

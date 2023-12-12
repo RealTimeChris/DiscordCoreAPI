@@ -35,7 +35,7 @@ namespace discord_core_api {
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.roleId = "YOUR_ROLE_ID_HERE";
 
-			role role = roles::getRoleAsync(const dataPackage).get();
+			role role = roles::getRoleAsync(dataPackage).get();
 
 			role role = roles::getCachedRole(dataPackage).get();
 		}

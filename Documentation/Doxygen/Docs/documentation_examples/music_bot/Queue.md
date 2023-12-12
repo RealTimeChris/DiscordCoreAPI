@@ -46,7 +46,7 @@ namespace discord_core_api {
 		dataPackage.addButton(false, "back", "back", button_style::success, "◀️");
 		dataPackage.addButton(false, "next", "next", button_style::success, "▶️");
 		dataPackage.addButton(false, "exit", "exit", button_style::success, "❌");
-		input_events::respondToInputEventAsync(const dataPackage).get();
+		input_events::respondToInputEventAsync(dataPackage).get();
 		return newMsgEmbeds;
 	}
 
@@ -103,7 +103,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(*newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
@@ -149,7 +149,7 @@ namespace discord_core_api {
 				dataPackage0.addButton(false, "back", "back", button_style::success, "◀️");
 				dataPackage0.addButton(false, "next", "next", button_style::success, "▶️");
 				dataPackage0.addButton(false, "exit", "exit", button_style::success, "❌");
-				newEvent = input_events::respondToInputEventAsync(const dataPackage0).get();
+				newEvent = input_events::respondToInputEventAsync(dataPackage0).get();
 				for (int32_t y = 0; y < 1; y) {
 					bool doWeQuit{};
 					unique_ptr<button_collector> button{ makeUnique<button_collector>(newEvent) };
@@ -161,7 +161,7 @@ namespace discord_core_api {
 						dataPackage02.setResponseType(input_event_response_type::Edit_Interaction_Response);
 						dataPackage02.addMessageEmbed(msgEmbeds[currentPageIndex]);
 						dataPackage02.addContent("");
-						newEvent = input_events::respondToInputEventAsync(const dataPackage02).get();
+						newEvent = input_events::respondToInputEventAsync(dataPackage02).get();
 						break;
 					} else if (buttonCollectedData.at(0).buttonId == "next" && (currentPageIndex == (msgEmbeds.size() - 1))) {
 						currentPageIndex = 0;
@@ -173,7 +173,7 @@ namespace discord_core_api {
 						dataPackage02->addButton(false, "back", "back", button_style::success, "◀️");
 						dataPackage02->addButton(false, "next", "next", button_style::success, "▶️");
 						dataPackage02->addButton(false, "exit", "exit", button_style::success, "❌");
-						newEvent = input_events::respondToInputEventAsync(const *dataPackage02).get();
+						newEvent = input_events::respondToInputEventAsync(*dataPackage02).get();
 						continue;
 					} else if (buttonCollectedData.at(0).buttonId == "next" && (currentPageIndex < msgEmbeds.size())) {
 						currentPageIndex += 1;
@@ -185,7 +185,7 @@ namespace discord_core_api {
 						dataPackage02->addButton(false, "back", "back", button_style::success, "◀️");
 						dataPackage02->addButton(false, "next", "next", button_style::success, "▶️");
 						dataPackage02->addButton(false, "exit", "exit", button_style::success, "❌");
-						newEvent = input_events::respondToInputEventAsync(const *dataPackage02).get();
+						newEvent = input_events::respondToInputEventAsync(*dataPackage02).get();
 						continue;
 					} else if (buttonCollectedData.at(0).buttonId == "back" && (currentPageIndex > 0)) {
 						currentPageIndex -= 1;
@@ -197,7 +197,7 @@ namespace discord_core_api {
 						dataPackage02->addButton(false, "back", "back", button_style::success, "◀️");
 						dataPackage02->addButton(false, "next", "next", button_style::success, "▶️");
 						dataPackage02->addButton(false, "exit", "exit", button_style::success, "❌");
-						newEvent = input_events::respondToInputEventAsync(const *dataPackage02).get();
+						newEvent = input_events::respondToInputEventAsync(*dataPackage02).get();
 						continue;
 					} else if (buttonCollectedData.at(0).buttonId == "back" && (currentPageIndex == 0)) {
 						currentPageIndex = ( int32_t )msgEmbeds.size() - 1;
@@ -209,7 +209,7 @@ namespace discord_core_api {
 						dataPackage02->addButton(false, "back", "back", button_style::success, "◀️");
 						dataPackage02->addButton(false, "next", "next", button_style::success, "▶️");
 						dataPackage02->addButton(false, "exit", "exit", button_style::success, "❌");
-						newEvent = input_events::respondToInputEventAsync(const *dataPackage02).get();
+						newEvent = input_events::respondToInputEventAsync(*dataPackage02).get();
 						continue;
 					} else if (buttonCollectedData.at(0).buttonId == "check") {
 						msgEmbeds[currentPageIndex].setDescription("__Type 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> "
@@ -223,13 +223,13 @@ namespace discord_core_api {
 						dataPackage03->setResponseType(input_event_response_type::Edit_Interaction_Response);
 						dataPackage03->addMessageEmbed(msgEmbeds[currentPageIndex]);
 						dataPackage03->addContent("");
-						newEvent = input_events::respondToInputEventAsync(const *dataPackage03).get();
+						newEvent = input_events::respondToInputEventAsync(*dataPackage03).get();
 						while (!doWeQuit) {
 							unique_ptr<respond_to_input_event_data> dataPackage02{ makeUnique<respond_to_input_event_data>(newEvent) };
 							dataPackage02->setResponseType(input_event_response_type::Edit_Interaction_Response);
 							dataPackage02->addMessageEmbed(msgEmbeds[currentPageIndex]);
 							dataPackage02->addContent("");
-							newEvent = input_events::respondToInputEventAsync(const *dataPackage02).get();
+							newEvent = input_events::respondToInputEventAsync(*dataPackage02).get();
 
 							std::function<bool(message)> messageFilter = [=](message message) -> bool {
 								if (userID == message.author.id) {
@@ -294,7 +294,7 @@ namespace discord_core_api {
 								dataPackage03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 								dataPackage03.addMessageEmbed(msgEmbeds[currentPageIndex]);
 								dataPackage03.addContent("");
-								newEvent = input_events::respondToInputEventAsync(const dataPackage03).get();
+								newEvent = input_events::respondToInputEventAsync(dataPackage03).get();
 								continue;
 							} else if (convertToLowerCase(args2[0]) == "remove") {
 								if (args2.size() < 2 || !regex_search(args2[1].data(), digitRegex)) {
@@ -314,7 +314,7 @@ namespace discord_core_api {
 									dataPackage03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 									dataPackage03.addMessageEmbed(msgEmbeds[currentPageIndex]);
 									dataPackage03.addContent("");
-									newEvent = input_events::respondToInputEventAsync(const dataPackage03).get();
+									newEvent = input_events::respondToInputEventAsync(dataPackage03).get();
 									continue;
 								}
 								if ((jsonifier::strToInt64(args2[1]) - 1) < 0 || ( uint64_t )(jsonifier::strToInt64(args2[1]) - 1) >= song_api::getPlaylist(guild_data->id).songQueue.size() || args2.size() < 1) {
@@ -334,7 +334,7 @@ namespace discord_core_api {
 									dataPackage03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 									dataPackage03.addMessageEmbed(msgEmbeds[currentPageIndex]);
 									dataPackage03.addContent("");
-									newEvent = input_events::respondToInputEventAsync(const dataPackage03).get();
+									newEvent = input_events::respondToInputEventAsync(dataPackage03).get();
 									continue;
 								}
 								int32_t removeIndex = ( int32_t )jsonifier::strToInt64(args2[1]);
@@ -370,7 +370,7 @@ namespace discord_core_api {
 									dataPackage03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 									dataPackage03.addMessageEmbed(msgEmbeds[currentPageIndex]);
 									dataPackage03.addContent("");
-									newEvent = input_events::respondToInputEventAsync(const dataPackage03).get();
+									newEvent = input_events::respondToInputEventAsync(dataPackage03).get();
 									continue;
 								}
 								if (args2.size() < 2 ||
@@ -392,7 +392,7 @@ namespace discord_core_api {
 									dataPackage03.setResponseType(input_event_response_type::Edit_Interaction_Response);
 									dataPackage03.addMessageEmbed(msgEmbeds[currentPageIndex]);
 									dataPackage03.addContent("");
-									newEvent = input_events::respondToInputEventAsync(const dataPackage03).get();
+									newEvent = input_events::respondToInputEventAsync(dataPackage03).get();
 									continue;
 								}
 

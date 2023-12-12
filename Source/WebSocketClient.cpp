@@ -174,7 +174,7 @@ namespace discord_core_api {
 			}
 		}
 
-		websocket_core::websocket_core(config_manager* configManagerNew, websocket_type typeOfWebSocketNew) : etf_parser{} {
+		websocket_core::websocket_core(config_manager* configManagerNew, websocket_type typeOfWebSocketNew) {
 			configManager = configManagerNew;
 			wsType		  = typeOfWebSocketNew;
 		}
@@ -186,9 +186,7 @@ namespace discord_core_api {
 			haveWeReceivedHeartbeatAck = other.haveWeReceivedHeartbeatAck;
 			currentMessage			   = std::move(other.currentMessage);
 			tcpConnection			   = std::move(other.tcpConnection);
-			finalString				   = std::move(other.finalString);
 			currentReconnectTries	   = other.currentReconnectTries;
-			dataBuffer				   = std::move(other.dataBuffer);
 			lastNumberReceived		   = other.lastNumberReceived;
 			maxReconnectTries		   = other.maxReconnectTries;
 			areWeHeartBeating		   = other.areWeHeartBeating;
@@ -197,13 +195,11 @@ namespace discord_core_api {
 			dataOpCode				   = other.dataOpCode;
 			shard.at(0)				   = other.shard.at(0);
 			shard.at(1)				   = other.shard.at(1);
-			dataSize				   = other.dataSize;
-			offSet					   = other.offSet;
 			wsType					   = other.wsType;
 			return *this;
 		}
 
-		websocket_core::websocket_core(websocket_core&& other) noexcept : etf_parser{} {
+		websocket_core::websocket_core(websocket_core&& other) noexcept {
 			*this = std::move(other);
 		}
 
@@ -529,7 +525,7 @@ namespace discord_core_api {
 					websocket_message message{};
 					if (configManager->getTextFormat() == text_format::etf) {
 						try {
-							dataNew		   = etf_parser::parseEtfToJson(dataNew);
+							dataNew		   = etfParser.parseEtfToJson(dataNew);
 							auto newString = jsonifier::string{ dataNew };
 							parser.parseJson(message, newString);
 							if (auto result = parser.getErrors(); result.size() > 0) {

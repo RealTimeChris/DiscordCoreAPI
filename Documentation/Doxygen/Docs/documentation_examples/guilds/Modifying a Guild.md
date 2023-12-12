@@ -39,7 +39,7 @@ namespace discord_core_api {
 						dataPackage00.name = "newer test guild_data!";
 						dataPackage00.reason = "testing purposes!";
 
-						auto guild_data = guilds::modifyGuildAsync(const dataPackage00).get();
+						auto guild_data = guilds::modifyGuildAsync(dataPackage00).get();
 
 						std::cout << "the name: " << guild_data.name << std::endl;
 					}

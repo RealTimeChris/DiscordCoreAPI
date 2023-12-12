@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_sticker_data& dataPackage;
 				dataPackage.stickerId = "YOUR_STICKER_ID_HERE";
 
-				auto responseData = stickers::getStickerAsync(const dataPackage).get();
+				auto responseData = stickers::getStickerAsync(dataPackage).get();
 
 				std::cout << "the name: " << responseData.name << std::endl;
 

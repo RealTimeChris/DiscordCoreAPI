@@ -31,7 +31,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData).get();
+			input_events::deleteInputEventResponseAsync(args.eventData).get();
 
 			edit_guild_application_command_permissions_data dataPackage;
 			application_command_permission_data& dataPackage02;
@@ -42,7 +42,7 @@ namespace discord_core_api {
 			dataPackage.permissions.emplace_back(dataPackage02);
 			dataPackage.guildId = args.eventData.getGuildId();
 
-			auto returnValue = application_commands::editGuildApplicationCommandPermissionsAsync(const dataPackage).get();
+			auto returnValue = application_commands::editGuildApplicationCommandPermissionsAsync(dataPackage).get();
 
 			std::cout << returnValue.applicationId << std::endl;
 		}

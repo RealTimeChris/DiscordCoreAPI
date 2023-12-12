@@ -39,7 +39,7 @@ namespace discord_core_api {
 				dataPackage01.computePruneCount = true;
 				dataPackage01.reason = "test pruning!";
 
-				auto responseData = guilds::beginGuildPruneAsync(const dataPackage01).get;
+				auto responseData = guilds::beginGuildPruneAsync(dataPackage01).get;
 
 				std::cout << responseData.count << std::endl;
 

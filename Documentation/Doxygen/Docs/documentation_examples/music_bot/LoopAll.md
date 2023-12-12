@@ -66,7 +66,7 @@ namespace discord_core_api {
 				respond_to_input_event_data& dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
-				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+				auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 
 				return;
 			} catch (...) {

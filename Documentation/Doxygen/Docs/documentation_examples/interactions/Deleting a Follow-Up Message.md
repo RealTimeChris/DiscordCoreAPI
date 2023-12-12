@@ -35,8 +35,8 @@ namespace discord_core_api {
 				respond_to_input_event_data& dataPackage {args.eventData};
 				dataPackage.type = input_event_response_type::Follow_Up_Message;
 				dataPackage.addContent("test content");
-				auto result = input_events::respondToInputEventAsync(const dataPackage);
-				auto responseData = input_events::deleteInputEventResponseAsync(const result);
+				auto result = input_events::respondToInputEventAsync(dataPackage);
+				auto responseData = input_events::deleteInputEventResponseAsync(result);
 
 			} catch (...) {
 				rethrowException("test::execute() error: ");

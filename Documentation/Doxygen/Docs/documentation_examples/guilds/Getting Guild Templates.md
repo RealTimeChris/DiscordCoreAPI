@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_templates_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = guilds::getGuildTemplatesAsync(const dataPackage01).get();
+				auto responseData = guilds::getGuildTemplatesAsync(dataPackage01).get();
 
 				for (auto& value: responseData) {
 					std::cout << "the name: " << value.name << std::endl;

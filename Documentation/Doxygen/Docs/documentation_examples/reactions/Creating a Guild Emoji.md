@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage.type = image_type::jpg;
 				vector<unsigned __int8> testImageData { };
 				dataPackage.imageData = testImageData;
-				auto emoji = reactions::createGuildEmojiAsync(const dataPackage).get();
+				auto emoji = reactions::createGuildEmojiAsync(dataPackage).get();
 
 				std::cout << "the name: " << emoji.name << std::endl;
 

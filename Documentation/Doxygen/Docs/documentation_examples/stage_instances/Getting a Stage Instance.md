@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_stage_instance_data& dataPackage;
 				dataPackage.channelId = "914726178022101052";
 
-				auto responseData = stage_instances::getStageInstanceAsync(const dataPackage).get();
+				auto responseData = stage_instances::getStageInstanceAsync(dataPackage).get();
 
 				std::cout << "the topic: " << responseData.topic << std::endl;
 

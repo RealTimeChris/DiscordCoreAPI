@@ -38,14 +38,14 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::create_guild_emoji_data> {
 		using value_type				 = discord_core_api::create_guild_emoji_data;
-		static constexpr auto parseValue = createObject("roles", &value_type::roles, "image", &value_type::imageDataFinal, "reason", &value_type::reason, "guildId",
+		static constexpr auto parseValue = createValue("roles", &value_type::roles, "image", &value_type::imageDataFinal, "reason", &value_type::reason, "guildId",
 			&value_type::guildId, "name", &value_type::name, "type", &value_type::type);
 	};
 
 	template<> struct core<discord_core_api::modify_guild_emoji_data> {
 		using value_type = discord_core_api::modify_guild_emoji_data;
 		static constexpr auto parseValue =
-			createObject("roles", &value_type::roles, "reason", &value_type::reason, "guildId", &value_type::guildId, "emojiId", &value_type::emojiId, "name", &value_type::name);
+			createValue("roles", &value_type::roles, "reason", &value_type::reason, "guildId", &value_type::guildId, "emojiId", &value_type::emojiId, "name", &value_type::name);
 	};
 
 }
@@ -99,7 +99,7 @@ namespace discord_core_api {
 		reactions::httpsClient = client;
 	}
 
-	co_routine<reaction_data> reactions::createReactionAsync(const create_reaction_data dataPackage) {
+	co_routine<reaction_data> reactions::createReactionAsync(create_reaction_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Reaction };
 		co_await newThreadAwaitable<reaction_data>();
 		jsonifier::string emoji;
@@ -116,7 +116,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> reactions::deleteOwnReactionAsync(const delete_own_reaction_data dataPackage) {
+	co_routine<void> reactions::deleteOwnReactionAsync(delete_own_reaction_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Own_Reaction };
 		co_await newThreadAwaitable<void>();
 		jsonifier::string emoji;
@@ -132,7 +132,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> reactions::deleteUserReactionAsync(const delete_user_reaction_data dataPackage) {
+	co_routine<void> reactions::deleteUserReactionAsync(delete_user_reaction_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_User_Reaction };
 		co_await newThreadAwaitable<void>();
 		jsonifier::string emoji;
@@ -149,7 +149,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<user_data>> reactions::getReactionsAsync(const get_reactions_data dataPackage) {
+	co_routine<jsonifier::vector<user_data>> reactions::getReactionsAsync(get_reactions_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Reactions };
 		co_await newThreadAwaitable<jsonifier::vector<user_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -169,7 +169,7 @@ namespace discord_core_api {
 	}
 
 
-	co_routine<void> reactions::deleteAllReactionsAsync(const delete_all_reactions_data dataPackage) {
+	co_routine<void> reactions::deleteAllReactionsAsync(delete_all_reactions_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_All_Reactions };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -179,7 +179,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> reactions::deleteReactionsByEmojiAsync(const delete_reactions_by_emoji_data dataPackage) {
+	co_routine<void> reactions::deleteReactionsByEmojiAsync(delete_reactions_by_emoji_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Reactions_By_Emoji };
 		co_await newThreadAwaitable<void>();
 		jsonifier::string emoji;
@@ -195,7 +195,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<emoji_data>> reactions::getEmojiListAsync(const get_emoji_list_data dataPackage) {
+	co_routine<jsonifier::vector<emoji_data>> reactions::getEmojiListAsync(get_emoji_list_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Emoji_List };
 		co_await newThreadAwaitable<jsonifier::vector<emoji_data>>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -206,7 +206,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<emoji_data> reactions::getGuildEmojiAsync(const get_guild_emoji_data dataPackage) {
+	co_routine<emoji_data> reactions::getGuildEmojiAsync(get_guild_emoji_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Emoji };
 		co_await newThreadAwaitable<emoji_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -250,7 +250,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<emoji_data> reactions::modifyGuildEmojiAsync(const modify_guild_emoji_data dataPackage) {
+	co_routine<emoji_data> reactions::modifyGuildEmojiAsync(modify_guild_emoji_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Emoji };
 		co_await newThreadAwaitable<emoji_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -265,7 +265,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> reactions::deleteGuildEmojiAsync(const delete_guild_emoji_data dataPackage) {
+	co_routine<void> reactions::deleteGuildEmojiAsync(delete_guild_emoji_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild_Emoji };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;

@@ -37,7 +37,7 @@ namespace discord_core_api {
 			dataPackage.limit = 25;
 			dataPackage.userId = args.eventData.getAuthorId();
 
-			audit_log_data auditLogData = guilds::getGuildAuditLogsAsync(const dataPackage).get(;
+			audit_log_data auditLogData = guilds::getGuildAuditLogsAsync(dataPackage).get(;
 		}
 	};
 }

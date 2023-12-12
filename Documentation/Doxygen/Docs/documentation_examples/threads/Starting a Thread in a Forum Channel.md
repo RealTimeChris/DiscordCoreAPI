@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.channelId = newArgs.eventData.getChannelId();
 				dataPackage.message.content = "testing";
 				dataPackage.name = "the test thread";
-				threads::startThreadInForumChannelAsync(const dataPackage).get();
+				threads::startThreadInForumChannelAsync(dataPackage).get();
 				
 				return;
 			} catch (...) {

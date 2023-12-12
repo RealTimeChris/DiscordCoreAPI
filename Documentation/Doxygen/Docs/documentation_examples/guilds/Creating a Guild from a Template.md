@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage01.templateCode = "ym_rr2bj5_ny_yx";
 				dataPackage01.name = "test guild_data!";
 
-				auto responseData = guilds::createGuildFromGuildTemplateAsync(const dataPackage01).get();
+				auto responseData = guilds::createGuildFromGuildTemplateAsync(dataPackage01).get();
 
 				std::cout << "guild_data name: " << responseData.name << std::endl;
 

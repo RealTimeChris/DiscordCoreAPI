@@ -35,7 +35,7 @@ namespace discord_core_api {
 				create_dmchannel_data dataPackage;
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				channel dmChannel = discord_core_api::channels::createDMChannelAsync(const dataPackage).get();
+				channel dmChannel = discord_core_api::channels::createDMChannelAsync(dataPackage).get();
 
 
 			} catch (...) {

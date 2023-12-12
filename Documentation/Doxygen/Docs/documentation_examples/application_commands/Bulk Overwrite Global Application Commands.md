@@ -47,7 +47,7 @@ namespace discord_core_api {
 			bulk_overwrite_global_application_commands_data& dataPackage;
 			dataPackage.data = newVector;
 
-			auto returnValue = application_commands::bulkOverwriteGlobalApplicationCommandsAsync(const dataPackage).get();
+			auto returnValue = application_commands::bulkOverwriteGlobalApplicationCommandsAsync(dataPackage).get();
 
 			for (const auto& value: returnValue) {
 				std::cout << "command name: " << value.name << std::endl;

@@ -63,7 +63,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 				voice_connection* voiceConnection{};
@@ -81,7 +81,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 				loadPlaylist(discordGuild);
@@ -95,7 +95,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
@@ -109,7 +109,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
@@ -124,7 +124,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(msgEmbed);
-					newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
@@ -139,7 +139,7 @@ namespace discord_core_api {
 				respond_to_input_event_data& dataPackage02(newArgs.eventData);
 				dataPackage02.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 				dataPackage02.addMessageEmbed(msgEmbed);
-				input_events::respondToInputEventAsync(const dataPackage02).get();
+				input_events::respondToInputEventAsync(dataPackage02).get();
 				return;
 			} catch (...) {
 				reportException("stop::execute()");

@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_welcome_screen_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = guilds::getGuildWelcomeScreenAsync(const dataPackage01).get();
+				auto responseData = guilds::getGuildWelcomeScreenAsync(dataPackage01).get();
 
 				std::cout << boolalpha << responseData.welcomeChannels.at(0).channelId << std::endl;
 

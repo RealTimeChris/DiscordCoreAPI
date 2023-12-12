@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_current_user_guilds_data& dataPackage;
 				dataPackage.limit = 2;
 
-				auto currentOutput = guilds::getCurrentUserGuildsAsync(const dataPackage).get();
+				auto currentOutput = guilds::getCurrentUserGuildsAsync(dataPackage).get();
 
 				for (auto& value: currentOutput) {
 					std::cout << "guild_data name: " << value.name << std::endl;

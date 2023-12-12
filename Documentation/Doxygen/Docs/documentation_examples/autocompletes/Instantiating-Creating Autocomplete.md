@@ -52,7 +52,7 @@ namespace discord_core_api {
 				testOptionTwo.autocomplete = true;
 				testOptionTwo.description = "test string!";
 				createTestData.options.emplace_back(testOptionTwo);
-				application_commands::createGlobalApplicationCommandAsync(const createTestData).get();
+				application_commands::createGlobalApplicationCommandAsync(createTestData).get();
 
 			} catch (...) {
 				reportException("test::execute()");

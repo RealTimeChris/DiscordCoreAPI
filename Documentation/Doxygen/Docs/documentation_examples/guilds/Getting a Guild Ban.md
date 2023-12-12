@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.userId = "851629399514415106";
 
-				auto guildBan = guilds::getGuildBanAsync(const dataPackage01).get();
+				auto guildBan = guilds::getGuildBanAsync(dataPackage01).get();
 
 				std::cout << "the ban name: " << guildBan.user.userName << std::endl;
 

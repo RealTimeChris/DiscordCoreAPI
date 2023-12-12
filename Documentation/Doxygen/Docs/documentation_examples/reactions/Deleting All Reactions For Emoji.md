@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.emojiName = "💯";
 
-				reactions::deleteReactionsByEmojiAsync(const dataPackage).get();
+				reactions::deleteReactionsByEmojiAsync(dataPackage).get();
 
 
 			} catch (...) {

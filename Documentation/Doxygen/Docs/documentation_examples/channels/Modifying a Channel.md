@@ -35,7 +35,7 @@ namespace discord_core_api {
 				channel channel = discord_core_api::channels::getCachedChannel({.channelId = args.eventData.getChannelId()}).get();
 				modify_channel_data dataPackage {channel};
 				dataPackage.channelData.name = "test update";
-				channel channelNew = discord_core_api::channels::modifyChannelAsync(const dataPackage).get();
+				channel channelNew = discord_core_api::channels::modifyChannelAsync(dataPackage).get();
 
 			} catch (...) {
 				rethrowException("test::execute() error: ");

@@ -101,22 +101,22 @@ namespace discord_core_api {
 		/// @brief Adds a chosen recipient to a group dm.
 		/// @param dataPackage an add_recipient_to_group_dmdata  structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> addRecipientToGroupDMAsync(const add_recipient_to_group_dmdata dataPackage);
+		static co_routine<void> addRecipientToGroupDMAsync(add_recipient_to_group_dmdata dataPackage);
 
 		/// @brief Removes a chosen recipient from a group dm.
 		/// @param dataPackage a remove_recipient_from_group_dmdata structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> removeRecipientFromGroupDMAsync(const remove_recipient_from_group_dmdata dataPackage);
+		static co_routine<void> removeRecipientFromGroupDMAsync(remove_recipient_from_group_dmdata dataPackage);
 
 		/// @brief Sets the bot's current voice state.
 		/// @param dataPackage a modify_current_user_voice_state_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> modifyCurrentUserVoiceStateAsync(const modify_current_user_voice_state_data dataPackage);
+		static co_routine<void> modifyCurrentUserVoiceStateAsync(modify_current_user_voice_state_data dataPackage);
 
 		/// @brief Sets another user's current voice state.
 		/// @param dataPackage a modify_user_voice_state_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> modifyUserVoiceStateAsync(const modify_user_voice_state_data dataPackage);
+		static co_routine<void> modifyUserVoiceStateAsync(modify_user_voice_state_data dataPackage);
 
 		/// @brief Collects the bot's current user_data responseData.
 		/// @return A co_routine containing a user.
@@ -125,17 +125,17 @@ namespace discord_core_api {
 		/// @brief Collects a given user from the library's cache.
 		/// @param dataPackage a get_user_data structure.
 		/// @return A co_routine containing a user.
-		static user_cache_data getCachedUser(const get_user_data dataPackage);
+		static user_cache_data getCachedUser(get_user_data dataPackage);
 
 		/// @brief Collects a given user from the discord servers.
 		/// @param dataPackage a get_user_data structure.
 		/// @return A co_routine containing a user.
-		static co_routine<user_data> getUserAsync(const get_user_data dataPackage);
+		static co_routine<user_data> getUserAsync(get_user_data dataPackage);
 
 		/// @brief Modifies the bot's user_data responseData.
 		/// @param dataPackage a modify_current_user_data structure.
 		/// @return A co_routine containing a user.
-		static co_routine<user_data> modifyCurrentUserAsync(const modify_current_user_data dataPackage);
+		static co_routine<user_data> modifyCurrentUserAsync(modify_current_user_data dataPackage);
 
 		/// @brief Collects the user_data's connections.
 		/// @return A co_routine containing a vector<connection_data>.

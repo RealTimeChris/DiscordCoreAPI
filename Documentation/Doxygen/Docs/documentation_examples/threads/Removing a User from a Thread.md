@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.channelId = "909407162776834069";
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				threads::removeThreadMemberAsync(const dataPackage).get();
+				threads::removeThreadMemberAsync(dataPackage).get();
 
 			} catch (...) {
 				rethrowException("test::execute()");

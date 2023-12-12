@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage01.description = "testing template!";
 				dataPackage01.name = "test template!";
 
-				auto responseData = guilds::createGuildTemplateAsync(const dataPackage01).get();
+				auto responseData = guilds::createGuildTemplateAsync(dataPackage01).get();
 
 				std::cout << "the name: " << responseData.name << std::endl;
 

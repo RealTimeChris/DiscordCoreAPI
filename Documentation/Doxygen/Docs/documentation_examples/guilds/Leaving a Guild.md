@@ -35,7 +35,7 @@ namespace discord_core_api {
 				leave_guild_data& dataPackage;
 				dataPackage.guildId = "GUIILD_ID_HERE";
 
-				guilds::leaveGuildAsync(const dataPackage).get();
+				guilds::leaveGuildAsync(dataPackage).get();
 
 
 			} catch (...) {

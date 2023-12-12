@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.reason = "deleting!";
 
-				discord_core_api::channels::deleteOrCloseChannelAsync(const dataPackage).get();
+				discord_core_api::channels::deleteOrCloseChannelAsync(dataPackage).get();
 
 
 			} catch (...) {

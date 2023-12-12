@@ -54,8 +54,8 @@ namespace discord_core_api {
 							respond_to_input_event_data& dataPackage(newArgs.eventData);
 							dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 							dataPackage.addMessageEmbed(messageEmbed);
-							auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
-							input_events::deleteInputEventResponseAsync(const newEvent, 20000);
+							auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
+							input_events::deleteInputEventResponseAsync(newEvent, 20000);
 							return;
 						}
 					}
@@ -71,7 +71,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 				if (newArgs.subCommandName == "remove") {
@@ -100,8 +100,8 @@ namespace discord_core_api {
 						respond_to_input_event_data& dataPackage(newArgs.eventData);
 						dataPackage.setResponseType(input_event_response_type::Ephemeral_Interaction_Response);
 						dataPackage.addMessageEmbed(messageEmbed);
-						auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
-						input_events::deleteInputEventResponseAsync(const newEvent, 20000);
+						auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
+						input_events::deleteInputEventResponseAsync(newEvent, 20000);
 						return;
 					}
 
@@ -114,7 +114,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 				if (newArgs.subCommandName == "purge") {
@@ -146,7 +146,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 				if (newArgs.subCommandName == "view") {
@@ -169,7 +169,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 

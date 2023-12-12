@@ -307,12 +307,12 @@ namespace discord_core_api {
 		/// @brief Gets an audit log from the discord servers.
 		/// @param dataPackage a get_guild_audit_logs_data structure.
 		/// @return A co_routine containing an audit_log_data.
-		static co_routine<audit_log_data> getGuildAuditLogsAsync(const get_guild_audit_logs_data dataPackage);
+		static co_routine<audit_log_data> getGuildAuditLogsAsync(get_guild_audit_logs_data dataPackage);
 
 		/// @brief Creates a new guild.
 		/// @param dataPackage a create_guild_data structure.
 		/// @return A co_routine containing a guild.
-		static co_routine<guild_data> createGuildAsync(const create_guild_data dataPackage);
+		static co_routine<guild_data> createGuildAsync(create_guild_data dataPackage);
 
 		/// @brief Returns all of the guilds that the current bot is in.
 		/// @return A co_routine containing a jsonifier::vector<guild_data>.
@@ -321,167 +321,167 @@ namespace discord_core_api {
 		/// @brief Collects a guild from the discord servers.
 		/// @param dataPackage a get_guild_data structure.
 		/// @return A co_routine containing a guild.
-		static co_routine<guild_data> getGuildAsync(const get_guild_data dataPackage);
+		static co_routine<guild_data> getGuildAsync(get_guild_data dataPackage);
 
 		/// @brief Collects a guild from the library's cache.
 		/// @param dataPackage a get_guild_data structure.
 		/// @return A co_routine containing a guild.
-		static guild_cache_data getCachedGuild(const get_guild_data dataPackage);
+		static guild_cache_data getCachedGuild(get_guild_data dataPackage);
 
 		/// @brief Acquires the preview data of a chosen guild.
 		/// @param dataPackage a get_guild_preview_data structure.
 		/// @return A co_routine containing a guild_preview_data.
-		static co_routine<guild_preview_data> getGuildPreviewAsync(const get_guild_preview_data dataPackage);
+		static co_routine<guild_preview_data> getGuildPreviewAsync(get_guild_preview_data dataPackage);
 
 		/// @brief Modifies a chosen guild's properties.
 		/// @param dataPackage a modify_guild_data structure.
 		/// @return A co_routine containing a guild.
-		static co_routine<guild_data> modifyGuildAsync(const modify_guild_data dataPackage);
+		static co_routine<guild_data> modifyGuildAsync(modify_guild_data dataPackage);
 
 		/// @brief Deletes a chosen guild.
 		/// @param dataPackage a delete_guild_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteGuildAsync(const delete_guild_data dataPackage);
+		static co_routine<void> deleteGuildAsync(delete_guild_data dataPackage);
 
 		/// @brief Collects a list of bans from a chosen guild.
 		/// @param dataPackage a get_guild_bans_data structure.
 		/// @return A co_routine containing a ban_data_vector.
-		static co_routine<jsonifier::vector<ban_data>> getGuildBansAsync(const get_guild_bans_data dataPackage);
+		static co_routine<jsonifier::vector<ban_data>> getGuildBansAsync(get_guild_bans_data dataPackage);
 
 		/// @brief Collects a single ban from a chosen guild.
 		/// @param dataPackage a get_guild_ban_data structure.
 		/// @return A co_routine containing a ban_data.
-		static co_routine<ban_data> getGuildBanAsync(const get_guild_ban_data dataPackage);
+		static co_routine<ban_data> getGuildBanAsync(get_guild_ban_data dataPackage);
 
 		/// @brief Bans a guild_member.
 		/// @param dataPackage a create_guild_ban_data structure.
 		/// @return A co_routine containing a ban_data.
-		static co_routine<void> createGuildBanAsync(const create_guild_ban_data dataPackage);
+		static co_routine<void> createGuildBanAsync(create_guild_ban_data dataPackage);
 
 		/// @brief Removes a previously created ban.
 		/// @param dataPackage a remove_guild_ban_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> removeGuildBanAsync(const remove_guild_ban_data dataPackage);
+		static co_routine<void> removeGuildBanAsync(remove_guild_ban_data dataPackage);
 
 		/// @brief For collecting the guild prune count.
 		/// @param dataPackage a get_guild_prune_count_data structure.
 		/// @return A co_routine containing guild_prune_count_data.
-		static co_routine<guild_prune_count_data> getGuildPruneCountAsync(const get_guild_prune_count_data dataPackage);
+		static co_routine<guild_prune_count_data> getGuildPruneCountAsync(get_guild_prune_count_data dataPackage);
 
 		/// @brief For performing a pruning of the guild_members of the guild, based on days of inactivity.
 		/// @param dataPackage a begin_guild_prune_data structure.
 		/// @return A co_routine containing a guild_prune_count_data.
-		static co_routine<guild_prune_count_data> beginGuildPruneAsync(const begin_guild_prune_data dataPackage);
+		static co_routine<guild_prune_count_data> beginGuildPruneAsync(begin_guild_prune_data dataPackage);
 
 		/// @brief Gets the list of voice regions for a particular server.
 		/// @param dataPackage a get_guild_voice_regions_data structure.
 		/// @return A co_routine containing a voice_region_data_vector.
-		static co_routine<jsonifier::vector<voice_region_data>> getGuildVoiceRegionsAsync(const get_guild_voice_regions_data dataPackage);
+		static co_routine<jsonifier::vector<voice_region_data>> getGuildVoiceRegionsAsync(get_guild_voice_regions_data dataPackage);
 
 		/// @brief Gets multiple invites from the discord servers.
 		/// @param dataPackage a get_guild_invites_data structure.
 		/// @return A co_routine containing a jsonifier::vector<invite_data>.
-		static co_routine<jsonifier::vector<invite_data>> getGuildInvitesAsync(const get_guild_invites_data dataPackage);
+		static co_routine<jsonifier::vector<invite_data>> getGuildInvitesAsync(get_guild_invites_data dataPackage);
 
 		/// @brief Gets the list of guild integrations for a particular server.
 		/// @param dataPackage a get_guild_integrations_data structure.
 		/// @return A co_routine containing a jsonifier::vector<integration_data>.
-		static co_routine<jsonifier::vector<integration_data>> getGuildIntegrationsAsync(const get_guild_integrations_data dataPackage);
+		static co_routine<jsonifier::vector<integration_data>> getGuildIntegrationsAsync(get_guild_integrations_data dataPackage);
 
 		/// @brief Deletes an integration from a guild.
 		/// @param dataPackage a delete_guild_integration_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteGuildIntegrationAsync(const delete_guild_integration_data dataPackage);
+		static co_routine<void> deleteGuildIntegrationAsync(delete_guild_integration_data dataPackage);
 
 		/// @brief Gets the guild widget's settings for a particular server.
 		/// @param dataPackage a get_guild_widget_settings_data structure.
 		/// @return A co_routine containing a guild_widget_data.
-		static co_routine<guild_widget_data> getGuildWidgetSettingsAsync(const get_guild_widget_settings_data dataPackage);
+		static co_routine<guild_widget_data> getGuildWidgetSettingsAsync(get_guild_widget_settings_data dataPackage);
 
 		/// @brief Modifies the guild widget for a particular server.
 		/// @param dataPackage a modify_guild_widget_data structure.
 		/// @return A co_routine containing a guild_widget_data.
-		static co_routine<guild_widget_data> modifyGuildWidgetAsync(const modify_guild_widget_data dataPackage);
+		static co_routine<guild_widget_data> modifyGuildWidgetAsync(modify_guild_widget_data dataPackage);
 
 		/// @brief Gets the guild widget for a particular server.
 		/// @param dataPackage a get_guild_widget_data structure.
 		/// @return A co_routine containing a guild_widget_data.
-		static co_routine<guild_widget_data> getGuildWidgetAsync(const get_guild_widget_data dataPackage);
+		static co_routine<guild_widget_data> getGuildWidgetAsync(get_guild_widget_data dataPackage);
 
 		/// @brief Gets the vanity invite responseData from a particular server.
 		/// @param dataPackage a get_guild_vanity_invite_data structure.
 		/// @return A co_routine containing invite_data.
-		static co_routine<invite_data> getGuildVanityInviteAsync(const get_guild_vanity_invite_data dataPackage);
+		static co_routine<invite_data> getGuildVanityInviteAsync(get_guild_vanity_invite_data dataPackage);
 
 		/// @brief Gets the guild widget image for a particular server.
 		/// @param dataPackage a get_guild_widget_image_data structure.
 		/// @return A co_routine containing a guild_widget_image_data.
-		static co_routine<guild_widget_image_data> getGuildWidgetImageAsync(const get_guild_widget_image_data dataPackage);
+		static co_routine<guild_widget_image_data> getGuildWidgetImageAsync(get_guild_widget_image_data dataPackage);
 
 		/// @brief Gets the guild welcome screen for a particular server.
 		/// @param dataPackage a get_guild_welcome_screen_data structure.
 		/// @return A co_routine containing a welcome_screen_data.
-		static co_routine<welcome_screen_data> getGuildWelcomeScreenAsync(const get_guild_welcome_screen_data dataPackage);
+		static co_routine<welcome_screen_data> getGuildWelcomeScreenAsync(get_guild_welcome_screen_data dataPackage);
 
 		/// @brief Modifies the guild welcome screen.
 		/// @param dataPackage a modify_guild_welcome_screen_data structure.
 		/// @return A co_routine containing a welcome_screen_data.
-		static co_routine<welcome_screen_data> modifyGuildWelcomeScreenAsync(const modify_guild_welcome_screen_data dataPackage);
+		static co_routine<welcome_screen_data> modifyGuildWelcomeScreenAsync(modify_guild_welcome_screen_data dataPackage);
 
 		/// @brief Gets the guild template from a particular server.
 		/// @param dataPackage a get_guild_template_data structure.
 		/// @return A co_routine containing a guild_template_data.
-		static co_routine<guild_template_data> getGuildTemplateAsync(const get_guild_template_data dataPackage);
+		static co_routine<guild_template_data> getGuildTemplateAsync(get_guild_template_data dataPackage);
 
 		/// @brief Creates a guild from the guild template.
 		/// @param dataPackage a create_guild_from_guild_template_data structure.
 		/// @return A co_routine containing a guild.
-		static co_routine<guild_data> createGuildFromGuildTemplateAsync(const create_guild_from_guild_template_data dataPackage);
+		static co_routine<guild_data> createGuildFromGuildTemplateAsync(create_guild_from_guild_template_data dataPackage);
 
 		/// @brief Collects a list of guild templates from a chosen guild.
 		/// @param dataPackage a get_guild_templates_data structure.
 		/// @return A co_routine containing a guiild_template_data_vector.
-		static co_routine<jsonifier::vector<guild_template_data>> getGuildTemplatesAsync(const get_guild_templates_data dataPackage);
+		static co_routine<jsonifier::vector<guild_template_data>> getGuildTemplatesAsync(get_guild_templates_data dataPackage);
 
 		/// @brief Creates a guild template.
 		/// @param dataPackage a create_guild_template_data structure.
 		/// @return A co_routine containing a guiild_template_data.
-		static co_routine<guild_template_data> createGuildTemplateAsync(const create_guild_template_data dataPackage);
+		static co_routine<guild_template_data> createGuildTemplateAsync(create_guild_template_data dataPackage);
 
 		/// @brief Syncs a guild template.
 		/// @param dataPackage a sync_guild_template_data structure.
 		/// @return A co_routine containing a guiild_template_data.
-		static co_routine<guild_template_data> syncGuildTemplateAsync(const sync_guild_template_data dataPackage);
+		static co_routine<guild_template_data> syncGuildTemplateAsync(sync_guild_template_data dataPackage);
 
 		/// @brief Modifies a guild template.
 		/// @param dataPackage a modify_guild_template_data structure.
 		/// @return A co_routine containing a guiild_template_data.
-		static co_routine<guild_template_data> modifyGuildTemplateAsync(const modify_guild_template_data dataPackage);
+		static co_routine<guild_template_data> modifyGuildTemplateAsync(modify_guild_template_data dataPackage);
 
 		/// @brief Deletes a guild template.
 		/// @param dataPackage a delete_guild_template_data structure.
 		/// @return A co_routine containing a void.
-		static co_routine<void> deleteGuildTemplateAsync(const delete_guild_template_data dataPackage);
+		static co_routine<void> deleteGuildTemplateAsync(delete_guild_template_data dataPackage);
 
 		/// @brief Gets an invite from the discord servers.
 		/// @param dataPackage a get_invite_data structure.
 		/// @return A co_routine containing an invite_data.
-		static co_routine<invite_data> getInviteAsync(const get_invite_data dataPackage);
+		static co_routine<invite_data> getInviteAsync(get_invite_data dataPackage);
 
 		/// @brief Deletes an invite from the discord servers
 		/// @param dataPackage a delete_invite_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteInviteAsync(const delete_invite_data dataPackage);
+		static co_routine<void> deleteInviteAsync(delete_invite_data dataPackage);
 
 		/// @brief Collects a list of guilds that the bot is in.
 		/// @param dataPackage a get_current_user_guilds_data structure.
 		/// @return A co_routine containing a guild_vector.
-		static co_routine<jsonifier::vector<guild_data>> getCurrentUserGuildsAsync(const get_current_user_guilds_data dataPackage);
+		static co_routine<jsonifier::vector<guild_data>> getCurrentUserGuildsAsync(get_current_user_guilds_data dataPackage);
 
 		/// @brief Removes the bot from a chosen guild.
 		/// @param dataPackage a leave_guild_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> leaveGuildAsync(const leave_guild_data dataPackage);
+		static co_routine<void> leaveGuildAsync(leave_guild_data dataPackage);
 
 		template<typename guild_type> inline static void insertGuild(guild_type&& guild) {
 			if (doWeCacheGuildsBool) {

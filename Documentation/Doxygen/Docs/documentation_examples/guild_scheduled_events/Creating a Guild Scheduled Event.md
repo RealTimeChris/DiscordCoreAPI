@@ -42,7 +42,7 @@ namespace discord_core_api {
 				dataPackage.scheduledEndTime = getISO8601TimeStamp("2021", "11", "30", "14", "10", "0");
 				dataPackage.entityMetadata.location = "here or somewhere else!";
 
-				auto responseData = guild_scheduled_events::createGuildScheduledEventAsync(const dataPackage).get();
+				auto responseData = guild_scheduled_events::createGuildScheduledEventAsync(dataPackage).get();
 
 				std::cout << "the name: " << responseData.name << std::endl;
 

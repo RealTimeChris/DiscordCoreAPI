@@ -29,7 +29,7 @@
 /// \file ISADetection.hpp
 #pragma once
 
-#include <jsonifier/ISADetection/ISADetectionBase.hpp>
+#include <jsonifier/ISA/ISADetectionBase.hpp>
 
 #include <discordcoreapi/Utilities/ISA/AVX512.hpp>
 #include <discordcoreapi/Utilities/ISA/AVX2.hpp>

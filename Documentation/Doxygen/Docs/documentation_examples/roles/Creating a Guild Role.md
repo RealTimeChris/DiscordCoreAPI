@@ -39,7 +39,7 @@ namespace discord_core_api {
 				dataPackage01.reason = "testing!";
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto newRole = roles::createGuildRoleAsync(const dataPackage01).get();
+				auto newRole = roles::createGuildRoleAsync(dataPackage01).get();
 
 				std::cout << "role name: " << newRole.name << std::endl;
 

@@ -148,22 +148,22 @@ namespace discord_core_api {
 		/// @brief Adds a role_data to a chosen guild member.
 		/// @param dataPackage an add_guild_member_role_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> addGuildMemberRoleAsync(const add_guild_member_role_data dataPackage);
+		static co_routine<void> addGuildMemberRoleAsync(add_guild_member_role_data dataPackage);
 
 		/// @brief Removes a given role from a chosen guild_member_data.
 		/// @param dataPackage a remove_guild_member_role_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> removeGuildMemberRoleAsync(const remove_guild_member_role_data dataPackage);
+		static co_routine<void> removeGuildMemberRoleAsync(remove_guild_member_role_data dataPackage);
 
 		/// @brief Collects the roles that a guild has.
 		/// @param dataPackage a get_guild_roles_data structure.
 		/// @return a co_routine containing a jsonifier::vector<role_data>.
-		static co_routine<jsonifier::vector<role_data>> getGuildRolesAsync(const get_guild_roles_data dataPackage);
+		static co_routine<jsonifier::vector<role_data>> getGuildRolesAsync(get_guild_roles_data dataPackage);
 
 		/// @brief Creates a new role_data within the given guild.
 		/// @param dataPackage a create_guild_role_data structure.
 		/// @return a co_routine containing a role_data.
-		static co_routine<role_data> createGuildRoleAsync(const create_guild_role_data dataPackage);
+		static co_routine<role_data> createGuildRoleAsync(create_guild_role_data dataPackage);
 
 		/// @brief Updates a role_data's positions.
 		/// @param dataPackage a modify_guild_role_positions_data structure.
@@ -173,27 +173,27 @@ namespace discord_core_api {
 		/// @brief Updates a given role's properties.
 		/// @param dataPackage a modify_guild_role_data structure.
 		/// @return a co_routine containing a role_data.
-		static co_routine<role_data> modifyGuildRoleAsync(const modify_guild_role_data dataPackage);
+		static co_routine<role_data> modifyGuildRoleAsync(modify_guild_role_data dataPackage);
 
 		/// @brief Removes a given role from a guild.
 		/// @param dataPackage a remove_guild_role_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> removeGuildRoleAsync(const remove_guild_role_data dataPackage);
+		static co_routine<void> removeGuildRoleAsync(remove_guild_role_data dataPackage);
 
 		/// @brief Collects the roles that a guild_member has.
 		/// @param dataPackage a get_guild_member_roles_data structure.
 		/// @return a co_routine containing a jsonifier::vector<role_data>.
-		static co_routine<jsonifier::vector<role_data>> getGuildMemberRolesAsync(const get_guild_member_roles_data dataPackage);
+		static co_routine<jsonifier::vector<role_data>> getGuildMemberRolesAsync(get_guild_member_roles_data dataPackage);
 
 		/// @brief Collects a role_data from the discord servers.
 		/// @param dataPackage a get_role_data structure.
 		/// @return a co_routine containing a role_data.
-		static co_routine<role_data> getRoleAsync(const get_role_data dataPackage);
+		static co_routine<role_data> getRoleAsync(get_role_data dataPackage);
 
 		/// @brief Collects a given role from the library's cache.
 		/// @param dataPackage a get_role_data structure.
 		/// @return a co_routine containing a role_data.
-		static role_cache_data getCachedRole(const get_role_data dataPackage);
+		static role_cache_data getCachedRole(get_role_data dataPackage);
 
 		template<typename role_type> inline static void insertRole(role_type&& role) {
 			if (doWeCacheRolesBool) {

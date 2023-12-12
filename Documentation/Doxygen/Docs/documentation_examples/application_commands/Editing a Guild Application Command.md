@@ -31,16 +31,16 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData);
+			input_events::deleteInputEventResponseAsync(args.eventData);
 
-			auto returnVector = application_commands::getGuildApplicationCommandsAsync(const {.guildId = args.eventData.getGuildId()}).get();
+			auto returnVector = application_commands::getGuildApplicationCommandsAsync({.guildId = args.eventData.getGuildId()}).get();
 
 			edit_guild_application_command_data& dataPackage;
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.name = returnVector.at(0).name;
 			dataPackage.description = "a test description";
 
-			auto returnValue = application_commands::editGuildApplicationCommandAsync(const dataPackage).get();
+			auto returnValue = application_commands::editGuildApplicationCommandAsync(dataPackage).get();
 
 			std::cout << returnValue.description << std::endl;
 		}

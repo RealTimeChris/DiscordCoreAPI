@@ -37,13 +37,13 @@ namespace jsonifier {
 	template<> struct core<discord_core_api::create_stage_instance_data> {
 		using value_type = discord_core_api::create_stage_instance_data;
 		static constexpr auto parseValue =
-			createObject("privacyLevel", &value_type::privacyLevel, "channelId", &value_type::channelId, "reason", &value_type::reason, "topic", &value_type::topic);
+			createValue("privacyLevel", &value_type::privacyLevel, "channelId", &value_type::channelId, "reason", &value_type::reason, "topic", &value_type::topic);
 	};
 
 	template<> struct core<discord_core_api::modify_stage_instance_data> {
 		using value_type = discord_core_api::modify_stage_instance_data;
 		static constexpr auto parseValue =
-			createObject("privacyLevel", &value_type::privacyLevel, "channelId", &value_type::channelId, "reason", &value_type::reason, "topic", &value_type::topic);
+			createValue("privacyLevel", &value_type::privacyLevel, "channelId", &value_type::channelId, "reason", &value_type::reason, "topic", &value_type::topic);
 	};
 
 }
@@ -54,7 +54,7 @@ namespace discord_core_api {
 		stage_instances::httpsClient = client;
 	}
 
-	co_routine<stage_instance_data> stage_instances::createStageInstanceAsync(const create_stage_instance_data dataPackage) {
+	co_routine<stage_instance_data> stage_instances::createStageInstanceAsync(create_stage_instance_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Stage_Instance };
 		co_await newThreadAwaitable<stage_instance_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -69,7 +69,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<stage_instance_data> stage_instances::getStageInstanceAsync(const get_stage_instance_data dataPackage) {
+	co_routine<stage_instance_data> stage_instances::getStageInstanceAsync(get_stage_instance_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Stage_Instance };
 		co_await newThreadAwaitable<stage_instance_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -80,7 +80,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<stage_instance_data> stage_instances::modifyStageInstanceAsync(const modify_stage_instance_data dataPackage) {
+	co_routine<stage_instance_data> stage_instances::modifyStageInstanceAsync(modify_stage_instance_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Stage_Instance };
 		co_await newThreadAwaitable<stage_instance_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -95,7 +95,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<void> stage_instances::deleteStageInstanceAsync(const delete_stage_instance_data dataPackage) {
+	co_routine<void> stage_instances::deleteStageInstanceAsync(delete_stage_instance_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Stage_Instance };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;

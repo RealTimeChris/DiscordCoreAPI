@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_voice_regions_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = guilds::getGuildVoiceRegionsAsync(const dataPackage01).get();
+				auto responseData = guilds::getGuildVoiceRegionsAsync(dataPackage01).get();
 
 				for (const auto& value: responseData) {
 					std::cout << value.name << std::endl;

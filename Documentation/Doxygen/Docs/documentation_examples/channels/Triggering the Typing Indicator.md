@@ -35,7 +35,7 @@ namespace discord_core_api {
 				trigger_typing_indicator_data dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				discord_core_api::channels::triggerTypingIndicatorAsync(const dataPackage).get();
+				discord_core_api::channels::triggerTypingIndicatorAsync(dataPackage).get();
 
 			} catch (...) {
 				rethrowException("test::execute()");

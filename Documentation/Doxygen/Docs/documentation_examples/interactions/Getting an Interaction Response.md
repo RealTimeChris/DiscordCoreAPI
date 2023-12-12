@@ -35,7 +35,7 @@ Getting an Interaction Response {#getting_an_interaction_response}
 				dataPackage.applicationId = getBotUser().id;
 				dataPackage.interactionToken = args.eventData.getInteractionToken();
 
-				auto interactionResponse = interactions::getInteractionResponseAsync(const dataPackage).get();
+				auto interactionResponse = interactions::getInteractionResponseAsync(dataPackage).get();
 
 
 			} catch (...) {

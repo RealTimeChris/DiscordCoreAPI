@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage01.deleteMessageDays = 3;
 				dataPackage01.reason = "testing purposes!";
 
-				guilds::createGuildBanAsync(const dataPackage01).get();
+				guilds::createGuildBanAsync(dataPackage01).get();
 
 
 			} catch (...) {

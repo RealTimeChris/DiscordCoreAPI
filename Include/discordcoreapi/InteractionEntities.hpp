@@ -305,7 +305,7 @@ namespace discord_core_api {
 		/// @brief Collects an interaction response.
 		/// @param dataPackage a get_interaction_response_data structure.
 		/// @return A co_routine containing an interaction_response_data.
-		static co_routine<message_data> getInteractionResponseAsync(const get_interaction_response_data dataPackage);
+		static co_routine<message_data> getInteractionResponseAsync(get_interaction_response_data dataPackage);
 
 		/// @brief Edits an interaction response.
 		/// @param dataPackage a edit_interaction_response_data structure.
@@ -315,7 +315,7 @@ namespace discord_core_api {
 		/// @brief Deletes an interaction respnose.
 		/// @param dataPackage a delete_interaction_response_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteInteractionResponseAsync(const delete_interaction_response_data dataPackage);
+		static co_routine<void> deleteInteractionResponseAsync(delete_interaction_response_data dataPackage);
 
 		/// @brief Creates a follow up message to an input interaction.
 		/// @param dataPackage a create_follow_up_message_data structure.
@@ -325,17 +325,17 @@ namespace discord_core_api {
 		/// @brief Creates a follow up message to an input interaction.
 		/// @param dataPackage a create_follow_up_message_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> getFollowUpMessageAsync(const get_follow_up_message_data dataPackage);
+		static co_routine<message_data> getFollowUpMessageAsync(get_follow_up_message_data dataPackage);
 
 		/// @brief Edits a follow up message_data.
 		/// @param dataPackage a edit_follow_up_message_data structure.
 		/// @return A co_routine containing a message.
-		static co_routine<message_data> editFollowUpMessageAsync(const edit_follow_up_message_data dataPackage);
+		static co_routine<message_data> editFollowUpMessageAsync(edit_follow_up_message_data dataPackage);
 
 		/// @brief Deletes a follow up message_data.
 		/// @param dataPackage a delete_follow_up_message_data structure.
 		/// @return A co_routine containing void.
-		static co_routine<void> deleteFollowUpMessageAsync(const delete_follow_up_message_data dataPackage);
+		static co_routine<void> deleteFollowUpMessageAsync(delete_follow_up_message_data dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;

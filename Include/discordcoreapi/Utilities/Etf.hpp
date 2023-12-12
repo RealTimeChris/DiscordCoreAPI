@@ -282,7 +282,7 @@ namespace discord_core_api {
 			}
 
 			/// @brief Parse a single etf value and convert to json.
-			void singleValueETFToJson() {
+			inline void singleValueETFToJson() {
 				if (offSet > dataSize) {
 					throw etf_parse_error{ "erl_packer::singleValueETFToJson() error: read past end of buffer." };
 				}
@@ -703,7 +703,7 @@ namespace discord_core_api {
 				return stringReal;
 			}
 
-			etf_serializer& operator[](typename object_type::key_type&& key) {
+			inline etf_serializer& operator[](typename object_type::key_type&& key) {
 				if (type == json_type::null_t) {
 					setValue<json_type::object_t>();
 				}
@@ -1143,4 +1143,6 @@ namespace discord_core_api {
 		/**@}*/
 
 	};
+
+	inline thread_local discord_core_internal::etf_parser etfParser{};
 }// namespace discord_core_internal

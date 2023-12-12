@@ -31,7 +31,7 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData).get();
+			input_events::deleteInputEventResponseAsync(args.eventData).get();
 
 			batch_edit_guild_application_command_permissions_data& dataPackage01;
 			jsonifier::vector<edit_guild_application_command_permissions_data> dataPackage02 {
@@ -40,7 +40,7 @@ namespace discord_core_api {
 			dataPackage01.guildId = args.eventData.getGuildId();
 			dataPackage01.permissions = dataPackage02;
 
-			auto returnVector = application_commands::batchEditGuildApplicationCommandPermissionsAsync(const dataPackage01).get();
+			auto returnVector = application_commands::batchEditGuildApplicationCommandPermissionsAsync(dataPackage01).get();
 
 			for (const auto& value: returnVector) {
 				std::cout << value.applicationId << std::endl;

@@ -42,7 +42,7 @@ namespace discord_core_api {
 				dataPackage.token = "YOUR_ACCESS_TOKEN_HERE";
 				dataPackage.nick = guildMember.nick;
 
-				users::addRecipientToGroupDMAsync(const dataPackage).get();
+				users::addRecipientToGroupDMAsync(dataPackage).get();
 
 
 			} catch (...) {

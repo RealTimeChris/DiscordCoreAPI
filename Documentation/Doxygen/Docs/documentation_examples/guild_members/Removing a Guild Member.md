@@ -39,7 +39,7 @@ namespace discord_core_api {
 				}
 				dataPackage01.reason = "testing purposes!";
 
-				guild_members::removeGuildMemberAsync(const dataPackage01).get();
+				guild_members::removeGuildMemberAsync(dataPackage01).get();
 
 
 			} catch (...) {

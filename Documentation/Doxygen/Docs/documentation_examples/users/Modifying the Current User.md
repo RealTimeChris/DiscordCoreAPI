@@ -35,7 +35,7 @@ namespace discord_core_api {
 				modify_current_user_data& dataPackage;
 				dataPackage.userName = "MBot_GameHouse";
 
-				auto currentUser = users::modifyCurrentUserAsync(const dataPackage).get();
+				auto currentUser = users::modifyCurrentUserAsync(dataPackage).get();
 
 				std::cout << currentUser.userName << std::endl;
 

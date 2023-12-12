@@ -38,12 +38,12 @@ namespace jsonifier {
 	template<> struct core<discord_core_api::add_recipient_to_group_dmdata> {
 		using value_type = discord_core_api::add_recipient_to_group_dmdata;
 		static constexpr auto parseValue =
-			createObject("channel_id", &value_type::channelId, "access_token", &value_type::token, "nick", &value_type::nick, "user_id", &value_type::userId);
+			createValue("channel_id", &value_type::channelId, "access_token", &value_type::token, "nick", &value_type::nick, "user_id", &value_type::userId);
 	};
 
 	template<> struct core<discord_core_api::modify_current_user_data> {
 		using value_type				 = discord_core_api::modify_current_user_data;
-		static constexpr auto parseValue = createObject("username", &value_type::userName, "avatar", &value_type::avatar);
+		static constexpr auto parseValue = createValue("username", &value_type::userName, "avatar", &value_type::avatar);
 	};
 }
 namespace discord_core_api {
@@ -271,7 +271,7 @@ namespace discord_core_api {
 		users::httpsClient		  = client;
 	}
 
-	co_routine<void> users::addRecipientToGroupDMAsync(const add_recipient_to_group_dmdata dataPackage) {
+	co_routine<void> users::addRecipientToGroupDMAsync(add_recipient_to_group_dmdata dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Recipient_To_Group_Dm };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
@@ -282,7 +282,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> users::removeRecipientFromGroupDMAsync(const remove_recipient_from_group_dmdata dataPackage) {
+	co_routine<void> users::removeRecipientFromGroupDMAsync(remove_recipient_from_group_dmdata dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Recipient_From_Group_Dm };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -292,7 +292,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> users::modifyCurrentUserVoiceStateAsync(const modify_current_user_voice_state_data dataPackage) {
+	co_routine<void> users::modifyCurrentUserVoiceStateAsync(modify_current_user_voice_state_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Current_User_Voice_State };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -302,7 +302,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> users::modifyUserVoiceStateAsync(const modify_user_voice_state_data dataPackage) {
+	co_routine<void> users::modifyUserVoiceStateAsync(modify_user_voice_state_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_User_Voice_State };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -333,7 +333,7 @@ namespace discord_core_api {
 		}
 	}
 
-	co_routine<user_data> users::getUserAsync(const get_user_data dataPackage) {
+	co_routine<user_data> users::getUserAsync(get_user_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_User };
 		co_await newThreadAwaitable<user_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Get;
@@ -350,7 +350,7 @@ namespace discord_core_api {
 		co_return data;
 	}
 
-	co_routine<user_data> users::modifyCurrentUserAsync(const modify_current_user_data dataPackage) {
+	co_routine<user_data> users::modifyCurrentUserAsync(modify_current_user_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Current_User };
 		co_await newThreadAwaitable<user_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;

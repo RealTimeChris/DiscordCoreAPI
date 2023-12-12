@@ -42,7 +42,7 @@ namespace discord_core_api {
 				dataPackage.autoArchiveDuration = thread_auto_archive_duration::shortest;
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				channel newThread = threads::startThreadWithMessageAsync(const dataPackage).get();
+				channel newThread = threads::startThreadWithMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

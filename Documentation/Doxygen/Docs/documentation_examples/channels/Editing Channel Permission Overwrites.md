@@ -40,7 +40,7 @@ namespace discord_core_api {
 			dataPackage.type = permission_overwrites_type::user;
 			dataPackage.roleOrUserId = args.eventData.getAuthorId();
 
-			discord_core_api::channels::editChannelPermissionOverwritesAsync(const dataPackage).get();
+			discord_core_api::channels::editChannelPermissionOverwritesAsync(dataPackage).get();
 		}
 	};
 }

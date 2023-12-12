@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.messageId = args.eventData.getMessageId();
 
-				message responseMessages = messages::crosspostMessageAsync(const dataPackage).get();
+				message responseMessages = messages::crosspostMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

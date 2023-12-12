@@ -31,14 +31,14 @@ namespace discord_core_api {
 		}
 
 		virtual void execute(base_function_arguments& args) {
-			input_events::deleteInputEventResponseAsync(const args.eventData).get();
+			input_events::deleteInputEventResponseAsync(args.eventData).get();
 
 			respond_to_input_event_data& dataPackage02 {args.eventData};
 			dataPackage02.type = input_event_response_type::Interaction_Response;
 			dataPackage02.addContent("test response");
-			auto inputEventData = input_events::respondToInputEventAsync(const dataPackage02);
+			auto inputEventData = input_events::respondToInputEventAsync(dataPackage02);
 
-			input_events::deleteInputEventResponseAsync(const inputEventData).get();
+			input_events::deleteInputEventResponseAsync(inputEventData).get();
 		}
 	};
 }

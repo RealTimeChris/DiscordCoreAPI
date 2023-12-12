@@ -255,67 +255,67 @@ namespace discord_core_api {
 		/// @brief Creates a new web_hook_data.
 		/// @param dataPackage a get_message_data structure.
 		/// @return a co_routine containing a web_hook.
-		static co_routine<web_hook_data> createWebHookAsync(const create_web_hook_data dataPackage);
+		static co_routine<web_hook_data> createWebHookAsync(create_web_hook_data dataPackage);
 
 		/// @brief Collects a list of web_hooks from a chosen channel_data.
 		/// @param dataPackage a get_channel_web_hooks_data structure.
 		/// @return a co_routine containing a jsonifier::vector<web_hook_data>.
-		static co_routine<jsonifier::vector<web_hook_data>> getChannelWebHooksAsync(const get_channel_web_hooks_data dataPackage);
+		static co_routine<jsonifier::vector<web_hook_data>> getChannelWebHooksAsync(get_channel_web_hooks_data dataPackage);
 
 		/// @brief Collects a list of web_hooks from a chosen guild.
 		/// @param dataPackage a get_guild_web_hooks_data structure.
 		/// @return a co_routine containing a jsonifier::vector<web_hook_data>.
-		static co_routine<jsonifier::vector<web_hook_data>> getGuildWebHooksAsync(const get_guild_web_hooks_data dataPackage);
+		static co_routine<jsonifier::vector<web_hook_data>> getGuildWebHooksAsync(get_guild_web_hooks_data dataPackage);
 
 		/// @brief Collects a single web_hook_data.
 		/// @param dataPackage a get_web_hook_data structure.
 		/// @return a co_routine containing a web_hook.
-		static co_routine<web_hook_data> getWebHookAsync(const get_web_hook_data dataPackage);
+		static co_routine<web_hook_data> getWebHookAsync(get_web_hook_data dataPackage);
 
 		/// @brief Collects a single web_hook_data, using the token.
 		/// @param dataPackage a get_web_hook_with_token_data structure.
 		/// @return a co_routine containing a web_hook.
-		static co_routine<web_hook_data> getWebHookWithTokenAsync(const get_web_hook_with_token_data dataPackage);
+		static co_routine<web_hook_data> getWebHookWithTokenAsync(get_web_hook_with_token_data dataPackage);
 
 		/// @brief Modifies a single web_hook_data.
 		/// @param dataPackage a modify_web_hook_data structure.
 		/// @return a co_routine containing a web_hook.
-		static co_routine<web_hook_data> modifyWebHookAsync(const modify_web_hook_data dataPackage);
+		static co_routine<web_hook_data> modifyWebHookAsync(modify_web_hook_data dataPackage);
 
 		/// @brief Modifies a single web_hook_data, using its token.
 		/// @param dataPackage a modify_web_hook_with_token_data structure.
 		/// @return a co_routine containing a web_hook.
-		static co_routine<web_hook_data> modifyWebHookWithTokenAsync(const modify_web_hook_with_token_data dataPackage);
+		static co_routine<web_hook_data> modifyWebHookWithTokenAsync(modify_web_hook_with_token_data dataPackage);
 
 		/// @brief Deletes a single web_hook_data.
 		/// @param dataPackage a delete_web_hook_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteWebHookAsync(const delete_web_hook_data dataPackage);
+		static co_routine<void> deleteWebHookAsync(delete_web_hook_data dataPackage);
 
 		/// @brief Deletes a single web_hook_data, using its token.
 		/// @param dataPackage a delete_web_hook_with_token_data structure.
 		/// @return a co_routine containing void.
-		static co_routine<void> deleteWebHookWithTokenAsync(const delete_web_hook_with_token_data dataPackage);
+		static co_routine<void> deleteWebHookWithTokenAsync(delete_web_hook_with_token_data dataPackage);
 
 		/// @brief Executes a single web_hook_data.
 		/// @param dataPackage an execute_web_hook_data structure.
 		/// @return a co_routine containing a message.
-		static co_routine<message_data> executeWebHookAsync(const execute_web_hook_data dataPackage);
+		static co_routine<message_data> executeWebHookAsync(execute_web_hook_data dataPackage);
 
 		/// @brief Collects a web_hook message_data.
 		/// @param dataPackage an get_web_hook_message_data structure.
 		/// @return a co_routine containing a message.
-		static co_routine<message_data> getWebHookMessageAsync(const get_web_hook_message_data dataPackage);
+		static co_routine<message_data> getWebHookMessageAsync(get_web_hook_message_data dataPackage);
 
 		/// @brief Edits a web_hook message_data.
 		/// @param dataPackage an edit_web_hook_data_message_data structure.
 		/// @return a co_routine containing a message.
-		static co_routine<message_data> editWebHookMessageAsync(const edit_web_hook_data dataPackage);
+		static co_routine<message_data> editWebHookMessageAsync(edit_web_hook_data dataPackage);
 
 		/// @brief Deletes a web_hook message_data.
 		/// @param dataPackage an delete_web_hook_message_data structure.
 		/// @return a co_routine containing a message.
-		static co_routine<void> deleteWebHookMessageAsync(const delete_web_hook_message_data dataPackage);
+		static co_routine<void> deleteWebHookMessageAsync(delete_web_hook_message_data dataPackage);
 
 	  protected:
 		static discord_core_internal::https_client* httpsClient;

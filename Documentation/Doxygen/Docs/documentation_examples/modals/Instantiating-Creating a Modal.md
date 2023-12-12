@@ -36,7 +36,7 @@ Instantiating/Creating a Modal-Input {#creating_a_modal}
 				dataPackage.addModal("test modal", "test_modal", "test modal small", "test_modal", true, 1, 46, text_input_style::paragraph, "test modal",
 									 "test_modal");
 				dataPackage.type = input_event_response_type::Interaction_Response;
-				auto newEvent = input_events::respondToInputEventAsync(const dataPackage);
+				auto newEvent = input_events::respondToInputEventAsync(dataPackage);
 
 
 			} catch (...) {

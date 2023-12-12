@@ -36,27 +36,27 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::modify_guild_role_positions_data> {
 		using value_type				 = discord_core_api::modify_guild_role_positions_data;
-		static constexpr auto parseValue = createObject("guild_id", &value_type::guildId, "id", &value_type::roleId, "positions", &value_type::rolePositions, "reason",
+		static constexpr auto parseValue = createValue("guild_id", &value_type::guildId, "id", &value_type::roleId, "positions", &value_type::rolePositions, "reason",
 			&value_type::reason, "position", &value_type::newPosition);
 	};
 
 	template<> struct core<discord_core_api::modify_guild_role_data> {
 		using value_type				 = discord_core_api::modify_guild_role_data;
-		static constexpr auto parseValue = createObject("color", &value_type::hexColorValue, "hoist", &value_type::hoist, "id", &value_type::roleId, "mentionable",
+		static constexpr auto parseValue = createValue("color", &value_type::hexColorValue, "hoist", &value_type::hoist, "id", &value_type::roleId, "mentionable",
 			&value_type::mentionable, "name", &value_type::name, "permissions", &value_type::permissions, "reason", &value_type::reason, "unicode_emoji", &value_type::unicodeEmoji,
 			"guild_id", &value_type::guildId, "icon", &value_type::icon);
 	};
 
 	template<> struct core<discord_core_api::create_guild_role_data> {
 		using value_type				 = discord_core_api::create_guild_role_data;
-		static constexpr auto parseValue = createObject("color", &value_type::hexColorValue, "hoist", &value_type::hoist, "id", &value_type::guildId, "mentionable",
+		static constexpr auto parseValue = createValue("color", &value_type::hexColorValue, "hoist", &value_type::hoist, "id", &value_type::guildId, "mentionable",
 			&value_type::mentionable, "name", &value_type::name, "permissions", &value_type::permissions, "position", &value_type::position, "reason", &value_type::reason,
 			"unicode_emoji", &value_type::unicodeEmoji, "icon", &value_type::icon);
 	};
 
 	template<> struct core<discord_core_api::role_position_data> {
 		using value_type				 = discord_core_api::role_position_data;
-		static constexpr auto parseValue = createObject("position", &value_type::rolePosition, "id", &value_type::roleId);
+		static constexpr auto parseValue = createValue("position", &value_type::rolePosition, "id", &value_type::roleId);
 	};
 }
 
@@ -146,7 +146,7 @@ namespace discord_core_api {
 		roles::httpsClient		  = client;
 	}
 
-	co_routine<void> roles::addGuildMemberRoleAsync(const add_guild_member_role_data dataPackage) {
+	co_routine<void> roles::addGuildMemberRoleAsync(add_guild_member_role_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Put_Guild_Member_Role };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Put;
@@ -159,7 +159,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<void> roles::removeGuildMemberRoleAsync(const remove_guild_member_role_data dataPackage) {
+	co_routine<void> roles::removeGuildMemberRoleAsync(remove_guild_member_role_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild_Member_Role };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -172,7 +172,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<role_data>> roles::getGuildRolesAsync(const get_guild_roles_data dataPackage) {
+	co_routine<jsonifier::vector<role_data>> roles::getGuildRolesAsync(get_guild_roles_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Get_Guild_Roles };
 		co_await newThreadAwaitable<jsonifier::vector<role_data>>();
 		if (dataPackage.guildId == 0) {
@@ -186,7 +186,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<role_data> roles::createGuildRoleAsync(const create_guild_role_data dataPackage) {
+	co_routine<role_data> roles::createGuildRoleAsync(create_guild_role_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Post_Guild_Role };
 		co_await newThreadAwaitable<role_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Post;
@@ -251,7 +251,7 @@ namespace discord_core_api {
 		co_return returnData;
 	}
 
-	co_routine<role_data> roles::modifyGuildRoleAsync(const modify_guild_role_data dataPackage) {
+	co_routine<role_data> roles::modifyGuildRoleAsync(modify_guild_role_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Role };
 		co_await newThreadAwaitable<role_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
@@ -272,7 +272,7 @@ namespace discord_core_api {
 		co_return data;
 	}
 
-	co_routine<void> roles::removeGuildRoleAsync(const remove_guild_role_data dataPackage) {
+	co_routine<void> roles::removeGuildRoleAsync(remove_guild_role_data dataPackage) {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Delete_Guild_Role };
 		co_await newThreadAwaitable<void>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Delete;
@@ -285,7 +285,7 @@ namespace discord_core_api {
 		co_return;
 	}
 
-	co_routine<jsonifier::vector<role_data>> roles::getGuildMemberRolesAsync(const get_guild_member_roles_data dataPackage) {
+	co_routine<jsonifier::vector<role_data>> roles::getGuildMemberRolesAsync(get_guild_member_roles_data dataPackage) {
 		co_await newThreadAwaitable<jsonifier::vector<role_data>>();
 		jsonifier::vector<role_data> rolesVector = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		jsonifier::vector<role_data> rolesVectorNew{};
@@ -299,7 +299,7 @@ namespace discord_core_api {
 		co_return std::move(rolesVectorNew);
 	}
 
-	co_routine<role_data> roles::getRoleAsync(const get_role_data dataPackage) {
+	co_routine<role_data> roles::getRoleAsync(get_role_data dataPackage) {
 		co_await newThreadAwaitable<role_data>();
 		auto roles = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		if (dataPackage.guildId == 0) {

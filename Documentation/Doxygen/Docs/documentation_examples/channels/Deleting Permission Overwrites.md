@@ -35,7 +35,7 @@ namespace discord_core_api {
 			dataPackage.channelId = args.eventData.getChannelId();
 			dataPackage.roleOrUserId = args.eventData.getAuthorId();
 
-			discord_core_api::channels::deleteChannelPermissionOverwritesAsync(const dataPackage).get();
+			discord_core_api::channels::deleteChannelPermissionOverwritesAsync(dataPackage).get();
 		}
 	};
 }

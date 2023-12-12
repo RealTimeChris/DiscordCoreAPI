@@ -41,7 +41,7 @@ namespace discord_core_api {
 				dataPackage01.mentionable = false;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto newRole = roles::modifyGuildRoleAsync(const dataPackage01).get();
+				auto newRole = roles::modifyGuildRoleAsync(dataPackage01).get();
 
 				std::cout << "role name: " << newRole.name << std::endl;
 

@@ -38,7 +38,7 @@ namespace discord_core_api {
 				dataPackage01.reason = "testing purposes!";
 				dataPackage01.roleId = "866124519303020554";
 
-				roles::addGuildMemberRoleAsync(const dataPackage01).get();
+				roles::addGuildMemberRoleAsync(dataPackage01).get();
 
 
 			} catch (...) {

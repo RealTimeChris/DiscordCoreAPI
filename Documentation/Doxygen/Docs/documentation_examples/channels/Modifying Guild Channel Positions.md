@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				vector<discord_core_api::channel_data> channels = discord_core_api::channels::getGuildChannelsAsync(const {.guildId = args.eventData.getGuildId()}).get();
+				vector<discord_core_api::channel_data> channels = discord_core_api::channels::getGuildChannelsAsync({.guildId = args.eventData.getGuildId()}).get();
 
 				vector<modify_guild_channel_position_data> dataPackage00;
 
@@ -49,7 +49,7 @@ namespace discord_core_api {
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.modifyChannelData = dataPackage00;
 
-				discord_core_api::channels::modifyGuildChannelPositionsAsync(const dataPackage).get();
+				discord_core_api::channels::modifyGuildChannelPositionsAsync(dataPackage).get();
 
 
 			} catch (...) {

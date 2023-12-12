@@ -45,7 +45,7 @@ namespace discord_core_api {
 				dataPackage01.description = "the description!";
 				dataPackage01.welcomeChannels = vector;
 
-				auto responseData = guilds::modifyGuildWelcomeScreenAsync(const dataPackage01).get();
+				auto responseData = guilds::modifyGuildWelcomeScreenAsync(dataPackage01).get();
 
 				std::cout << boolalpha << responseData.welcomeChannels.at(0).channelId << std::endl;
 

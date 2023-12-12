@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				reactions::deleteAllReactionsAsync(const dataPackage).get();
+				reactions::deleteAllReactionsAsync(dataPackage).get();
 
 
 			} catch (...) {

@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage01.userId = "869276807394902066";
 				dataPackage01.reason = "testing purposes!";
 
-				guilds::removeGuildBanAsync(const dataPackage01).get();
+				guilds::removeGuildBanAsync(dataPackage01).get();
 
 
 			} catch (...) {

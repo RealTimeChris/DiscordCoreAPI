@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.withUserCount = true;
 				dataPackage.guildScheduledEventId = "914726482365009931";
 
-				auto responseData = guild_scheduled_events::getGuildScheduledEventAsync(const dataPackage).get();
+				auto responseData = guild_scheduled_events::getGuildScheduledEventAsync(dataPackage).get();
 
 				std::cout << "the name: " << responseData.name << std::endl;
 

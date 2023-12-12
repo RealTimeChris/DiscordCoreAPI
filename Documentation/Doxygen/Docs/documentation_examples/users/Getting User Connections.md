@@ -32,7 +32,7 @@ namespace discord_core_api {
 
 		virtual void execute(base_function_arguments& args) {
 			try {
-				auto responseVector = users::getUserConnectionsAsync(const dataPackage).get();
+				auto responseVector = users::getUserConnectionsAsync(dataPackage).get();
 
 				for (auto& value: responseVector) {
 					std::cout << "the id: " << value.id << std::endl;

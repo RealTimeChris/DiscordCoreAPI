@@ -121,7 +121,7 @@ RespondToInputEventData dataPackage{ args.eventData };
 dataPackage.addMessageEmbed(newEmbed);
 dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
 InputEventData newEvent = input_events::respondToInputEvent(dataPackage);
-input_events::deleteInputEventResponseAsync(const newEvent, 20000).get();
+input_events::deleteInputEventResponseAsync(newEvent, 20000).get();
 ```
 
 # Build Instructions (Full-Vcpkg)

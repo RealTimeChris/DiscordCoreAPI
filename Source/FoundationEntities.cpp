@@ -1032,12 +1032,6 @@ namespace discord_core_api {
 
 	void parseCommandDataOption(unordered_map<jsonifier::string, json_string_value>& values, application_command_interaction_data_option& data) {
 		json_string_value valueNew{};
-		auto stringSize{ data.value.operator jsonifier::string_view().size() };
-		if (stringSize > 1) {
-			if (data.value.operator jsonifier::string_view().at(0) == '"' && data.value.operator jsonifier::string_view().at(stringSize - 1) == '"') {
-				data.value = static_cast<jsonifier::string>(data.value.operator jsonifier::string_view().substr(1, data.value.operator jsonifier::string_view().size() - 2));
-			}
-		}
 		valueNew.value	  = data.value;
 		values[data.name] = valueNew;
 		for (auto& value: data.options) {

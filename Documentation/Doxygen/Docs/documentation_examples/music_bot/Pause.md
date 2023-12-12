@@ -45,7 +45,7 @@ namespace discord_core_api {
 
 				respond_to_input_event_data& dataPackage00(newArgs.eventData);
 				dataPackage00.setResponseType(input_event_response_type::Ephemeral_Deferred_Response);
-				input_events::respondToInputEventAsync(const dataPackage00).get();
+				input_events::respondToInputEventAsync(dataPackage00).get();
 				voice_connection* voiceConnection{};
 				voice_state_data voiceStateData{};
 				if (guild_data.voiceStates.contains(guildMember.id)) {
@@ -61,7 +61,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					input_events::respondToInputEventAsync(const dataPackage).get();
+					input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 				loadPlaylist(discordGuild);
@@ -75,7 +75,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
@@ -89,7 +89,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
@@ -103,7 +103,7 @@ namespace discord_core_api {
 					respond_to_input_event_data& dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+					auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
@@ -118,7 +118,7 @@ namespace discord_core_api {
 				respond_to_input_event_data& dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
-				auto newEvent = input_events::respondToInputEventAsync(const dataPackage).get();
+				auto newEvent = input_events::respondToInputEventAsync(dataPackage).get();
 
 				return;
 			} catch (...) {

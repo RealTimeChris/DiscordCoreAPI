@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_widget_image_data& dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = guilds::getGuildWidgetImageAsync(const dataPackage01).get();
+				auto responseData = guilds::getGuildWidgetImageAsync(dataPackage01).get();
 
 				std::cout << boolalpha << responseData.url << std::endl;
 

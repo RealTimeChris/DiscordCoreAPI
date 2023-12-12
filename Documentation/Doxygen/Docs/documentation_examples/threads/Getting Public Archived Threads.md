@@ -36,7 +36,7 @@ namespace discord_core_api {
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.limit = 1;
 
-				auto newActiveThreads = threads::getPublicArchivedThreadsAsync(const dataPackage).get();
+				auto newActiveThreads = threads::getPublicArchivedThreadsAsync(dataPackage).get();
 
 
 			} catch (...) {

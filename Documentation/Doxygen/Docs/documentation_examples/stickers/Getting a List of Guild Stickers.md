@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_guild_stickers_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto responseData = stickers::getGuildStickersAsync(const dataPackage).get();
+				auto responseData = stickers::getGuildStickersAsync(dataPackage).get();
 
 				for (auto& value: responseData) {
 					std::cout << "the name: " << value.name << std::endl;

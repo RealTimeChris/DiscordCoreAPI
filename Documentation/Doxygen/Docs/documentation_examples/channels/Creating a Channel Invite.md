@@ -37,7 +37,7 @@ namespace discord_core_api {
 				dataPackage.targetType = invite_target_types::Embedded_Application;
 				dataPackage.temporary = true;
 
-				invite_data channelInvite = discord_core_api::channels::createChannelInviteAsync(const dataPackage).get();
+				invite_data channelInvite = discord_core_api::channels::createChannelInviteAsync(dataPackage).get();
 				std::cout << "channel invite: " << channelInvite.inviter.userName << std::endl;
 
 			} catch (...) {

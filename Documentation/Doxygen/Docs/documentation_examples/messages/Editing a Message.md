@@ -35,7 +35,7 @@ namespace discord_core_api {
 				edit_message_data& dataPackage {args.eventData};
 				dataPackage.addContent("test editing content!");
 
-				message newMessage = messages::editMessageAsync(const dataPackage).get();
+				message newMessage = messages::editMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

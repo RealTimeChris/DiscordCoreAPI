@@ -35,7 +35,7 @@ namespace discord_core_api {
 				get_emoji_list_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto emojiList = reactions::getEmojiListAsync(const dataPackage).get();
+				auto emojiList = reactions::getEmojiListAsync(dataPackage).get();
 
 				for (const auto& value: emojiList) {
 					std::cout << "the name: " << value.name << std::endl;

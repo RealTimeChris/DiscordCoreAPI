@@ -45,7 +45,7 @@ namespace discord_core_api {
 				}
 				dataPackage.file = fileData;
 
-				auto responseData = stickers::createGuildStickerAsync(const dataPackage).get();
+				auto responseData = stickers::createGuildStickerAsync(dataPackage).get();
 
 				std::cout << "the name: " << responseData.name << std::endl;
 

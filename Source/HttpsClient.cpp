@@ -75,6 +75,8 @@ namespace discord_core_api {
 		}
 
 		void https_connection::handleBuffer() {
+			stop_watch<milliseconds> stopWatch{ 9500 };
+			stopWatch.reset();
 			do {
 				inputBufferReal += getInputBuffer();
 				switch (data.currentState) {
@@ -101,7 +103,7 @@ namespace discord_core_api {
 						return;
 					}
 				}
-			} while (inputBufferReal.size() > 0);
+			} while (inputBufferReal.size() > 0 && !stopWatch.hasTimeElapsed());
 			return;
 		}
 

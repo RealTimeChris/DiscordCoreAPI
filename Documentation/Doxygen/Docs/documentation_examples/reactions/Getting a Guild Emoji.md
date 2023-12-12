@@ -35,13 +35,13 @@ namespace discord_core_api {
 				get_emoji_list_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto emojiList = reactions::getEmojiListAsync(const dataPackage).get();
+				auto emojiList = reactions::getEmojiListAsync(dataPackage).get();
 
 				get_guild_emoji_data& dataPackage01;
 				dataPackage01.emojiId = emojiList[0].id;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto emoji = reactions::getGuildEmojiAsync(const dataPackage).get();
+				auto emoji = reactions::getGuildEmojiAsync(dataPackage).get();
 
 				std::cout << "the name: " << emoji.name << std::endl;
 

@@ -35,13 +35,13 @@ namespace discord_core_api {
 				get_emoji_list_data& dataPackage00 { };
 				dataPackage00.guildId = args.eventData.getGuildId();
 
-				auto emojiList = reactions::getEmojiListAsync(const dataPackage00).get();
+				auto emojiList = reactions::getEmojiListAsync(dataPackage00).get();
 
 				delete_guild_emoji_data& dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.emojiId = emojiList[0].id;
 				dataPackage.reason = "reason for deleting!";
-				reactions::deleteGuildEmojiAsync(const dataPackage).get();
+				reactions::deleteGuildEmojiAsync(dataPackage).get();
 
 
 			} catch (...) {
