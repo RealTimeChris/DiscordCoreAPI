@@ -43,7 +43,7 @@ namespace jsonifier {
 		using value_type				 = discord_core_api::create_guild_data;
 		static constexpr auto parseValue = createValue("default_message_notifications", &value_type::defaultMessageNotifications, "explicit_content_filter",
 			&value_type::explicitContentFilter, "system_channel_flags", &value_type::systemChannelFlags, "verification_level", &value_type::verificationLevel, "afk_timeout",
-			&value_type::afkTimeout, "region", &value_type::region, "name", &value_type::name, "icon", "channels", &value_type::channels, "system_channel_id",
+			&value_type::afkTimeout, "region", &value_type::region, "name", &value_type::name, "icon", &value_type::icon, "channels", &value_type::channels, "system_channel_id",
 			&value_type::systemChannelId, "roles", &value_type::roles, "afk_channel_id", &value_type::afkChannelId);
 	};
 

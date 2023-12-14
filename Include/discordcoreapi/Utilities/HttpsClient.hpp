@@ -99,7 +99,7 @@ namespace discord_core_api {
 		class https_error : public dca_exception {
 		  public:
 			https_response_code errorCode{};
-			inline https_error(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+			inline https_error(const jsonifier::string_view& message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 		};
 
 		struct DiscordCoreAPI_Dll https_response_data {
@@ -252,7 +252,7 @@ namespace discord_core_api {
 			https_client(jsonifier::string_view botTokenNew);
 
 			template<typename value_type, typename string_type> void getParseErrors(jsonifier::jsonifier_core<false>& parser, value_type& value, string_type& stringNew) {
-				parser.parseJson(value, stringNew);
+				parser.parseJson<true>(value, parser.minify(parser.prettify(stringNew)));
 				if (auto result = parser.getErrors(); result.size() > 0) {
 					for (auto& valueNew: result) {
 						message_printer::printError<print_message_type::websocket>(valueNew.reportError());

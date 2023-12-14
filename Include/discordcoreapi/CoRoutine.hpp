@@ -50,7 +50,7 @@ namespace discord_core_api {
 
 	/// @brief An error type for co_routines.
 	struct co_routine_error : public dca_exception {
-		inline co_routine_error(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+		inline co_routine_error(const jsonifier::string_view& message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
 	template<typename value_type> class result_holder {
