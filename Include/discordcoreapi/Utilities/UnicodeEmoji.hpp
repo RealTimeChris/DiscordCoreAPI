@@ -5525,7 +5525,7 @@ namespace discord_core_api {
 		constexpr unicode_emoji stars																		 = "🌠";
 		constexpr unicode_emoji sparkler																	 = "🎇";
 		constexpr unicode_emoji fireworks																	 = "🎆";
-		constexpr unicode_emoji city_sunset																	 = "🌇";
+		constexpr unicode_emoji city_sUnset																	 = "🌇";
 		constexpr unicode_emoji city_sunrise																 = "🌇";
 		constexpr unicode_emoji city_dusk																	 = "🌆";
 		constexpr unicode_emoji cityscape																	 = "🏙️";

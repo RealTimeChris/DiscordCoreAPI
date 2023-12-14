@@ -53,6 +53,8 @@ namespace discord_core_api {
 
 			song constructDownloadInfo(const song& songNew, uint64_t currentRecursionDepth);
 
+			jsonifier::vector<song> collectPlaylist(jsonifier::string_view string);
+
 			song collectSingleResult(jsonifier::string_view string);
 
 			jsonifier::string collectClientId();
@@ -78,6 +80,8 @@ namespace discord_core_api {
 			std::atomic_bool areWeWorkingBool{ false };
 			snowflake guildId{};
 		};
+
+		enum class search_type { single_song_with_id = 0, single_song_without_id = 1, playlist = 2 };
 
 		struct transcoding {
 			jsonifier::string preset{};

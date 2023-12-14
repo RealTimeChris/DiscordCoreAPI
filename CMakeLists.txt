@@ -21,22 +21,38 @@
 # CMakeLists.txt - The CMake script for building this library.
 # May 13, 2021
 # https://discordcoreapi.com
-set(Opus_DIR "C:/Vcpkg/installed/x64-windows/share/opus") # Set this one to the folder location of the file "OpusConfig.cmake".
-set(unofficial-sodium_DIR "C:/Vcpkg/installed/x64-windows/share/unofficial-sodium") # Set this one to the folder location of the file "unofficial-sodiumConfig.cmake".
-set(Jsonifier_DIR "C:/vcpkg2/Users/Chris/source/repos/Jsonifier/Install/Windows-Release/share/jsonifier") # Set this one to the folder location of the file "JsonifierConfig.cmake".
-set(OPENSSL_ROOT_DIR "C:/Vcpkg/installed/x64-windows/") # Set this one to the folder location of the include folder and library folders of OpenSSL.
+set(Opus_DIR "C:/Vcpkg/installed/x64-windows-static/share/opus") # Set this one to the folder location of the file "OpusConfig.cmake".
+set(unofficial-sodium_DIR "C:/Vcpkg/installed/x64-windows-static/share/unofficial-sodium") # Set this one to the folder location of the file "unofficial-sodiumConfig.cmake".
+set(Jsonifier_DIR "") # Set this one to the folder location of the file "JsonifierConfig.cmake".
+set(OPENSSL_ROOT_DIR "C:/Vcpkg/installed/x64-windows-static/") # Set this one to the folder location of the include folder and library folders of OpenSSL.
+set(VCPKG_ROOT_DIR "C:/Vcpkg")
+set(CMAKE_BUILD_TYPES "Release;Debug")
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+set(DEV TRUE)
 
 if (EXISTS "${VCPKG_ROOT_DIR}")
 	set(ENV{VCPKG_INSTALLATION_ROOT} "${VCPKG_ROOT_DIR}")
-endif()
+endif() 
 
 cmake_minimum_required(VERSION 3.20)
 if (WIN32)
-	set(OS "windows")
+	if (NOT BUILD_SHARED_LIBS)
+		set(OS "windows-static")
+	else()
+		set(OS "windows")
+	endif()
 elseif(APPLE)
-	set(OS "osx")
+	if (NOT BUILD_SHARED_LIBS)
+		set(OS "osx-static")
+	else()
+		set(OS "osx")
+	endif()
 elseif(UNIX)
-	set(OS "linux")
+	if (NOT BUILD_SHARED_LIBS)
+		set(OS "linux-static")
+	else()
+		set(OS "linux")
+	endif()
 endif()
 if (EXISTS "$ENV{VCPKG_INSTALLATION_ROOT}")
 	set(VCPKG_INSTALLATION_ROOT_NEW "$ENV{VCPKG_INSTALLATION_ROOT}")

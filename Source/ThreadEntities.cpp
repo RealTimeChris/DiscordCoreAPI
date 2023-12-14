@@ -44,20 +44,20 @@ namespace jsonifier {
 	template<> struct core<discord_core_api::start_thread_with_message_data> {
 		using value_type				 = discord_core_api::start_thread_with_message_data;
 		static constexpr auto parseValue = createValue("autoArchiveDuration", &value_type::autoArchiveDuration, "rateLimitPerUser", &value_type::rateLimitPerUser, "threadName",
-			&value_type::threadName, "messageId", &value_type::messageId, "channelId", &value_type::channelId, "reason", &value_type::reason);
+			&value_type::threadName, "messageId", &value_type::messageId, "channelId", &value_type::channelId);
 	};
 
 	template<> struct core<discord_core_api::start_thread_without_message_data> {
 		using value_type = discord_core_api::start_thread_without_message_data;
 		static constexpr auto parseValue =
 			createValue("autoArchiveDuration", &value_type::autoArchiveDuration, "type", &value_type::type, "rateLimitPerUser", &value_type::rateLimitPerUser, "threadName",
-				&value_type::threadName, "channelId", &value_type::channelId, "reason", &value_type::reason, "invitable", &value_type::invitable);
+				&value_type::threadName, "channelId", &value_type::channelId, "invitable", &value_type::invitable);
 	};
 
 	template<> struct core<discord_core_api::start_thread_in_forum_channel_data> {
 		using value_type				 = discord_core_api::start_thread_in_forum_channel_data;
 		static constexpr auto parseValue = createValue("autoArchiveDuration", &value_type::autoArchiveDuration, "message", &value_type::message, "rateLimitPerUser",
-			&value_type::rateLimitPerUser, "channelId", &value_type::channelId, "reason", &value_type::reason, "name", &value_type::name);
+			&value_type::rateLimitPerUser, "channelId", &value_type::channelId, "name", &value_type::name);
 	};
 
 }

@@ -54,49 +54,38 @@ namespace discord_core_api {
 		  public:
 			/// @brief Websocket close codes.
 			enum class websocket_close_code : uint16_t {
-				unset				  = 1 << 0,///< Unset.
-				Normal_Close		  = 1 << 1,///< Normal close.
-				Unknown_Error		  = 1 << 2,///< We're not sure what went wrong. try reconnecting?
-				Unknown_Opcode		  = 1 << 3,///< You sent an invalid gateway opcode or an invalid payload for an opcode. don't do that!
-				Decode_Error		  = 1 << 4,///< You sent an invalid payload to us. don't do that!
-				Not_Authenticated	  = 1 << 5,///< You sent us a payload prior to identifying.
-				Authentication_Failed = 1 << 6,///< The account token sent with your identify payload is incorrect.
-				Already_Authenticated = 1 << 7,///< You sent more than one identify payload. don't do that!
-				Invalid_Seq			  = 1 << 8,///<	the sequence sent when resuming the session was invalid. reconnect and start a new session.
-				Rate_Limited		  = 1 << 9,///< Woah nelly! you're sending payloads to us too quickly. slow it down! you will be disconnected on receiving this.
-				Session_Timed		  = 1 << 10,///< Your session timed out. reconnect and start a new one.
-				Invalid_Shard		  = 1 << 11,///< You sent us an invalid shard when identifying.
-				Sharding_Required	  = 1 << 12,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
-				Invalid_API_Version	  = 1 << 13,///< You sent an invalid version for the gateway.
-				Invalid_Intent		  = 1 << 14,///< You sent an invalid intent for a gateway intent. you may have incorrectly calculated the bitwise value.
-				Disallowed_Intent =
-					1 << 15,///< You sent a disallowed intent for a gateway intent. you may have tried to specify an intent that you have not enabled or are not approved for.
-				We_Do_Reconnect =
-					Normal_Close | Unknown_Error | Unknown_Opcode | Decode_Error | Not_Authenticated | Already_Authenticated | Invalid_Seq | Rate_Limited | Session_Timed,
-				We_Do_Not_Reconnect = Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
+				Unset				  = 0,///< Unset.
+				Normal_Close		  = 1000,///< Normal close.
+				Unknown_Error		  = 4000,///< We're not sure what went wrong. try reconnecting?
+				Unknown_Opcode		  = 4001,///< You sent an invalid gateway opcode or an invalid payload for an opcode. don't do that!
+				Decode_Error		  = 4002,///< You sent an invalid payload to us. don't do that!
+				Not_Authenticated	  = 4003,///< You sent us a payload prior to identifying.
+				Authentication_Failed = 4004,///< The account token sent with your identify payload is incorrect.
+				Already_Authenticated = 4005,///< You sent more than one identify payload. don't do that!
+				Invalid_Seq			  = 4007,///<	the sequence sent when resuming the session was invalid. reconnect and start a new session.
+				Rate_Limited		  = 4008,///< Woah nelly! you're sending payloads to us too quickly. slow it down! you will be disconnected on receiving this.
+				Session_Timed		  = 4009,///< Your session timed out. reconnect and start a new one.
+				Invalid_Shard		  = 4010,///< You sent us an invalid shard when identifying.
+				Sharding_Required	  = 4011,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
+				Invalid_API_Version	  = 4012,///< You sent an invalid version for the gateway.
+				Invalid_Intent		  = 4013,///< You sent an invalid intent for a gateway intent. you may have incorrectly calculated the bitwise value.
+				Disallowed_Intent	  = 4014,///< You sent a disallowed intent for a gateway intent. you may have tried to specify an intent that you have not enabled.
 			};
 
-			inline static unordered_map<int32_t, websocket_close_code> mappingValues{ { 0, websocket_close_code::unset }, { 1000, websocket_close_code::Normal_Close },
-				{ 4000, websocket_close_code::Unknown_Error }, { 4001, websocket_close_code::Unknown_Opcode }, { 4002, websocket_close_code::Decode_Error },
-				{ 4003, websocket_close_code::Not_Authenticated }, { 4004, websocket_close_code::Authentication_Failed }, { 4005, websocket_close_code::Already_Authenticated },
-				{ 4007, websocket_close_code::Invalid_Seq }, { 4008, websocket_close_code::Rate_Limited }, { 4009, websocket_close_code::Session_Timed },
-				{ 4010, websocket_close_code::Invalid_Shard }, { 4011, websocket_close_code::Sharding_Required }, { 4012, websocket_close_code::Invalid_API_Version },
-				{ 4013, websocket_close_code::Invalid_Intent }, { 4014, websocket_close_code::Disallowed_Intent } };
-
-			inline static unordered_map<websocket_close_code, jsonifier::string> outputErrorValues{ {
+			DCA_INLINE static unordered_map<websocket_close_code, jsonifier::string> outputErrorValues{ {
 																										websocket_close_code::Unknown_Error,
 																										"we're not sure what went wrong.",
 																									},
 				{ websocket_close_code::Unknown_Opcode, "you sent an invalid gateway opcode or an invalid payload for an opcode. don't do that!" },
 				{ websocket_close_code::Decode_Error, "you sent an invalid payload to discord. don't do that!" },
 				{ websocket_close_code::Not_Authenticated, "you sent us a payload prior to identifying." },
-				{ websocket_close_code::Authentication_Failed, "the account token sent with your identify payload is incorrect." },
+				{ websocket_close_code::Authentication_Failed, "The account token sent with your identify payload is incorrect." },
 				{ websocket_close_code::Already_Authenticated, "you sent more than one identify payload. don't do that!" },
-				{ websocket_close_code::Invalid_Seq, "the sequence sent when resuming the session was invalid. reconnect and start a new session." },
+				{ websocket_close_code::Invalid_Seq, "The sequence sent when resuming the session was invalid. reconnect and start a new session." },
 				{ websocket_close_code::Rate_Limited, "woah nelly! you're sending payloads to us too quickly. slow it down! you will be disconnected on receiving this." },
 				{ websocket_close_code::Session_Timed, "your session timed out. reconnect and start a new one." },
 				{ websocket_close_code::Invalid_Shard, "you sent us an invalid shard when identifying." },
-				{ websocket_close_code::Sharding_Required, "the session would have handled too many guilds - you are required to shard your connection in order to connect." },
+				{ websocket_close_code::Sharding_Required, "The session would have handled too many guilds - you are required to shard your connection in order to connect." },
 				{ websocket_close_code::Invalid_API_Version, "you sent an invalid version for the gateway." },
 				{ websocket_close_code::Invalid_Intent, "you sent an invalid intent for a gateway intent. you may have incorrectly calculated the bitwise value." },
 				{ websocket_close_code::Disallowed_Intent,
@@ -105,21 +94,17 @@ namespace discord_core_api {
 
 			websocket_close_code value{};
 
-			inline websocket_close& operator=(uint16_t valueNew) {
+			DCA_INLINE websocket_close& operator=(uint16_t valueNew) {
 				value = static_cast<websocket_close_code>(valueNew);
 				return *this;
 			};
 
-			inline websocket_close(uint16_t valueNew) {
+			DCA_INLINE websocket_close(uint16_t valueNew) {
 				*this = valueNew;
 			};
 
-			inline operator jsonifier::string_view() {
-				return websocket_close::outputErrorValues[mappingValues[static_cast<uint16_t>(value)]];
-			}
-
-			inline operator bool() {
-				return static_cast<std::underlying_type_t<decltype(value)>>(value) & static_cast<std::underlying_type_t<decltype(value)>>(websocket_close_code::We_Do_Reconnect);
+			DCA_INLINE operator jsonifier::string_view() {
+				return websocket_close::outputErrorValues[static_cast<websocket_close_code>(value)];
 			}
 		};
 
@@ -154,10 +139,10 @@ namespace discord_core_api {
 		  public:
 			friend class websocket_core;
 
-			inline websocket_tcpconnection() = default;
+			DCA_INLINE websocket_tcpconnection() = default;
 
-			inline websocket_tcpconnection& operator=(websocket_tcpconnection&& other) = default;
-			inline websocket_tcpconnection(websocket_tcpconnection&& other)			   = default;
+			DCA_INLINE websocket_tcpconnection& operator=(websocket_tcpconnection&& other) = default;
+			DCA_INLINE websocket_tcpconnection(websocket_tcpconnection&& other)			   = default;
 
 			websocket_tcpconnection(const jsonifier::string& baseUrlNew, uint16_t portNew, websocket_core* ptrNew);
 
@@ -176,7 +161,7 @@ namespace discord_core_api {
 			friend class discord_core_api::voice_connection;
 			friend class websocket_tcpconnection;
 
-			inline websocket_core() = default;
+			DCA_INLINE websocket_core() = default;
 
 			websocket_core& operator=(websocket_core&& data) noexcept;
 			websocket_core(websocket_core&& data) noexcept;
@@ -262,10 +247,10 @@ namespace discord_core_api {
 			friend class websocket_core;
 			friend class you_tube_api;
 
-			inline websocket_client() = default;
+			DCA_INLINE websocket_client() = default;
 
-			inline websocket_client& operator=(websocket_client&&) = default;
-			inline websocket_client(websocket_client&&)			   = default;
+			DCA_INLINE websocket_client& operator=(websocket_client&&) = default;
+			DCA_INLINE websocket_client(websocket_client&&)			   = default;
 
 			websocket_client(uint64_t currentShardNew, std::atomic_bool* doWeQuitNew);
 

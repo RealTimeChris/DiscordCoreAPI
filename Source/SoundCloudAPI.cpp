@@ -45,12 +45,12 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::discord_core_internal::welcome_element> {
 		using value_type				 = discord_core_api::discord_core_internal::welcome_element;
-		static constexpr auto parseValue = createValue("data", &value_type::data, "hydratable", &value_type::hydratable);
+		static constexpr auto parseValue = createValue("data", &value_type::data, "hydratable", &value_type::hydratable, "tracks", &value_type::data);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::welcome> {
 		using value_type				 = discord_core_api::discord_core_internal::welcome;
-		static constexpr auto parseValue = createScalarValue(&value_type::data);
+		static constexpr auto parseValue = createValue(&value_type::data);
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::media> {
@@ -86,13 +86,134 @@ namespace discord_core_api {
 
 		sound_cloud_request_builder::sound_cloud_request_builder(config_manager* configManagerNew) : https_client_core{ jsonifier::string{ configManagerNew->getBotToken() } } {};
 
-		inline bool collectSongIdFromSearchQuery(jsonifier::string_view string, jsonifier::string& stringNew) {
-			if (string.find("soundcloud.com") != jsonifier::string::npos) {
+		inline search_type collectSearchType(jsonifier::string_view string, jsonifier::string& stringNew) {
+			if (string.find("soundcloud.com") != jsonifier::string::npos && string.find("/sets/") == jsonifier::string::npos) {
 				stringNew = string.substr(string.find("soundcloud.com/") + jsonifier::string{ "soundcloud.com/" }.size());
-				return true;
+				return search_type::single_song_with_id;
+			} else if (string.find("/sets/") != jsonifier::string::npos) {
+				stringNew = string.substr(string.find("soundcloud.com/") + jsonifier::string{ "soundcloud.com/" }.size());
+				return search_type::playlist;
 			} else {
-				return false;
+				stringNew = string;
+				return search_type::single_song_without_id;
 			}
+		}
+
+		jsonifier::vector<song> sound_cloud_request_builder::collectPlaylist(jsonifier::string_view songQuery) {
+			if (clientId == "") {
+				sound_cloud_request_builder::collectClientId();
+			}
+			try {
+				https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Search_Results };
+				dataPackage.baseUrl						  = "https://soundcloud.com/";
+				dataPackage.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36";
+				dataPackage.relativePath				  = songQuery;
+				dataPackage.workloadClass				  = https_workload_class::Get;
+				https_response_data returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));
+				jsonifier::vector<song> resultsFinal{};
+				auto findValue = returnData.responseData.find("window.__sc_hydration = ");
+				if (findValue != jsonifier::string::npos) {
+					returnData.responseData = returnData.responseData.substr(findValue + jsonifier::string{ "window.__sc_hydration = " }.size(),
+						returnData.responseData.find("</script>") -
+							(returnData.responseData.find("window.__sc_hydration = ") + jsonifier::string{ "window.__sc_hydration = " }.size()));
+				}
+				welcome resultsNew{};
+				parser.parseJson(resultsNew, returnData.responseData);
+				jsonifier::string avatarUrl{};
+				jsonifier::string collectionString{ "tracks?ids=" };
+				for (auto& value: resultsNew.data) {
+					if (value.data.getType() == jsonifier::json_type::Object) {
+						auto newObject = value.data.operator jsonifier::raw_json_data::object_type();
+						avatarUrl	   = newObject["avatar_url"].operator jsonifier::string();
+						if (value.hydratable == "playlist") {
+							auto newerObject = value.data.operator jsonifier::raw_json_data::object_type();
+							for (auto& [key, valueNew]: newerObject) {
+								if (key == "tracks") {
+									auto newArray = valueNew.operator jsonifier::raw_json_data::array_type();
+									uint32_t currentIndex{};
+									auto arraySize = newArray.size();
+									for (auto& newValue: newArray) {
+										newObject = newValue.operator jsonifier::raw_json_data::object_type();
+										collectionString += jsonifier::toString(newValue.operator jsonifier::raw_json_data::object_type()["id"].operator uint64_t());
+										if (currentIndex < arraySize - 1) {
+											collectionString += "%2C";
+										}
+										++currentIndex;
+									}
+									collectionString += "&client_id=" + clientId + "&%5Bobject%20Object%5D=&app_version=" + appVersion + "&app_locale=en";
+								}
+							}
+						}
+					}
+				}
+				https_workload_data dataPackage02{ https_workload_type::SoundCloud_Get_Search_Results };
+				dataPackage02.baseUrl						= "https://api-v2.soundcloud.com/";
+				dataPackage02.headersToInsert["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36";
+				dataPackage02.relativePath					= collectionString;
+				dataPackage02.workloadClass					= https_workload_class::Get;
+				returnData									= submitWorkloadAndGetResult(std::move(dataPackage02));
+				jsonifier::vector<jsonifier::raw_json_data> resultsNewer{};
+				parser.parseJson(resultsNewer, returnData.responseData);
+				for (auto& value: resultsNewer) {
+					song results{};
+					if (value.getType() == jsonifier::json_type::Object) {
+						auto newObject = value.operator jsonifier::raw_json_data::object_type();
+						avatarUrl	   = newObject["avatar_url"].operator jsonifier::string();
+						if (newObject["title"].operator jsonifier::string() == "") {
+							continue;
+						}
+						bool isItFound{};
+						for (auto& valueNew: newObject["media"].operator jsonifier::raw_json_data::object_type()["transcodings"].operator jsonifier::raw_json_data::array_type()) {
+							if (valueNew.operator jsonifier::raw_json_data::object_type()["preset"].operator jsonifier::string() == "opus_0_0") {
+								isItFound				 = true;
+								results.firstDownloadUrl = valueNew.operator jsonifier::raw_json_data::object_type()["url"].operator jsonifier::string();
+								results.songId			 = valueNew.operator jsonifier::raw_json_data::object_type()["url"].operator jsonifier::string();
+							}
+						}
+						if (isItFound) {
+							jsonifier::string newString = newObject["title"].operator jsonifier::string();
+							if (newString.size() > 0) {
+								if (newString.size() > 256) {
+									newString = newString.substr(0, 256);
+								}
+								results.songTitle = utf8MakeValid(newString);
+							}
+							newString = newObject["description"].operator jsonifier::string();
+							if (newString.size() > 0) {
+								if (newString.size() > 256) {
+									newString = newString.substr(0, 256);
+								}
+								results.description = utf8MakeValid(newString);
+								results.description += "...";
+							}
+							newString = newObject["artwork_url"].operator jsonifier::string();
+							if (newString.size() > 0) {
+								results.thumbnailUrl = utf8MakeValid(newString);
+							}
+							results.viewUrl	 = newObject["permalink_url"].operator jsonifier::string();
+							results.duration = time_stamp::convertMsToDurationString(static_cast<uint64_t>(newObject["duration"].operator uint64_t()));
+							results.firstDownloadUrl +=
+								"?client_id=" + sound_cloud_request_builder::clientId + "&track_authorization=" + newObject["track_authorization"].operator jsonifier::string();
+							if (newObject["artwork_url"].operator jsonifier::string().find("-") != jsonifier::string::npos) {
+								jsonifier::string newerString =
+									newObject["artwork_url"].operator jsonifier::string().substr(0, newObject["artwork_url"].operator jsonifier::string().findLastOf("-") + 1);
+								newerString += "t500x500.jpg";
+								results.thumbnailUrl = newerString;
+							} else if (avatarUrl.find("-") != jsonifier::string::npos) {
+								jsonifier::string newerString = avatarUrl.substr(0, avatarUrl.findLastOf("-") + 1);
+								newerString += "t500x500.jpg";
+								results.thumbnailUrl = newerString;
+							}
+							results.type = song_type::SoundCloud;
+							resultsFinal.emplace_back(results);
+						}
+					}
+				}
+				return resultsFinal;
+			} catch (const https_error& error) {
+				message_printer::printError<print_message_type::https>("sound_cloud_request_builder::collectSearchResults() Error: " + jsonifier::string{ error.what() });
+			}
+			return {};
 		}
 
 		song sound_cloud_request_builder::collectSingleResult(jsonifier::string_view songQuery) {
@@ -116,11 +237,11 @@ namespace discord_core_api {
 				welcome resultsNew{};
 				parser.parseJson(resultsNew, returnData.responseData);
 				jsonifier::string avatarUrl{};
-				
+
 				for (auto& value: resultsNew.data) {
-					if (value.data.getType() == jsonifier_internal::json_type::Object) {
+					if (value.data.getType() == jsonifier::json_type::Object) {
 						auto newObject = value.data.operator jsonifier::raw_json_data::object_type();
-						avatarUrl	   = newObject["avatarUrl"].operator jsonifier::string();
+						avatarUrl	   = newObject["avatar_url"].operator jsonifier::string();
 						if (value.hydratable == "sound") {
 							if (newObject["title"].operator jsonifier::string() == "") {
 								continue;
@@ -187,12 +308,15 @@ namespace discord_core_api {
 			try {
 				jsonifier::string newString{};
 				jsonifier::vector<song> results{};
-				if (collectSongIdFromSearchQuery(songQuery, newString)) {
+				auto searchType = collectSearchType(songQuery, newString);
+				if (searchType == search_type::single_song_with_id) {
 					auto result = collectSingleResult(newString);
 					if (result.songId != "") {
 						results.emplace_back(result);
 					}
 					return results;
+				} else if (searchType == search_type::playlist) {
+					return collectPlaylist(newString);
 				}
 				https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Search_Results };
 				dataPackage.baseUrl						  = baseUrl02;
@@ -276,8 +400,8 @@ namespace discord_core_api {
 				newerSong.secondDownloadUrl = downloadUrl.url;
 				if (newerSong.secondDownloadUrl.find("/playlist") != jsonifier::string::npos) {
 					https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Download_Links };
-					dataPackage.baseUrl			 = newerSong.secondDownloadUrl;
-					dataPackage.workloadClass	 = https_workload_class::Get;
+					dataPackage.baseUrl			   = newerSong.secondDownloadUrl;
+					dataPackage.workloadClass	   = https_workload_class::Get;
 					https_response_data resultsNew = submitWorkloadAndGetResult(std::move(dataPackage));
 					jsonifier::string newString{ resultsNew.responseData };
 					newerSong.finalDownloadUrls.clear();
@@ -367,8 +491,8 @@ namespace discord_core_api {
 						assetPaths.emplace_back(newString03);
 					}
 					https_workload_data dataPackage03{ https_workload_type::SoundCloud_Get_Client_Id };
-					dataPackage03.baseUrl		   = assetPaths[5];
-					dataPackage03.workloadClass	   = https_workload_class::Get;
+					dataPackage03.baseUrl			 = assetPaths[5];
+					dataPackage03.workloadClass		 = https_workload_class::Get;
 					https_response_data returnData02 = submitWorkloadAndGetResult(std::move(dataPackage03));
 					jsonifier::string newerString02{};
 					newerString02.insert(newerString02.begin(), returnData02.responseData.begin(), returnData02.responseData.end());

@@ -195,7 +195,7 @@ namespace discord_core_api {
 		/// @return a co_routine containing a role_data.
 		static role_cache_data getCachedRole(get_role_data dataPackage);
 
-		template<typename role_type> inline static void insertRole(role_type&& role) {
+		template<typename role_type> DCA_INLINE static void insertRole(role_type&& role) {
 			if (doWeCacheRolesBool) {
 				if (role.id == 0) {
 					throw dca_exception{ "Sorry, but there was no id set for that role." };

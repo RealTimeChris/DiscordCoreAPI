@@ -70,10 +70,9 @@ namespace discord_core_api {
 			}
 		}
 		if (isItFound) {
-			unique_ptr<base_function> newValue = createFunction(functionName);
-			return newValue;
+			return createFunction(functionName);
 		}
-		return nullptr;
+		return unique_ptr<base_function>{};
 	}
 
 	unique_ptr<base_function> command_controller::createFunction(jsonifier::string_view functionName) {
@@ -84,7 +83,7 @@ namespace discord_core_api {
 				}
 			}
 		}
-		return nullptr;
+		return unique_ptr<base_function>{};
 	}
 
 }

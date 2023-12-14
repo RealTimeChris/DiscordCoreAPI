@@ -46,20 +46,20 @@ namespace discord_core_api {
 
 		/// @brief A struct representing a worker thread for coroutine-based tasks.
 		struct worker_thread {
-			inline worker_thread() = default;
+			DCA_INLINE worker_thread(){};
 
-			inline worker_thread& operator=(worker_thread&& other) noexcept {
+			DCA_INLINE worker_thread& operator=(worker_thread&& other) noexcept {
 				areWeCurrentlyWorking.store(other.areWeCurrentlyWorking.load(std::memory_order_acquire), std::memory_order_release);
 				std::swap(thread, other.thread);
 				tasks = std::move(other.tasks);
 				return *this;
 			}
 
-			inline worker_thread(worker_thread&& other) noexcept {
+			DCA_INLINE worker_thread(worker_thread&& other) noexcept {
 				*this = std::move(other);
 			}
 
-			inline ~worker_thread() = default;
+			DCA_INLINE ~worker_thread() = default;
 
 			unbounded_message_block<std::coroutine_handle<>> tasks{};///< Queue of coroutine tasks.
 			std::atomic_bool areWeCurrentlyWorking{};///< Atomic flag indicating if the thread is working.
@@ -67,54 +67,37 @@ namespace discord_core_api {
 		};
 
 		/// @brief A class representing a coroutine-based thread pool.
-		class co_routine_thread_pool : protected discord_core_api::unordered_map<uint64_t, unique_ptr<worker_thread>> {
+		class co_routine_thread_pool : protected std::unordered_map<uint64_t, unique_ptr<worker_thread>> {
 		  public:
-			using map_type = discord_core_api::unordered_map<uint64_t, unique_ptr<worker_thread>>;
+			using map_type = std::unordered_map<uint64_t, unique_ptr<worker_thread>>;
 
 			/// @brief Constructor to create a coroutine thread pool. initializes the worker threads.
-			inline co_routine_thread_pool() : threadCount(std::thread::hardware_concurrency()) {
+			DCA_INLINE co_routine_thread_pool() : threadCount(std::thread::hardware_concurrency()) {
+				std::unique_lock lock01{ workerAccessMutex };
 				for (uint32_t x = 0; x < threadCount; ++x) {
-					currentIndex.fetch_add(1, std::memory_order_release);
-					currentCount.fetch_add(1, std::memory_order_release);
-					uint64_t indexNew = currentIndex.load(std::memory_order_acquire);
+					uint64_t indexNew = x;
 					getMap().emplace(indexNew, makeUnique<worker_thread>());
-					getMap()[indexNew]->thread = std::jthread([=, this](std::stop_token tokenNew) mutable {
-						threadFunction(getMap().at(indexNew).get(), tokenNew);
-					});
+					std::this_thread::sleep_for(150ms);
+					getMap().at(indexNew)->thread = std::jthread{ [=, this](std::stop_token tokenNew) mutable {
+						auto indexNewer			  = indexNew;
+						threadFunction(getMap().at(indexNewer).get(), tokenNew);
+					} };
 				}
 			}
 
 			/// @brief Submit a coroutine task to the thread pool.
 			/// @param coro the coroutine handle to submit.
-			inline void submitTask(std::coroutine_handle<> coro) {
-				bool areWeAllBusy{ true };
-				uint64_t currentLowestValue{ std::numeric_limits<uint64_t>::max() };
+			DCA_INLINE void submitTask(std::coroutine_handle<> coro) {
 				uint64_t currentLowestIndex{ std::numeric_limits<uint64_t>::max() };
+				while (currentLowestIndex == std::numeric_limits<uint64_t>::max()) {
+					currentLowestIndex = areWeAllBusy();
+					std::this_thread::sleep_for(1ms);
+				}
 				std::shared_lock lock01{ workerAccessMutex };
-				for (auto& [key, value]: getMap()) {
-					if (!value->areWeCurrentlyWorking.load(std::memory_order_acquire)) {
-						areWeAllBusy = false;
-						if (value->tasks.size() < currentLowestValue) {
-							currentLowestValue = value->tasks.size();
-							currentLowestIndex = key;
-						}
-						break;
-					}
+				if (std ::this_thread::get_id() == getMap()[currentLowestIndex]->thread.get_id()) {
+					++currentLowestIndex;
 				}
-				if (areWeAllBusy) {
-					currentIndex.fetch_add(1, std::memory_order_release);
-					currentCount.fetch_add(1, std::memory_order_release);
-					uint64_t indexNew = currentIndex.load(std::memory_order_acquire);
-					lock01.unlock();
-					std::unique_lock lock02{ workerAccessMutex };
-					getMap().emplace(indexNew, makeUnique<worker_thread>());
-					getMap()[indexNew]->thread = std::jthread([=, this](std::stop_token tokenNew) mutable {
-						threadFunction(getMap().at(indexNew).get(), tokenNew);
-					});
-					lock02.unlock();
-				} else {
-					getMap()[currentLowestIndex]->tasks.send(std::move(coro));
-				}
+				getMap()[currentLowestIndex]->tasks.send(std::move(coro));
 			}
 
 			~co_routine_thread_pool() {
@@ -123,15 +106,13 @@ namespace discord_core_api {
 
 		  protected:
 			std::shared_mutex workerAccessMutex{};///< Shared mutex for worker thread access.
-			std::atomic_uint64_t currentCount{};///< current count of worker threads.
-			std::atomic_uint64_t currentIndex{};///< current index of worker threads.
 			std::atomic_bool doWeQuit{ false };///< Whether or not we're quitting.
 			const uint64_t threadCount{};///< Total thread count.
 
 			/// @brief Thread function for each worker thread.
 			/// @param thread A pointer to the current thread of execution.
 			/// @param tokenNew The stop token for the thread.
-			inline void threadFunction(worker_thread* thread, std::stop_token tokenNew) {
+			DCA_INLINE void threadFunction(worker_thread* thread, std::stop_token tokenNew) {
 				while (!doWeQuit.load(std::memory_order_acquire) && !tokenNew.stop_requested()) {
 					std::coroutine_handle<> coroHandle{};
 					if (thread->tasks.tryReceive(coroHandle)) {
@@ -146,31 +127,22 @@ namespace discord_core_api {
 						}
 						thread->areWeCurrentlyWorking.store(false, std::memory_order_release);
 					}
-					if (currentCount.load(std::memory_order_acquire) > threadCount) {
-						uint64_t extraWorkers{ currentCount.load(std::memory_order_acquire) - threadCount };
-						while (extraWorkers > 0) {
-							--extraWorkers;
-							size_type currentHighestIndex{};
-							for (const auto& [key, value]: *this) {
-								if (key > currentHighestIndex) {
-									currentHighestIndex = key;
-								}
-							}
-							std::unique_lock lock{ workerAccessMutex };
-							auto oldThread = begin() + currentHighestIndex;
-							if (oldThread->second->thread.joinable()) {
-								oldThread->second->thread.request_stop();
-								oldThread->second->thread.detach();
-								currentCount.fetch_sub(1, std::memory_order_release);
-								getMap().erase(oldThread->first);
-							}
-						}
-					}
 					std::this_thread::sleep_for(std::chrono::nanoseconds{ 100000 });
 				}
 			}
 
-			inline map_type& getMap() {
+			DCA_INLINE uint64_t areWeAllBusy() {
+				for (uint64_t x = 0; x < this->size(); ++x) {
+					if (this->contains(x)) {
+						if (!this->operator[](x)->areWeCurrentlyWorking.load(std::memory_order_acquire)) {
+							return x;
+						}
+					}
+				}
+				return std::numeric_limits<uint64_t>::max();
+			}
+
+			DCA_INLINE map_type& getMap() {
 				return *this;
 			}
 		};

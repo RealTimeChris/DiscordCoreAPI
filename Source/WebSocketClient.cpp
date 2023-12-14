@@ -458,80 +458,16 @@ namespace discord_core_api {
 			return currentCount;
 		}
 
-		uint64_t findInvalidJSONIndex(jsonifier::string_view_base<uint8_t> jsonStr) {
-			std::stack<uint8_t> stack;
-			bool areWeInAString{ false };
-			jsonifier::string_base<uint8_t> stringNew{ jsonStr + '\0' };
-			uint64_t backslashCount{};
-			for (jsonifier::string_base<uint8_t>::iterator iter{ stringNew.begin() }; iter != stringNew.end(); ++iter) {
-				if (iter > stringNew.begin()) {
-					uint8_t cMinus1 = *(iter - 1);
-					uint8_t c		= *iter;
-					backslashCount = 0;
-					if (c == '\\') {
-						backslashCount = countBackSlashes(iter, stringNew.end());
-					}
-					cMinus1 = *(iter - 1);
-					c		 = *iter;
-					
-					if ((c == '{' || c == '[' || c == '"') && cMinus1 != '\\' && !areWeInAString && backslashCount % 1 == 0) {
-						if (c == '"') {
-							areWeInAString = true;
-						}
-						stack.push(c);
-					} else if (areWeInAString && c == '"' && cMinus1 != '\\' && backslashCount % 1 == 0) {
-						areWeInAString = false;
-						stack.pop();
-					} else if ((c == '}' || c == ']' || c == '"') && !areWeInAString) {
-
-						uint8_t top = stack.top();
-						stack.pop();
-
-						if ((c == '}' && top != '{') || (c == ']' && top != '[') || (c == '"' && top != '"')) {
-							return static_cast<uint64_t>(iter - stringNew.begin());
-						}
-					}
-				} else {
-					uint8_t c = *iter;
-					if ((c == '{' || c == '[' || c == '"') && !areWeInAString) {
-						if (c == '"') {
-							areWeInAString = true;
-						}
-						stack.push(c);
-					} else if (areWeInAString && c == '"' ) {
-						areWeInAString = false;
-						stack.pop();
-					} else if ((c == '}' || c == ']' || c == '"') && !areWeInAString) {
-						uint8_t top = stack.top();
-						stack.pop();
-
-						if ((c == '}' && top != '{') || (c == ']' && top != '[') || (c == '"' && top != '"')) {
-							return static_cast<uint64_t>(iter - stringNew.begin());
-						}
-					}
-				}
-			}
-
-			if (stack.empty()) {
-				return std::numeric_limits<uint64_t>::max();
-			} else {
-				return jsonStr.size();
-			}
-		}
-
 		bool websocket_client::onMessageReceived(jsonifier::string_view_base<uint8_t> dataNew) {
 			try {
 				if (areWeConnected() && currentMessage.size() > 0 && dataNew.size() > 0) {
 					websocket_message message{};
 					if (configManager->getTextFormat() == text_format::etf) {
 						try {
-							dataNew		   = etfParser.parseEtfToJson(dataNew);
-							auto newString = jsonifier::string{ dataNew };
-							parser.parseJson(message, newString);
-							if (auto result = parser.getErrors(); result.size() > 0) {
-								for (auto& valueNew: result) {
-									message_printer::printError<print_message_type::websocket>(valueNew.reportError() + ", for data:" + dataNew);
-								}
+							dataNew = etfParser.parseEtfToJson(dataNew);
+							parser.parseJson(message, parser.minify(parser.prettify(dataNew)));
+							for (auto& valueNew: parser.getErrors()) {
+								message_printer::printError<print_message_type::websocket>(valueNew.reportError() + ", for data:" + dataNew);
 							}
 						} catch (const dca_exception& error) {
 							message_printer::printError<print_message_type::websocket>(error.what());
@@ -540,12 +476,7 @@ namespace discord_core_api {
 							return false;
 						}
 					} else {
-#if !defined(NDEBUG)
-						if (auto result = findInvalidJSONIndex(dataNew); result != std::numeric_limits<uint64_t>::max()) {
-							throw dca_exception{ "Sorry, but that json data is invalid at index: " + jsonifier::toString(result) + " and it is: " + dataNew };
-						}
-#endif
-						parser.parseJson(message, dataNew);
+						parser.parseJson(message, parser.minify(parser.prettify(dataNew)));
 						if (auto result = parser.getErrors(); result.size() > 0) {
 							for (auto& valueNew: result) {
 								message_printer::printError<print_message_type::websocket>(valueNew.reportError() + ", for data:" + dataNew);

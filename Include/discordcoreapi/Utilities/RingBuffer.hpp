@@ -29,7 +29,7 @@
 /// \file RingBuffer.hpp
 #pragma once
 
-#include <jsonifier/Index.hpp>
+#include <discordcoreapi/Utilities/Base.hpp>
 
 #include <string_view>
 #include <cstring>
@@ -59,14 +59,14 @@ namespace discord_core_api {
 			using size_type	 = uint64_t;
 
 			/// @brief Constructor. initializes the buffer size.
-			ring_buffer_interface() {
+			DCA_INLINE ring_buffer_interface() {
 				arrayValue.resize(size);
 			}
 
-			ring_buffer_interface& operator=(ring_buffer_interface&&) noexcept		= default;
-			ring_buffer_interface(ring_buffer_interface&&) noexcept					= default;
-			ring_buffer_interface& operator=(const ring_buffer_interface&) noexcept = default;
-			ring_buffer_interface(const ring_buffer_interface&) noexcept			= default;
+			DCA_INLINE ring_buffer_interface& operator=(ring_buffer_interface&&) noexcept		= default;
+			DCA_INLINE ring_buffer_interface(ring_buffer_interface&&) noexcept			  = default;
+			DCA_INLINE ring_buffer_interface& operator=(const ring_buffer_interface&) noexcept	= default;
+			DCA_INLINE ring_buffer_interface(const ring_buffer_interface&) noexcept				= default;
 
 			// forward declaration to grant friendship to the ring_buffer class.
 			template<typename value_type2, size_type slice_count> friend class ring_buffer;
@@ -74,7 +74,7 @@ namespace discord_core_api {
 			/// @brief Modify the read or write position of the buffer.
 			/// @param type the access type (read or write).
 			/// @param sizeNew the size by which to modify the position.
-			void modifyReadOrWritePosition(ring_buffer_access_type type, size_type sizeNew) {
+			DCA_INLINE void modifyReadOrWritePosition(ring_buffer_access_type type, size_type sizeNew) {
 				if (type == ring_buffer_access_type::read) {
 					tail += sizeNew;
 				} else {
@@ -84,25 +84,31 @@ namespace discord_core_api {
 
 			/// @brief Get the used space in the buffer.
 			/// @return the used space in the buffer.
-			size_type getUsedSpace() {
+			DCA_INLINE size_type getUsedSpace() {
 				return head - tail;
+			}
+
+			/// @brief Get the used space in the buffer.
+			/// @return the used space in the buffer.
+			DCA_INLINE size_type getFreeSpace() {
+				return size - getUsedSpace();
 			}
 
 			/// @brief Get a pointer to the current tail position.
 			/// @return a pointer to the current tail position.
-			pointer getCurrentTail() {
+			DCA_INLINE pointer getCurrentTail() {
 				return arrayValue.data() + (tail % size);
 			}
 
 			/// @brief Get a pointer to the current head position.
 			/// @return a pointer to the current head position.
-			pointer getCurrentHead() {
+			DCA_INLINE pointer getCurrentHead() {
 				return arrayValue.data() + (head % size);
 			}
 
 			/// @brief Check if the buffer is empty.
 			/// @return true if the buffer is empty, otherwise false.
-			bool isItEmpty() {
+			DCA_INLINE bool isItEmpty() {
 				return tail == head;
 			}
 
@@ -113,13 +119,13 @@ namespace discord_core_api {
 			}
 
 			/// @brief Clear the buffer by resetting positions.
-			void clear() {
+			DCA_INLINE void clear() {
 				tail = 0;
 				head = 0;
 			}
 
 		  protected:
-			jsonifier::vector<std::unwrap_ref_decay_t<value_type>> arrayValue{};///< The underlying data array.
+			jsonifier::vector<jsonifier::concepts::unwrap_t<value_type>> arrayValue{};///< The underlying data array.
 			size_type tail{};///< The tail position in the buffer.
 			size_type head{};///< The head position in the buffer.
 		};
@@ -128,27 +134,27 @@ namespace discord_core_api {
 		/// @tparam value_type the type of data stored in the buffer.
 		/// @tparam slice_count the number of slices.
 		template<typename value_type_new, uint64_t slice_count> class ring_buffer
-			: public ring_buffer_interface<ring_buffer_interface<std::unwrap_ref_decay_t<value_type_new>, 1024 * 16>, slice_count> {
+			: public ring_buffer_interface<ring_buffer_interface<jsonifier::concepts::unwrap_t<value_type_new>, 1024 * 16>, slice_count> {
 		  public:
-			using base_type		= ring_buffer_interface<ring_buffer_interface<std::unwrap_ref_decay_t<value_type_new>, 1024 * 16>, slice_count>;
-			using value_type	= typename ring_buffer_interface<std::unwrap_ref_decay_t<value_type_new>, 1024 * 16>::value_type;
+			using base_type		= ring_buffer_interface<ring_buffer_interface<jsonifier::concepts::unwrap_t<value_type_new>, 1024 * 16>, slice_count>;
+			using value_type	= typename ring_buffer_interface<jsonifier::concepts::unwrap_t<value_type_new>, 1024 * 16>::value_type;
 			using const_pointer = const value_type*;
 			using pointer		= value_type*;
 			using size_type		= uint64_t;
 
 			/// @brief Default constructor. initializes the buffer size.
-			ring_buffer() noexcept								= default;
-			ring_buffer& operator=(ring_buffer&&) noexcept		= default;
-			ring_buffer(ring_buffer&&) noexcept					= default;
-			ring_buffer& operator=(const ring_buffer&) noexcept = default;
-			ring_buffer(const ring_buffer&) noexcept			= default;
+			DCA_INLINE ring_buffer() noexcept						= default;
+			DCA_INLINE ring_buffer& operator=(ring_buffer&&) noexcept = default;
+			DCA_INLINE ring_buffer(ring_buffer&&) noexcept			  = default;
+			DCA_INLINE ring_buffer& operator=(const ring_buffer&) noexcept = default;
+			DCA_INLINE ring_buffer(const ring_buffer&) noexcept			   = default;
 
 			/// @brief Write data into the buffer.
 			/// @tparam value_type_new the type of data to be written.
 			/// @param data pointer to the data.
 			/// @param sizeNew size of the data.
-			template<typename value_type_newer> void writeData(value_type_newer* data, size_type sizeNew) {
-				if (base_type::isItFull() || base_type::getCurrentHead()->getUsedSpace() + sizeNew >= 16384) {
+			template<typename value_type_newer> DCA_INLINE void writeData(value_type_newer* data, size_type sizeNew) {
+				if (base_type::isItFull() || base_type::isItFull()) {
 					base_type::getCurrentTail()->clear();
 					base_type::modifyReadOrWritePosition(ring_buffer_access_type::read, 1);
 				}
@@ -160,10 +166,10 @@ namespace discord_core_api {
 
 			/// @brief Read data from the buffer.
 			/// @return a string view containing the read data.
-			jsonifier::string_view_base<std::unwrap_ref_decay_t<value_type>> readData() {
-				jsonifier::string_view_base<std::unwrap_ref_decay_t<value_type>> returnData{};
+			DCA_INLINE jsonifier::string_view_base<jsonifier::concepts::unwrap_t<value_type>> readData() {
+				jsonifier::string_view_base<jsonifier::concepts::unwrap_t<value_type>> returnData{};
 				if (base_type::getCurrentTail()->getUsedSpace() > 0) {
-					returnData = jsonifier::string_view_base<std::unwrap_ref_decay_t<value_type>>{ base_type::getCurrentTail()->getCurrentTail(),
+					returnData = jsonifier::string_view_base<jsonifier::concepts::unwrap_t<value_type>>{ base_type::getCurrentTail()->getCurrentTail(),
 						base_type::getCurrentTail()->getUsedSpace() };
 					base_type::getCurrentTail()->clear();
 					base_type::modifyReadOrWritePosition(ring_buffer_access_type::read, 1);

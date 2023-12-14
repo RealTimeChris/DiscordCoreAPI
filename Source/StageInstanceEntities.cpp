@@ -37,13 +37,13 @@ namespace jsonifier {
 	template<> struct core<discord_core_api::create_stage_instance_data> {
 		using value_type = discord_core_api::create_stage_instance_data;
 		static constexpr auto parseValue =
-			createValue("privacyLevel", &value_type::privacyLevel, "channelId", &value_type::channelId, "reason", &value_type::reason, "topic", &value_type::topic);
+			createValue("privacyLevel", &value_type::privacyLevel, "channelId", &value_type::channelId, "topic", &value_type::topic);
 	};
 
 	template<> struct core<discord_core_api::modify_stage_instance_data> {
 		using value_type = discord_core_api::modify_stage_instance_data;
 		static constexpr auto parseValue =
-			createValue("privacyLevel", &value_type::privacyLevel, "channelId", &value_type::channelId, "reason", &value_type::reason, "topic", &value_type::topic);
+			createValue("privacyLevel", &value_type::privacyLevel, "channelId", &value_type::channelId, "topic", &value_type::topic);
 	};
 
 }

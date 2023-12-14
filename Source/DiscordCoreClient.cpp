@@ -36,9 +36,9 @@
 namespace discord_core_api {
 
 	voice_connections_map voiceConnectionMap{};
-	sound_cloud_apimap soundCloudAPIMap{};
-	you_tube_apimap youtubeAPIMap{};
-	song_apimap songAPIMap{};
+	sound_cloud_api_map soundCloudAPIMap{};
+	you_tube_api_map youtubeAPIMap{};
+	song_api_map songAPIMap{};
 	std::atomic_bool doWeQuit{};
 
 	discord_core_internal::sound_cloud_api& discord_core_client::getSoundCloudAPI(snowflake guildId) {

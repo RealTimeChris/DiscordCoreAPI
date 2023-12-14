@@ -45,7 +45,7 @@ namespace discord_core_api {
 	  public:
 		/// @brief Voice websocket close codes.
 		enum class voice_websocket_close_code : uint16_t {
-			unset					= 1 << 0,///< Unset.
+			Unset					= 1 << 0,///< Unset.
 			Normal_Close			= 1 << 1,///< Normal close.
 			Unknown_Opcode			= 1 << 2,///< You sent an invalid opcode.
 			Failed_To_Decode		= 1 << 3,///< You sent an invalid payload in your identifying to the gateway.
@@ -61,7 +61,7 @@ namespace discord_core_api {
 			Unknown_Encryption_Mode = 1 << 13///< We didn't recognize your encryption.
 		};
 
-		inline static unordered_map<int32_t, voice_websocket_close_code> mappingValues{ { 0, voice_websocket_close_code::unset },
+		DCA_INLINE static unordered_map<int32_t, voice_websocket_close_code> mappingValues{ { 0, voice_websocket_close_code::Unset },
 			{ 1000, voice_websocket_close_code::Normal_Close }, { 4001, voice_websocket_close_code::Unknown_Opcode }, { 4002, voice_websocket_close_code::Failed_To_Decode },
 			{ 4003, voice_websocket_close_code::Not_Authenticated }, { 4004, voice_websocket_close_code::Authentication_Failed },
 			{ 4005, voice_websocket_close_code::Already_Authenticated }, { 4006, voice_websocket_close_code::Session_No_Longer_Valid },
@@ -69,7 +69,7 @@ namespace discord_core_api {
 			{ 4014, voice_websocket_close_code::disconnected }, { 4015, voice_websocket_close_code::Voice_Server_Crashed },
 			{ 4016, voice_websocket_close_code::Unknown_Encryption_Mode } };
 
-		inline static unordered_map<voice_websocket_close_code, jsonifier::string> outputErrorValues{ { voice_websocket_close_code::unset, "unset." },
+		DCA_INLINE static unordered_map<voice_websocket_close_code, jsonifier::string> outputErrorValues{ { voice_websocket_close_code::Unset, "Unset." },
 			{ voice_websocket_close_code::Normal_Close, "normal close." }, { voice_websocket_close_code::Unknown_Opcode, "you sent an invalid opcode." },
 			{ voice_websocket_close_code::Failed_To_Decode, "you sent an invalid payload in your identifying to the gateway." },
 			{ voice_websocket_close_code::Not_Authenticated, "you sent a payload before identifying with the gateway." },
@@ -86,20 +86,20 @@ namespace discord_core_api {
 			{ voice_websocket_close_code::Unknown_Encryption_Mode, "we didn't recognize your encryption." } };
 		voice_websocket_close_code value{};
 
-		inline voice_websocket_close& operator=(uint16_t valueNew) {
+		DCA_INLINE voice_websocket_close& operator=(uint16_t valueNew) {
 			value = static_cast<voice_websocket_close_code>(valueNew);
 			return *this;
 		};
 
-		inline voice_websocket_close(uint16_t value) {
+		DCA_INLINE voice_websocket_close(uint16_t value) {
 			*this = value;
 		};
 
-		inline operator jsonifier::string_view() {
+		DCA_INLINE operator jsonifier::string_view() {
 			return voice_websocket_close::outputErrorValues[mappingValues[static_cast<uint16_t>(value)]];
 		}
 
-		inline operator bool() {
+		DCA_INLINE operator bool() {
 			return true;
 		}
 	};
@@ -224,7 +224,7 @@ namespace discord_core_api {
 			const jsonifier::string& baseUrlNew, const uint16_t portNew, snowflake guildIdNew,
 			std::coroutine_handle<discord_core_api::co_routine<void, false>::promise_type>* tokenNew);
 
-		inline void applyGainRamp(int64_t sampleCount);
+		DCA_INLINE void applyGainRamp(int64_t sampleCount);
 
 		void parseOutgoingVoiceData();
 

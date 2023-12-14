@@ -34,6 +34,7 @@
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
+#include <unordered_set>
 
 namespace discord_core_api {
 
@@ -81,15 +82,17 @@ namespace discord_core_api {
 	};
 
 	/// @brief For modifying a guild_member's values.
-	struct modify_guild_member_data {
+	struct DiscordCoreAPI_Dll modify_guild_member_data {
+		modify_guild_member_data(const guild_member_data& other);
+		std::unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 		jsonifier::string communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		jsonifier::vector<snowflake> roleIds{};///< A collection of role_data id's to be applied to them.
-		snowflake newVoiceChannelId{};///< The new voice channel_data to move them into.
-		snowflake currentChannelId{};///< The current voice channel_data, if applicaple.
-		snowflake guildMemberId{};///< The user id of the desired guild memeber.
-		snowflake guildId{};///< The id of the guild for which you would like to modify a member.
 		jsonifier::string reason{};///< Reason for modifying this guild_member_data.
+		snowflake guildMemberId{};///< The user id of the desired guild memeber.
 		jsonifier::string nick{};///< Their new display/nick name.
+		snowflake channelId{};///< The current voice channel_data, if applicaple.
+		snowflake guildId{};///< The id of the guild for which you would like to modify a member.
+		uint32_t flags{};
 		bool mute{};///< Whether or not to mute them in voice.
 		bool deaf{};///< Whether or not to deafen them, in voice.
 	};
@@ -172,7 +175,7 @@ namespace discord_core_api {
 		/// @return a co_routine containing guild_member_data.
 		static co_routine<guild_member_data> timeoutGuildMemberAsync(timeout_guild_member_data dataPackage);
 
-		template<typename voice_state_type> inline static void insertVoiceState(voice_state_type&& voiceState) {
+		template<typename voice_state_type> DCA_INLINE static void insertVoiceState(voice_state_type&& voiceState) {
 			if (doWeCacheVoiceStatesBool) {
 				if (voiceState.userId == 0) {
 					throw dca_exception{ "Sorry, but there was no id set for that voice state." };
@@ -181,7 +184,7 @@ namespace discord_core_api {
 			}
 		}
 
-		template<typename guild_member_type> inline static void insertGuildMember(guild_member_type&& guildMember) {
+		template<typename guild_member_type> DCA_INLINE static void insertGuildMember(guild_member_type&& guildMember) {
 			if (doWeCacheGuildMembersBool) {
 				if (guildMember.guildId == 0 || guildMember.user.id == 0) {
 					throw dca_exception{ "Sorry, but there was no id set for that guildmember." };

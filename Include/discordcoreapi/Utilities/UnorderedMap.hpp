@@ -71,9 +71,9 @@ namespace discord_core_api {
 		friend iterator;
 		friend const_iterator;
 
-		inline unordered_map(){};
+		DCA_INLINE unordered_map(){};
 
-		inline unordered_map& operator=(unordered_map&& other) noexcept {
+		DCA_INLINE unordered_map& operator=(unordered_map&& other) noexcept {
 			if (this != &other) {
 				reset();
 				swap(other);
@@ -81,11 +81,11 @@ namespace discord_core_api {
 			return *this;
 		}
 
-		inline unordered_map(unordered_map&& other) noexcept {
+		DCA_INLINE unordered_map(unordered_map&& other) noexcept {
 			*this = std::move(other);
 		}
 
-		inline unordered_map& operator=(const unordered_map& other) {
+		DCA_INLINE unordered_map& operator=(const unordered_map& other) {
 			if (this != &other) {
 				reset();
 
@@ -97,11 +97,11 @@ namespace discord_core_api {
 			return *this;
 		}
 
-		inline unordered_map(const unordered_map& other) {
+		DCA_INLINE unordered_map(const unordered_map& other) {
 			*this = other;
 		}
 
-		inline unordered_map(std::initializer_list<value_type> list) {
+		DCA_INLINE unordered_map(std::initializer_list<value_type> list) {
 			reserve(list.size());
 			for (auto& value: list) {
 				emplace(std::move(value.first), std::move(value.second));
@@ -112,7 +112,7 @@ namespace discord_core_api {
 			return emplaceInternal(std::forward<Args>(value)...);
 		}
 
-		template<typename key_type_newer> inline const_iterator find(key_type_newer&& key) const {
+		template<typename key_type_newer> DCA_INLINE const_iterator find(key_type_newer&& key) const {
 			if (sizeVal > 0) {
 				auto currentIndex = hash_policy_new::indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
@@ -124,7 +124,7 @@ namespace discord_core_api {
 			return end();
 		}
 
-		template<typename key_type_newer> inline iterator find(key_type_newer&& key) {
+		template<typename key_type_newer> DCA_INLINE iterator find(key_type_newer&& key) {
 			if (sizeVal > 0) {
 				auto currentIndex = hash_policy_new::indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
@@ -136,15 +136,15 @@ namespace discord_core_api {
 			return end();
 		}
 
-		template<typename key_type_newer> inline const mapped_type& operator[](key_type_newer&& key) const {
+		template<typename key_type_newer> DCA_INLINE const mapped_type& operator[](key_type_newer&& key) const {
 			return emplaceInternal(key)->second;
 		}
 
-		template<typename key_type_newer> inline mapped_type& operator[](key_type_newer&& key) {
+		template<typename key_type_newer> DCA_INLINE mapped_type& operator[](key_type_newer&& key) {
 			return emplaceInternal(key)->second;
 		}
 
-		template<typename key_type_newer> inline const mapped_type& at(key_type_newer&& key) const {
+		template<typename key_type_newer> DCA_INLINE const mapped_type& at(key_type_newer&& key) const {
 			auto iter = find(std::forward<key_type_newer>(key));
 			if (iter == end()) {
 				throw std::runtime_error{ "Sorry, but an object by that key doesn't exist in this map." };
@@ -152,7 +152,7 @@ namespace discord_core_api {
 			return iter->second;
 		}
 
-		template<typename key_type_newer> inline mapped_type& at(key_type_newer&& key) {
+		template<typename key_type_newer> DCA_INLINE mapped_type& at(key_type_newer&& key) {
 			auto iter = find(std::forward<key_type_newer>(key));
 			if (iter == end()) {
 				throw std::runtime_error{ "Sorry, but an object by that key doesn't exist in this map." };
@@ -160,7 +160,7 @@ namespace discord_core_api {
 			return iter->second;
 		}
 
-		template<typename key_type_newer> inline bool contains(key_type_newer&& key) const {
+		template<typename key_type_newer> DCA_INLINE bool contains(key_type_newer&& key) const {
 			if (sizeVal > 0) {
 				auto currentIndex = hash_policy_new::indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
@@ -172,7 +172,7 @@ namespace discord_core_api {
 			return false;
 		}
 
-		template<map_container_iterator_t<key_type, mapped_type> map_iterator> inline iterator erase(map_iterator&& iter) {
+		template<map_container_iterator_t<key_type, mapped_type> map_iterator> DCA_INLINE iterator erase(map_iterator&& iter) {
 			if (sizeVal > 0) {
 				auto currentIndex = static_cast<size_type>(iter.getRawPtr() - data);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
@@ -187,7 +187,7 @@ namespace discord_core_api {
 			return end();
 		}
 
-		template<typename key_type_newer> inline iterator erase(key_type_newer&& key) {
+		template<typename key_type_newer> DCA_INLINE iterator erase(key_type_newer&& key) {
 			if (sizeVal > 0) {
 				auto currentIndex = hash_policy_new::indexForHash(key);
 				for (size_type x{}; x < static_cast<size_type>(maxLookAheadDistance); ++x, ++currentIndex) {
@@ -202,7 +202,7 @@ namespace discord_core_api {
 			return end();
 		}
 
-		inline const_iterator begin() const {
+		DCA_INLINE const_iterator begin() const {
 			for (size_type x{ 0 }; x < capacityVal; ++x) {
 				if (sentinelVector.at(x) > 0) {
 					return { this, x };
@@ -211,11 +211,11 @@ namespace discord_core_api {
 			return end();
 		}
 
-		inline const_iterator end() const {
+		DCA_INLINE const_iterator end() const {
 			return {};
 		}
 
-		inline iterator begin() {
+		DCA_INLINE iterator begin() {
 			for (size_type x{ 0 }; x < capacityVal; ++x) {
 				if (sentinelVector.at(x) > 0) {
 					return { this, x };
@@ -224,27 +224,27 @@ namespace discord_core_api {
 			return end();
 		}
 
-		inline iterator end() {
+		DCA_INLINE iterator end() {
 			return {};
 		}
 
-		inline bool full() const {
+		DCA_INLINE bool full() const {
 			return static_cast<float>(sizeVal) >= static_cast<float>(capacityVal) * 0.90f;
 		}
 
-		inline size_type size() const {
+		DCA_INLINE size_type size() const {
 			return sizeVal;
 		}
 
-		inline bool empty() const {
+		DCA_INLINE bool empty() const {
 			return sizeVal == 0;
 		}
 
-		inline void reserve(size_type sizeNew) {
+		DCA_INLINE void reserve(size_type sizeNew) {
 			resize(sizeNew);
 		}
 
-		inline void swap(unordered_map& other) {
+		DCA_INLINE void swap(unordered_map& other) {
 			std::swap(maxLookAheadDistance, other.maxLookAheadDistance);
 			std::swap(sentinelVector, other.sentinelVector);
 			std::swap(capacityVal, other.capacityVal);
@@ -252,11 +252,11 @@ namespace discord_core_api {
 			std::swap(data, other.data);
 		}
 
-		inline size_type capacity() const {
+		DCA_INLINE size_type capacity() const {
 			return capacityVal;
 		}
 
-		inline bool operator==(const unordered_map& other) const {
+		DCA_INLINE bool operator==(const unordered_map& other) const {
 			if (capacityVal != other.capacityVal || sizeVal != other.sizeVal || data != other.data) {
 				return false;
 			}
@@ -268,7 +268,7 @@ namespace discord_core_api {
 			return true;
 		}
 
-		inline void clear() {
+		DCA_INLINE void clear() {
 			for (size_type x = 0; x < sentinelVector.size(); ++x) {
 				if (sentinelVector.at(x) > 0) {
 					allocator_traits::destroy(*this, data + x);
@@ -278,7 +278,7 @@ namespace discord_core_api {
 			sizeVal = 0;
 		}
 
-		inline ~unordered_map() {
+		DCA_INLINE ~unordered_map() {
 			reset();
 		};
 
@@ -289,7 +289,7 @@ namespace discord_core_api {
 		size_type sizeVal{};
 		value_type* data{};
 
-		template<typename key_type_newer, typename... mapped_type_new> inline iterator emplaceInternal(key_type_newer&& key, mapped_type_new&&... value) {
+		template<typename key_type_newer, typename... mapped_type_new> DCA_INLINE iterator emplaceInternal(key_type_newer&& key, mapped_type_new&&... value) {
 			if (full() || capacityVal == 0) {
 				resize(capacityVal + 1);
 			}
@@ -315,7 +315,7 @@ namespace discord_core_api {
 			return emplaceInternal(std::forward<key_type_newer>(key), std::forward<mapped_type_new>(value)...);
 		}
 
-		inline void resize(size_type capacityNew) {
+		DCA_INLINE void resize(size_type capacityNew) {
 			auto newSize = hash_policy_new::nextPowerOfTwo(capacityNew);
 			if (newSize > capacityVal) {
 				jsonifier::vector<int8_t> oldSentinelVector = std::move(sentinelVector);
@@ -341,7 +341,7 @@ namespace discord_core_api {
 			}
 		}
 
-		inline void reset() {
+		DCA_INLINE void reset() {
 			if (data && sizeVal > 0) {
 				for (uint64_t x = 0; x < sentinelVector.size(); ++x) {
 					if (sentinelVector.at(x) > 0) {

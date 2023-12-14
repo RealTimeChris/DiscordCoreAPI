@@ -58,7 +58,7 @@ namespace discord_core_api {
 		/// @brief Begin waiting for objects.
 		/// @param quantityToCollect maximum quantity of objects to collect before returning the results.
 		/// @param msToCollectForNew maximum number of milliseconds to wait for objects before returning the results.
-		/// @param filteringFunctionNew a filter function to apply to new objects, where returning "true" from the function results in a object being stored.
+		/// @param filteringFunctionNew a filter function to apply to new objects, where returning "True" from the function results in a object being stored.
 		/// @return A object_collector_return_data structure.
 		co_routine<object_collector_return_data, false> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, object_filter<value_type> filteringFunctionNew);
 

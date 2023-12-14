@@ -45,19 +45,19 @@ namespace discord_core_api {
 			/// @brief Equality operator for comparing event_delegate_token instances.
 			/// @param rhs the right-hand side event_delegate_token to compare against.
 			/// @return bool true if the event_delegate_token instances are equal, otherwise false.
-			inline bool operator==(const event_delegate_token& rhs) const {
+			DCA_INLINE bool operator==(const event_delegate_token& rhs) const {
 				return handlerId == rhs.handlerId && eventId == rhs.eventId;
 			}
 
 			/// @brief Less-than operator for comparing event_delegate_token instances.
 			/// @param rhs the right-hand side event_delegate_token to compare against.
 			/// @return bool true if this event_delegate_token is less than rhs, otherwise false.
-			inline bool operator<(const event_delegate_token& rhs) const {
+			DCA_INLINE bool operator<(const event_delegate_token& rhs) const {
 				return handlerId < rhs.handlerId;
 			}
 
 			/// @brief Default constructor for event_delegate_token.
-			inline event_delegate_token() = default;
+			DCA_INLINE event_delegate_token() = default;
 
 			uint64_t handlerId{};///< Identifier for the handler.
 			uint64_t eventId{};///< Identifier for the event.
@@ -66,7 +66,7 @@ namespace discord_core_api {
 	};
 
 	template<event_delegate_token_t value_type> struct key_hasher<value_type> {
-		inline static uint64_t getHashKey(const value_type& data) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& data) {
 			uint64_t values[2]{};
 			values[0] = data.eventId;
 			values[0] = data.handlerId;
@@ -84,15 +84,15 @@ namespace discord_core_api {
 			/// @brief Default constructor for event_delegate class.
 			event_delegate() = default;
 
-			inline event_delegate& operator=(const event_delegate& other) = delete;
-			inline event_delegate(const event_delegate& other)			  = delete;
+			DCA_INLINE event_delegate& operator=(const event_delegate& other) = delete;
+			DCA_INLINE event_delegate(const event_delegate& other)			  = delete;
 
 			/// @brief Move assignment operator for the event_delegate class.
 			/// this operator moves the contents of another event_delegate instance, 'other', into the current instance.
 			/// it swaps the 'function' member between 'other' and the current instance, and then clears 'other' function.
 			/// @param other the event_delegate instance to be moved from.
 			/// @return reference to the current event_delegate instance after the move assignment.
-			inline event_delegate& operator=(event_delegate&& other) noexcept {
+			DCA_INLINE event_delegate& operator=(event_delegate&& other) noexcept {
 				if (this != &other) {
 					function.swap(other.function);
 				}
@@ -103,7 +103,7 @@ namespace discord_core_api {
 			/// this constructor moves the contents of another event_delegate instance, 'other', into the current instance.
 			/// it performs a move assignment using the 'operator=' function.
 			/// @param other the event_delegate instance to be moved from.
-			inline event_delegate(event_delegate&& other) noexcept {
+			DCA_INLINE event_delegate(event_delegate&& other) noexcept {
 				// perform move assignment using the 'operator=' function.
 				*this = std::move(other);
 			}
@@ -112,14 +112,14 @@ namespace discord_core_api {
 			/// this operator assigns a new std::function, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew the std::function to assign as the current event.
 			/// @return reference to the current event_delegate instance after the assignment.
-			inline event_delegate& operator=(std::function<return_type(arg_types...)> functionNew) {
+			DCA_INLINE event_delegate& operator=(std::function<return_type(arg_types...)> functionNew) {
 				function = functionNew;
 				return *this;
 			}
 
 			/// @brief Constructor, taking a std::function<return_type(arg_types...)> as an argument.
 			/// @param functionNew the function to construct as the current event.
-			inline event_delegate(std::function<return_type(arg_types...)> functionNew) {
+			DCA_INLINE event_delegate(std::function<return_type(arg_types...)> functionNew) {
 				*this = functionNew;
 			}
 
@@ -127,7 +127,7 @@ namespace discord_core_api {
 			/// this operator assigns a new function pointer, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew the function pointer to assign as the current event.
 			/// @return reference to the current event_delegate instance after the assignment.
-			inline event_delegate& operator=(return_type (*functionNew)(arg_types...)) {
+			DCA_INLINE event_delegate& operator=(return_type (*functionNew)(arg_types...)) {
 				function = functionNew;
 				return *this;
 			}
@@ -136,13 +136,13 @@ namespace discord_core_api {
 			/// this constructor initializes the event_delegate instance with the provided function pointer.
 			/// it calls the assignment operator to set the delegate function using the provided function pointer.
 			/// @param functionNew the function to construct as the current event.
-			inline event_delegate(return_type (*functionNew)(arg_types...)) {
+			DCA_INLINE event_delegate(return_type (*functionNew)(arg_types...)) {
 				// call the assignment operator to set the delegate function using the provided function pointer.
 				*this = functionNew;
 			}
 
 		  protected:
-			std::function<return_type(arg_types...)> function{};
+			std::function<return_type(const arg_types&...)> function{};
 		};
 
 		/// @brief Template class representing an event that executes event functions.
@@ -150,15 +150,15 @@ namespace discord_core_api {
 		  public:
 			unordered_map<event_delegate_token, event_delegate<return_type, arg_types...>> functions{};
 
-			inline event& operator=(const event& other) = delete;
-			inline event(const event& other)			= delete;
+			DCA_INLINE event& operator=(const event& other) = delete;
+			DCA_INLINE event(const event& other)			= delete;
 
 			/// @brief Move assignment operator for the event class.
 			/// this operator moves the contents of another event instance, 'other', into the current instance.
 			/// it transfers the functions and eventId from 'other' to the current instance, clearing 'other' in the process.
 			/// @param other the event instance to be moved from.
 			/// @return reference to the current event instance after the move assignment.
-			inline event& operator=(event&& other) noexcept {
+			DCA_INLINE event& operator=(event&& other) noexcept {
 				if (this != &other) {
 					std::swap(functions, other.functions);
 					std::swap(eventId, other.eventId);
@@ -170,13 +170,13 @@ namespace discord_core_api {
 			/// this constructor moves the contents of another event instance, 'other', into the current instance.
 			/// it performs a move assignment using the 'operator=' function.
 			/// @param other the event instance to be moved from.
-			inline event(event&& other) noexcept {
+			DCA_INLINE event(event&& other) noexcept {
 				// perform move assignment using the 'operator=' function.
 				*this = std::move(other);
 			}
 
 			/// @brief Default constructor for event class.
-			inline event() {
+			DCA_INLINE event() {
 				std::unique_lock lock{ accessMutex };
 				eventId = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(sys_clock::now().time_since_epoch()).count();
 			}
@@ -184,7 +184,7 @@ namespace discord_core_api {
 			/// @brief Add an event delegate to the event.
 			/// @param eventDelegate the event delegate to add.
 			/// @return event_delegate_token the token representing the added event delegate.
-			inline event_delegate_token add(event_delegate<return_type, arg_types...>&& eventDelegate) {
+			DCA_INLINE event_delegate_token add(event_delegate<return_type, arg_types...>&& eventDelegate) {
 				std::unique_lock lock{ accessMutex };
 				event_delegate_token eventToken{};
 				eventToken.handlerId  = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(sys_clock::now().time_since_epoch()).count();
@@ -195,7 +195,7 @@ namespace discord_core_api {
 
 			/// @brief Remove an event delegate from the event.
 			/// @param eventToken the token representing the event delegate to remove.
-			inline void erase(const event_delegate_token& eventToken) {
+			DCA_INLINE void erase(const event_delegate_token& eventToken) {
 				std::unique_lock lock{ accessMutex };
 				if (eventToken.eventId == eventId) {
 					if (functions.contains(eventToken)) {
@@ -206,7 +206,7 @@ namespace discord_core_api {
 
 			/// @brief Invoke the event with provided arguments.
 			/// @param args the arguments to pass to the event delegates.
-			inline void operator()(const arg_types&... args) {
+			DCA_INLINE void operator()(const arg_types&... args) {
 				std::unique_lock lock{ accessMutex };
 				for (auto& [key, value]: functions) {
 					try {
@@ -235,14 +235,14 @@ namespace discord_core_api {
 		  public:
 			template<typename rty02, typename... arg_types02> friend class trigger_event;
 
-			inline trigger_event_delegate& operator=(const trigger_event_delegate& other) = delete;
-			inline trigger_event_delegate(const trigger_event_delegate& other)			  = delete;
+			DCA_INLINE trigger_event_delegate& operator=(const trigger_event_delegate& other) = delete;
+			DCA_INLINE trigger_event_delegate(const trigger_event_delegate& other)			  = delete;
 
 			/// @brief Move assignment operator for trigger_event_delegate class.
 			/// this operator moves the contents of another trigger_event_delegate instance ('other') into the current instance.
 			/// @param other the trigger_event_delegate instance to be moved.
 			/// @return reference to the current trigger_event_delegate instance after the move assignment.
-			inline trigger_event_delegate& operator=(trigger_event_delegate&& other) noexcept {
+			DCA_INLINE trigger_event_delegate& operator=(trigger_event_delegate&& other) noexcept {
 				if (this != &other) {
 					testFunction.swap(other.testFunction);
 					function.swap(other.function);
@@ -253,7 +253,7 @@ namespace discord_core_api {
 			/// @brief Move constructor for trigger_event_delegate class.
 			/// this constructor moves the contents of another trigger_event_delegate instance ('other') into the current instance.
 			/// @param other the trigger_event_delegate instance to be moved.
-			inline trigger_event_delegate(trigger_event_delegate&& other) noexcept {
+			DCA_INLINE trigger_event_delegate(trigger_event_delegate&& other) noexcept {
 				*this = std::move(other);
 			}
 
@@ -261,17 +261,16 @@ namespace discord_core_api {
 			/// this operator assigns a new std::function, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew the std::function to assign as the current event.
 			/// @return reference to the current trigger_event_delegate instance after the assignment.
-			inline trigger_event_delegate& operator=(std::function<return_type(arg_types...)> functionNew) {
+			DCA_INLINE trigger_event_delegate& operator=(std::function<return_type(arg_types...)> functionNew) {
 				function = functionNew;
 				return *this;
 			}
-
 
 			/// @brief Constructor for the trigger_event_delegate class, taking a std::function as an argument.
 			/// this constructor initializes the trigger_event_delegate instance with the provided std::function.
 			/// it calls the assignment operator to set the delegate function using the provided std::function.
 			/// @param functionNew the function to construct as the current event.
-			inline trigger_event_delegate(std::function<return_type(arg_types...)> functionNew) {
+			DCA_INLINE trigger_event_delegate(std::function<return_type(arg_types...)> functionNew) {
 				// call the assignment operator to set the delegate function using the provided std::function.
 				*this = functionNew;
 			}
@@ -280,36 +279,35 @@ namespace discord_core_api {
 			/// this operator assigns a new function pointer, 'functionNew', as the delegate function of the current instance.
 			/// @param functionNew the function pointer to assign as the current event.
 			/// @return reference to the current trigger_event_delegate instance after the assignment.
-			inline trigger_event_delegate& operator=(return_type (*functionNew)(arg_types...)) {
+			DCA_INLINE trigger_event_delegate& operator=(return_type (*functionNew)(arg_types...)) {
 				function = functionNew;
 				return *this;
 			}
 
-
 			/// @brief Constructor for trigger_event_delegate class, taking a function pointer as argument.
 			/// @param functionNew the function to construct as the current event.
-			inline trigger_event_delegate(return_type (*functionNew)(arg_types...)) {
+			DCA_INLINE trigger_event_delegate(return_type (*functionNew)(arg_types...)) {
 				*this = functionNew;
 			}
 
 			/// @brief Default constructor for trigger_event_delegate class.
-			inline trigger_event_delegate() = default;
+			DCA_INLINE trigger_event_delegate() = default;
 
 			/// @brief Sets the test function to determine conditional execution.
 			/// @param testFunctionNew the test function to set.
-			inline void setTestFunction(std::function<bool(arg_types...)> testFunctionNew) {
+			DCA_INLINE void setTestFunction(std::function<bool(arg_types...)> testFunctionNew) {
 				testFunction = testFunctionNew;
 			}
 
 			/// @brief Sets the test function using a function pointer.
 			/// @param testFunctionNew the test function to set.
-			inline void setTestFunction(bool (*testFunctionNew)(arg_types...)) {
+			DCA_INLINE void setTestFunction(bool (*testFunctionNew)(arg_types...)) {
 				testFunction = testFunctionNew;
 			}
 
 		  protected:
-			std::function<return_type(arg_types...)> function{};
-			std::function<bool(arg_types...)> testFunction{};
+			std::function<return_type(const arg_types&...)> function{};
+			std::function<bool(const arg_types&...)> testFunction{};
 		};
 
 		/// @brief A trigger event that fires based on the result of trigger-function return value.
@@ -317,15 +315,15 @@ namespace discord_core_api {
 		  public:
 			unordered_map<event_delegate_token, trigger_event_delegate<return_type, arg_types...>> functions{};
 
-			inline trigger_event& operator=(const trigger_event& other) = delete;
-			inline trigger_event(const trigger_event& other)			= delete;
+			DCA_INLINE trigger_event& operator=(const trigger_event& other) = delete;
+			DCA_INLINE trigger_event(const trigger_event& other)			= delete;
 
 			/// @brief Move assignment operator for the trigger_event class.
 			/// this operator moves the contents of another trigger_event instance, 'other', into the current instance.
 			/// it transfers the functions and eventId from 'other' to the current instance, clearing 'other' in the process.
 			/// @param other the trigger_event instance to be moved from.
 			/// @return reference to the current trigger_event instance after the move assignment.
-			inline trigger_event& operator=(trigger_event&& other) noexcept {
+			DCA_INLINE trigger_event& operator=(trigger_event&& other) noexcept {
 				if (this != &other) {
 					std::swap(functions, other.functions);
 					std::swap(eventId, other.eventId);
@@ -337,13 +335,13 @@ namespace discord_core_api {
 			/// this constructor moves the contents of another trigger_event instance, 'other', into the current instance.
 			/// it performs a move assignment using the 'operator=' function.
 			/// @param other the trigger_event instance to be moved from.
-			inline trigger_event(trigger_event&& other) noexcept {
+			DCA_INLINE trigger_event(trigger_event&& other) noexcept {
 				// perform move assignment using the 'operator=' function.
 				*this = std::move(other);
 			}
 
 			/// @brief Default constructor for trigger_event class.
-			inline trigger_event() {
+			DCA_INLINE trigger_event() {
 				std::unique_lock lock{ accessMutex };
 				eventId = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(sys_clock::now().time_since_epoch()).count();
 			}
@@ -351,7 +349,7 @@ namespace discord_core_api {
 			/// @brief Add an event delegate to the event.
 			/// @param eventDelegate the event delegate to add.
 			/// @return event_delegate_token the token representing the added event delegate.
-			inline event_delegate_token add(trigger_event_delegate<return_type, arg_types...>&& eventDelegate) {
+			DCA_INLINE event_delegate_token add(trigger_event_delegate<return_type, arg_types...>&& eventDelegate) {
 				std::unique_lock lock{ accessMutex };
 				event_delegate_token eventToken{};
 				eventToken.handlerId  = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(sys_clock::now().time_since_epoch()).count();
@@ -362,7 +360,7 @@ namespace discord_core_api {
 
 			/// @brief Remove an event delegate from the event.
 			/// @param eventToken the token representing the event delegate to remove.
-			inline void erase(const event_delegate_token& eventToken) {
+			DCA_INLINE void erase(const event_delegate_token& eventToken) {
 				std::unique_lock lock{ accessMutex };
 				if (eventToken.eventId == eventId) {
 					if (functions.contains(eventToken)) {
@@ -373,7 +371,7 @@ namespace discord_core_api {
 
 			/// @brief Invoke the trigger event with provided arguments.
 			/// @param args the arguments to pass to the trigger event delegates.
-			inline void operator()(const arg_types&... args) {
+			DCA_INLINE void operator()(const arg_types&... args) {
 				std::unique_lock lock{ accessMutex };
 				for (auto iterator = functions.begin(); iterator != functions.end(); ++iterator) {
 					try {

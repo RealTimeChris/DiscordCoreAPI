@@ -29,6 +29,8 @@
 /// \file Fallback.hpp
 #pragma once
 
+#include <discordcoreapi/Utilities/Base.hpp>
+
 #if (!JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX)) && (!JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX2)) && (!JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX512))
 
 	#include <cstdint>
@@ -49,11 +51,11 @@ namespace discord_core_api {
 			// @param dataOut pointer to the output array of int16_t values.
 			// @param currentGain the gain to be applied to the elements.
 			// @param increment the increment value to be added to each element.
-			inline static void collectSingleRegister(const int32_t* dataIn, int16_t* dataOut, const float currentGain, const float increment) {
+			DCA_INLINE void collectSingleRegister(const int32_t* dataIn, int16_t* dataOut, const float currentGain, const float increment) {
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
-					float incrementNew	   = increment * static_cast<float>(x);
-					float currentGainNew   = currentGain + incrementNew;
-					float currentSampleNew = static_cast<float>(dataIn[x]) * currentGainNew;
+					incrementNew	   = increment * static_cast<float>(x);
+					currentGainNew	 = currentGain + incrementNew;
+					currentSampleNew   = static_cast<float>(dataIn[x]) * currentGainNew;
 					if (currentSampleNew >= static_cast<float>(std::numeric_limits<int16_t>::max())) {
 						currentSampleNew = static_cast<float>(std::numeric_limits<int16_t>::max());
 					} else if (currentSampleNew <= static_cast<float>(std::numeric_limits<int16_t>::min())) {
@@ -66,11 +68,16 @@ namespace discord_core_api {
 			// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. this version uses x64 instructions.
 			// @param upSampledVector pointer to the array of int32_t values.
 			// @param decodedData pointer to the array of int16_t values.
-			inline static void combineSamples(const int16_t* decodedData, int32_t* upSampledVector) {
+			DCA_INLINE static void combineSamples(const int16_t* decodedData, int32_t* upSampledVector) {
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					upSampledVector[x] += static_cast<int32_t>(decodedData[x]);
 				}
 			}
+
+		  protected:
+			float currentSampleNew{};
+			float currentGainNew{};
+			float incrementNew{};
 		};
 	}
 }

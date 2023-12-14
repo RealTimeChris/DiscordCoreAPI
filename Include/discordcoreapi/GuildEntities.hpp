@@ -292,7 +292,7 @@ namespace discord_core_api {
 
 	/**@}*/
 
-	inline stop_watch<milliseconds> stopWatchNew{ milliseconds{ 100 } };
+	DCA_INLINE stop_watch<milliseconds> stopWatchNew{ milliseconds{ 100 } };
 
 	/**
 	 * \addtogroup main_endpoints
@@ -483,7 +483,7 @@ namespace discord_core_api {
 		/// @return A co_routine containing void.
 		static co_routine<void> leaveGuildAsync(leave_guild_data dataPackage);
 
-		template<typename guild_type> inline static void insertGuild(guild_type&& guild) {
+		template<typename guild_type> DCA_INLINE static void insertGuild(guild_type&& guild) {
 			if (doWeCacheGuildsBool) {
 				if (guild.id == 0) {
 					throw dca_exception{ "Sorry, but there was no id set for that guild." };

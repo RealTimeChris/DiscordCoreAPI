@@ -46,6 +46,12 @@
 	#pragma warning(disable : 5246)
 #endif
 
+#if defined(__clang__) && defined(NDEBUG) && !defined(DCA_INLINE)
+	#define DCA_INLINE inline __attribute__((always_inline))
+#elif !defined(DCA_INLINE)
+	#define DCA_INLINE inline
+#endif
+
 #if defined _WIN32
 	#if !defined DiscordCoreAPI_EXPORTS_NOPE
 		#if defined DiscordCoreAPI_EXPORTS
@@ -70,7 +76,7 @@
 		#define NOMINMAX
 	#endif
 	#include <chrono>
-inline tm getTime(time_t time) {
+DCA_INLINE tm getTime(time_t time) {
 	tm timeNew{};
 	gmtime_s(&timeNew, &time);
 	return timeNew;
@@ -87,7 +93,7 @@ inline tm getTime(time_t time) {
 	#include <cstring>
 	#include <time.h>
 	#include <ctime>
-inline tm getTime(time_t time) {
+DCA_INLINE tm getTime(time_t time) {
 	return *gmtime(&time);
 }
 #endif
@@ -157,7 +163,7 @@ using namespace std::literals;
 
 namespace discord_core_api {
 
-	inline thread_local jsonifier::jsonifier_core<false> parser{};
+	DCA_INLINE thread_local jsonifier::jsonifier_core<false> parser{};
 
 	template<typename value_type> using stop_watch = jsonifier_internal::stop_watch<value_type>;
 	using sys_clock								   = std::chrono::system_clock;
@@ -197,12 +203,12 @@ namespace discord_core_api {
 	/// @brief Class for printing different types of messages to output and error streams.
 	class message_printer {
 	  public:
-		inline message_printer() = default;
+		DCA_INLINE message_printer() = default;
 
 		/// @brief Initialize the message_printer with configuration settings and output/error streams.
 		/// @tparam value_type the type containing configuration settings.
 		/// @param other an instance of value_type with configuration settings.
-		template<typename value_type> inline static void initialize(const value_type& other) {
+		template<typename value_type> DCA_INLINE static void initialize(const value_type& other) {
 			doWePrintGeneralErrors.store(other.doWePrintGeneralErrorMessages(), std::memory_order_release);
 			doWePrintGeneralSuccesses.store(other.doWePrintGeneralSuccessMessages(), std::memory_order_release);
 			doWePrintHttpsErrors.store(other.doWePrintHttpsErrorMessages(), std::memory_order_release);
@@ -218,7 +224,7 @@ namespace discord_core_api {
 		/// @param what the error message.
 		/// @param where the source location where the error occurred (default: current source location).
 		template<print_message_type messageType, typename string_type>
-		inline static void printError(const string_type& what, std::source_location where = std::source_location::current()) {
+		DCA_INLINE static void printError(const string_type& what, std::source_location where = std::source_location::current()) {
 			switch (messageType) {
 				case print_message_type::general: {
 					if (doWePrintGeneralErrors.load(std::memory_order_acquire)) {
@@ -255,7 +261,7 @@ namespace discord_core_api {
 		/// @param what the success message.
 		/// @param where the source location where the success occurred (default: current source location).
 		template<print_message_type messageType, typename string_type>
-		inline static void printSuccess(const string_type& what, std::source_location where = std::source_location::current()) {
+		DCA_INLINE static void printSuccess(const string_type& what, std::source_location where = std::source_location::current()) {
 			switch (messageType) {
 				case print_message_type::general: {
 					if (doWePrintGeneralSuccesses.load(std::memory_order_acquire)) {
@@ -288,15 +294,15 @@ namespace discord_core_api {
 		}
 
 	  protected:
-		inline static std::atomic_bool doWePrintHttpsSuccesses{};///< Flag to control printing of https success messages.
-		inline static std::atomic_bool doWePrintHttpsErrors{};///< Flag to control printing of https error messages.
-		inline static std::atomic_bool doWePrintWebSocketSuccesses{};///< Flag to control printing of websocket success messages.
-		inline static std::atomic_bool doWePrintWebSocketErrors{};///< Flag to control printing of websocket error messages.
-		inline static std::atomic_bool doWePrintGeneralSuccesses{};///< Flag to control printing of general success messages.
-		inline static std::atomic_bool doWePrintGeneralErrors{};///< Flag to control printing of general error messages.
-		inline static std::ostream* outputStream{};///< Pointer to the output stream for message printing.
-		inline static std::ostream* errorStream{};///< Pointer to the error stream for message printing.
-		inline static std::mutex accessMutex{};///< Mutex for thread-safe access to shared resources.
+		DCA_INLINE static std::atomic_bool doWePrintWebSocketSuccesses{};///< Flag to control printing of websocket success messages.
+		DCA_INLINE static std::atomic_bool doWePrintGeneralSuccesses{};///< Flag to control printing of general success messages.
+		DCA_INLINE static std::atomic_bool doWePrintWebSocketErrors{};///< Flag to control printing of websocket error messages.
+		DCA_INLINE static std::atomic_bool doWePrintHttpsSuccesses{};///< Flag to control printing of https success messages.
+		DCA_INLINE static std::atomic_bool doWePrintGeneralErrors{};///< Flag to control printing of general error messages.
+		DCA_INLINE static std::atomic_bool doWePrintHttpsErrors{};///< Flag to control printing of https error messages.
+		DCA_INLINE static std::ostream* outputStream{};///< Pointer to the output stream for message printing.
+		DCA_INLINE static std::ostream* errorStream{};///< Pointer to the error stream for message printing.
+		DCA_INLINE static std::mutex accessMutex{};///< Mutex for thread-safe access to shared resources.
 	};
 
 	/// @brief Time formatting methods.
@@ -315,10 +321,22 @@ namespace discord_core_api {
 	/// @tparam value_type the value type to be used with the time stamp.
 	template<typename value_type> class time_stamp_base {
 	  public:
+		static constexpr uint64_t msPerSecond{ 1000ULL };
+		static constexpr uint64_t secondsPerMinute{ 60ULL };
+		static constexpr uint64_t minutesPerHour{ 60ULL };
+		static constexpr uint64_t msPerMinute{ msPerSecond * secondsPerMinute };
+		static constexpr uint64_t msPerHour{ msPerMinute * minutesPerHour };
+		static constexpr uint64_t secondsPerHour{ minutesPerHour * secondsPerMinute };
+		static constexpr uint64_t hoursPerDay{ 24ULL };
+		static constexpr uint64_t secondsPerDay{ secondsPerHour * hoursPerDay };
+		static constexpr uint64_t daysPerMonth{ 30ULL };
+		static constexpr uint64_t secondsPerMonth{ secondsPerDay * daysPerMonth };
+		static constexpr uint64_t daysPerYear{ 365ULL };
+		static constexpr uint64_t secondsPerYear{ secondsPerDay * daysPerYear };
 		/// @brief Checks if the time stamp is equal to a string representation.
 		/// @param other the string to compare with.
 		/// @return true if equal, false otherwise.
-		inline bool operator==(jsonifier::string_view other) const {
+		DCA_INLINE bool operator==(jsonifier::string_view other) const {
 			return static_cast<jsonifier::string>(*static_cast<const value_type*>(this)) == other;
 		}
 
@@ -330,18 +348,9 @@ namespace discord_core_api {
 		/// @param yearsToAdd number of years to add.
 		/// @param timeFormat format for the resulting time stamp.
 		/// @return iso8601 time stamp string.
-		inline static jsonifier::string convertToFutureISO8601TimeStamp(uint64_t minutesToAdd, uint64_t hoursToAdd, uint64_t daysToAdd, uint64_t monthsToAdd, uint64_t yearsToAdd,
+		DCA_INLINE static jsonifier::string convertToFutureISO8601TimeStamp(uint64_t minutesToAdd, uint64_t hoursToAdd, uint64_t daysToAdd, uint64_t monthsToAdd, uint64_t yearsToAdd,
 			time_format timeFormat) {
 			std::time_t result = std::time(nullptr);
-			static constexpr uint64_t secondsPerMinute{ 60ULL };
-			static constexpr uint64_t minutesPerHour{ 60ULL };
-			static constexpr uint64_t secondsPerHour{ minutesPerHour * secondsPerMinute };
-			static constexpr uint64_t hoursPerDay{ 24ULL };
-			static constexpr uint64_t secondsPerDay{ secondsPerHour * hoursPerDay };
-			static constexpr uint64_t daysPerMonth{ 30ULL };
-			static constexpr uint64_t secondsPerMonth{ secondsPerDay * daysPerMonth };
-			static constexpr uint64_t daysPerYear{ 365ULL };
-			static constexpr uint64_t secondsPerYear{ secondsPerDay * daysPerYear };
 			uint64_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + ((hoursToAdd + 8) * secondsPerHour) +
 				(minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
@@ -353,7 +362,7 @@ namespace discord_core_api {
 					++resultTwo.tm_mday;
 				}
 				auto newValue =
-					getTimeSinceEpoch(static_cast<uint64_t>(resultTwo.tm_year) + 1900ULL, static_cast<uint64_t>(resultTwo.tm_mon) + 1ULL, static_cast<uint64_t>(resultTwo.tm_mday),
+					getMsSinceEpoch(static_cast<uint64_t>(resultTwo.tm_year) + 1900ULL, static_cast<uint64_t>(resultTwo.tm_mon) + 1ULL, static_cast<uint64_t>(resultTwo.tm_mday),
 						static_cast<uint64_t>(resultTwo.tm_hour) + 4ULL, static_cast<uint64_t>(resultTwo.tm_min), static_cast<uint64_t>(resultTwo.tm_sec));
 				returnString = getISO8601TimeStamp(timeFormat, newValue);
 			} else {
@@ -362,7 +371,7 @@ namespace discord_core_api {
 					++resultTwo.tm_mday;
 				}
 				auto newValue =
-					getTimeSinceEpoch(static_cast<uint64_t>(resultTwo.tm_year) + 1900ULL, static_cast<uint64_t>(resultTwo.tm_mon) + 1ULL, static_cast<uint64_t>(resultTwo.tm_mday),
+					getMsSinceEpoch(static_cast<uint64_t>(resultTwo.tm_year) + 1900ULL, static_cast<uint64_t>(resultTwo.tm_mon) + 1ULL, static_cast<uint64_t>(resultTwo.tm_mday),
 						static_cast<uint64_t>(resultTwo.tm_hour) + 5ULL, static_cast<uint64_t>(resultTwo.tm_min), static_cast<uint64_t>(resultTwo.tm_sec));
 				returnString = getISO8601TimeStamp(timeFormat, newValue);
 			}
@@ -372,7 +381,7 @@ namespace discord_core_api {
 		/// @brief Converts the current time into an iso8601 time stamp.
 		/// @param timeFormat format for the resulting time stamp.
 		/// @return iso8601 time stamp string.
-		inline static jsonifier::string convertToCurrentISO8601TimeStamp(time_format timeFormat) {
+		DCA_INLINE static jsonifier::string convertToCurrentISO8601TimeStamp(time_format timeFormat) {
 			std::time_t result = std::time(nullptr);
 			std::tm resultTwo{ getTime(result) };
 			jsonifier::string returnString{};
@@ -382,7 +391,7 @@ namespace discord_core_api {
 					++resultTwo.tm_mday;
 				}
 				auto newValue =
-					getTimeSinceEpoch(static_cast<uint64_t>(resultTwo.tm_year) + 1900ULL, static_cast<uint64_t>(resultTwo.tm_mon) + 1ULL, static_cast<uint64_t>(resultTwo.tm_mday),
+					getMsSinceEpoch(static_cast<uint64_t>(resultTwo.tm_year) + 1900ULL, static_cast<uint64_t>(resultTwo.tm_mon) + 1ULL, static_cast<uint64_t>(resultTwo.tm_mday),
 						static_cast<uint64_t>(resultTwo.tm_hour) + 4ULL, static_cast<uint64_t>(resultTwo.tm_min), static_cast<uint64_t>(resultTwo.tm_sec));
 				returnString = getISO8601TimeStamp(timeFormat, newValue);
 			} else {
@@ -391,7 +400,7 @@ namespace discord_core_api {
 					++resultTwo.tm_mday;
 				}
 				auto newValue =
-					getTimeSinceEpoch(static_cast<uint64_t>(resultTwo.tm_year) + 1900ULL, static_cast<uint64_t>(resultTwo.tm_mon) + 1ULL, static_cast<uint64_t>(resultTwo.tm_mday),
+					getMsSinceEpoch(static_cast<uint64_t>(resultTwo.tm_year) + 1900ULL, static_cast<uint64_t>(resultTwo.tm_mon) + 1ULL, static_cast<uint64_t>(resultTwo.tm_mday),
 						static_cast<uint64_t>(resultTwo.tm_hour) + 5ULL, static_cast<uint64_t>(resultTwo.tm_min), static_cast<uint64_t>(resultTwo.tm_sec));
 				returnString = getISO8601TimeStamp(timeFormat, newValue);
 			}
@@ -403,14 +412,11 @@ namespace discord_core_api {
 		/// @param hours number of hours for elapsed time.
 		/// @param minutes number of minutes for elapsed time.
 		/// @return true if the specified time has elapsed, otherwise false.
-		inline bool hasTimeElapsed(int64_t days, int64_t hours, int64_t minutes) const {
+		DCA_INLINE bool hasTimeElapsed(int64_t days, int64_t hours, int64_t minutes) const {
 			int64_t startTimeRaw{ static_cast<int64_t>(convertTimeStampToTimeUnits(static_cast<jsonifier::string>(*static_cast<const value_type*>(this)))) };
 			startTimeRaw =
 				std::chrono::current_zone()->to_sys(std::chrono::local_time<std::chrono::milliseconds>(std::chrono::milliseconds{ startTimeRaw })).time_since_epoch().count();
 			auto currentTime						  = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			static constexpr int64_t secondsPerMinute = 60ULL;
-			static constexpr int64_t secondsPerHour	  = secondsPerMinute * 60ULL;
-			static constexpr int64_t secondsPerDay	  = secondsPerHour * 24ULL;
 			auto targetElapsedTime =
 				((static_cast<int64_t>(days) * secondsPerDay) + ((static_cast<int64_t>(hours)) * secondsPerHour) + (static_cast<int64_t>(minutes) * secondsPerMinute)) * 1000LL;
 			auto actualElapsedTime = currentTime - startTimeRaw;
@@ -427,13 +433,8 @@ namespace discord_core_api {
 		/// @brief Converts milliseconds into a human-readable duration string.
 		/// @param durationInMs duration in milliseconds to convert.
 		/// @return human-readable duration string.
-		inline static jsonifier::string convertMsToDurationString(uint64_t durationInMs) {
+		DCA_INLINE static jsonifier::string convertMsToDurationString(uint64_t durationInMs) {
 			jsonifier::string newString{};
-			static constexpr uint64_t msPerSecond{ 1000ULL };
-			static constexpr uint64_t secondsPerMinute{ 60ULL };
-			static constexpr uint64_t minutesPerHour{ 60ULL };
-			static constexpr uint64_t msPerMinute{ msPerSecond * secondsPerMinute };
-			static constexpr uint64_t msPerHour{ msPerMinute * minutesPerHour };
 			uint64_t hoursLeft	 = static_cast<uint64_t>(trunc(durationInMs / msPerHour));
 			uint64_t minutesLeft = static_cast<uint64_t>(trunc((durationInMs % msPerHour) / msPerMinute));
 			uint64_t secondsLeft = static_cast<uint64_t>(trunc(((durationInMs % msPerHour) % msPerMinute) / msPerSecond));
@@ -454,7 +455,7 @@ namespace discord_core_api {
 		/// @param timeFormat format for the resulting time stamp.
 		/// @param inputTime input time value.
 		/// @return iso8601 time stamp string.
-		inline static jsonifier::string getISO8601TimeStamp(time_format timeFormat, uint64_t inputTime) {
+		DCA_INLINE static jsonifier::string getISO8601TimeStamp(time_format timeFormat, uint64_t inputTime) {
 			uint64_t timeValue = static_cast<uint64_t>(inputTime) / 1000ULL;
 			time_t rawTime(static_cast<time_t>(timeValue));
 			std::tm resultTwo{ getTime(rawTime) };
@@ -506,22 +507,19 @@ namespace discord_core_api {
 		/// @param minute minute.
 		/// @param second second.
 		/// @return time since unix epoch in milliseconds.
-		inline static uint64_t getTimeSinceEpoch(uint64_t year, uint64_t month, uint64_t day, uint64_t hour, uint64_t minute, uint64_t second) {
-			static constexpr uint64_t secondsInJan{ 31ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInFeb{ 28 * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInMar{ 31ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInApr{ 30ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInMay{ 31ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInJun{ 30ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInJul{ 31ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInAug{ 31ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInSep{ 30ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInOct{ 31ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInNov{ 30ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsInDec{ 31ULL * 24ULL * 60ULL * 60ULL };
-			static constexpr uint64_t secondsPerMinute{ 60ULL };
-			static constexpr uint64_t secondsPerHour{ 60ULL * 60ULL };
-			static constexpr uint64_t secondsPerDay{ 60ULL * 60ULL * 24ULL };
+		DCA_INLINE static uint64_t getMsSinceEpoch(uint64_t year, uint64_t month, uint64_t day, uint64_t hour, uint64_t minute, uint64_t second) {
+			static constexpr uint64_t secondsInJan{ 31ULL * secondsPerDay };
+			static constexpr uint64_t secondsInFeb{ 28ULL * secondsPerDay };
+			static constexpr uint64_t secondsInMar{ 31ULL * secondsPerDay };
+			static constexpr uint64_t secondsInApr{ 30ULL * secondsPerDay };
+			static constexpr uint64_t secondsInMay{ 31ULL * secondsPerDay };
+			static constexpr uint64_t secondsInJun{ 30ULL * secondsPerDay };
+			static constexpr uint64_t secondsInJul{ 31ULL * secondsPerDay };
+			static constexpr uint64_t secondsInAug{ 31ULL * secondsPerDay };
+			static constexpr uint64_t secondsInSep{ 30ULL * secondsPerDay };
+			static constexpr uint64_t secondsInOct{ 31ULL * secondsPerDay };
+			static constexpr uint64_t secondsInNov{ 30ULL * secondsPerDay };
+			static constexpr uint64_t secondsInDec{ 31ULL * secondsPerDay };
 			seconds value{};
 			for (uint64_t x = 1970ULL; x < year; ++x) {
 				value += seconds{ secondsInJan };
@@ -586,10 +584,10 @@ namespace discord_core_api {
 		/// @brief Converts a string time stamp into a uint64_t time value.
 		/// @param originalTimeStamp original time stamp string.
 		/// @return converted time value in milliseconds.
-		inline static uint64_t convertTimeStampToTimeUnits(jsonifier::string_view originalTimeStamp) {
+		DCA_INLINE static uint64_t convertTimeStampToTimeUnits(jsonifier::string_view originalTimeStamp) {
 			if (originalTimeStamp != "" && originalTimeStamp.size() >= 19) {
 				auto newValue =
-					getTimeSinceEpoch(jsonifier::strToUint64(originalTimeStamp.substr(0ULL, 4ULL).data()), jsonifier::strToUint64(originalTimeStamp.substr(5ULL, 6ULL).data()),
+					getMsSinceEpoch(jsonifier::strToUint64(originalTimeStamp.substr(0ULL, 4ULL).data()), jsonifier::strToUint64(originalTimeStamp.substr(5ULL, 6ULL).data()),
 						jsonifier::strToUint64(originalTimeStamp.substr(8ULL, 9ULL).data()), jsonifier::strToUint64(originalTimeStamp.substr(11ULL, 12ULL).data()),
 						jsonifier::strToUint64(originalTimeStamp.substr(14ULL, 15ULL).data()), jsonifier::strToUint64(originalTimeStamp.substr(17ULL, 18ULL).data()));
 				return newValue;
@@ -601,14 +599,14 @@ namespace discord_core_api {
 		/// @brief Converts a string time stamp into a uint64_t time value.
 		/// @param stringTimeStamp string time stamp to convert.
 		/// @return converted time value in milliseconds.
-		inline uint64_t convertStringToUintTimeStamp(jsonifier::string_view stringTimeStamp) const {
+		DCA_INLINE uint64_t convertStringToUintTimeStamp(jsonifier::string_view stringTimeStamp) const {
 			return convertTimeStampToTimeUnits(stringTimeStamp);
 		}
 
 		/// @brief Converts a uint64_t time value into a string time stamp.
 		/// @param uintTimeStamp time value to convert.
 		/// @return string time stamp.
-		inline jsonifier::string convertUintToStringTimeStamp(uint64_t uintTimeStamp) const {
+		DCA_INLINE jsonifier::string convertUintToStringTimeStamp(uint64_t uintTimeStamp) const {
 			return getISO8601TimeStamp(time_format::long_date_time, uintTimeStamp);
 		}
 	};
@@ -619,45 +617,45 @@ namespace discord_core_api {
 		template<typename value_type> friend class time_stamp_base;
 
 		/// @brief Default constructor for time_stamp.
-		inline time_stamp() = default;
+		DCA_INLINE time_stamp() = default;
 
 		/// @brief Move assignment operator to move a string value into time_stamp.
 		/// @param valueNew the string value to move.
 		/// @return reference to the modified time_stamp instance.
-		inline time_stamp& operator=(jsonifier::string_view valueNew) {
+		DCA_INLINE time_stamp& operator=(jsonifier::string_view valueNew) {
 			value = convertStringToUintTimeStamp(valueNew);
 			return *this;
 		}
 
 		/// @brief Move constructor to create a time_stamp instance by moving a string value.
 		/// @param valueNew the string value to move.
-		inline time_stamp(jsonifier::string_view valueNew) {
+		DCA_INLINE time_stamp(jsonifier::string_view valueNew) {
 			*this = valueNew;
 		}
 
 		/// @brief Assignment operator to assign a uint64_t value to time_stamp.
 		/// @param valueNew the new uint64_t value to assign.
 		/// @return reference to the modified time_stamp instance.
-		inline time_stamp& operator=(uint64_t valueNew) {
+		DCA_INLINE time_stamp& operator=(uint64_t valueNew) {
 			value = valueNew;
 			return *this;
 		}
 
 		/// @brief Constructor to create a time_stamp instance from a uint64_t value.
 		/// @param valueNew the uint64_t value to create the instance from.
-		inline time_stamp(uint64_t valueNew) {
+		DCA_INLINE time_stamp(uint64_t valueNew) {
 			*this = valueNew;
 		}
 
 		/// @brief Conversion operator to convert time_stamp to int64_t.
 		/// @return the int64_t value represented by the time_stamp instance.
-		inline operator uint64_t() const {
+		DCA_INLINE operator uint64_t() const {
 			return value;
 		}
 
 		/// @brief Conversion operator to convert time_stamp to jsonifier::string.
 		/// @return the jsonifier::string value represented by the time_stamp instance.
-		inline operator jsonifier::string() const {
+		DCA_INLINE operator jsonifier::string() const {
 			return convertUintToStringTimeStamp(value);
 		}
 
@@ -670,21 +668,21 @@ namespace discord_core_api {
 	/// @brief A class for converting snowflake id's into the data structures they represent.
 	/// @tparam value_type The type of value being acquired.
 	template<typename value_type = void> class to_entity {
-		inline static value_type toEntity(snowflake initialId, snowflake additionalId);
+		DCA_INLINE static value_type toEntity(snowflake initialId, snowflake additionalId);
 
-		inline static value_type toEntity(snowflake initialId);
+		DCA_INLINE static value_type toEntity(snowflake initialId);
 	};
 
 	/// @brief A class representing a snowflake identifier with various operations.
 	class snowflake {
 	  public:
 		/// @brief Default constructor for snowflake.
-		inline snowflake() = default;
+		DCA_INLINE snowflake() = default;
 
 		/// @brief A class for converting snowflake id's into the data structures they represent.
 		/// @tparam value_type The type of value being acquired.
 		/// @return value_type If successful, the intended data structure.
-		template<typename value_type> inline value_type toEntity() {
+		template<typename value_type> DCA_INLINE value_type toEntity() {
 			return to_entity<value_type>{}.toEntity(*this);
 		}
 
@@ -692,14 +690,14 @@ namespace discord_core_api {
 		/// @param additionalId For certain classes, a second Id for collecting the data structure.
 		/// @tparam value_type The type of value being acquired.
 		/// @return value_type If successful, the intended data structure.
-		template<typename value_type> inline value_type toEntity(snowflake additionalId) {
+		template<typename value_type> DCA_INLINE value_type toEntity(snowflake additionalId) {
 			return to_entity<value_type>{}.toEntity(*this, additionalId);
 		}
 
 		/// @brief Assignment operator to assign a string value to snowflake.
 		/// @param other the string value to assign.
 		/// @return reference to the modified snowflake instance.
-		inline snowflake& operator=(const jsonifier::string& other) {
+		DCA_INLINE snowflake& operator=(const jsonifier::string& other) {
 			if (other.size() > 0) {
 				for (auto& value: other) {
 					if (!std::isdigit(static_cast<uint8_t>(value))) {
@@ -713,45 +711,45 @@ namespace discord_core_api {
 
 		/// @brief Constructor to create a snowflake instance from a string value.
 		/// @param other the string value to create the instance from.
-		inline snowflake(const jsonifier::string& other) {
+		DCA_INLINE snowflake(const jsonifier::string& other) {
 			*this = other;
 		}
 
 		/// @brief Assignment operator to assign a uint64_t value to snowflake.
 		/// @param other the uint64_t value to assign.
 		/// @return reference to the modified snowflake instance.
-		inline snowflake& operator=(uint64_t other) {
+		DCA_INLINE snowflake& operator=(uint64_t other) {
 			id = other;
 			return *this;
 		}
 
 		/// @brief Constructor to create a snowflake instance from a uint64_t value.
 		/// @param other the uint64_t value to create the instance from.
-		inline snowflake(uint64_t other) {
+		DCA_INLINE snowflake(uint64_t other) {
 			*this = other;
 		}
 
 		/// @brief Conversion operator to convert snowflake to jsonifier::string.
 		/// @return the jsonifier::string value represented by the snowflake instance.
-		inline explicit operator jsonifier::string() const {
+		DCA_INLINE explicit operator jsonifier::string() const {
 			return jsonifier::toString(id);
 		}
 
 		/// @brief Explicit conversion operator to convert snowflake to uint64_t.
 		/// @return the uint64_t value represented by the snowflake instance.
-		inline explicit operator const uint64_t&() const {
+		DCA_INLINE explicit operator const uint64_t&() const {
 			return id;
 		}
 
-		inline bool operator==(const snowflake& other) const {
+		DCA_INLINE bool operator==(const snowflake& other) const {
 			return id == other.id;
 		}
 
-		inline bool operator==(jsonifier::string_view other) const {
+		DCA_INLINE bool operator==(jsonifier::string_view other) const {
 			return operator jsonifier::string() == other;
 		}
 
-		inline bool operator==(uint64_t other) const {
+		DCA_INLINE bool operator==(uint64_t other) const {
 			return id == other;
 		}
 
@@ -759,7 +757,7 @@ namespace discord_core_api {
 		/// @tparam value_type the type of the string value.
 		/// @param rhs the string value to concatenate.
 		/// @return the concatenated string.
-		template<jsonifier::concepts::string_t value_type> inline jsonifier::string operator+(jsonifier::string_view rhs) const {
+		template<jsonifier::concepts::string_t value_type> DCA_INLINE jsonifier::string operator+(jsonifier::string_view rhs) const {
 			jsonifier::string newString{ operator jsonifier::string() };
 			newString += rhs;
 			return newString;
@@ -769,7 +767,7 @@ namespace discord_core_api {
 		/// @param lhs the snowflake instance.
 		/// @param other the string value to concatenate.
 		/// @return the concatenated string.
-		inline friend jsonifier::string operator+(const snowflake& lhs, jsonifier::string_view other) {
+		DCA_INLINE friend jsonifier::string operator+(const snowflake& lhs, jsonifier::string_view other) {
 			jsonifier::string lhsNew{ static_cast<jsonifier::string>(lhs) };
 			lhsNew += other;
 			return lhsNew;
@@ -781,7 +779,7 @@ namespace discord_core_api {
 		/// @param lhs the first value.
 		/// @param rhs the second value.
 		/// @return the concatenated string.
-		template<jsonifier::concepts::string_t value_type01, typename value_type02> friend inline jsonifier::string operator+(const value_type01& lhs, const value_type02& rhs) {
+		template<jsonifier::concepts::string_t value_type01, typename value_type02> friend DCA_INLINE jsonifier::string operator+(const value_type01& lhs, const value_type02& rhs) {
 			jsonifier::string newString{ lhs };
 			newString += rhs.operator jsonifier::string();
 			return newString;
@@ -793,7 +791,7 @@ namespace discord_core_api {
 		/// @param lhs the first value.
 		/// @param rhs the second value.
 		/// @return the concatenated string.
-		template<uint64_t size> friend inline jsonifier::string operator+(const char (&lhs)[size], const snowflake& rhs) {
+		template<uint64_t size> friend DCA_INLINE jsonifier::string operator+(const char (&lhs)[size], const snowflake& rhs) {
 			jsonifier::string newString{ lhs };
 			newString += rhs.operator jsonifier::string();
 			return newString;
@@ -801,7 +799,7 @@ namespace discord_core_api {
 
 		/// @brief Converts the snowflake id into a time and date stamp.
 		/// @return a jsonifier::string containing the timestamp.
-		inline jsonifier::string getCreatedAtTimeStamp() {
+		DCA_INLINE jsonifier::string getCreatedAtTimeStamp() {
 			uint64_t timeStamp{ static_cast<uint64_t>((id >> 22) + 1420070400000) };
 			return time_stamp::getISO8601TimeStamp(time_format::long_date_time, timeStamp);
 		}
@@ -810,7 +808,7 @@ namespace discord_core_api {
 		uint64_t id{};///< The snowflake id.
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, snowflake sf) {
+	DCA_INLINE std::ostream& operator<<(std::ostream& os, snowflake sf) {
 		os << sf.operator jsonifier::string();
 		return os;
 	}
@@ -820,7 +818,7 @@ namespace discord_core_api {
 		/// @brief Constructor to create a dca_exception with an error message and optional source location.
 		/// @param error the error message.
 		/// @param location the source location of the exception (default: current location).
-		inline dca_exception(jsonifier::string_view error, std::source_location location = std::source_location::current()) : std::runtime_error{ "No error." } {
+		DCA_INLINE dca_exception(jsonifier::string_view error, std::source_location location = std::source_location::current()) : std::runtime_error{ "No error." } {
 			auto newError  = jsonifier::string{ "Thrown from: " };
 			auto newString = location.file_name();
 			if (newString) {

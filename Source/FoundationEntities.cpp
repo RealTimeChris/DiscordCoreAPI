@@ -1030,9 +1030,9 @@ namespace discord_core_api {
 		*this = other;
 	}
 
-	void parseCommandDataOption(unordered_map<jsonifier::string, json_string_value>& values, application_command_interaction_data_option& data) {
-		json_string_value valueNew{};
-		valueNew.value	  = data.value;
+	void parseCommandDataOption(unordered_map<jsonifier::string, jsonifier::raw_json_data>& values, application_command_interaction_data_option& data) {
+		jsonifier::raw_json_data valueNew{};
+		valueNew		  = data.value;
 		values[data.name] = valueNew;
 		for (auto& value: data.options) {
 			parseCommandDataOption(values, value);
@@ -1061,15 +1061,13 @@ namespace discord_core_api {
 			commandName = inputEventData.interactionData->data.name;
 		}
 		if (inputEventData.interactionData->data.targetId != 0) {
-			optionsArgs.values.emplace("target_id",
-				json_string_value{ .type = discord_core_internal::json_type::string_t, .value = inputEventData.interactionData->data.targetId.operator jsonifier::string() });
+			optionsArgs.values.emplace("target_id", jsonifier::raw_json_data{ inputEventData.interactionData->data.targetId.operator jsonifier::string() });
 		} else if (inputEventData.interactionData->data.targetId != 0) {
-			optionsArgs.values.emplace("target_id",
-				json_string_value{ .type = discord_core_internal::json_type::string_t, .value = inputEventData.interactionData->data.targetId.operator jsonifier::string() });
+			optionsArgs.values.emplace("target_id", jsonifier::raw_json_data{ inputEventData.interactionData->data.targetId.operator jsonifier::string() });
 		}
 		eventData = makeUnique<input_event_data>(inputEventData);
 		for (auto& value: eventData->interactionData->data.options) {
-			json_string_value serializer{ .value = value.value.operator jsonifier::string() };
+			jsonifier::raw_json_data serializer{ value.value.operator jsonifier::string() };
 			optionsArgs.values[value.name] = serializer;
 			parseCommandDataOption(optionsArgs.values, value);
 		}
@@ -1163,6 +1161,9 @@ namespace discord_core_api {
 						component.disabled		= true;
 						actionRow.components.emplace_back(component);
 					}
+					if (returnResult) {
+						dataPackage02->addButton(false, "select", "Select", button_style::Success, unicode_emojis::x);
+					}
 					dataPackage02->addButton(false, "backwards", "Prev Page", button_style::Primary, unicode_emojis::arrow_left);
 					dataPackage02->addButton(false, "forwards", "Next Page", button_style::Primary, unicode_emojis::arrow_right);
 					dataPackage02->addButton(false, "exit", "Exit", button_style::Danger, unicode_emojis::x);
@@ -1196,9 +1197,12 @@ namespace discord_core_api {
 						component.disabled		 = true;
 						actionRow.components.emplace_back(component);
 					}
-					dataPackage02->addButton(false, "backwards", "Prev Page", button_style::Primary, unicode_emojis::arrow_left);
-					dataPackage02->addButton(false, "forwards", "Next Page", button_style::Primary, unicode_emojis::arrow_right);
-					dataPackage02->addButton(false, "exit", "Exit", button_style::Danger, unicode_emojis::x);
+					if (returnResult) {
+						dataPackage02->addButton(true, "select", "Select", button_style::Success, unicode_emojis::x);
+					}
+					dataPackage02->addButton(true, "backwards", "Prev Page", button_style::Primary, unicode_emojis::arrow_left);
+					dataPackage02->addButton(true, "forwards", "Next Page", button_style::Primary, unicode_emojis::arrow_right);
+					dataPackage02->addButton(true, "exit", "Exit", button_style::Danger, unicode_emojis::x);
 				}
 				if (deleteAfter == true) {
 					input_event_data dataPackage03{ originalEvent };
@@ -1231,6 +1235,9 @@ namespace discord_core_api {
 						component.disabled		 = false;
 						actionRow.components.emplace_back(component);
 					}
+					if (returnResult) {
+						dataPackage.addButton(false, "select", "Select", button_style::Success, unicode_emojis::x);
+					}
 					dataPackage.addButton(false, "backwards", "Prev Page", button_style::Primary, unicode_emojis::arrow_left);
 					dataPackage.addButton(false, "forwards", "Next Page", button_style::Primary, unicode_emojis::arrow_right);
 					dataPackage.addButton(false, "exit", "Exit", button_style::Danger, unicode_emojis::x);
@@ -1242,10 +1249,9 @@ namespace discord_core_api {
 					input_event_data dataPackage03{ originalEvent };
 					input_events::deleteInputEventResponseAsync(dataPackage03);
 				} else {
-					unique_ptr<interaction_data> interactionDataNew = makeUnique<interaction_data>(buttonIntData[0]);
-					auto dataPackage							  = respond_to_input_event_data{ *interactionDataNew };
+					interactionData	 = makeUnique<interaction_data>(buttonIntData[0]);
+					auto dataPackage = respond_to_input_event_data{ *interactionData };
 					dataPackage.setResponseType(input_event_response_type::Edit_Interaction_Response);
-					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 					for (uint64_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
 						action_row_data actionRow{};
 						for (uint64_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
@@ -1253,9 +1259,15 @@ namespace discord_core_api {
 							component.disabled		 = true;
 							actionRow.components.emplace_back(component);
 						}
-						dataPackage.addComponentRow(actionRow);
+						if (returnResult) {
+							dataPackage.addButton(true, "select", "Select", button_style::Success, unicode_emojis::x);
+						}
+						dataPackage.addButton(true, "backwards", "Prev Page", button_style::Primary, unicode_emojis::arrow_left);
+						dataPackage.addButton(true, "forwards", "Next Page", button_style::Primary, unicode_emojis::arrow_right);
+						dataPackage.addButton(true, "exit", "Exit", button_style::Danger, unicode_emojis::x);
 					}
-					originalEvent = input_events::respondToInputEventAsync(dataPackage).get();
+					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
+					input_events::respondToInputEventAsync(dataPackage).get();
 				}
 				returnData->currentPageIndex = newCurrentPageIndex;
 				returnData->inputEventData	= originalEvent;

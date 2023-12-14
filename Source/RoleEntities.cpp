@@ -43,14 +43,14 @@ namespace jsonifier {
 	template<> struct core<discord_core_api::modify_guild_role_data> {
 		using value_type				 = discord_core_api::modify_guild_role_data;
 		static constexpr auto parseValue = createValue("color", &value_type::hexColorValue, "hoist", &value_type::hoist, "id", &value_type::roleId, "mentionable",
-			&value_type::mentionable, "name", &value_type::name, "permissions", &value_type::permissions, "reason", &value_type::reason, "unicode_emoji", &value_type::unicodeEmoji,
+			&value_type::mentionable, "name", &value_type::name, "permissions", &value_type::permissions, "unicode_emoji", &value_type::unicodeEmoji,
 			"guild_id", &value_type::guildId, "icon", &value_type::icon);
 	};
 
 	template<> struct core<discord_core_api::create_guild_role_data> {
 		using value_type				 = discord_core_api::create_guild_role_data;
 		static constexpr auto parseValue = createValue("color", &value_type::hexColorValue, "hoist", &value_type::hoist, "id", &value_type::guildId, "mentionable",
-			&value_type::mentionable, "name", &value_type::name, "permissions", &value_type::permissions, "position", &value_type::position, "reason", &value_type::reason,
+			&value_type::mentionable, "name", &value_type::name, "permissions", &value_type::permissions, "position", &value_type::position,
 			"unicode_emoji", &value_type::unicodeEmoji, "icon", &value_type::icon);
 	};
 

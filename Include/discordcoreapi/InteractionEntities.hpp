@@ -360,11 +360,11 @@ namespace discord_core_api {
 
 	/// @brief Select menu response data.
 	struct select_menu_response_data {
-		inline operator interaction_data() {
+		DCA_INLINE operator interaction_data() {
 			return *interactionData;
 		}
 
-		inline select_menu_response_data& operator=(const select_menu_response_data& other) {
+		DCA_INLINE select_menu_response_data& operator=(const select_menu_response_data& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
 				selectionId		 = other.selectionId;
@@ -376,11 +376,11 @@ namespace discord_core_api {
 			return *this;
 		}
 
-		inline select_menu_response_data(const select_menu_response_data& other) {
+		DCA_INLINE select_menu_response_data(const select_menu_response_data& other) {
 			*this = other;
 		}
 
-		inline select_menu_response_data& operator=(select_menu_response_data& other) {
+		DCA_INLINE select_menu_response_data& operator=(select_menu_response_data& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
 				selectionId		 = other.selectionId;
@@ -392,11 +392,11 @@ namespace discord_core_api {
 			return *this;
 		}
 
-		inline select_menu_response_data(select_menu_response_data& other) {
+		DCA_INLINE select_menu_response_data(select_menu_response_data& other) {
 			*this = other;
 		}
 
-		inline select_menu_response_data() = default;
+		DCA_INLINE select_menu_response_data() = default;
 
 		unique_ptr<interaction_data> interactionData{ makeUnique<interaction_data>() };///< Interaction data.
 		jsonifier::vector<jsonifier::string> values{};///< A vector of the chosen values.
@@ -432,7 +432,7 @@ namespace discord_core_api {
 
 		/// @brief Used to collect the select-menu inputs from one or more users.
 		/// @param triggerFunctionNew a std::function<bool(interaction_data)> to decide whether or not to trigger the event's main function.
-		/// @param functionNew takes a discord_core_internal::trigger_event_delegate<void, interaction_data> as a function to be executed upon returning true from the "trigger-function".
+		/// @param functionNew takes a discord_core_internal::trigger_event_delegate<void, interaction_data> as a function to be executed upon returning true from the "Trigger-function".
 		void collectSelectMenuData(std::function<bool(interaction_data)> triggerFunctionNew, discord_core_internal::trigger_event_delegate<void, interaction_data> functionNew);
 
 		~select_menu_collector();
@@ -459,11 +459,11 @@ namespace discord_core_api {
 
 	/// @brief Button response data.
 	struct button_response_data {
-		inline operator interaction_data() {
+		DCA_INLINE operator interaction_data() {
 			return *interactionData;
 		}
 
-		inline button_response_data& operator=(const button_response_data& other) {
+		DCA_INLINE button_response_data& operator=(const button_response_data& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
 				messageId		 = other.messageId;
@@ -475,11 +475,11 @@ namespace discord_core_api {
 			return *this;
 		}
 
-		inline button_response_data(const button_response_data& other) {
+		DCA_INLINE button_response_data(const button_response_data& other) {
 			*this = other;
 		}
 
-		inline button_response_data& operator=(button_response_data& other) {
+		DCA_INLINE button_response_data& operator=(button_response_data& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
 				messageId		 = other.messageId;
@@ -491,11 +491,11 @@ namespace discord_core_api {
 			return *this;
 		}
 
-		inline button_response_data(button_response_data& other) {
+		DCA_INLINE button_response_data(button_response_data& other) {
 			*this = other;
 		}
 
-		inline button_response_data() = default;
+		DCA_INLINE button_response_data() = default;
 
 		unique_ptr<interaction_data> interactionData{ makeUnique<interaction_data>() };///< Interaction data.
 		jsonifier::string emojiName{};///< The emoji name, if applicable.
@@ -529,7 +529,7 @@ namespace discord_core_api {
 
 		/// @brief Used to collect the button inputs from one or more users.
 		/// @param triggerFunctionNew a std::function<bool(interaction_data)> to decide whether or not to trigger the event's main function.
-		/// @param functionNew takes a discord_core_internal::trigger_event_delegate<void, interaction_data> as a function to be executed upon returning true from the "trigger-function".
+		/// @param functionNew takes a discord_core_internal::trigger_event_delegate<void, interaction_data> as a function to be executed upon returning true from the "Trigger-function".
 		void collectButtonData(std::function<bool(interaction_data)> triggerFunctionNew, discord_core_internal::trigger_event_delegate<void, interaction_data> functionNew);
 
 		~button_collector();
@@ -556,11 +556,11 @@ namespace discord_core_api {
 
 	/// @brief Button response data.
 	struct modal_response_data {
-		inline operator interaction_data() {
+		DCA_INLINE operator interaction_data() {
 			return *interactionData;
 		}
 
-		inline modal_response_data& operator=(const modal_response_data& other) {
+		DCA_INLINE modal_response_data& operator=(const modal_response_data& other) {
 			if (this != &other) {
 				*interactionData = *other.interactionData;
 				customIdSmall	 = other.customIdSmall;
@@ -572,11 +572,11 @@ namespace discord_core_api {
 			return *this;
 		}
 
-		inline modal_response_data(const modal_response_data& other) {
+		DCA_INLINE modal_response_data(const modal_response_data& other) {
 			*this = other;
 		}
 
-		inline modal_response_data() = default;
+		DCA_INLINE modal_response_data() = default;
 
 		unique_ptr<interaction_data> interactionData{ makeUnique<interaction_data>() };///< Interaction data.
 		jsonifier::vector<jsonifier::string> values{};/// the input values of the modal component.
@@ -605,7 +605,7 @@ namespace discord_core_api {
 
 		/// @brief Used to collect the modal from one or more users.
 		/// @param triggerFunctionNew a std::function<bool(interaction_data)> to decide whether or not to trigger the event's main function.
-		/// @param functionNew takes a discord_core_internal::trigger_event_delegate<void, interaction_data> as a function to be executed upon returning true from the "trigger-function".
+		/// @param functionNew takes a discord_core_internal::trigger_event_delegate<void, interaction_data> as a function to be executed upon returning true from the "Trigger-function".
 		void collectModalData(std::function<bool(interaction_data)> triggerFunctionNew, discord_core_internal::trigger_event_delegate<void, interaction_data> functionNew);
 
 		~modal_collector();
