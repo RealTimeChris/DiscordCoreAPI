@@ -48,7 +48,7 @@ namespace discord_core_api {
 			struct opus_decoder_deleter {
 				/// @brief Operator to destroy an OpusDecoder instance.
 				/// @param other the OpusDecoder pointer to be deleted.
-				inline void operator()(OpusDecoder* other) {
+				DCA_INLINE void operator()(OpusDecoder* other) {
 					if (other) {
 						opus_decoder_destroy(other);
 						other = nullptr;
@@ -57,7 +57,7 @@ namespace discord_core_api {
 			};
 
 			/// @brief Constructor for opus_decoder_wrapper. initializes and configures the opus decoder.
-			inline opus_decoder_wrapper() {
+			DCA_INLINE opus_decoder_wrapper() {
 				int32_t error{};
 
 				// ensure data vector has minimum size
@@ -78,7 +78,7 @@ namespace discord_core_api {
 			/// @param dataToDecode the opus-encoded audio data to decode.
 			/// @return a basic_string_view containing the decoded audio samples.
 			/// @throws dca_exception if decoding fails.
-			inline jsonifier::string_view_base<opus_int16> decodeData(jsonifier::string_view_base<uint8_t> dataToDecode) {
+			DCA_INLINE jsonifier::string_view_base<opus_int16> decodeData(jsonifier::string_view_base<uint8_t> dataToDecode) {
 				const int32_t sampleCount = opus_decode(ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.size() & 0x7FFFFFFF), data.data(), 5760, 0);
 
 				// check for successful decoding

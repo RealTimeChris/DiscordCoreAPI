@@ -40,7 +40,7 @@ namespace discord_core_api {
 		  public:
 			/// \brief Voice websocket close codes.
 			enum class https_response_codes : uint64_t {
-				unset				= std::numeric_limits<uint64_t>::max(),
+				Unset				= std::numeric_limits<uint64_t>::max(),
 				ok					= 200,///< The request completed successfully.
 				created				= 201,///< The entity was created successfully.
 				No_Content			= 204,///< The request completed successfully but returned no content.
@@ -54,39 +54,39 @@ namespace discord_core_api {
 				Gateway_Unavailable = 502,///< There was not a gateway available to process your request. wait a bit and retry.
 			};
 
-			inline static unordered_map<https_response_codes, jsonifier::string> outputErrorValues{
-				{ static_cast<https_response_codes>(200), "the request completed successfully" }, { static_cast<https_response_codes>(201), "the entity was created successfully" },
-				{ static_cast<https_response_codes>(204), "the request completed successfully but returned no content" },
-				{ static_cast<https_response_codes>(304), "the entity was not modified (no action was taken)" },
-				{ static_cast<https_response_codes>(400), "the request was improperly formatted, or the server couldn't understand it" },
-				{ static_cast<https_response_codes>(401), "the authorization header was missing or invalid" },
-				{ static_cast<https_response_codes>(403), "the authorization token you passed did not have permission to the resource" },
-				{ static_cast<https_response_codes>(404), "the resource at the location specified doesn't exist" },
-				{ static_cast<https_response_codes>(405), "the https method used is not valid for the location specified" },
+			DCA_INLINE static unordered_map<https_response_codes, jsonifier::string> outputErrorValues{
+				{ static_cast<https_response_codes>(200), "The request completed successfully" }, { static_cast<https_response_codes>(201), "The entity was created successfully" },
+				{ static_cast<https_response_codes>(204), "The request completed successfully but returned no content" },
+				{ static_cast<https_response_codes>(304), "The entity was not modified (no action was taken)" },
+				{ static_cast<https_response_codes>(400), "The request was improperly formatted, or the server couldn't understand it" },
+				{ static_cast<https_response_codes>(401), "The authorization header was missing or invalid" },
+				{ static_cast<https_response_codes>(403), "The authorization token you passed did not have permission to the resource" },
+				{ static_cast<https_response_codes>(404), "The resource at the location specified doesn't exist" },
+				{ static_cast<https_response_codes>(405), "The https method used is not valid for the location specified" },
 				{ static_cast<https_response_codes>(429), "you are being rate limited, see rate limits" },
-				{ static_cast<https_response_codes>(502), "there was not a gateway available to process your request.wait a bit and retry" },
-				{ static_cast<https_response_codes>(500), "the server had an error processing your request(these are rare)" }
+				{ static_cast<https_response_codes>(502), "There was not a gateway available to process your request.wait a bit and retry" },
+				{ static_cast<https_response_codes>(500), "The server had an error processing your request(these are rare)" }
 			};
 
 			https_response_codes value{};
 
-			inline https_response_code() = default;
+			DCA_INLINE https_response_code() = default;
 
-			inline https_response_code& operator=(uint64_t valueNew) {
+			DCA_INLINE https_response_code& operator=(uint64_t valueNew) {
 				value = static_cast<https_response_codes>(valueNew);
 				return *this;
 			}
 
-			inline https_response_code(uint64_t value) {
+			DCA_INLINE https_response_code(uint64_t value) {
 				*this = value;
 			}
 
-			inline operator jsonifier::string() {
-				return jsonifier::string{ "code: " + jsonifier::toString(static_cast<uint32_t>(value)) + jsonifier::string{ ", message: " } +
+			DCA_INLINE operator jsonifier::string() {
+				return jsonifier::string{ "Code: " + jsonifier::toString(static_cast<uint32_t>(value)) + jsonifier::string{ ", message: " } +
 					static_cast<jsonifier::string>(https_response_code::outputErrorValues[value]) };
 			}
 
-			inline operator uint64_t() {
+			DCA_INLINE operator uint64_t() {
 				return static_cast<uint64_t>(value);
 			}
 		};
@@ -99,7 +99,7 @@ namespace discord_core_api {
 		class https_error : public dca_exception {
 		  public:
 			https_response_code errorCode{};
-			inline https_error(const jsonifier::string_view& message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+			DCA_INLINE https_error(const jsonifier::string_view& message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 		};
 
 		struct DiscordCoreAPI_Dll https_response_data {
@@ -203,7 +203,7 @@ namespace discord_core_api {
 		  public:
 			https_client_core(jsonifier::string_view botTokenNew);
 
-			inline https_response_data submitWorkloadAndGetResult(https_workload_data&& workloadNew) {
+			DCA_INLINE https_response_data submitWorkloadAndGetResult(https_workload_data&& workloadNew) {
 				https_connection connection{};
 				rate_limit_data rateLimitData{};
 				connection.resetValues(std::move(workloadNew), &rateLimitData);
@@ -225,7 +225,6 @@ namespace discord_core_api {
 					}
 					https_error theError{ errorMessage };
 					theError.errorCode = returnData.responseCode;
-					throw theError;
 				}
 				return returnData;
 			}
@@ -252,7 +251,7 @@ namespace discord_core_api {
 			https_client(jsonifier::string_view botTokenNew);
 
 			template<typename value_type, typename string_type> void getParseErrors(jsonifier::jsonifier_core<false>& parser, value_type& value, string_type& stringNew) {
-				parser.parseJson<true>(value, parser.minify(parser.prettify(stringNew)));
+				parser.parseJson(value, parser.minify(parser.prettify(stringNew)));
 				if (auto result = parser.getErrors(); result.size() > 0) {
 					for (auto& valueNew: result) {
 						message_printer::printError<print_message_type::websocket>(valueNew.reportError());
@@ -282,8 +281,6 @@ namespace discord_core_api {
 					}
 					https_error theError{ errorMessage };
 					theError.errorCode = returnData.responseCode;
-
-					throw theError;
 				}
 
 				if constexpr ((( !std::is_void_v<args> ) || ...)) {

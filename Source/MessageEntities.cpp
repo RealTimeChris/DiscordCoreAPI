@@ -213,6 +213,7 @@ namespace discord_core_api {
 		workload.callStack = "messages::getMessagesAsync()";
 		jsonifier::vector<message_data> returnData{};
 		messages::httpsClient->submitWorkloadAndGetResult(std::move(workload), returnData);
+		std::cout << "CURRENT RESULTS: " << returnData.at(0).timeStamp << std::endl;
 		co_return returnData;
 	}
 

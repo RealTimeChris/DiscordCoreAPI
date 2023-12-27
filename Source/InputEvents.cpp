@@ -100,7 +100,7 @@ namespace discord_core_api {
 			case input_event_response_type::Application_Command_AutoComplete_Result: {
 				[[fallthrough]];
 			}
-			case input_event_response_type::unset: {
+			case input_event_response_type::Unset: {
 				break;
 			}
 			default: {

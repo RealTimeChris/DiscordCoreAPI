@@ -17,7 +17,7 @@
 # 	FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # 	OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # 	DEALINGS IN THE SOFTWARE.
-# JsonifierDetectArchitecture.cmake - Script for detecting the CPU architecture.
+# DCADetectArchitecture.cmake - Script for detecting the CPU architecture.
 # Sept 18, 2023
 # https://discordcoreapi.com
 include(CheckCXXSourceRuns)
@@ -47,29 +47,30 @@ function(jsonifier_check_instruction_set INSTRUCTION_SET_NAME INSTRUCTION_SET_IN
     endif()
 endfunction()
 
-set(INSTRUCTION_SET_NAMES "POPCNT" "LZCNT" "BMI" "AVX" "AVX2" "AVX512")
-set (INSTRUCTION_SET_CODE
+set(INSTRUCTION_SET_NAMES "POPCNT" "LZCNT" "BMI" "BMI2" "AVX" "AVX2" "AVX512")
+set(INSTRUCTION_SET_CODE
     "auto result = _mm_popcnt_u64(uint64_t{})"
     "auto result = _lzcnt_u64(int64_t{})"
-    "auto result = _blsr_u64(uint64_t{})"
-    "auto result = _mm_castsi128_pd(__m128i{}).auto result02 = _mm_setzero_si128()"
+    "auto result = _blsr_u64(uint64_t{}).result = _tzcnt_u32(uint16_t{})"
+    "auto result = _pdep_u64(uint64_t{}, uint64_t{})"
+    "auto result = _mm_castsi128_pd(__m128i{}).auto result01 = _mm_setzero_si128()"
     "auto result = _mm256_add_epi32(__m256i{}, __m256i{})"
-    "auto result = _mm512_add_ps(__m512i{}, __m512i{}).auto result2 = _mm512_cmplt_epu8_mask(__m512i{}, __m512i{}).auto result03 = _mm_abs_epi64 (__m128i{})"
+    "auto result = _mm_abs_epi64 (__m128i{}).auto result01 = _mm512_abs_epi16(__m512i{})"
 )
 
-set(INDEX_SET "0" "1" "2" "3" "4" "5")
+set(INDEX_SET "0" "1" "2" "3" "4" "5" "6")
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    set(INSTRUCTION_SET_IN_FLAGS "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX2" "/arch:AVX512")
-    set(INSTRUCTION_SET_OUT_FLAGS "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX2" "/arch:AVX512")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    set(INSTRUCTION_SET_IN_FLAGS "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX2" "/arch:AVX512")
+    set(INSTRUCTION_SET_OUT_FLAGS "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX2" "/arch:AVX512")
 else()
-    set(INSTRUCTION_SET_IN_FLAGS "-march=native" "-march=native" "-march=native" "-march=native" "-march=native" "-march=native")
-    set(INSTRUCTION_SET_OUT_FLAGS "-mpopcnt" "-mlzcnt" "-mbmi" "-mavx.-mpclmul" "-mavx2.-mpclmul" "-mavx512f.-mavx512bw.-mavx512vl.-mpclmul")
+    set(INSTRUCTION_SET_IN_FLAGS "-march=native" "-march=native" "-march=native" "-march=native" "-march=native" "-march=native" "-march=native")
+    set(INSTRUCTION_SET_OUT_FLAGS "-mpopcnt" "-mlzcnt" "-mbmi" "-mbmi2" "-mavx.-mpclmul" "-mavx2.-mpclmul" "-mavx512f.-mavx512bw.-mavx512vl.-mpclmul")
 endif()
 
 set(CMAKE_REQUIRED_FLAGS_SAVE "${CMAKE_REQUIRED_FLAGS}")
 
-if ((${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64") OR (${CMAKE_SYSTEM_PROCESSOR} MATCHES "i386") OR (${CMAKE_SYSTEM_PROCESSOR} MATCHES "AMD64"))
+if(("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64") OR ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386") OR ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "AMD64"))
 
 	foreach(CURRENT_INDEX IN LISTS INDEX_SET)
 		list(GET INSTRUCTION_SET_NAMES "${CURRENT_INDEX}" INSTRUCTION_SET_NAME)
@@ -89,27 +90,31 @@ endif()
 set(AVX_FLAG)
 set(JSONIFIER_CPU_INSTRUCTIONS 0)
 
-if (NOT "${POPCNT}" STREQUAL "")
+if(NOT "${POPCNT}" STREQUAL "")
     list(APPEND AVX_FLAG "${POPCNT}")
     math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 0" OUTPUT_FORMAT DECIMAL)
 endif()
-if (NOT "${LZCNT}" STREQUAL "")
+if(NOT "${LZCNT}" STREQUAL "")
     list(APPEND AVX_FLAG "${LZCNT}")
     math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 1" OUTPUT_FORMAT DECIMAL)
 endif()
-if (NOT "${BMI}" STREQUAL "")
+if(NOT "${BMI}" STREQUAL "")
     list(APPEND AVX_FLAG "${BMI}")
     math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 2" OUTPUT_FORMAT DECIMAL)
 endif()
-if (NOT "${AVX512}" STREQUAL "")
-    list(APPEND AVX_FLAG "${AVX512}")
-    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 5" OUTPUT_FORMAT DECIMAL)
-elseif (NOT "${AVX2}" STREQUAL "")
-    list(APPEND AVX_FLAG "${AVX2}")
-    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 4" OUTPUT_FORMAT DECIMAL)
-elseif (NOT "${AVX}" STREQUAL "")
-    list(APPEND AVX_FLAG "${AVX}")
+if(NOT "${BMI2}" STREQUAL "")
+    list(APPEND AVX_FLAG "${BMI2}")
     math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 3" OUTPUT_FORMAT DECIMAL)
+endif()
+if(NOT "${AVX512}" STREQUAL "")
+    list(APPEND AVX_FLAG "${AVX512}")
+    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 6" OUTPUT_FORMAT DECIMAL)
+elseif(NOT "${AVX2}" STREQUAL "")
+    list(APPEND AVX_FLAG "${AVX2}")
+    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 5" OUTPUT_FORMAT DECIMAL)
+elseif(NOT "${AVX}" STREQUAL "")
+    list(APPEND AVX_FLAG "${AVX}")
+    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 4" OUTPUT_FORMAT DECIMAL)
 endif()
 
 set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS_SAVE}")

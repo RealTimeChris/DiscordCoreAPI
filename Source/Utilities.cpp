@@ -211,7 +211,7 @@ namespace discord_core_api {
 	}
 
 	void audio_frame_data::clearData() {
-		type		= audio_frame_type::unset;
+		type		= audio_frame_type::Unset;
 		currentSize = 0;
 		data.clear();
 	}
@@ -460,8 +460,8 @@ namespace discord_core_api {
 	}
 
 	jsonifier::string constructMultiPartData(jsonifier::string_view data, const jsonifier::vector<file>& files) {
-		const jsonifier::string boundary("boundary25");
-		const jsonifier::string partStart("--" + boundary + "\r\nContent-type: application/octet-stream\r\nContent-disposition: form-data; ");
+		static constexpr jsonifier::string_view boundary{ "boundary25" };
+		static constexpr jsonifier::string_view partStart("--boundary25\r\nContent-type: application/octet-stream\r\nContent-disposition: form-data; ");
 
 		jsonifier::string content("--" + boundary);
 
@@ -495,7 +495,7 @@ namespace discord_core_api {
 	}
 
 	jsonifier::string base64Encode(jsonifier::string_view string, bool url) {
-		const char* base64CharsArray[2] = { "abcdefghijklmnopqrstuvwxyz"
+		static constexpr const char* base64CharsArray[2] = { "abcdefghijklmnopqrstuvwxyz"
 											"abcdefghijklmnopqrstuvwxyz"
 											"0123456789"
 											"+/",
@@ -520,22 +520,22 @@ namespace discord_core_api {
 			if (stopWatch.hasTimeElapsed()) {
 				break;
 			}
-			returnString.pushBack(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
+			returnString.emplace_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < string.size()) {
-				returnString.pushBack(base64Chars[((string[static_cast<uint64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<uint64_t>(pos + 1)] & 0xf0) >> 4)]);
+				returnString.emplace_back(base64Chars[((string[static_cast<uint64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<uint64_t>(pos + 1)] & 0xf0) >> 4)]);
 
 				if (static_cast<uint64_t>(pos + 2) < string.size()) {
-					returnString.pushBack(base64Chars[((string[static_cast<uint64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<uint64_t>(pos + 2)] & 0xc0) >> 6)]);
-					returnString.pushBack(base64Chars[string[static_cast<uint64_t>(pos + 2)] & 0x3f]);
+					returnString.emplace_back(base64Chars[((string[static_cast<uint64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<uint64_t>(pos + 2)] & 0xc0) >> 6)]);
+					returnString.emplace_back(base64Chars[string[static_cast<uint64_t>(pos + 2)] & 0x3f]);
 				} else {
-					returnString.pushBack(base64Chars[(string[static_cast<uint64_t>(pos + 1)] & 0x0f) << 2]);
-					returnString.pushBack(trailing_char);
+					returnString.emplace_back(base64Chars[(string[static_cast<uint64_t>(pos + 1)] & 0x0f) << 2]);
+					returnString.emplace_back(trailing_char);
 				}
 			} else {
-				returnString.pushBack(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0x03) << 4]);
-				returnString.pushBack(trailing_char);
-				returnString.pushBack(trailing_char);
+				returnString.emplace_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0x03) << 4]);
+				returnString.emplace_back(trailing_char);
+				returnString.emplace_back(trailing_char);
 			}
 
 			pos += 3;
@@ -559,10 +559,10 @@ namespace discord_core_api {
 				if (value + difference == '\0') {
 					continue;
 				} else {
-					returnString.pushBack(value + static_cast<char>(difference));
+					returnString.emplace_back(value + static_cast<char>(difference));
 				}
 			} else {
-				returnString.pushBack(value);
+				returnString.emplace_back(value);
 			}
 		}
 		return returnString;

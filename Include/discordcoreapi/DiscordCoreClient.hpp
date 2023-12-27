@@ -63,46 +63,46 @@ namespace discord_core_api {
 
 	class sigtermerror : public dca_exception {
 	  public:
-		inline sigtermerror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+		DCA_INLINE sigtermerror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
 	class sigsegverror : public dca_exception {
 	  public:
-		inline sigsegverror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+		DCA_INLINE sigsegverror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
 	class siginterror : public dca_exception {
 	  public:
-		inline siginterror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+		DCA_INLINE siginterror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
 	class sigillerror : public dca_exception {
 	  public:
-		inline sigillerror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+		DCA_INLINE sigillerror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
 	class sigabrterror : public dca_exception {
 	  public:
-		inline sigabrterror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+		DCA_INLINE sigabrterror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
 	class sigfpeerror : public dca_exception {
 	  public:
-		inline sigfpeerror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+		DCA_INLINE sigfpeerror(jsonifier::string_view message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
 	};
 
-	using sound_cloud_apimap = unordered_map<uint64_t, unique_ptr<discord_core_internal::sound_cloud_api>>;
+	using sound_cloud_api_map = unordered_map<uint64_t, unique_ptr<discord_core_internal::sound_cloud_api>>;
 
-	using you_tube_apimap = unordered_map<uint64_t, unique_ptr<discord_core_internal::you_tube_api>>;
+	using you_tube_api_map = unordered_map<uint64_t, unique_ptr<discord_core_internal::you_tube_api>>;
 
 	using voice_connections_map = unordered_map<uint64_t, unique_ptr<voice_connection>>;
 
-	using song_apimap = unordered_map<uint64_t, unique_ptr<song_api>>;
+	using song_api_map = unordered_map<uint64_t, unique_ptr<song_api>>;
 
 	template<typename... arg_types> using time_elapsed_handler = std::function<void(arg_types...)>;
 
-	template<typename... arg_types>
-	inline static co_routine<void, false> threadFunction(time_elapsed_handler<arg_types...> timeElapsedHandler, bool repeated, int64_t timeInterval, arg_types... args) {
+	template<typename... arg_types, typename function_type>
+	DCA_INLINE static co_routine<void, false> threadFunction(function_type timeElapsedHandler, bool repeated, int64_t timeInterval, arg_types... args) {
 		auto threadHandle = co_await newThreadAwaitable<void, false>();
 		stop_watch<milliseconds> stopWatch{ milliseconds{ timeInterval } };
 		stopWatch.reset();
@@ -128,9 +128,9 @@ namespace discord_core_api {
 		co_return;
 	};
 
-	template<typename... arg_types> inline static void executeFunctionAfterTimePeriod(time_elapsed_handler<arg_types...> timeElapsedHandler, int64_t timeDelay, bool repeated,
-		bool blockForCompletion, arg_types... args) {
-		auto newThread = threadFunction<arg_types...>(timeElapsedHandler, repeated, timeDelay, args...);
+	template<typename... arg_types, typename function_type> DCA_INLINE static void executeFunctionAfterTimePeriod(function_type timeElapsedHandler,
+		int64_t timeDelay, bool repeated, bool blockForCompletion, arg_types... args) {
+		auto newThread = threadFunction(timeElapsedHandler, repeated, timeDelay, args...);
 		if (blockForCompletion) {
 			newThread.get();
 		}
@@ -200,7 +200,7 @@ namespace discord_core_api {
 		~discord_core_client();
 
 	  protected:
-		inline static unique_ptr<discord_core_client> instancePtr{};
+		DCA_INLINE static unique_ptr<discord_core_client> instancePtr{};
 		static bot_user currentUser;
 
 		discord_core_client& operator=(discord_core_client&&) = delete;

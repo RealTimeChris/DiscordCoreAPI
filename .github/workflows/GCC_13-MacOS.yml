@@ -24,16 +24,43 @@ jobs:
       run: |
             brew install gcc
 
-    - name: Install the dependencies.
+    - name: Update Vcpkg and install other dependencies.
       run: |
-           vcpkg install opus:x64-osx
-           vcpkg install libsodium:x64-osx
-           vcpkg install openssl:x64-osx
+            brew update
+            brew upgrade
+            brew install nasm
+            brew install nano
+            brew install autoconf
+            brew install automake
+            brew install glibtoolize
+            which autoconf
+            export PATH="/opt/homebrew/bin/autoconf:$PATH"
+            git clone https://github.com/Microsoft/Vcpkg ./vcpkg2
+            cd ./vcpkg2
+            ./bootstrap-vcpkg.sh
+            git stash
+            git pull
+            ./vcpkg update
+
+    - name: Set TERM environment variable
+      run: echo "export TERM=xterm" >> $GITHUB_ENV
+
+    - name: Install the dependencies.
+      working-directory: /Users/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg2/
+      run: |
+            /Users/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg2/vcpkg install opus:x64-osx
+            /Users/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg2/vcpkg install libsodium:x64-osx
+            /Users/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg2/vcpkg install openssl:x64-osx
+
+    - name: Print failure log on failure
+      if: ${{ failure() }}
+      run: cat /Users/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg2/buildtrees/libsodium/autoconf-x64-osx-err.log
+
 
     - name: Configure CMake
       working-directory: ./
       run: |
-           cmake -S . -B ./Build -DCMAKE_CXX_COMPILER=/usr/local/opt/gcc@13/bin/g++-13 -DDEV=true  -DDISCORDCOREAPI_TEST=true -DVCPKG_ROOT_DIR=/usr/local/share/vcpkg
+           cmake -S . -B ./Build -DCMAKE_CXX_COMPILER=/usr/local/opt/gcc@13/bin/g++-13 -DDEV=true  -DDISCORDCOREAPI_TEST=true -DVCPKG_ROOT_DIR=./vcpkg2
 
     - name: Build the Test
       working-directory: ./Build

@@ -53,7 +53,7 @@ namespace discord_core_api {
 			struct opus_encoder_deleter {
 				/// @brief Operator to destroy an OpusEncoder instance.
 				/// @param other the OpusEncoder pointer to be deleted.
-				inline void operator()(OpusEncoder* other) {
+				DCA_INLINE void operator()(OpusEncoder* other) {
 					if (other) {
 						opus_encoder_destroy(other);
 						other = nullptr;
@@ -62,7 +62,7 @@ namespace discord_core_api {
 			};
 
 			/// @brief Constructor for opus_encoder_wrapper. initializes and configures the opus encoder.
-			inline opus_encoder_wrapper() {
+			DCA_INLINE opus_encoder_wrapper() {
 				int32_t error{};
 				ptr.reset(opus_encoder_create(sampleRate, nChannels, OPUS_APPLICATION_AUDIO, &error));
 
@@ -83,7 +83,7 @@ namespace discord_core_api {
 			/// @param inputFrame the audio data to encode.
 			/// @return encoded data and sample count.
 			/// @throws dca_exception if encoding fails.
-			inline encoder_return_data encodeData(jsonifier::string_view_base<uint8_t> inputFrame) {
+			DCA_INLINE encoder_return_data encodeData(jsonifier::string_view_base<uint8_t> inputFrame) {
 				if (inputFrame.size() == 0) {
 					return {};
 				}

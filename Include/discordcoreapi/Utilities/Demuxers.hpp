@@ -56,18 +56,18 @@ namespace discord_core_api {
 		class matroska_demuxer {
 		  public:
 			/// @brief Constructor for matroska_demuxer.
-			inline matroska_demuxer() = default;
+			DCA_INLINE matroska_demuxer() = default;
 
 			/// @brief Writes data to the Matroska demuxer.
 			/// @param dataNew The data to be written.
-			inline void writeData(jsonifier::string_view_base<uint8_t> dataNew) {
+			DCA_INLINE void writeData(jsonifier::string_view_base<uint8_t> dataNew) {
 				data = dataNew;
 			}
 
 			/// @brief Collects the next frame from the demuxer.
 			/// @param frameNew The reference to store the collected frame.
 			/// @return True if a frame was collected, false otherwise.
-			inline bool collectFrame(audio_frame_data& frameNew) {
+			DCA_INLINE bool collectFrame(audio_frame_data& frameNew) {
 				if (frames.size() > 0) {
 					frameNew = std::move(frames.at(0));
 					frames.erase(frames.begin());
@@ -78,7 +78,7 @@ namespace discord_core_api {
 			}
 
 			/// @brief Proceed with the demuxing process.
-			inline void proceedDemuxing() {
+			DCA_INLINE void proceedDemuxing() {
 				if (!doWeHaveTotalSize) {
 					if (reverseBytes<uint32_t>() != segmentId) {
 						message_printer::printError<print_message_type::general>(
@@ -135,7 +135,7 @@ namespace discord_core_api {
 
 			/// @brief Checks if the demuxing process is complete.
 			/// @return True if demuxing is complete, false otherwise.
-			inline bool areWeDone() {
+			DCA_INLINE bool areWeDone() {
 				return areWeDoneVal;
 			}
 
@@ -152,7 +152,7 @@ namespace discord_core_api {
 			/// @tparam object_type The type of value to search for.
 			/// @param value The value to search for.
 			/// @return True if the value was found, false otherwise.
-			template<typename object_type> inline bool findNextId(object_type value) {
+			template<typename object_type> DCA_INLINE bool findNextId(object_type value) {
 				if (currentPosition + sizeof(object_type) >= data.size()) {
 					return false;
 				}
@@ -169,7 +169,7 @@ namespace discord_core_api {
 			/// @brief Reverses the byte order of the current element being processed.
 			/// @tparam object_type The type of the current element.
 			/// @return The current element with reversed byte order.
-			template<typename object_type> inline object_type reverseBytes() {
+			template<typename object_type> DCA_INLINE object_type reverseBytes() {
 				if (data.size() <= currentPosition + sizeof(object_type)) {
 					return static_cast<object_type>(-1);
 				}
@@ -181,7 +181,7 @@ namespace discord_core_api {
 
 			/// @brief Collects the size of the current element being processed.
 			/// @return The size of the current element.
-			inline int64_t collectElementSize() {
+			DCA_INLINE int64_t collectElementSize() {
 				if (currentPosition >= data.size() - 8) {
 					return -1;
 				}
@@ -190,7 +190,7 @@ namespace discord_core_api {
 
 			/// @brief Collects a number from the data.
 			/// @return The collected number.
-			inline int64_t collectNumber() {
+			DCA_INLINE int64_t collectNumber() {
 				uint64_t read{}, n{ 1 };
 				uint64_t total{};
 				total = static_cast<uint8_t>(data.at(currentPosition++));
@@ -205,7 +205,7 @@ namespace discord_core_api {
 			}
 
 			/// @brief Parses an Opus frame.
-			inline void parseOpusFrame() {
+			DCA_INLINE void parseOpusFrame() {
 				audio_frame_data frameNew{};
 				frameNew.currentSize = static_cast<int64_t>(currentSize - 4);
 				frameNew += jsonifier::string_view_base<uint8_t>{ data.data() + currentPosition + 4, static_cast<uint64_t>(frameNew.currentSize) };
@@ -223,7 +223,7 @@ namespace discord_core_api {
 		  public:
 			/// @brief Constructor for ogg_page.
 			/// @param newData The data for the Ogg page.
-			inline ogg_page(jsonifier::vector<uint8_t>&& newData) {
+			DCA_INLINE ogg_page(jsonifier::vector<uint8_t>&& newData) {
 				data = std::move(newData);
 				verifyAsOggPage();
 				getSegmentData();
@@ -232,7 +232,7 @@ namespace discord_core_api {
 			/// @brief Retrieves the next Opus packet from the Ogg page.
 			/// @param newPacket Reference to store the retrieved Opus packet.
 			/// @return True if an Opus packet was retrieved, false otherwise.
-			inline bool getOpusPacket(opus_packet& newPacket) {
+			DCA_INLINE bool getOpusPacket(opus_packet& newPacket) {
 				if (segmentTable.size() > 0) {
 					auto newSpace = static_cast<uint64_t>(segmentTable.front());
 					segmentTable.pop_front();
@@ -246,7 +246,7 @@ namespace discord_core_api {
 			}
 
 			/// @brief Parses the segment data of the Ogg page.
-			inline void getSegmentData() {
+			DCA_INLINE void getSegmentData() {
 				segmentCount = data.at(26);
 				currentPosition += 27;
 				for (uint64_t x{}; x < segmentCount; ++x) {
@@ -263,7 +263,7 @@ namespace discord_core_api {
 
 			/// @brief Returns the size of the Ogg page data.
 			/// @return The size of the Ogg page data.
-			inline uint64_t getDataSize() {
+			DCA_INLINE uint64_t getDataSize() {
 				return data.size();
 			}
 
@@ -275,7 +275,7 @@ namespace discord_core_api {
 			uint64_t segmentCount{};///< Number of segments in the Ogg page.
 
 			/// @brief Verifies that the data represents a valid Ogg page.
-			inline void verifyAsOggPage() {
+			DCA_INLINE void verifyAsOggPage() {
 				while (data.at(currentPosition) != 'O' || data.at(currentPosition + 1) != 'g' || data.at(currentPosition + 2) != 'g' || data.at(currentPosition + 3) != 'S') {
 					++currentPosition;
 					if (currentPosition >= data.size()) {
@@ -288,12 +288,12 @@ namespace discord_core_api {
 		/// @brief A class for demuxing Ogg-contained audio data.
 		class ogg_demuxer {
 		  public:
-			inline ogg_demuxer() = default;
+			DCA_INLINE ogg_demuxer() = default;
 
 			/// @brief Collects the next audio frame from the demuxer.
 			/// @param frameNew The reference to store the collected frame.
 			/// @return True if a frame was collected, false otherwise.
-			inline bool collectFrame(audio_frame_data& frameNew) {
+			DCA_INLINE bool collectFrame(audio_frame_data& frameNew) {
 				if (frames.size() > 0) {
 					frameNew = std::move(frames.front());
 					frames.pop_front();
@@ -305,7 +305,7 @@ namespace discord_core_api {
 
 			/// @brief Writes data to the Ogg demuxer and processes it.
 			/// @param inputData The data to be written and processed.
-			inline void writeData(jsonifier::string_view inputData) {
+			DCA_INLINE void writeData(jsonifier::string_view inputData) {
 				uint64_t pos = 0;
 				data.clear();
 				data.resize(inputData.size());
@@ -343,7 +343,7 @@ namespace discord_core_api {
 
 			/// @brief Proceeds with the demuxing process.
 			/// @return True if demuxing is successful, false otherwise.
-			inline bool proceedDemuxing() {
+			DCA_INLINE bool proceedDemuxing() {
 				while (1) {
 					if (!processOggPage()) {
 						return false;
@@ -360,7 +360,7 @@ namespace discord_core_api {
 
 			/// @brief Processes an Ogg page for demuxing.
 			/// @return True if processing is successful, false if there are no more pages.
-			inline bool processOggPage() {
+			DCA_INLINE bool processOggPage() {
 				if (pages.empty()) {
 					return false;
 				}
@@ -372,7 +372,7 @@ namespace discord_core_api {
 			}
 
 			/// @brief Processes Opus packets extracted from Ogg pages.
-			inline void processPackets() {
+			DCA_INLINE void processPackets() {
 				while (!packets.empty()) {
 					opus_packet newPacket = packets.front();
 					packets.pop_front();
@@ -385,7 +385,7 @@ namespace discord_core_api {
 			}
 
 			/// @brief Processes Ogg pages to extract Opus packets.
-			inline void processPages() {
+			DCA_INLINE void processPages() {
 				while (!pages.empty()) {
 					ogg_page page = pages.front();
 					pages.pop_front();

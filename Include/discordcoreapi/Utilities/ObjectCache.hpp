@@ -45,12 +45,12 @@ namespace discord_core_api {
 		using pointer		  = mapped_type*;
 
 		/// @brief Default constructor for the object_cache class.
-		inline object_cache() : cacheMap{} {};
+		DCA_INLINE object_cache() : cacheMap{} {};
 
 		/// @brief Move assignment operator for the object_cache class.
 		/// @param other another object_cache instance to be moved.
 		/// @return reference to the current object_cache instance.
-		inline object_cache& operator=(object_cache&& other) noexcept {
+		DCA_INLINE object_cache& operator=(object_cache&& other) noexcept {
 			if (this != &other) {
 				std::unique_lock lock01{ other.cacheMutex };
 				std::unique_lock lock02{ cacheMutex };
@@ -61,7 +61,7 @@ namespace discord_core_api {
 
 		/// @brief Move constructor for the object_cache class.
 		/// @param other another object_cache instance to be moved.
-		inline object_cache(object_cache&& other) noexcept {
+		DCA_INLINE object_cache(object_cache&& other) noexcept {
 			*this = std::move(other);
 		}
 
@@ -69,7 +69,7 @@ namespace discord_core_api {
 		/// @tparam mapped_type_new the type of the object to be added.
 		/// @param object the object to be added to the cache.
 		/// @return an iterator pointing to the newly added object in the cache.
-		template<typename mapped_type_new> inline auto emplace(mapped_type_new&& object) {
+		template<typename mapped_type_new> DCA_INLINE auto emplace(mapped_type_new&& object) {
 			std::unique_lock lock(cacheMutex);
 			return cacheMap.emplace(makeUnique<std::remove_cvref_t<mapped_type_new>>(std::forward<mapped_type_new>(object)));
 		}
@@ -78,7 +78,7 @@ namespace discord_core_api {
 		/// @tparam mapped_type_new the type of the key used for access.
 		/// @param key the key used for accessing the object in the cache.
 		/// @return reference to the object associated with the provided key.
-		template<typename mapped_type_new> inline reference operator[](mapped_type_new&& key) {
+		template<typename mapped_type_new> DCA_INLINE reference operator[](mapped_type_new&& key) {
 			std::shared_lock lock(cacheMutex);
 			if (!cacheMap.contains(key)) {
 				cacheMap.emplace(makeUnique<mapped_type>());
@@ -90,7 +90,7 @@ namespace discord_core_api {
 		/// @tparam mapped_type_new the type of the key to be checked.
 		/// @param key the key to check for existence in the cache.
 		/// @return `true` if the cache contains the key, `false` otherwise.
-		template<typename mapped_type_new> inline bool contains(mapped_type_new&& key) {
+		template<typename mapped_type_new> DCA_INLINE bool contains(mapped_type_new&& key) {
 			std::shared_lock lock(cacheMutex);
 			return cacheMap.contains(std::forward<mapped_type_new>(key));
 		}
@@ -98,32 +98,32 @@ namespace discord_core_api {
 		/// @brief Remove an object from the cache using a key.
 		/// @tparam mapped_type_new the type of the key used for removal.
 		/// @param key the key used to remove the object from the cache.
-		template<typename mapped_type_new> inline void erase(mapped_type_new&& key) {
+		template<typename mapped_type_new> DCA_INLINE void erase(mapped_type_new&& key) {
 			std::unique_lock lock(cacheMutex);
 			cacheMap.erase(std::forward<mapped_type_new>(key));
 		}
 
 		/// @brief Get the number of objects currently in the cache.
 		/// @return the number of objects in the cache.
-		inline uint64_t count() {
+		DCA_INLINE uint64_t count() {
 			std::shared_lock lock(cacheMutex);
 			return cacheMap.size();
 		}
 
 		/// @brief Get an iterator to the beginning of the cache.
 		/// @return an iterator to the beginning of the cache.
-		inline auto begin() {
+		DCA_INLINE auto begin() {
 			return cacheMap.begin();
 		}
 
 		/// @brief Get an iterator to the end of the cache.
 		/// @return an iterator to the end of the cache.
-		inline auto end() {
+		DCA_INLINE auto end() {
 			return cacheMap.end();
 		}
 
 		/// @brief Destructor for the object_cache class.
-		inline ~object_cache(){};
+		DCA_INLINE ~object_cache(){};
 
 	  protected:
 		unordered_set<unique_ptr<mapped_type>> cacheMap{};///< The underlying container for storing objects.

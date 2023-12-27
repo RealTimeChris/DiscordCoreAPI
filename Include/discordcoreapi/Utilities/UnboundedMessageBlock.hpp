@@ -34,7 +34,7 @@
 namespace discord_core_api {
 
 	template<typename value_type>
-	concept copyable_or_movable = std::copyable<std::unwrap_ref_decay_t<value_type>> || std::movable<std::unwrap_ref_decay_t<value_type>>;
+	concept copyable_or_movable = std::copyable<jsonifier::concepts::unwrap_t<value_type>> || std::movable<jsonifier::concepts::unwrap_t<value_type>>;
 
 	/// @brief A thread-safe messaging block for data-structures.
 	/// @tparam value_type the type of object that will be sent over the message block.
@@ -42,29 +42,29 @@ namespace discord_core_api {
 	  public:
 		using value_type = value_type_new;
 
-		inline unbounded_message_block(){};
+		DCA_INLINE unbounded_message_block(){};
 
-		inline unbounded_message_block& operator=(unbounded_message_block&& other) noexcept {
+		DCA_INLINE unbounded_message_block& operator=(unbounded_message_block&& other) noexcept {
 			if (this != &other) {
 				std::swap(queue, other.queue);
 			}
 			return *this;
 		}
 
-		inline unbounded_message_block& operator=(const unbounded_message_block&) = delete;
-		inline unbounded_message_block(const unbounded_message_block&)			  = delete;
+		DCA_INLINE unbounded_message_block& operator=(const unbounded_message_block&) = delete;
+		DCA_INLINE unbounded_message_block(const unbounded_message_block&)			  = delete;
 
-		template<copyable_or_movable value_type_newer> inline void send(value_type_newer&& object) {
+		template<copyable_or_movable value_type_newer> DCA_INLINE void send(value_type_newer&& object) {
 			std::unique_lock lock{ accessMutex };
 			queue.emplace_back(std::forward<value_type_newer>(object));
 		}
 
-		inline void clearContents() {
+		DCA_INLINE void clearContents() {
 			std::unique_lock lock{ accessMutex };
 			queue.clear();
 		}
 
-		inline bool tryReceive(value_type& object) {
+		DCA_INLINE bool tryReceive(value_type& object) {
 			std::unique_lock lock{ accessMutex };
 			if (queue.size() > 0) {
 				object = std::move(queue.front());
@@ -75,19 +75,19 @@ namespace discord_core_api {
 			}
 		}
 
-		inline uint64_t size() {
+		DCA_INLINE uint64_t size() {
 			std::unique_lock lock{ accessMutex };
 			return queue.size();
 		}
 
-		inline ~unbounded_message_block() = default;
+		DCA_INLINE ~unbounded_message_block() = default;
 
 	  protected:
 		std::deque<value_type> queue{};
 		std::mutex accessMutex{};
 	};
 
-	template<typename value_type> inline bool waitForTimeToPass(unbounded_message_block<std::unwrap_ref_decay_t<value_type>>& outBuffer, value_type& argOne, uint64_t timeInMsNew) {
+	template<typename value_type> DCA_INLINE bool waitForTimeToPass(unbounded_message_block<jsonifier::concepts::unwrap_t<value_type>>& outBuffer, value_type& argOne, uint64_t timeInMsNew) {
 		stop_watch<milliseconds> stopWatch{ milliseconds{ timeInMsNew } };
 		stopWatch.reset();
 		while (!outBuffer.tryReceive(argOne)) {
