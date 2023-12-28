@@ -33,6 +33,7 @@
 #include <discordcoreapi/VoiceConnection.hpp>
 #include <discordcoreapi/SoundCloudAPI.hpp>
 #include <discordcoreapi/YouTubeAPI.hpp>
+#include <map>
 
 namespace discord_core_api {
 
@@ -69,18 +70,24 @@ namespace discord_core_api {
 		jsonifier::vector<song> newVector{};
 		uint64_t vector01Used{};
 		uint64_t vector02Used{};
-		for (uint64_t x = 0; x < totalLength; ++x) {
-			if ((vector01Used < vector01.size()) && (x % 2 == 0) && vector01.size() > 0) {
-				newVector.emplace_back(vector01[vector01Used]);
-				newVector[newVector.size() - 1].type = song_type::SoundCloud;
-				++vector01Used;
-			} else if (vector02Used < vector02.size() && vector02.size() > 0) {
-				newVector.emplace_back(vector02[vector02Used]);
-				newVector[newVector.size() - 1].type = song_type::YouTube;
-				++vector02Used;
+		if (vector01.size() == 0 && vector02.size() != 0 || (vector01.size() >= 1 && vector02.size() >= 1)) {
+			return vector02;
+		} else if (vector02.size() == 0 && vector01.size() != 0 || (vector02.size() >= 1 && vector01.size() >= 1)) {
+			return vector01;
+		} else {
+			for (uint64_t x = 0; x < totalLength; ++x) {
+				if ((vector01Used < vector01.size()) && (x % 2 == 0) && vector01.size() > 0) {
+					newVector.emplace_back(vector01[vector01Used]);
+					newVector[newVector.size() - 1].type = song_type::SoundCloud;
+					++vector01Used;
+				} else if (vector02Used < vector02.size() && vector02.size() > 0) {
+					newVector.emplace_back(vector02[vector02Used]);
+					newVector[newVector.size() - 1].type = song_type::YouTube;
+					++vector02Used;
+				}
 			}
+			return newVector;
 		}
-		return newVector;
 	}
 
 	bool song_api::play(song songNew) {

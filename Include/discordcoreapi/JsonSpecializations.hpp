@@ -67,18 +67,18 @@ namespace jsonifier_internal {
 	template<typename value_type>
 	concept snowflake_t = std::same_as<discord_core_api::snowflake, jsonifier::concepts::unwrap_t<value_type>>;
 
-	template<snowflake_t value_type_new> struct serialize_impl<value_type_new> {
+	template<snowflake_t value_type_new, typename derived_type> struct serialize_impl<value_type_new, derived_type> {
 		template<snowflake_t value_type, jsonifier::concepts::buffer_like iterator_type>
 		inline static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serialize::impl(newString, iter, index);
+			serializer<derived_type>::impl(newString, iter, index);
 		}
 	};
 
-	template<snowflake_t value_type_new> struct parse_impl<value_type_new> {
+	template<snowflake_t value_type_new, typename derived_type> struct parse_impl<value_type_new, derived_type> {
 		template<snowflake_t value_type, jsonifier::concepts::is_fwd_iterator iterator> inline static void impl(value_type&& value, iterator&& iter) {
 			jsonifier::raw_json_data newString{};
-			parse::impl(newString, iter);
+			parser<derived_type>::impl(newString, iter);
 			if (newString.getType() == jsonifier::json_type::String) {
 				value = newString.operator jsonifier::string();
 			} else {
@@ -90,18 +90,18 @@ namespace jsonifier_internal {
 	template<typename value_type>
 	concept time_stamp_t = std::same_as<discord_core_api::time_stamp, jsonifier::concepts::unwrap_t<value_type>>;
 
-	template<time_stamp_t value_type_new> struct serialize_impl<value_type_new> {
+	template<time_stamp_t value_type_new, typename derived_type> struct serialize_impl<value_type_new, derived_type> {
 		template<time_stamp_t value_type, jsonifier::concepts::buffer_like iterator_type>
 		inline static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serialize::impl(newString, iter, index);
+			serializer<derived_type>::impl(newString, iter, index);
 		}
 	};
 
-	template<time_stamp_t value_type_new> struct parse_impl<value_type_new> {
+	template<time_stamp_t value_type_new, typename derived_type> struct parse_impl<value_type_new, derived_type> {
 		template<time_stamp_t value_type, jsonifier::concepts::is_fwd_iterator iterator> inline static void impl(value_type&& value, iterator&& iter) {
 			jsonifier::string newString{};
-			parse::impl(newString, iter);
+			parser<derived_type>::impl(newString, iter);
 			value = static_cast<jsonifier::string>(newString);
 		};
 	};
