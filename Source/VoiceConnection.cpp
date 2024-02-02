@@ -69,7 +69,7 @@ namespace jsonifier {
 
 namespace discord_core_api {
 
-	static inline thread_local discord_core_internal::audio_mixer audioMixer{};
+	static DCA_INLINE thread_local discord_core_internal::audio_mixer audioMixer{};
 
 	voice_user::voice_user(snowflake userIdNew) {
 		userId = userIdNew;
@@ -169,7 +169,7 @@ namespace discord_core_api {
 		token		  = tokenNew;
 	}
 
-	inline void voice_connection_bridge::applyGainRamp(int64_t sampleCount) {
+	DCA_INLINE void voice_connection_bridge::applyGainRamp(int64_t sampleCount) {
 		increment = (endGain - currentGain) / static_cast<float>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / audioMixer.byteBlocksPerRegister; ++x) {
 			audioMixer.collectSingleRegister(upSampledVector.data() + (x * audioMixer.byteBlocksPerRegister), downSampledVector.data() + (x * audioMixer.byteBlocksPerRegister),
@@ -365,7 +365,7 @@ namespace discord_core_api {
 	void voice_connection::checkForAndSendHeartBeat(const bool isImmedate) {
 		if (heartBeatStopWatch.hasTimeElapsed() || isImmedate) {
 			discord_core_internal::websocket_message_data<uint32_t> message{};
-			message.jsonifierExcludedKeys.emplace("t");
+			message.jsonifierExcludedKeys.emplace("T");
 			message.jsonifierExcludedKeys.emplace("s");
 			jsonifier::string_base<uint8_t> string{};
 			message.d  = static_cast<uint32_t>(std::chrono::duration_cast<nanoseconds>(sys_clock::now().time_since_epoch()).count());
@@ -386,7 +386,7 @@ namespace discord_core_api {
 
 	void voice_connection::sendSpeakingMessage(const bool isSpeaking) {
 		discord_core_internal::websocket_message_data<discord_core_internal::send_speaking_data> data{};
-		data.jsonifierExcludedKeys.emplace("t");
+		data.jsonifierExcludedKeys.emplace("T");
 		data.jsonifierExcludedKeys.emplace("s");
 		if (!isSpeaking) {
 			data.d.type = discord_core_internal::send_speaking_type::None;
@@ -410,11 +410,11 @@ namespace discord_core_api {
 	bool voice_connection::onMessageReceived(jsonifier::string_view_base<uint8_t> data) {
 		discord_core_internal::websocket_message message{};
 		message_printer::printSuccess<print_message_type::websocket>("message received from voice websocket: " + jsonifier::string{ data });
-		parser.parseJson<true>(message, data);
+		parser.parseJson(message, data);
 		switch (static_cast<voice_socket_op_codes>(message.op)) {
 			case voice_socket_op_codes::Ready_Server: {
 				discord_core_internal::websocket_message_data<voice_socket_ready_data> dataNew{};
-				parser.parseJson<true>(dataNew, data);
+				parser.parseJson(dataNew, data);
 				audioSSRC = dataNew.d.ssrc;
 				voiceIp	  = dataNew.d.ip;
 				port	  = dataNew.d.port;
@@ -429,9 +429,9 @@ namespace discord_core_api {
 			case voice_socket_op_codes::Session_Description: {
 				discord_core_internal::websocket_message_data<voice_session_description_data> dataNew{};
 				encryptionKey.clear();
-				parser.parseJson<true>(dataNew, data);
+				parser.parseJson(dataNew, data);
 				for (auto& value: dataNew.d.secretKey) {
-					encryptionKey.pushBack(static_cast<uint8_t>(value));
+					encryptionKey.emplace_back(static_cast<uint8_t>(value));
 				}
 				packetEncrypter = rtppacket_encrypter{ audioSSRC, encryptionKey };
 				connectionState.store(voice_connection_state::Collecting_Init_Data, std::memory_order_release);
@@ -439,7 +439,7 @@ namespace discord_core_api {
 			}
 			case voice_socket_op_codes::speaking: {
 				discord_core_internal::websocket_message_data<speaking_data> dataNew{};
-				parser.parseJson<true>(dataNew, data);
+				parser.parseJson(dataNew, data);
 				const uint32_t ssrc = dataNew.d.ssrc;
 				auto userId			= dataNew.d.userId;
 				unique_ptr<voice_user> user{ makeUnique<voice_user>(userId) };
@@ -457,7 +457,7 @@ namespace discord_core_api {
 			}
 			case voice_socket_op_codes::hello: {
 				discord_core_internal::websocket_message_data<voice_connection_hello_data> dataNew{};
-				parser.parseJson<true>(dataNew, data);
+				parser.parseJson(dataNew, data);
 				heartBeatStopWatch = stop_watch<milliseconds>{ dataNew.d.heartBeatInterval };
 				heartBeatStopWatch.reset();
 				areWeHeartBeating = true;
@@ -472,7 +472,7 @@ namespace discord_core_api {
 			}
 			case voice_socket_op_codes::Client_Disconnect: {
 				discord_core_internal::websocket_message_data<voice_user_disconnect_data> dataNew{};
-				parser.parseJson<true>(dataNew, data);
+				parser.parseJson(dataNew, data);
 				const auto userId = dataNew.d.userId;
 				for (auto& [key, value]: voiceUsers) {
 					if (userId == value->getUserId()) {
@@ -563,7 +563,7 @@ namespace discord_core_api {
 			case voice_connection_state::Sending_Identify: {
 				haveWeReceivedHeartbeatAck = true;
 				discord_core_internal::websocket_message_data<discord_core_internal::voice_identify_data> data{};
-				data.jsonifierExcludedKeys.emplace("t");
+				data.jsonifierExcludedKeys.emplace("T");
 				data.jsonifierExcludedKeys.emplace("s");
 				data.d.serverId	 = voiceConnectInitData.guildId.operator jsonifier::string();
 				data.d.sessionId = voiceConnectionData.sessionId;
@@ -609,7 +609,7 @@ namespace discord_core_api {
 			}
 			case voice_connection_state::Sending_Select_Protocol: {
 				discord_core_internal::websocket_message_data<discord_core_internal::voice_socket_protocol_payload_data> data{};
-				data.jsonifierExcludedKeys.emplace("t");
+				data.jsonifierExcludedKeys.emplace("T");
 				data.jsonifierExcludedKeys.emplace("s");
 				data.d.data.mode	= audioEncryptionMode;
 				data.d.data.address = externalIp;
@@ -771,7 +771,7 @@ namespace discord_core_api {
 									}
 									break;
 								}
-								case audio_frame_type::unset: {
+								case audio_frame_type::Unset: {
 									xferAudioData.clearData();
 									break;
 								}
@@ -966,7 +966,7 @@ namespace discord_core_api {
 	void voice_connection::disconnect() {
 		activeState.store(voice_active_state::exiting, std::memory_order_release);
 		if (taskThread.getStatus() == co_routine_status::running) {
-			taskThread.cancelAndWait();
+			taskThread.cancel();
 		}
 		if (streamSocket) {
 			streamSocket->disconnect();

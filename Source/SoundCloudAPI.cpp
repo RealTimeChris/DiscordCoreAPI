@@ -325,7 +325,7 @@ namespace discord_core_api {
 				dataPackage.workloadClass				  = https_workload_class::Get;
 				https_response_data returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));
 				sound_cloud_search_results resultsNew{};
-				parser.parseJson<true>(resultsNew, returnData.responseData);
+				parser.parseJson(resultsNew, returnData.responseData);
 				for (auto& value: resultsNew.collection) {
 					song songNew{};
 					if (value.title == "") {
@@ -396,7 +396,7 @@ namespace discord_core_api {
 				https_response_data results					= submitWorkloadAndGetResult(std::move(dataPackage01));
 				second_download_url downloadUrl{};
 				song newerSong{ songNew };
-				parser.parseJson<true>(downloadUrl, results.responseData);
+				parser.parseJson(downloadUrl, results.responseData);
 				newerSong.secondDownloadUrl = downloadUrl.url;
 				if (newerSong.secondDownloadUrl.find("/playlist") != jsonifier::string::npos) {
 					https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Download_Links };

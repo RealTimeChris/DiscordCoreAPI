@@ -19,7 +19,7 @@ namespace discord_core_api {
 				msgEmbedFields.emplace_back(jsonifier::vector<embed_field_data>());
 			}
 			embed_field_data msgEmbedField{};
-			msgEmbedField.inline = false;
+			msgEmbedField.DCA_INLINE = false;
 			msgEmbedField.value = "__**title:**__ [" + playlist.at(y).songTitle + "](" + playlist.at(y).viewUrl + ")\n__**added by:**__ <@!" +
 				jsonifier::toString(playlist.at(y).addedByUserId) + "> (" + playlist.at(y).addedByUserName + ")";
 
@@ -120,7 +120,7 @@ namespace discord_core_api {
 						msgEmbedFields.emplace_back(jsonifier::vector<embed_field_data>());
 					}
 					embed_field_data msgEmbedField{};
-					msgEmbedField.inline = false;
+					msgEmbedField.DCA_INLINE = false;
 					msgEmbedField.value = "__**title:**__ [" + song_api::getPlaylist(guild_data->id).songQueue.at(y).songTitle + "](" +
 						song_api::getPlaylist(guild_data->id).songQueue.at(y).viewUrl + ")\n__**added by:**__ <@!" +
 						jsonifier::toString(song_api::getPlaylist(guild_data->id).songQueue.at(y).addedByUserId) + "> (" + song_api::getPlaylist(guild_data->id).songQueue.at(y).addedByUserName +

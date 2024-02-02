@@ -333,7 +333,7 @@ namespace discord_core_api {
 			int64_t op{};
 			int64_t s{};
 
-			inline operator discord_core_internal::etf_serializer() {
+			DCA_INLINE operator discord_core_internal::etf_serializer() {
 				etf_serializer data{};
 				data["op"] = op;
 				data["s"]  = s;
@@ -407,7 +407,7 @@ namespace discord_core_api {
 
 	template<typename value_type> class flag_entity {
 	  public:
-		template<jsonifier::concepts::enum_t value_type02> inline auto setFlagValue(value_type02 theFlagToSet, bool enabled) {
+		template<jsonifier::concepts::enum_t value_type02> DCA_INLINE auto setFlagValue(value_type02 theFlagToSet, bool enabled) {
 			auto newValue = static_cast<int64_t>(static_cast<value_type*>(this)->flags);
 			if (enabled) {
 				newValue |= static_cast<int64_t>(theFlagToSet);
@@ -417,13 +417,13 @@ namespace discord_core_api {
 			static_cast<value_type*>(this)->flags = static_cast<value_type02>(newValue);
 		}
 
-		template<jsonifier::concepts::enum_t value_type02> inline bool getFlagValue(value_type02 theFlagToCheckFor) const {
+		template<jsonifier::concepts::enum_t value_type02> DCA_INLINE bool getFlagValue(value_type02 theFlagToCheckFor) const {
 			return static_cast<int64_t>(static_cast<const value_type*>(this)->flags) & static_cast<int64_t>(theFlagToCheckFor);
 		}
 
 	  protected:
-		inline flag_entity()  = default;
-		inline ~flag_entity() = default;
+		DCA_INLINE flag_entity()  = default;
+		DCA_INLINE ~flag_entity() = default;
 	};
 
 	enum class user_image_types {
@@ -435,7 +435,7 @@ namespace discord_core_api {
 
 	template<typename value_type> class get_user_image_url {
 	  public:
-		inline jsonifier::string getUserImageUrl(user_image_types type) const {
+		  template<user_image_types type> DCA_INLINE jsonifier::string getUserImageUrl() const {
 			jsonifier::string baseUrl{ "https://cdn.discordapp.com/" };
 			switch (type) {
 				case user_image_types::Banner: {
@@ -470,10 +470,9 @@ namespace discord_core_api {
 		}
 
 	  protected:
-		inline get_user_image_url()	 = default;
-		inline ~get_user_image_url() = default;
+		DCA_INLINE get_user_image_url()	 = default;
+		DCA_INLINE ~get_user_image_url() = default;
 	};
-
 
 	enum class guild_member_image_types {
 		Avatar = 0,
@@ -482,7 +481,7 @@ namespace discord_core_api {
 
 	template<typename value_type> class get_guild_member_image_url {
 	  public:
-		jsonifier::string getGuildMemberImageUrl(guild_member_image_types type) const {
+		template<guild_member_image_types type> jsonifier::string getGuildMemberImageUrl() const {
 			jsonifier::string baseUrl{ "https://cdn.discordapp.com/" };
 			switch (type) {
 				case guild_member_image_types::Avatar: {
@@ -501,8 +500,8 @@ namespace discord_core_api {
 		}
 
 	  protected:
-		inline get_guild_member_image_url()	 = default;
-		inline ~get_guild_member_image_url() = default;
+		DCA_INLINE get_guild_member_image_url()	 = default;
+		DCA_INLINE ~get_guild_member_image_url() = default;
 	};
 
 	enum class guild_image_types {
@@ -514,7 +513,7 @@ namespace discord_core_api {
 
 	template<typename value_type> class get_guild_image_url {
 	  public:
-		jsonifier::string getGuildImageUrl(guild_image_types type) const {
+		template<guild_image_types type> jsonifier::string getGuildImageUrl() const {
 			jsonifier::string baseUrl{ "https://cdn.discordapp.com/" };
 			switch (type) {
 				case guild_image_types::Icon: {
@@ -544,8 +543,8 @@ namespace discord_core_api {
 		}
 
 	  protected:
-		inline get_guild_image_url()  = default;
-		inline ~get_guild_image_url() = default;
+		DCA_INLINE get_guild_image_url()  = default;
+		DCA_INLINE ~get_guild_image_url() = default;
 	};
 
 	/// @brief Attachment data.
@@ -625,7 +624,7 @@ namespace discord_core_api {
 	struct embed_field_data {
 		jsonifier::string value{};///< The text on the field.
 		jsonifier::string name{};///< The title of the field.
-		bool Inline{};///< Is the field inline with the rest of them?
+		bool Inline{};///< Is the field DCA_INLINE with the rest of them?
 	};
 
 	/// @brief Embed types.
@@ -678,7 +677,7 @@ namespace discord_core_api {
 		/// @brief Adds a field to the embed.
 		/// @param name the title of the embed field.
 		/// @param value the contents of the embed field.
-		/// @param Inline is it inline with the rest of the fields on the embed?
+		/// @param Inline is it DCA_INLINE with the rest of the fields on the embed?
 		/// @return embed_data& A reference to this embed_data instance.
 		embed_data& addField(jsonifier::string_view name, jsonifier::string_view value, bool Inline = true);
 
@@ -763,7 +762,7 @@ namespace discord_core_api {
 		uint64_t flags{};///< Flags.
 		snowflake id{};///< This threadmemberdata's id.
 
-		inline thread_member_data() = default;
+		DCA_INLINE thread_member_data() = default;
 	};
 
 	/// @brief Thread_data types.
@@ -779,7 +778,7 @@ namespace discord_core_api {
 		snowflake guildId{};///< The guild id this voice state is for.
 		snowflake userId{};///< The user_data id this voice state is for.
 
-		virtual inline ~voice_state_data_light() = default;
+		virtual DCA_INLINE ~voice_state_data_light() = default;
 	};
 
 	struct voice_server_update_data {
@@ -835,7 +834,7 @@ namespace discord_core_api {
 		bool system{};///< Whether the user is an official discord system user (part of the urgent message system).
 		bool bot{};///< Whether the user belongs to an oauth2 application.
 
-		inline user_data() = default;
+		DCA_INLINE user_data() = default;
 
 		user_data(snowflake);
 	};
@@ -857,7 +856,7 @@ namespace discord_core_api {
 		user_flags flags{};///< The public flags on a user's account.
 		snowflake id{};///< This user's id.
 
-		inline user_cache_data() = default;
+		DCA_INLINE user_cache_data() = default;
 
 		user_cache_data& operator=(user_data&& other) noexcept;
 		user_cache_data(user_data&& other) noexcept;
@@ -868,7 +867,7 @@ namespace discord_core_api {
 		operator user_data();
 
 
-		inline bool operator==(const snowflake& other) const {
+		DCA_INLINE bool operator==(const snowflake& other) const {
 			return id == other;
 		}
 	};
@@ -889,7 +888,7 @@ namespace discord_core_api {
 		bool managed{};///< Whether this role is managed by an integration.
 		bool hoist{};///< Whether this role is pinned in the user listing.
 
-		inline role_data() = default;
+		DCA_INLINE role_data() = default;
 
 		role_data(snowflake);
 	};
@@ -908,7 +907,7 @@ namespace discord_core_api {
 		uint32_t color{};///< The role_data's color.
 		snowflake id{};///< This role's id.
 
-		inline role_cache_data() = default;
+		DCA_INLINE role_cache_data() = default;
 
 		role_cache_data& operator=(role_data&& other) noexcept;
 		role_cache_data(role_data&& other) noexcept;
@@ -918,7 +917,7 @@ namespace discord_core_api {
 
 		operator role_data();
 
-		inline bool operator==(const snowflake& other) const {
+		DCA_INLINE bool operator==(const snowflake& other) const {
 			return id == other;
 		}
 	};
@@ -932,7 +931,7 @@ namespace discord_core_api {
 		bool animated{};///< Is it animated?
 		snowflake id{};///< This emoji's id.
 
-		inline partial_emoji_data() = default;
+		DCA_INLINE partial_emoji_data() = default;
 
 		void generateExcludedKeys();
 	};
@@ -987,7 +986,7 @@ namespace discord_core_api {
 	  public:
 		snowflake id{};
 
-		inline user_id_base() = default;
+		DCA_INLINE user_id_base() = default;
 	};
 
 	class guild_data;
@@ -1015,7 +1014,7 @@ namespace discord_core_api {
 		bool deaf{};///< Whether the user is deafened in voice channels.
 		bool mute{};///< Whether the user is muted in voice channels.
 
-		inline guild_member_data() = default;
+		DCA_INLINE guild_member_data() = default;
 
 		voice_state_data_light getVoiceStateData();
 
@@ -1053,7 +1052,7 @@ namespace discord_core_api {
 
 		user_cache_data getUserData();
 
-		inline guild_member_cache_data(uint64_t snowFlake) {
+		DCA_INLINE guild_member_cache_data(uint64_t snowFlake) {
 			user.id = snowFlake;
 		}
 	};
@@ -1135,7 +1134,7 @@ namespace discord_core_api {
 		bool managed{};///< For group dm channels: whether the channel is managed by an application via the gdm.join oauth2 scope.
 		bool nsfw{};///< Whether the channel is nsfw.
 
-		inline channel_data() = default;
+		DCA_INLINE channel_data() = default;
 
 		channel_data(snowflake);
 
@@ -1159,7 +1158,7 @@ namespace discord_core_api {
 		snowflake guildId{};///< snowflake of the channel_data's guild, if applicable.
 		snowflake id{};///< This channel's id.
 
-		inline channel_cache_data() = default;
+		DCA_INLINE channel_cache_data() = default;
 
 		channel_cache_data& operator=(channel_data&& other) noexcept;
 		channel_cache_data(channel_data&& other) noexcept;
@@ -1170,7 +1169,7 @@ namespace discord_core_api {
 		/// @brief For converting this into a channel_data instance.
 		operator channel_data();
 
-		inline bool operator==(const snowflake& other) const {
+		DCA_INLINE bool operator==(const snowflake& other) const {
 			return id == other;
 		}
 	};
@@ -1275,7 +1274,7 @@ namespace discord_core_api {
 		bool enabled{};///< Whether the rule is enabled.
 		snowflake id{};
 
-		inline auto_moderation_rule_data() = default;
+		DCA_INLINE auto_moderation_rule_data() = default;
 	};
 
 	/// @brief Permissions data for an application_command_data.
@@ -1294,7 +1293,7 @@ namespace discord_core_api {
 		snowflake guildId{};///< The guild's id.
 		snowflake id{};
 
-		inline guild_application_command_permissions_data() = default;
+		DCA_INLINE guild_application_command_permissions_data() = default;
 	};
 
 	/// @brief For updating/modifying a given channel's properties.
@@ -1327,7 +1326,7 @@ namespace discord_core_api {
 		snowflake id{};
 		bool me{};///< Whether or not i (the bot) placed it.
 
-		inline reaction_data() = default;
+		DCA_INLINE reaction_data() = default;
 	};
 
 	/// @brief Structure representing voice region data.
@@ -1396,7 +1395,7 @@ namespace discord_core_api {
 		jsonifier::string icon{};///< Icon for the team.
 		snowflake id{};
 
-		inline team_object_data() = default;
+		DCA_INLINE team_object_data() = default;
 	};
 
 	/// application flags, for the application_data structure.
@@ -1442,7 +1441,7 @@ namespace discord_core_api {
 		bool botPublic{};///< Is the bot public?
 		snowflake id{};
 
-		inline application_data() = default;
+		DCA_INLINE application_data() = default;
 	};
 
 	/// @brief Authorization info structure.
@@ -1459,7 +1458,7 @@ namespace discord_core_api {
 		jsonifier::string name{};///< Name of the account.
 		snowflake id{};
 
-		inline account_data() = default;
+		DCA_INLINE account_data() = default;
 	};
 
 	/// @brief Guild widget data.
@@ -1511,7 +1510,7 @@ namespace discord_core_api {
 		bool syncing{};///< Is it syncing?
 		snowflake id{};
 
-		inline integration_data() = default;
+		DCA_INLINE integration_data() = default;
 	};
 
 	/// @brief Audit log events.
@@ -1583,7 +1582,7 @@ namespace discord_core_api {
 		snowflake messageId{};///< Message snowflake.
 		snowflake id{};
 
-		inline optional_audit_entry_info_data() = default;
+		DCA_INLINE optional_audit_entry_info_data() = default;
 	};
 
 	/// @brief Audit log change data.
@@ -1678,7 +1677,7 @@ namespace discord_core_api {
 		snowflake guildId{};///< The guild id for which the channel_data exists in.
 		snowflake id{};
 
-		inline stage_instance_data() = default;
+		DCA_INLINE stage_instance_data() = default;
 	};
 
 	/// @brief Sticker_data types.
@@ -1706,7 +1705,7 @@ namespace discord_core_api {
 		user_data user{};///< The user_data that uploaded the guild sticker_data.
 		snowflake id{};
 
-		inline sticker_data() = default;
+		DCA_INLINE sticker_data() = default;
 	};
 
 	/// @brief Data representing a single guild preview.
@@ -1798,7 +1797,7 @@ namespace discord_core_api {
 		user_data creator{};///< The user_data that created the scheduled event.
 		snowflake id{};
 
-		inline guild_scheduled_event_data() = default;
+		DCA_INLINE guild_scheduled_event_data() = default;
 	};
 
 	/// @brief Data representing a single guild_scheduled_event_user.
@@ -1930,9 +1929,9 @@ namespace discord_core_api {
 
 	class select_default_value_data {
 	  public:
-		inline select_default_value_data() = default;
+		DCA_INLINE select_default_value_data() = default;
 
-		inline select_default_value_data(select_default_value_type typeNew) {
+		DCA_INLINE select_default_value_data(select_default_value_type typeNew) {
 			switch (typeNew) {
 				case select_default_value_type::user: {
 					type = "user";
@@ -2071,7 +2070,7 @@ namespace discord_core_api {
 		snowflake guildId{};///< (where applicable) a guild id for which guild to assign this application_command_data to.
 		snowflake id{};
 
-		inline application_command_data() = default;
+		DCA_INLINE application_command_data() = default;
 
 		void generateExcludedKeys();
 
@@ -2111,7 +2110,7 @@ namespace discord_core_api {
 		snowflake guildId{};///< Guild id of the thread_data.
 		snowflake id{};
 
-		inline thread_members_update_data() = default;
+		DCA_INLINE thread_members_update_data() = default;
 	};
 
 	/// @brief Message interaction data.
@@ -2123,7 +2122,7 @@ namespace discord_core_api {
 		user_data user{};
 		snowflake id{};
 
-		inline message_interaction_data() = default;
+		DCA_INLINE message_interaction_data() = default;
 	};
 
 	/// @brief Message types.
@@ -2226,7 +2225,7 @@ namespace discord_core_api {
 		bool pinned{};///< Is it pinned?
 		bool tts{};///< Is it a text-to-speech message_data?
 
-		virtual inline ~message_data() = default;
+		virtual DCA_INLINE ~message_data() = default;
 	};
 
 	/// @brief Resolved data.
@@ -2388,7 +2387,7 @@ namespace discord_core_api {
 		/// @param selfMute whether or not to self-mute the bot.
 		/// @param streamInfoNew for usage with the vc-to-vc audio streaming option.
 		/// @return voice_connection* a pointer to the currently held voice connection, or nullptr if it failed to connect.
-		inline voice_connection& connectToVoice(const snowflake guildMemberId, const snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
+		DCA_INLINE voice_connection& connectToVoice(const snowflake guildMemberId, const snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
 			stream_info streamInfoNew = stream_info{}) {
 			if (static_cast<discord_core_client_t*>(static_cast<value_type*>(this)->getDiscordCoreClient())
 					->getVoiceConnection(static_cast<value_type*>(this)->id)
@@ -2500,7 +2499,7 @@ namespace discord_core_api {
 		bool large{};///< True if this is considered a large guild.
 		bool owner{};///< True if the user is the owner of the guild.
 
-		inline guild_data() = default;
+		DCA_INLINE guild_data() = default;
 
 		guild_data(snowflake snowflake);
 
@@ -2539,7 +2538,7 @@ namespace discord_core_api {
 		icon_hash icon{};///< Url to the guild's icon.
 		snowflake id{};///< The id of this guild.
 
-		inline guild_cache_data() = default;
+		DCA_INLINE guild_cache_data() = default;
 
 		guild_cache_data(snowflake snowflakeNew);
 
@@ -2554,7 +2553,7 @@ namespace discord_core_api {
 
 		discord_core_client* getDiscordCoreClient();
 
-		inline bool operator==(const snowflake& other) const {
+		DCA_INLINE bool operator==(const snowflake& other) const {
 			return id == other;
 		}
 
@@ -2584,7 +2583,7 @@ namespace discord_core_api {
 		user_data user{};
 		snowflake id{};
 
-		inline interaction_data() = default;
+		DCA_INLINE interaction_data() = default;
 	};
 
 	class partial_guild_data {
@@ -2646,7 +2645,7 @@ namespace discord_core_api {
 		user_data user{};///< User_data which create the web_hook_data.
 		snowflake id{};
 
-		inline web_hook_data() = default;
+		DCA_INLINE web_hook_data() = default;
 	};
 
 	/// @brief Audit log data.
@@ -2694,7 +2693,7 @@ namespace discord_core_api {
 
 		input_event_data(const interaction_data& interactionData);
 
-		inline input_event_data() = default;
+		DCA_INLINE input_event_data() = default;
 
 		/// @brief Returns the interaction data, if appplicable, of this input-event.
 		/// @return interaction_data a snowflake containing the interaction data.
@@ -2746,7 +2745,7 @@ namespace discord_core_api {
 
 		operator interaction_callback_data() const;
 
-		inline respond_to_input_event_data() noexcept = default;
+		DCA_INLINE respond_to_input_event_data() noexcept = default;
 
 		respond_to_input_event_data& operator=(const interaction_data dataPackage);
 
@@ -3032,7 +3031,7 @@ namespace discord_core_api {
 		bool isLoopAllEnabled{};///< Is looping of the entire playlist currently enabled?
 		song currentSong{};///< The current song that is playing.
 
-		inline bool areThereAnySongs() {
+		DCA_INLINE bool areThereAnySongs() {
 			if (isLoopAllEnabled) {
 				return songQueue.size() > 0 || currentSong.songId != "";
 			} else if (isLoopSongEnabled) {
@@ -3042,7 +3041,7 @@ namespace discord_core_api {
 			}
 		}
 
-		inline bool sendNextSong() {
+		DCA_INLINE bool sendNextSong() {
 			if (isLoopSongEnabled) {
 				if (songQueue.size() > 0 && currentSong.songId == "") {
 					currentSong = songQueue.at(0);
@@ -3080,7 +3079,7 @@ namespace discord_core_api {
 			return false;
 		}
 
-		inline void modifyQueue(uint64_t firstSongPosition, uint64_t secondSongPosition) {
+		DCA_INLINE void modifyQueue(uint64_t firstSongPosition, uint64_t secondSongPosition) {
 			song tempSong					 = songQueue.at(firstSongPosition);
 			songQueue.at(firstSongPosition)	 = songQueue.at(secondSongPosition);
 			songQueue.at(secondSongPosition) = tempSong;
@@ -3095,7 +3094,7 @@ namespace discord_core_api {
 	*/
 
 	struct serializer_value {
-		unordered_map<jsonifier::string, json_string_value> values{};
+		unordered_map<jsonifier::string, jsonifier::raw_json_data> values{};
 	};
 
 	/// @brief Command data, for functions executed by the command_controller.

@@ -54,20 +54,20 @@ namespace jsonifier {
 				"system_channel_flags", &value_type::systemChannelFlags, "verification_level", &value_type::verificationLevel, "features", &value_type::features,
 				"public_updates_channel_id", &value_type::publicUpdatesChannelId, "afk_timeout", &value_type::afkTimeout, "preferred_locale", &value_type::preferredLocale,
 				"discovery_splash", &value_type::discoverySplash, "system_channel_id", &value_type::systemChannelId, "rules_channel_id", &value_type::rulesChannelId, "description",
-				&value_type::description, "afk_channel_id", &value_type::afkChannelId, "banner", &value_type::banner, "splash", &value_type::splash, "reason", &value_type::reason,
+				&value_type::description, "afk_channel_id", &value_type::afkChannelId, "banner", &value_type::banner, "splash", &value_type::splash,
 				"owner_id", &value_type::ownerId, "guild_id", &value_type::guildId, "icon", &value_type::icon, "name", &value_type::name);
 	};
 
 	template<> struct core<discord_core_api::create_guild_ban_data> {
 		using value_type				 = discord_core_api::create_guild_ban_data;
-		static constexpr auto parseValue = createValue("delete_message_days", &value_type::deleteMessageDays, "member", &value_type::guildMemberId, "reason", &value_type::reason,
+		static constexpr auto parseValue = createValue("delete_message_days", &value_type::deleteMessageDays, "member", &value_type::guildMemberId,
 			"guild_id", &value_type::guildId);
 	};
 
 	template<> struct core<discord_core_api::modify_guild_welcome_screen_data> {
 		using value_type				 = discord_core_api::modify_guild_welcome_screen_data;
 		static constexpr auto parseValue = createValue("welcome_channels", &value_type::welcomeChannels, "description", &value_type::description, "guild_id", &value_type::guildId,
-			"enabled", &value_type::enabled, "reason", &value_type::reason);
+			"enabled", &value_type::enabled);
 	};
 
 	template<> struct core<discord_core_api::get_guild_prune_count_data> {
@@ -99,7 +99,7 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::modify_guild_widget_data> {
 		using value_type				 = discord_core_api::modify_guild_widget_data;
-		static constexpr auto parseValue = createValue("widget_data", &value_type::widgetData, "reason", &value_type::reason, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue("widget_data", &value_type::widgetData, "guild_id", &value_type::guildId);
 	};
 
 

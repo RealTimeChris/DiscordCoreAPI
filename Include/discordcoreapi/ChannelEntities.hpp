@@ -238,7 +238,7 @@ namespace discord_core_api {
 		/// @return a co_routine containing a voice_region_data_vector.
 		static co_routine<jsonifier::vector<voice_region_data>> getVoiceRegionsAsync();
 
-		template<typename channel_type> inline static void insertChannel(channel_type&& channel) {
+		template<typename channel_type> DCA_INLINE static void insertChannel(channel_type&& channel) {
 			if (doWeCacheChannelsBool) {
 				if (channel.id == 0) {
 					throw dca_exception{ "Sorry, but there was no id set for that channel." };

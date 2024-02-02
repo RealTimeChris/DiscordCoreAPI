@@ -29,6 +29,8 @@
 /// \file AVX.hpp
 #pragma once
 
+#include <discordcoreapi/Utilities/Base.hpp>
+
 #if JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX) && !JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX2) && !JSONIFIER_CHECK_FOR_INSTRUCTION(JSONIFIER_AVX512)
 
 	#include <immintrin.h>
@@ -51,32 +53,32 @@ namespace discord_core_api {
 			// @param dataOut pointer to the output array of int16_t values.
 			// @param currentGain the gain to be applied to the elements.
 			// @param increment the increment value to be added to each element.
-			inline void collectSingleRegister(const int32_t* dataIn, int16_t* dataOut, const float currentGain, const float increment) {
-				avx_float currentSamplesNew{ _mm_mul_ps(gatherValues(dataIn),
-					_mm_add_ps(_mm_set1_ps(currentGain), _mm_mul_ps(_mm_set1_ps(increment), _mm_set_ps(0.0f, 1.0f, 2.0f, 3.0f)))) };
+			DCA_INLINE void collectSingleRegister(const int32_t* dataIn, int16_t* dataOut, const float currentGain, const float increment) {
+				currentSamples = _mm_mul_ps(gatherValues(dataIn), _mm_add_ps(_mm_set1_ps(currentGain), _mm_mul_ps(_mm_set1_ps(increment), _mm_set_ps(0.0f, 1.0f, 2.0f, 3.0f))));
 
-				currentSamplesNew = _mm_blendv_ps(_mm_max_ps(currentSamplesNew, _mm_set1_ps(static_cast<float>(std::numeric_limits<int16_t>::min()))),
-					_mm_min_ps(currentSamplesNew, _mm_set1_ps(static_cast<float>(std::numeric_limits<int16_t>::max()))),
-					_mm_cmp_ps(currentSamplesNew, _mm_set1_ps(0.0f), _CMP_GE_OQ));
+				currentSamples = _mm_blendv_ps(_mm_max_ps(currentSamples, _mm_set1_ps(static_cast<float>(std::numeric_limits<int16_t>::min()))),
+					_mm_min_ps(currentSamples, _mm_set1_ps(static_cast<float>(std::numeric_limits<int16_t>::max()))),
+					_mm_cmp_ps(currentSamples, _mm_set1_ps(0.0f), _CMP_GE_OQ));
 
-				storeValues(currentSamplesNew, dataOut);
+				storeValues(currentSamples, dataOut);
 			}
 
 			// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. this version uses AVX instructions.
 			// @param upSampledVector pointer to the array of int32_t values.
 			// @param decodedData pointer to the array of int16_t values.
-			inline void combineSamples(const int16_t* decodedData, int32_t* upSampledVector) {
+			DCA_INLINE void combineSamples(const int16_t* decodedData, int32_t* upSampledVector) {
 				storeValues(_mm_add_ps(gatherValues(upSampledVector), gatherValues(decodedData)), upSampledVector);
 			}
 
 		  protected:
 			alignas(16) float newArray[byteBlocksPerRegister]{};
+			avx_float currentSamples{};
 
 			// @brief Stores values from a 128-bit AVX vector to a storage location.
 			// @tparam value_type the target value type for storage.
 			// @param valuesToStore the 128-bit AVX vector containing values to store.
 			// @param storageLocation pointer to the storage location.
-			template<typename value_type> inline void storeValues(const avx_float& valuesToStore, value_type* storageLocation) {
+			template<typename value_type> DCA_INLINE void storeValues(const avx_float& valuesToStore, value_type* storageLocation) {
 				_mm_store_ps(newArray, valuesToStore);
 				for (int64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					storageLocation[x] = static_cast<value_type>(newArray[x]);
@@ -87,7 +89,7 @@ namespace discord_core_api {
 			// @tparam value_type the type of values being gathered.
 			// @tparam indices parameter pack of indices for gathering values.
 			// @return an AVX register containing gathered values.
-			template<typename value_type> inline avx_float gatherValues(const value_type* values) {
+			template<typename value_type> DCA_INLINE avx_float gatherValues(const value_type* values) {
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					newArray[x] = static_cast<float>(values[x]);
 				}

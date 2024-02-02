@@ -136,7 +136,7 @@ namespace discord_core_api {
 		int64_t since{};///< When was the activity started?
 		bool afk{};///< Are we afk.
 
-		inline update_presence_data() = default;
+		DCA_INLINE update_presence_data() = default;
 		update_presence_data(presence_update_state updateState);
 
 		operator discord_core_internal::etf_serializer();
@@ -149,7 +149,7 @@ namespace discord_core_api {
 
 	/// @brief Input event response types.
 	enum class input_event_response_type : uint8_t {
-		unset									= 0,///< Unset.
+		Unset									= 0,///< Unset.
 		Deferred_Response						= 1,
 		Ephemeral_Deferred_Response				= 2,///< Deferred ephemeral response.
 		Interaction_Response					= 3,///< Interaction response.
@@ -245,11 +245,6 @@ namespace discord_core_api {
 		logging_options logOptions{};///< Options for the output/logging of the library.
 		cache_options cacheOptions{};///< Options for the cache of the library.
 		uint16_t connectionPort{};///< A potentially alternative connection port for the websocket.
-	};
-
-	struct json_string_value {
-		discord_core_internal::json_type type{};
-		jsonifier::raw_json_data value{};
 	};
 
 	class DiscordCoreAPI_Dll config_manager {
@@ -372,14 +367,14 @@ namespace discord_core_api {
 
 	/// @brief Audio frame types.
 	enum class audio_frame_type : uint8_t {
-		unset	= 0,///< Unset.
+		Unset	= 0,///< Unset.
 		raw_pcm = 1,///< Raw pcm.
 		encoded = 2,///< Encoded audio data.
 	};
 
 	/// @brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll audio_frame_data {
-		audio_frame_type type{ audio_frame_type::unset };///< The type of audio frame.
+		audio_frame_type type{ audio_frame_type::Unset };///< The type of audio frame.
 		jsonifier::vector<uint8_t> data{};///< The audio data.
 		int64_t currentSize{ -5 };///< The current size of the allocated memory.
 
@@ -391,7 +386,7 @@ namespace discord_core_api {
 
 		audio_frame_data& operator+=(jsonifier::vector<uint8_t>);
 
-		inline bool operator==(const audio_frame_data& rhs) const {
+		DCA_INLINE bool operator==(const audio_frame_data& rhs) const {
 			return currentSize == rhs.currentSize && data == rhs.data;
 		}
 
@@ -417,14 +412,14 @@ namespace discord_core_api {
 	 * @{
 	 */
 
-	template<typename return_type> inline return_type fromString(jsonifier::string_view string, std::ios_base& (*type)( std::ios_base& )) {
+	template<typename return_type> DCA_INLINE return_type fromString(jsonifier::string_view string, std::ios_base& (*type)( std::ios_base& )) {
 		return_type value{};
 		std::istringstream stream(std::string{ string });
 		stream >> type, stream >> value;
 		return value;
 	}
 
-	template<typename return_type> inline jsonifier::string toHex(return_type inputValue) {
+	template<typename return_type> DCA_INLINE jsonifier::string toHex(return_type inputValue) {
 		std::stringstream stream{};
 		stream << std::setfill('0') << std::setw(sizeof(return_type) * 2) << std::hex << inputValue;
 		return jsonifier::string{ stream.str() };
@@ -544,7 +539,7 @@ namespace discord_core_api {
 		/// @param guildMember the guild_member_data who's permissions_base to analyze.
 		/// @param channel the channel_data withint which to check for permissions_base.
 		/// @return jsonifier::string a string containing the final permission's value for a given channel.
-		inline static jsonifier::string getCurrentChannelPermissions(const guild_member_data& guildMember, const channel_data& channel) {
+		DCA_INLINE static jsonifier::string getCurrentChannelPermissions(const guild_member_data& guildMember, const channel_data& channel) {
 			return computePermissions(guildMember, channel);
 		}
 
@@ -553,7 +548,7 @@ namespace discord_core_api {
 		/// @param channel the channel_data within which to check for the permission's presence.
 		/// @param permission a permission to check the current channel_data for.
 		/// @return bool a bool suggesting the presence of the chosen permission.
-		inline bool checkForPermission(const guild_member_data& guildMember, const channel_data& channel, permission permission) {
+		DCA_INLINE bool checkForPermission(const guild_member_data& guildMember, const channel_data& channel, permission permission) {
 			if ((jsonifier::strToUint64(computePermissions(guildMember, channel).data()) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
 				return true;
 			} else {
@@ -564,14 +559,14 @@ namespace discord_core_api {
 		/// @brief Returns a string containing the currently held permissions_base in a given guild.
 		/// @param guildMember the guild_member_data who's permissions_base are to be evaluated.
 		/// @return jsonifier::string a string containing the current permissions_base.
-		inline static jsonifier::string getCurrentGuildPermissions(const guild_member_data& guildMember) {
+		DCA_INLINE static jsonifier::string getCurrentGuildPermissions(const guild_member_data& guildMember) {
 			permissions_base setValue(computeBasePermissions(guildMember));
 			return static_cast<value_type*>(setValue);
 		}
 
 		/// @brief Removes one or more permissions_base from the current permissions_base value.
 		/// @param permissionsToRemove a vector containing the permissions_base you wish to remove.
-		inline void removePermissions(const jsonifier::vector<permission>& permissionsToRemove) {
+		DCA_INLINE void removePermissions(const jsonifier::vector<permission>& permissionsToRemove) {
 			uint64_t permissionsInteger = *static_cast<value_type*>(this);
 			for (auto valueNew: permissionsToRemove) {
 				permissionsInteger &= ~static_cast<uint64_t>(valueNew);
@@ -583,7 +578,7 @@ namespace discord_core_api {
 
 		/// @brief Adds one or more permissions_base to the current permissions_base value.
 		/// @param permissionsToAdd a vector containing the permissions_base you wish to add.
-		inline void addPermissions(const jsonifier::vector<permission>& permissionsToAdd) {
+		DCA_INLINE void addPermissions(const jsonifier::vector<permission>& permissionsToAdd) {
 			uint64_t permissionsInteger = *static_cast<value_type*>(this);
 			for (auto valueNew: permissionsToAdd) {
 				permissionsInteger |= static_cast<uint64_t>(valueNew);
@@ -595,7 +590,7 @@ namespace discord_core_api {
 
 		/// @brief Displays the currently present permissions_base in a string, and returns A vector with each of them stored in string format.
 		/// @return jsonifier::vector a vector full of strings of the permissions_base that are in the input jsonifier::string's value.
-		inline jsonifier::vector<jsonifier::string> displayPermissions() {
+		DCA_INLINE jsonifier::vector<jsonifier::string> displayPermissions() {
 			jsonifier::vector<jsonifier::string> returnVector{};
 			uint64_t permissionsInteger = *static_cast<value_type*>(this);
 			if (permissionsInteger & (1ll << 3)) {
@@ -743,14 +738,14 @@ namespace discord_core_api {
 
 		/// @brief Returns a string containing the currently held permissions_base.
 		/// @return jsonifier::string a string containing the current permissions_base.
-		inline jsonifier::string getCurrentPermissionString() {
+		DCA_INLINE jsonifier::string getCurrentPermissionString() {
 			jsonifier::string returnString = *static_cast<value_type*>(this);
 			return returnString;
 		}
 
 		/// @brief Returns a string containing all of the possible permissions_base.
 		/// @return jsonifier::string a string containing all of the possible permissions_base.
-		inline static jsonifier::string getAllPermissions() {
+		DCA_INLINE static jsonifier::string getAllPermissions() {
 			uint64_t allPerms{};
 			for (int64_t x = 0; x < 46; ++x) {
 				allPerms |= 1ll << x;
@@ -761,11 +756,11 @@ namespace discord_core_api {
 		}
 
 	  protected:
-		inline permissions_base() = default;
+		DCA_INLINE permissions_base() = default;
 
 		DiscordCoreAPI_Dll static jsonifier::string computeOverwrites(jsonifier::string_view basePermissions, const guild_member_data& guildMember, const channel_data& channel);
 
-		inline static jsonifier::string computePermissions(const guild_member_data& guildMember, const channel_data& channel) {
+		DCA_INLINE static jsonifier::string computePermissions(const guild_member_data& guildMember, const channel_data& channel) {
 			jsonifier::string permissions = computeBasePermissions(guildMember);
 			permissions					  = computeOverwrites(permissions, guildMember, channel);
 			return permissions;
@@ -778,40 +773,40 @@ namespace discord_core_api {
 	  public:
 		template<typename value_type> friend class permissions_base;
 
-		inline permissions_parse() = default;
+		DCA_INLINE permissions_parse() = default;
 
-		inline permissions_parse& operator=(jsonifier::string_view valueNew) {
+		DCA_INLINE permissions_parse& operator=(jsonifier::string_view valueNew) {
 			resize(valueNew.size());
 			std::memcpy(data(), valueNew.data(), size());
 			return *this;
 		}
 
-		inline permissions_parse(jsonifier::string_view valueNew) {
+		DCA_INLINE permissions_parse(jsonifier::string_view valueNew) {
 			*this = valueNew;
 		}
 
-		inline permissions_parse& operator=(uint64_t valueNew) {
+		DCA_INLINE permissions_parse& operator=(uint64_t valueNew) {
 			*this = jsonifier::toString(valueNew);
 			return *this;
 		}
 
-		inline permissions_parse(uint64_t valueNew) {
+		DCA_INLINE permissions_parse(uint64_t valueNew) {
 			*this = valueNew;
 		}
 
-		inline permissions_parse substr(uint64_t offset, uint64_t count) const {
+		DCA_INLINE permissions_parse substr(uint64_t offset, uint64_t count) const {
 			return substr(offset, count);
 		}
 
-		inline uint64_t size() const {
+		DCA_INLINE uint64_t size() const {
 			return jsonifier::string::size();
 		}
 
-		inline char* data() const {
+		DCA_INLINE char* data() const {
 			return jsonifier::string::data();
 		}
 
-		inline operator uint64_t() const {
+		DCA_INLINE operator uint64_t() const {
 			return jsonifier::strToUint64(data());
 		}
 	};
@@ -820,49 +815,49 @@ namespace discord_core_api {
 	  public:
 		template<typename value_type> friend class permissions_base;
 
-		inline permissions() = default;
+		DCA_INLINE permissions() = default;
 
-		inline permissions& operator=(const permissions_parse& other) {
+		DCA_INLINE permissions& operator=(const permissions_parse& other) {
 			value = other.operator uint64_t();
 			return *this;
 		}
 
-		inline permissions(const permissions_parse& other) {
+		DCA_INLINE permissions(const permissions_parse& other) {
 			*this = other;
 		}
 
-		inline permissions& operator=(jsonifier::string_view valueNew) {
+		DCA_INLINE permissions& operator=(jsonifier::string_view valueNew) {
 			value = jsonifier::strToUint64(valueNew.data());
 			return *this;
 		}
 
-		inline permissions(jsonifier::string_view valueNew) {
+		DCA_INLINE permissions(jsonifier::string_view valueNew) {
 			*this = valueNew;
 		}
 
-		inline permissions& operator=(jsonifier::string&& valueNew) {
+		DCA_INLINE permissions& operator=(jsonifier::string&& valueNew) {
 			value = jsonifier::strToUint64(valueNew.data());
 			return *this;
 		}
 
-		inline permissions(jsonifier::string&& valueNew) {
+		DCA_INLINE permissions(jsonifier::string&& valueNew) {
 			*this = std::move(valueNew);
 		}
 
-		inline permissions& operator=(uint64_t valueNew) {
+		DCA_INLINE permissions& operator=(uint64_t valueNew) {
 			value = valueNew;
 			return *this;
 		}
 
-		inline permissions(uint64_t valueNew) {
+		DCA_INLINE permissions(uint64_t valueNew) {
 			*this = valueNew;
 		}
 
-		inline operator uint64_t() const {
+		DCA_INLINE operator uint64_t() const {
 			return value;
 		}
 
-		inline operator jsonifier::string() const {
+		DCA_INLINE operator jsonifier::string() const {
 			return jsonifier::toString(value);
 		}
 
@@ -904,7 +899,7 @@ namespace discord_core_api {
 	/// @tparam return_type the type of value returned by the containing co_routine.
 	/// @tparam timeOut whether or not to time out the co_routine's execution after a period of time.
 	/// @return new_thread_awaiter<return_type, timeOut> a new_thread_awaiter for suspendint the current co_routine's execution.
-	template<typename return_type, bool timeOut = true> inline auto newThreadAwaitable() {
+	template<typename return_type, bool timeOut = true> DCA_INLINE auto newThreadAwaitable() {
 		return new_thread_awaiter<return_type, timeOut>{};
 	}
 

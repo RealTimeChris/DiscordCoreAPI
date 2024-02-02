@@ -149,7 +149,7 @@ namespace discord_core_api {
 		/// @return A co_routine containing an authorization_info_data.
 		static co_routine<authorization_info_data> getCurrentUserAuthorizationInfoAsync();
 
-		template<typename user_type> inline static void insertUser(user_type&& user) {
+		template<typename user_type> DCA_INLINE static void insertUser(user_type&& user) {
 			if (doWeCacheUsersBool) {
 				if (user.id == 0) {
 					throw dca_exception{ "Sorry, but there was no id set for that user." };

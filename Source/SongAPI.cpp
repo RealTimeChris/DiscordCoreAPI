@@ -92,6 +92,7 @@ namespace discord_core_api {
 
 	bool song_api::play(song songNew) {
 		std::unique_lock lock{ accessMutex };
+		audioDataBuffer.clearContents();
 		if (taskThread.getStatus() == co_routine_status::running) {
 			taskThread.cancelAndWait();
 		}

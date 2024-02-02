@@ -1,0 +1,88 @@
+name: Build and Release DiscordCoreAPI
+
+on:
+  push:
+    branches:
+      - test-compiler
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        vcpkg install discordcoreapi:x64-windows
+
+    - name: Build DiscordCoreAPI
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build .
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: discordcoreapi
+        path: build
+
+  release:
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: discordcoreapi
+        path: build
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v1.0.0  # Specify your tag name here
+        release_name: Release v1.0.0  # Specify your release name here
+        body: |
+          Describe your release here.
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset DLL
+      id: upload-release-asset-dll
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: build\*.dll
+        asset_name: DiscordCoreAPI.dll
+        asset_content_type: application/x-msdownload
+
+    - name: Upload Release Asset PDB
+      id: upload-release-asset-pdb
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: build\*.pdb
+        asset_name: DiscordCoreAPI.pdb
+        asset_content_type: application/x-msdownload
+
+    - name: Upload Release Asset Header
+      id: upload-release-asset-header
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: build\*.h
+        asset_name: DiscordCoreAPI.h
+        asset_content_type: application/x-msdownload

@@ -198,7 +198,7 @@ namespace discord_core_api {
 				jsonifier::string stringSequence = ";</script><script nonce=";
 				newString						 = newString.substr(0, newString.find(stringSequence));
 				you_tube_search_results youtubeSearchResults{};
-				parser.parseJson<true>(youtubeSearchResults, newString);
+				parser.parseJson(youtubeSearchResults, newString);
 				for (auto& value: parser.getErrors()) {
 					message_printer::printError<print_message_type::https>(value.reportError());
 				}
@@ -238,7 +238,7 @@ namespace discord_core_api {
 				}
 				data dataNew{};
 				jsonifier::vector<format> potentialFormats{};
-				parser.parseJson<true>(dataNew, responseData.responseData);
+				parser.parseJson(dataNew, responseData.responseData);
 				for (auto& value: parser.getErrors()) {
 					message_printer::printError<print_message_type::https>(value.reportError());
 				}

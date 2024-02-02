@@ -61,16 +61,16 @@ namespace discord_core_api {
 	concept event_delegate_token_t = std::same_as<value_type, discord_core_internal::event_delegate_token>;
 
 	struct object_compare {
-		template<typename value_type01, typename value_type02> inline bool operator()(const value_type01& lhs, const value_type02& rhs) {
+		template<typename value_type01, typename value_type02> DCA_INLINE bool operator()(const value_type01& lhs, const value_type02& rhs) {
 			return lhs == static_cast<value_type01>(rhs);
 		}
 
-		template<typename value_type01> inline bool operator()(const value_type01& lhs, const value_type01& rhs) {
+		template<typename value_type01> DCA_INLINE bool operator()(const value_type01& lhs, const value_type01& rhs) {
 			return lhs == rhs;
 		}
 	};
 
-	inline uint64_t internalHashFunction(const void* value, uint64_t count) {
+	DCA_INLINE uint64_t internalHashFunction(const void* value, uint64_t count) {
 		static constexpr uint64_t fnvOffsetBasis{ 0xcbf29ce484222325 };
 		static constexpr uint64_t fnvPrime{ 0x00000100000001B3 };
 		uint64_t hash{ fnvOffsetBasis };
@@ -93,31 +93,31 @@ namespace discord_core_api {
 	template<typename value_type> struct key_hasher;
 
 	template<has_id value_type> struct key_hasher<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return internalHashFunction(&other.id.operator const uint64_t&(), sizeof(uint64_t));
 		}
 	};
 
 	template<> struct key_hasher<const char*> {
-		inline static uint64_t getHashKey(const char* other) {
+		DCA_INLINE static uint64_t getHashKey(const char* other) {
 			return internalHashFunction(other, std::char_traits<char>::length(other));
 		}
 	};
 
 	template<uint64_t size> struct key_hasher<char[size]> {
-		inline static uint64_t getHashKey(const char (&other)[size]) {
+		DCA_INLINE static uint64_t getHashKey(const char (&other)[size]) {
 			return internalHashFunction(other, std::char_traits<char>::length(other));
 		}
 	};
 
 	template<jsonifier::concepts::integer_t value_type> struct key_hasher<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return internalHashFunction(&other, sizeof(other));
 		}
 	};
 
 	template<> struct key_hasher<two_id_key> {
-		inline static uint64_t getHashKey(const two_id_key& other) {
+		DCA_INLINE static uint64_t getHashKey(const two_id_key& other) {
 			uint64_t values[2]{};
 			values[0] = other.idOne.operator const uint64_t&();
 			values[1] = other.idTwo.operator const uint64_t&();
@@ -126,25 +126,25 @@ namespace discord_core_api {
 	};
 
 	template<jsonifier::concepts::enum_t value_type> struct key_hasher<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return internalHashFunction(&other, sizeof(other));
 		}
 	};
 
 	template<jsonifier::concepts::string_t value_type> struct key_hasher<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return internalHashFunction(other.data(), other.size());
 		}
 	};
 
 	template<> struct key_hasher<snowflake> {
-		inline static uint64_t getHashKey(const snowflake& data) {
+		DCA_INLINE static uint64_t getHashKey(const snowflake& data) {
 			return internalHashFunction(&data.operator const uint64_t&(), sizeof(uint64_t));
 		}
 	};
 
 	template<> struct key_hasher<jsonifier::vector<jsonifier::string>> {
-		inline static uint64_t getHashKey(const jsonifier::vector<jsonifier::string>& data) {
+		DCA_INLINE static uint64_t getHashKey(const jsonifier::vector<jsonifier::string>& data) {
 			jsonifier::string newString{};
 			for (auto& value: data) {
 				newString.append(value);
@@ -154,13 +154,13 @@ namespace discord_core_api {
 	};
 
 	template<has_two_id value_type> struct key_hasher<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return key_hasher<two_id_key>::getHashKey(two_id_key{ other });
 		}
 	};
 
 	template<jsonifier::concepts::unique_ptr_t value_type> struct key_hasher<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return key_hasher<typename value_type::element_type>::getHashKey(*other);
 		}
 	};
@@ -168,71 +168,71 @@ namespace discord_core_api {
 	template<typename value_Type> struct key_accessor;
 
 	template<guild_member_t value_type> struct key_accessor<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return key_hasher<value_type>::getHashKey(other);
 		}
 	};
 
 	template<voice_state_t value_type> struct key_accessor<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return key_hasher<value_type>::getHashKey(other);
 		}
 	};
 
 	template<> struct key_accessor<snowflake> {
-		inline static uint64_t getHashKey(const snowflake& other) {
+		DCA_INLINE static uint64_t getHashKey(const snowflake& other) {
 			return key_hasher<snowflake>::getHashKey(other);
 		}
 	};
 
 	template<> struct key_accessor<two_id_key> {
-		inline static uint64_t getHashKey(const two_id_key& other) {
+		DCA_INLINE static uint64_t getHashKey(const two_id_key& other) {
 			return key_hasher<two_id_key>::getHashKey(other);
 		}
 	};
 
 	template<> struct key_accessor<const char*> {
-		inline static uint64_t getHashKey(const char* other) {
+		DCA_INLINE static uint64_t getHashKey(const char* other) {
 			return key_hasher<const char*>::getHashKey(other);
 		}
 	};
 
 	template<uint64_t size> struct key_accessor<char[size]> {
-		inline static uint64_t getHashKey(const char (&other)[size]) {
+		DCA_INLINE static uint64_t getHashKey(const char (&other)[size]) {
 			return key_hasher<char[size]>::getHashKey(other);
 		}
 	};
 
 	template<jsonifier::concepts::string_t value_type> struct key_accessor<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return key_hasher<value_type>::getHashKey(other);
 		}
 	};
 
 	template<has_id value_type> struct key_accessor<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return key_hasher<value_type>::getHashKey(other);
 		}
 	};
 
 	template<jsonifier::concepts::unique_ptr_t value_type> struct key_accessor<value_type> {
-		inline static uint64_t getHashKey(const value_type& other) {
+		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return key_hasher<value_type>::getHashKey(other);
 		}
 	};
 
 	template<> struct key_accessor<jsonifier::vector<jsonifier::string>> {
-		inline static uint64_t getHashKey(const jsonifier::vector<jsonifier::string>& other) {
+		DCA_INLINE static uint64_t getHashKey(const jsonifier::vector<jsonifier::string>& other) {
 			return key_hasher<jsonifier::vector<jsonifier::string>>::getHashKey(other);
 		}
 	};
 
 	template<typename value_type> struct hash_policy {
-		template<typename key_type> inline uint64_t indexForHash(key_type&& key) const {
+		template<typename key_type> DCA_INLINE uint64_t indexForHash(key_type&& key) const {
 			return key_hasher<std::remove_cvref_t<key_type>>::getHashKey(key) & (static_cast<const value_type*>(this)->capacityVal - 1);
 		}
 
-		inline static int8_t log2(uint64_t value) {
+		DCA_INLINE static int8_t log2(uint64_t value) {
 			static constexpr int8_t table[64] = { 63, 0, 58, 1, 59, 47, 53, 2, 60, 39, 48, 27, 54, 33, 42, 3, 61, 51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4, 62, 57,
 				46, 52, 38, 26, 32, 41, 50, 36, 17, 19, 29, 10, 13, 21, 56, 45, 25, 31, 35, 16, 9, 12, 44, 24, 15, 8, 23, 7, 6, 5 };
 			value |= value >> 1;
@@ -244,7 +244,7 @@ namespace discord_core_api {
 			return table[((value - (value >> 1)) * 0x07EDD5E59A4E28C2) >> 58];
 		}
 
-		inline static uint64_t nextPowerOfTwo(uint64_t size) {
+		DCA_INLINE static uint64_t nextPowerOfTwo(uint64_t size) {
 			--size;
 			size |= size >> 1;
 			size |= size >> 2;
@@ -271,47 +271,47 @@ namespace discord_core_api {
 		using pointer_internal	  = value_type_internal*;
 		using size_type			  = uint64_t;
 
-		inline hash_iterator() = default;
+		DCA_INLINE hash_iterator() = default;
 
-		inline hash_iterator(pointer_internal valueNew, size_type currentIndexNew) : value{ valueNew }, currentIndex{ currentIndexNew } {};
+		DCA_INLINE hash_iterator(pointer_internal valueNew, size_type currentIndexNew) : value{ valueNew }, currentIndex{ currentIndexNew } {};
 
-		inline hash_iterator& operator++() {
+		DCA_INLINE hash_iterator& operator++() {
 			skipEmptySlots();
 			return *this;
 		}
 
-		inline hash_iterator& operator--() {
+		DCA_INLINE hash_iterator& operator--() {
 			skipEmptySlotsRev();
 			return *this;
 		}
 
-		inline hash_iterator& operator-(size_type amountToReverse) {
+		DCA_INLINE hash_iterator& operator-(size_type amountToReverse) {
 			for (size_type x = 0; x < amountToReverse; ++x) {
 				skipEmptySlotsRev();
 			}
 			return *this;
 		}
 
-		inline hash_iterator& operator+(size_type amountToAdd) {
+		DCA_INLINE hash_iterator& operator+(size_type amountToAdd) {
 			for (size_type x = 0; x < amountToAdd; ++x) {
 				skipEmptySlots();
 			}
 			return *this;
 		}
 
-		inline pointer getRawPtr() {
+		DCA_INLINE pointer getRawPtr() {
 			return &value->data[currentIndex];
 		}
 
-		inline bool operator==(const hash_iterator&) const {
+		DCA_INLINE bool operator==(const hash_iterator&) const {
 			return !value || value->sentinelVector[currentIndex] == -1;
 		}
 
-		inline pointer operator->() {
+		DCA_INLINE pointer operator->() {
 			return &value->data[currentIndex];
 		}
 
-		inline reference operator*() {
+		DCA_INLINE reference operator*() {
 			return value->data[currentIndex];
 		}
 

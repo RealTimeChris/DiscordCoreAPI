@@ -43,11 +43,11 @@ namespace discord_core_api {
 		  public:
 			friend class voice_connection;
 
-			inline udp_connection() {
+			DCA_INLINE udp_connection() {
 				resampleVector.resize(maxBufferSize);
 			}
 
-			inline udp_connection& operator=(udp_connection&& other) noexcept {
+			DCA_INLINE udp_connection& operator=(udp_connection&& other) noexcept {
 				resampleVector = std::move(other.resampleVector);
 				outputBuffer   = std::move(other.outputBuffer);
 				inputBuffer	   = std::move(other.inputBuffer);
@@ -61,11 +61,11 @@ namespace discord_core_api {
 				return *this;
 			};
 
-			inline udp_connection(udp_connection&& other) noexcept {
+			DCA_INLINE udp_connection(udp_connection&& other) noexcept {
 				*this = std::move(other);
 			};
 
-			inline udp_connection(const jsonifier::string& baseUrlNew, uint16_t portNew, stream_type streamTypeNew,
+			DCA_INLINE udp_connection(const jsonifier::string& baseUrlNew, uint16_t portNew, stream_type streamTypeNew,
 				std::coroutine_handle<discord_core_api::co_routine<void, false>::promise_type>* token) {
 				resampleVector.resize(maxBufferSize);
 				streamType = streamTypeNew;
@@ -174,7 +174,7 @@ namespace discord_core_api {
 				}
 			}
 
-			inline connection_status processIO() {
+			DCA_INLINE connection_status processIO() {
 				if (!areWeStillConnected()) {
 					return currentStatus;
 				};
@@ -227,7 +227,7 @@ namespace discord_core_api {
 				return currentStatus;
 			}
 
-			inline void writeData(jsonifier::string_view_base<uint8_t> dataToWrite) {
+			DCA_INLINE void writeData(jsonifier::string_view_base<uint8_t> dataToWrite) {
 				if (areWeStillConnected()) {
 					uint64_t remainingBytes{ dataToWrite.size() };
 					while (remainingBytes > 0) {
@@ -244,11 +244,11 @@ namespace discord_core_api {
 				}
 			}
 
-			inline jsonifier::string_view_base<uint8_t> getInputBuffer() {
+			DCA_INLINE jsonifier::string_view_base<uint8_t> getInputBuffer() {
 				return inputBuffer.readData();
 			}
 
-			inline bool areWeStillConnected() {
+			DCA_INLINE bool areWeStillConnected() {
 				if (socket.operator SOCKET() != INVALID_SOCKET) {
 					pollfd fdEvent = {};
 					fdEvent.fd	   = socket;
@@ -264,7 +264,7 @@ namespace discord_core_api {
 				}
 			}
 
-			inline bool processWriteData() {
+			DCA_INLINE bool processWriteData() {
 				if (outputBuffer.getUsedSpace() > 0) {
 					auto bytesToWrite{ outputBuffer.getCurrentTail()->getUsedSpace() };
 					auto newData = outputBuffer.readData();
@@ -279,7 +279,7 @@ namespace discord_core_api {
 				return true;
 			}
 
-			inline bool processReadData() {
+			DCA_INLINE bool processReadData() {
 				int32_t readBytes{};
 				do {
 					if (!inputBuffer.isItFull()) {
@@ -298,15 +298,15 @@ namespace discord_core_api {
 				return true;
 			}
 
-			virtual inline void handleAudioBuffer() = 0;
+			virtual DCA_INLINE void handleAudioBuffer() = 0;
 
-			virtual inline void disconnect() {
+			virtual DCA_INLINE void disconnect() {
 				socket = INVALID_SOCKET;
 				outputBuffer.clear();
 				inputBuffer.clear();
 			}
 
-			virtual inline ~udp_connection() {
+			virtual DCA_INLINE ~udp_connection() {
 				disconnect();
 			}
 

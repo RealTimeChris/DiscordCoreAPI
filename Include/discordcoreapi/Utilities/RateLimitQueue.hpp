@@ -62,48 +62,13 @@ namespace discord_core_api {
 		  public:
 			friend class https_client;
 
-			inline rate_limit_queue() = default;
+			DCA_INLINE rate_limit_queue() = default;
 
-			inline void initialize() {
-				for (int64_t enumOne = static_cast<int64_t>(https_workload_type::Unset); enumOne != static_cast<int64_t>(https_workload_type::Last); enumOne++) {
-					auto tempBucket = jsonifier::toString(std::chrono::duration_cast<nanoseconds>(sys_clock::now().time_since_epoch()).count());
-					buckets.emplace(static_cast<https_workload_type>(enumOne), tempBucket);
-					rateLimits.emplace(tempBucket, makeUnique<rate_limit_data>())
-						.getRawPtr()
-						->second->sampledTimeInMs.store(std::chrono::duration_cast<milliseconds>(sys_clock::now().time_since_epoch()));
-					std::this_thread::sleep_for(1ms);
-				}
-			}
+			DCA_INLINE void initialize();
 
-			inline rate_limit_data* getEndpointAccess(https_workload_type workloadType) {
-				stop_watch<milliseconds> stopWatch{ milliseconds{ 25000 } };
-				stopWatch.reset();
-				auto targetTime =
-					std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(rateLimits[buckets[workloadType]]->sampledTimeInMs.load(std::memory_order_acquire)) +
-					std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(rateLimits[buckets[workloadType]]->sRemain.load(std::memory_order_acquire));
-				if (rateLimits[buckets[workloadType]]->getsRemaining.load(std::memory_order_acquire) <= 0) {
-					auto newNow = std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(sys_clock::now().time_since_epoch());
-					while ((newNow - targetTime).count() <= 0) {
-						if (stopWatch.hasTimeElapsed()) {
-							return nullptr;
-						}
-						newNow = std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(sys_clock::now().time_since_epoch());
-						std::this_thread::sleep_for(1us);
-					}
-				}
-				stopWatch.reset();
-				while (!rateLimits[buckets[workloadType]]->accessMutex.try_lock()) {
-					std::this_thread::sleep_for(1us);
-					if (stopWatch.hasTimeElapsed()) {
-						return nullptr;
-					}
-				}
-				return rateLimits[buckets[workloadType]].get();
-			}
+			DCA_INLINE rate_limit_data* getEndpointAccess(https_workload_type workloadType);
 
-			inline void releaseEndPointAccess(https_workload_type type) {
-				rateLimits[buckets[type]]->accessMutex.unlock();
-			}
+			DCA_INLINE void releaseEndPointAccess(https_workload_type type);
 
 		  protected:
 			unordered_map<jsonifier::string, unique_ptr<rate_limit_data>> rateLimits{};

@@ -465,7 +465,7 @@ namespace discord_core_api {
 					if (configManager->getTextFormat() == text_format::etf) {
 						try {
 							dataNew = etfParser.parseEtfToJson(dataNew);
-							parser.parseJson<true>(message, parser.minify(parser.prettify(dataNew)));
+							parser.parseJson(message, parser.minify(parser.prettify(dataNew)));
 							for (auto& valueNew: parser.getErrors()) {
 								message_printer::printError<print_message_type::websocket>(valueNew.reportError() + ", for data:" + dataNew);
 							}
@@ -476,7 +476,7 @@ namespace discord_core_api {
 							return false;
 						}
 					} else {
-						parser.parseJson<true>(message, parser.minify(parser.prettify(dataNew)));
+						parser.parseJson(message, parser.minify(parser.prettify(dataNew)));
 						if (auto result = parser.getErrors(); result.size() > 0) {
 							for (auto& valueNew: result) {
 								message_printer::printError<print_message_type::websocket>(valueNew.reportError() + ", for data:" + dataNew);
@@ -499,7 +499,7 @@ namespace discord_core_api {
 											data.d.jsonifierExcludedKeys.emplace("shard");
 										}
 										currentState.store(websocket_state::authenticated, std::memory_order_release);
-										parser.parseJson<true>(data, dataNew);
+										parser.parseJson(data, dataNew);
 										if (auto result = parser.getErrors(); result.size() > 0) {
 											for (auto& valueNew: result) {
 												message_printer::printError<print_message_type::websocket>(valueNew.reportError());
@@ -951,7 +951,7 @@ namespace discord_core_api {
 						}
 						case websocket_op_codes::Invalid_Session: {
 							websocket_message_data<bool> data{};
-							parser.parseJson<true>(data, dataNew);
+							parser.parseJson(data, dataNew);
 							if (auto result = parser.getErrors(); result.size() > 0) {
 								for (auto& valueNew: result) {
 									message_printer::printError<print_message_type::websocket>(valueNew.reportError());
@@ -975,7 +975,7 @@ namespace discord_core_api {
 						}
 						case websocket_op_codes::hello: {
 							websocket_message_data<hello_data> data{};
-							parser.parseJson<true>(data, dataNew);
+							parser.parseJson(data, dataNew);
 							if (auto result = parser.getErrors(); result.size() > 0) {
 								for (auto& valueNew: result) {
 									message_printer::printError<print_message_type::websocket>(valueNew.reportError());

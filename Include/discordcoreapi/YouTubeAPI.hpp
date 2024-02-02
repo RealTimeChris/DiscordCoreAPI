@@ -75,7 +75,7 @@ namespace discord_core_api {
 		};
 
 		struct you_tube_request_client {
-			static constexpr jsonifier::string_view clientVersion{ "17.10.35" };
+			static constexpr jsonifier::string_view clientVersion{ "17.13.3" };
 			static constexpr jsonifier::string_view androidSdkVersion{ "31" };
 			static constexpr jsonifier::string_view clientName{ "android" };
 			static constexpr jsonifier::string_view platform{ "mobile" };

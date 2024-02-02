@@ -25,10 +25,12 @@ set(Opus_DIR "C:/Vcpkg/installed/x64-windows/share/opus") # Set this one to the 
 set(unofficial-sodium_DIR "C:/Vcpkg/installed/x64-windows/share/unofficial-sodium") # Set this one to the folder location of the file "unofficial-sodiumConfig.cmake".
 set(Jsonifier_DIR "C:/vcpkg2/Users/Chris/source/repos/Jsonifier/Install/Windows-Release/share/jsonifier") # Set this one to the folder location of the file "JsonifierConfig.cmake".
 set(OPENSSL_ROOT_DIR "C:/Vcpkg/installed/x64-windows/") # Set this one to the folder location of the include folder and library folders of OpenSSL.
+set(VCPKG_ROOT_DIR "C:/Vcpkg")
+set(CMAKE_BUILD_TYPES "Release;Debug")
 
 if (EXISTS "${VCPKG_ROOT_DIR}")
 	set(ENV{VCPKG_INSTALLATION_ROOT} "${VCPKG_ROOT_DIR}")
-endif()
+endif() 
 
 cmake_minimum_required(VERSION 3.20)
 if (WIN32)

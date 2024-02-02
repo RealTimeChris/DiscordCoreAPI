@@ -43,18 +43,31 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::modify_current_guild_member_data> {
 		using value_type				 = discord_core_api::modify_current_guild_member_data;
-		static constexpr auto parseValue = createValue("guild_id", &value_type::guildId, "nick", &value_type::nick, "reason", &value_type::reason);
+		static constexpr auto parseValue = createValue("nick", &value_type::nick);
 	};
 
 	template<> struct core<discord_core_api::modify_guild_member_data> {
 		using value_type				 = discord_core_api::modify_guild_member_data;
-		static constexpr auto parseValue = createValue("channel_id", &value_type::currentChannelId, "deaf", &value_type::deaf, "guild_id", &value_type::guildId, "mute",
-			&value_type::mute, "nick", &value_type::nick, "roles", &value_type::roleIds, "user_id", &value_type::guildMemberId, "voice_channel_id", &value_type::newVoiceChannelId,
-			"reason", &value_type::reason);
+		static constexpr auto parseValue = createValue("deaf", &value_type::deaf, "mute", &value_type::mute, "nick", &value_type::nick, "roles", &value_type::roleIds, "channel_id",
+			&value_type::channelId, "flags", &value_type::flags);
 	};
 }
 
 namespace discord_core_api {
+
+	modify_guild_member_data::modify_guild_member_data(const guild_member_data& other) {
+		this->channelId = guild_members::getVoiceStateData(other).channelId;
+		this->roleIds	= other.roles;
+		if (roleIds.size() == 0) {
+			jsonifierExcludedKeys.emplace("roles");
+		}
+		this->deaf			= other.deaf;
+		this->mute			= other.mute;
+		this->nick			= other.nick;
+		this->flags			= static_cast<uint32_t>(other.flags);
+		this->guildId		= other.guildId;
+		this->guildMemberId = other.user.id;
+	}
 
 	guild_member_cache_data& guild_member_cache_data::operator=(const guild_member_data& other) {
 		if (static_cast<int64_t>(other.flags) != 0) {
@@ -249,7 +262,18 @@ namespace discord_core_api {
 		discord_core_internal::https_workload_data workload{ discord_core_internal::https_workload_type::Patch_Guild_Member };
 		co_await newThreadAwaitable<guild_member_data>();
 		workload.workloadClass = discord_core_internal::https_workload_class::Patch;
-		workload.relativePath  = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
+		if (dataPackage.communicationDisabledUntil.operator jsonifier::string_base<char, false>() == "") {
+			dataPackage.jsonifierExcludedKeys.emplace("communication_disabled_until");
+		}
+		if (dataPackage.channelId.operator jsonifier::string_base<char, false>() == "0" || dataPackage.channelId.operator const uint64_t &() == 0) {
+			dataPackage.jsonifierExcludedKeys.emplace("channel_id");
+			dataPackage.jsonifierExcludedKeys.emplace("mute");
+			dataPackage.jsonifierExcludedKeys.emplace("deaf");
+		}
+		if (dataPackage.flags == 0) {
+			dataPackage.jsonifierExcludedKeys.emplace("flags");
+		}
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "guild_members::modifyGuildMemberAsync()";
 		if (dataPackage.reason != "") {
@@ -262,7 +286,11 @@ namespace discord_core_api {
 		if (cache.contains(key)) {
 			data = cache[key];
 		}
-		guild_members::httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
+		try {
+			guild_members::httpsClient->submitWorkloadAndGetResult(std::move(workload), data);
+		} catch (const std::runtime_error& error) {
+			std::cout << error.what() << std::endl;
+		}
 		if (doWeCacheGuildMembersBool) {
 			insertGuildMember(static_cast<guild_member_cache_data>(data));
 		}
@@ -286,7 +314,7 @@ namespace discord_core_api {
 		co_await newThreadAwaitable<guild_member_data>();
 		get_guild_member_data dataNew{ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId };
 		guild_member_data guildMember = guild_members::getCachedGuildMember(dataNew);
-		modify_guild_member_data dataPackage01{};
+		modify_guild_member_data dataPackage01{ guildMember };
 		dataPackage01.deaf			= guildMember.getFlagValue(guild_member_flags::Deaf);
 		dataPackage01.guildId		= guildMember.guildId;
 		dataPackage01.guildMemberId = guildMember.user.id;

@@ -12,7 +12,7 @@ void onBoot00(discord_core_api::discord_core_client* args) {
 	//theUser.writeDataToDB(discord_core_api::managerAgent);
 }
 
-discord_core_api::co_routine<void, true> onGuildCreation(discord_core_api::on_guild_creation_data dataPackage) {
+discord_core_api::co_routine<void, true> onGuildCreation(const discord_core_api::on_guild_creation_data& dataPackage) {
 	co_await discord_core_api::newThreadAwaitable<void>();
 	//discord_core_api::DiscordGuild discordGuild{ discord_core_api::managerAgent, dataPackage.value };
 	//discordGuild.getDataFromDB(discord_core_api::managerAgent);

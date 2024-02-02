@@ -440,7 +440,7 @@ SUBGROUPING            = NO
 INLINE_GROUPED_CLASSES = NO
 
 # When the INLINE_SIMPLE_STRUCTS tag is set to YES, structs, classes, and unions
-# with only public data fields or simple typedef fields will be shown inline in
+# with only public data fields or simple typedef fields will be shown DCA_INLINE in
 # the documentation of the scope in which they are defined (i.e. file,
 # namespace, or group documentation), provided this scope is documented. If set
 # to NO, structs, classes, and unions are shown on a separate page (for HTML and
@@ -649,7 +649,7 @@ SHOW_GROUPED_MEMB_INC  = NO
 FORCE_LOCAL_INCLUDES   = NO
 
 # If the INLINE_INFO tag is set to YES then a tag [inline] is inserted in the
-# documentation for inline members.
+# documentation for DCA_INLINE members.
 # The default value is: YES.
 
 INLINE_INFO            = YES

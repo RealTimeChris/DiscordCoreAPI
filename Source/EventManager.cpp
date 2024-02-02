@@ -186,7 +186,7 @@ namespace discord_core_api {
 	template<> unordered_map<jsonifier::string, unbounded_message_block<reaction_data>*> object_collector<reaction_data>::objectsBuffersMap;
 
 	on_input_event_creation_data::on_input_event_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -196,7 +196,7 @@ namespace discord_core_api {
 
 	on_application_command_permissions_update_data::on_application_command_permissions_update_data(jsonifier::jsonifier_core<false>& parserNew,
 		jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -205,7 +205,7 @@ namespace discord_core_api {
 	}
 
 	on_auto_moderation_rule_creation_data::on_auto_moderation_rule_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -214,7 +214,7 @@ namespace discord_core_api {
 	}
 
 	on_auto_moderation_rule_update_data::on_auto_moderation_rule_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -223,7 +223,7 @@ namespace discord_core_api {
 	}
 
 	on_auto_moderation_rule_deletion_data::on_auto_moderation_rule_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -232,7 +232,7 @@ namespace discord_core_api {
 	}
 
 	on_auto_moderation_action_execution_data::on_auto_moderation_action_execution_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -241,7 +241,7 @@ namespace discord_core_api {
 	}
 
 	on_channel_creation_data::on_channel_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -258,7 +258,7 @@ namespace discord_core_api {
 	}
 
 	on_channel_update_data::on_channel_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<updated_event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<updated_event_data*>(this), dataToParse);
 		if (channels::doWeCacheChannels()) {
 			oldValue = channels::getCachedChannel({ .channelId = value.id });
 			channels::insertChannel(static_cast<channel_cache_data>(value));
@@ -266,7 +266,7 @@ namespace discord_core_api {
 	}
 
 	on_channel_deletion_data::on_channel_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -287,7 +287,7 @@ namespace discord_core_api {
 	}
 
 	on_channel_pins_update_data::on_channel_pins_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -296,7 +296,7 @@ namespace discord_core_api {
 	}
 
 	on_thread_creation_data::on_thread_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -305,7 +305,7 @@ namespace discord_core_api {
 	}
 
 	on_thread_update_data::on_thread_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -314,7 +314,7 @@ namespace discord_core_api {
 	}
 
 	on_thread_deletion_data::on_thread_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -323,7 +323,7 @@ namespace discord_core_api {
 	}
 
 	on_thread_list_sync_data::on_thread_list_sync_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -332,7 +332,7 @@ namespace discord_core_api {
 	}
 
 	on_thread_member_update_data::on_thread_member_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -341,7 +341,7 @@ namespace discord_core_api {
 	}
 
 	on_thread_members_update_data::on_thread_members_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -350,7 +350,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_creation_data::on_guild_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -416,7 +416,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_update_data::on_guild_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<updated_event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<updated_event_data*>(this), dataToParse);
 		if (guilds::doWeCacheGuilds()) {
 			oldValue = guilds::getCachedGuild({ value.id });
 			guilds::insertGuild(static_cast<guild_cache_data>(value));
@@ -424,7 +424,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_deletion_data::on_guild_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -445,7 +445,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_ban_add_data::on_guild_ban_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -462,7 +462,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_ban_remove_data::on_guild_ban_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -471,7 +471,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_emojis_update_data::on_guild_emojis_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -486,7 +486,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_stickers_update_data::on_guild_stickers_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -495,7 +495,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_integrations_update_data::on_guild_integrations_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -504,7 +504,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_member_add_data::on_guild_member_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -522,7 +522,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_member_remove_data::on_guild_member_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -545,7 +545,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_member_update_data::on_guild_member_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<updated_event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<updated_event_data*>(this), dataToParse);
 		if (guild_members::doWeCacheGuildMembers()) {
 			oldValue = guild_members::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 			guild_members::insertGuildMember(static_cast<guild_member_cache_data>(value));
@@ -553,7 +553,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_members_chunk_data::on_guild_members_chunk_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -562,7 +562,7 @@ namespace discord_core_api {
 	}
 
 	on_role_creation_data::on_role_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -579,7 +579,7 @@ namespace discord_core_api {
 	}
 
 	on_role_update_data::on_role_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<updated_event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<updated_event_data*>(this), dataToParse);
 		if (roles::doWeCacheRoles()) {
 			oldValue = roles::getCachedRole({ .guildId = value.guildId, .roleId = value.role.id });
 			roles::insertRole(static_cast<role_cache_data>(value.role));
@@ -587,7 +587,7 @@ namespace discord_core_api {
 	}
 
 	on_role_deletion_data::on_role_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -609,7 +609,7 @@ namespace discord_core_api {
 
 	on_voice_server_update_data::on_voice_server_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse,
 		discord_core_internal::websocket_client* sslShard) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -633,7 +633,7 @@ namespace discord_core_api {
 	};
 
 	on_guild_scheduled_event_creation_data::on_guild_scheduled_event_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -642,7 +642,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_scheduled_event_update_data::on_guild_scheduled_event_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -651,7 +651,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_scheduled_event_deletion_data::on_guild_scheduled_event_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -660,7 +660,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_scheduled_event_user_add_data::on_guild_scheduled_event_user_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -669,7 +669,7 @@ namespace discord_core_api {
 	}
 
 	on_guild_scheduled_event_user_remove_data::on_guild_scheduled_event_user_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -678,7 +678,7 @@ namespace discord_core_api {
 	}
 
 	on_integration_creation_data::on_integration_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -687,7 +687,7 @@ namespace discord_core_api {
 	}
 
 	on_integration_update_data::on_integration_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -696,7 +696,7 @@ namespace discord_core_api {
 	}
 
 	on_integration_deletion_data::on_integration_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -705,7 +705,7 @@ namespace discord_core_api {
 	}
 
 	on_interaction_creation_data::on_interaction_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -714,7 +714,7 @@ namespace discord_core_api {
 		unique_ptr<input_event_data> eventData{ makeUnique<input_event_data>(value) };
 		switch (value.type) {
 			case interaction_type::Application_Command: {
-				eventData->responseType		= input_event_response_type::unset;
+				eventData->responseType		= input_event_response_type::Unset;
 				eventData->interactionData = makeUnique<interaction_data>(value);
 				discord_core_client::getInstance()->getCommandController().checkForAndRunCommand(command_data{ *eventData });
 				unique_ptr<on_input_event_creation_data> eventCreationData{ makeUnique<on_input_event_creation_data>(parser, dataToParse) };
@@ -726,7 +726,7 @@ namespace discord_core_api {
 					case component_type::Action_Row:
 						[[fallthrough]];
 					case component_type::Button: {
-						eventData->responseType	   = input_event_response_type::unset;
+						eventData->responseType	   = input_event_response_type::Unset;
 						eventData->interactionData = makeUnique<interaction_data>(value);
 						if (button_collector::buttonInteractionBuffersMap.contains(
 								eventData->getChannelData().id.operator jsonifier::string() + eventData->getMessageData().id.operator jsonifier::string())) {
@@ -746,7 +746,7 @@ namespace discord_core_api {
 					case component_type::User_Select:
 						[[fallthrough]];
 					case component_type::String_Select: {
-						eventData->responseType		= input_event_response_type::unset;
+						eventData->responseType		= input_event_response_type::Unset;
 						eventData->interactionData = makeUnique<interaction_data>(value);
 						if (select_menu_collector::selectMenuInteractionBuffersMap.contains(
 								eventData->getChannelData().id.operator jsonifier::string() + eventData->getMessageData().id.operator jsonifier::string())) {
@@ -764,7 +764,7 @@ namespace discord_core_api {
 				break;
 			}
 			case interaction_type::Modal_Submit: {
-				eventData->responseType		= input_event_response_type::unset;
+				eventData->responseType		= input_event_response_type::Unset;
 				eventData->interactionData = makeUnique<interaction_data>(value);
 				unique_ptr<on_input_event_creation_data> eventCreationData{ makeUnique<on_input_event_creation_data>(parser, dataToParse) };
 				eventCreationData->value = *eventData;
@@ -775,7 +775,7 @@ namespace discord_core_api {
 				break;
 			}
 			case interaction_type::Application_Command_Autocomplete: {
-				eventData->responseType	   = input_event_response_type::unset;
+				eventData->responseType	   = input_event_response_type::Unset;
 				eventData->interactionData = makeUnique<interaction_data>(value);
 				unique_ptr<on_auto_complete_entry_data> autocompleteEntryData{ makeUnique<on_auto_complete_entry_data>(parser, dataToParse) };
 				autocompleteEntryData->value = *eventData;
@@ -789,7 +789,7 @@ namespace discord_core_api {
 	}
 
 	on_invite_creation_data::on_invite_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -798,7 +798,7 @@ namespace discord_core_api {
 	}
 
 	on_invite_deletion_data::on_invite_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -807,7 +807,7 @@ namespace discord_core_api {
 	}
 
 	on_message_creation_data::on_message_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -819,7 +819,7 @@ namespace discord_core_api {
 	}
 
 	on_message_update_data::on_message_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -831,7 +831,7 @@ namespace discord_core_api {
 	}
 
 	on_message_deletion_data::on_message_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -840,7 +840,7 @@ namespace discord_core_api {
 	}
 
 	on_message_delete_bulk_data::on_message_delete_bulk_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -849,7 +849,7 @@ namespace discord_core_api {
 	}
 
 	on_reaction_add_data::on_reaction_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -861,7 +861,7 @@ namespace discord_core_api {
 	}
 
 	on_reaction_remove_data::on_reaction_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -870,7 +870,7 @@ namespace discord_core_api {
 	}
 
 	on_reaction_remove_all_data::on_reaction_remove_all_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -879,7 +879,7 @@ namespace discord_core_api {
 	}
 
 	on_reaction_remove_emoji_data::on_reaction_remove_emoji_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -888,7 +888,7 @@ namespace discord_core_api {
 	}
 
 	on_presence_update_data::on_presence_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -897,7 +897,7 @@ namespace discord_core_api {
 	}
 
 	on_stage_instance_creation_data::on_stage_instance_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -906,7 +906,7 @@ namespace discord_core_api {
 	}
 
 	on_stage_instance_update_data::on_stage_instance_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -915,7 +915,7 @@ namespace discord_core_api {
 	}
 
 	on_stage_instance_deletion_data::on_stage_instance_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -924,7 +924,7 @@ namespace discord_core_api {
 	}
 
 	on_typing_start_data::on_typing_start_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -933,7 +933,7 @@ namespace discord_core_api {
 	}
 
 	on_user_update_data::on_user_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<updated_event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<updated_event_data*>(this), dataToParse);
 		oldValue = users::getCachedUser({ value.id });
 		if (users::doWeCacheUsers()) {
 			users::insertUser(static_cast<user_cache_data>(value));
@@ -942,7 +942,7 @@ namespace discord_core_api {
 
 	on_voice_state_update_data::on_voice_state_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse,
 		discord_core_internal::websocket_client* sslShard) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -970,7 +970,7 @@ namespace discord_core_api {
 	}
 
 	on_webhook_update_data::on_webhook_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -979,7 +979,7 @@ namespace discord_core_api {
 	}
 
 	on_auto_complete_entry_data::on_auto_complete_entry_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<true>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -988,7 +988,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onApplicationCommandsPermissionsUpdate(
-		discord_core_internal::event_delegate<co_routine<void>, on_application_command_permissions_update_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_application_command_permissions_update_data&> handler) {
 		return onApplicationCommandPermissionsUpdateEvent.add(std::move(handler));
 	}
 
@@ -997,7 +997,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onAutoModerationRuleCreation(
-		discord_core_internal::event_delegate<co_routine<void>, on_auto_moderation_rule_creation_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_auto_moderation_rule_creation_data&> handler) {
 		return onAutoModerationRuleCreationEvent.add(std::move(handler));
 	}
 
@@ -1006,7 +1006,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onAutoModerationRuleUpdate(
-		discord_core_internal::event_delegate<co_routine<void>, on_auto_moderation_rule_update_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_auto_moderation_rule_update_data&> handler) {
 		return onAutoModerationRuleUpdateEvent.add(std::move(handler));
 	}
 
@@ -1015,7 +1015,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onAutoModerationRuleDeletion(
-		discord_core_internal::event_delegate<co_routine<void>, on_auto_moderation_rule_deletion_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_auto_moderation_rule_deletion_data&> handler) {
 		return onAutoModerationRuleDeletionEvent.add(std::move(handler));
 	}
 
@@ -1024,7 +1024,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onAutoModerationActionExecution(
-		discord_core_internal::event_delegate<co_routine<void>, on_auto_moderation_action_execution_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_auto_moderation_action_execution_data&> handler) {
 		return onAutoModerationActionExecutionEvent.add(std::move(handler));
 	}
 
@@ -1032,7 +1032,7 @@ namespace discord_core_api {
 		return onAutoModerationActionExecutionEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onAutoCompleteEntry(discord_core_internal::event_delegate<co_routine<void>, on_auto_complete_entry_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onAutoCompleteEntry(discord_core_internal::event_delegate<co_routine<void>, const on_auto_complete_entry_data&> handler) {
 		return onAutoCompleteEntryEvent.add(std::move(handler));
 	}
 
@@ -1040,7 +1040,7 @@ namespace discord_core_api {
 		return onInputEventCreationEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onInputEventCreation(discord_core_internal::event_delegate<co_routine<void>, on_input_event_creation_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onInputEventCreation(discord_core_internal::event_delegate<co_routine<void>, const on_input_event_creation_data&> handler) {
 		return onInputEventCreationEvent.add(std::move(handler));
 	}
 
@@ -1048,7 +1048,7 @@ namespace discord_core_api {
 		return onInputEventCreationEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onChannelCreation(discord_core_internal::event_delegate<co_routine<void>, on_channel_creation_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onChannelCreation(discord_core_internal::event_delegate<co_routine<void>, const on_channel_creation_data&> handler) {
 		return onChannelCreationEvent.add(std::move(handler));
 	}
 
@@ -1056,7 +1056,7 @@ namespace discord_core_api {
 		onChannelCreationEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onChannelUpdate(discord_core_internal::event_delegate<co_routine<void>, on_channel_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onChannelUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_channel_update_data&> handler) {
 		return onChannelUpdateEvent.add(std::move(handler));
 	}
 
@@ -1064,7 +1064,7 @@ namespace discord_core_api {
 		onChannelUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onChannelDeletion(discord_core_internal::event_delegate<co_routine<void>, on_channel_deletion_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onChannelDeletion(discord_core_internal::event_delegate<co_routine<void>, const on_channel_deletion_data&> handler) {
 		return onChannelDeletionEvent.add(std::move(handler));
 	}
 
@@ -1072,7 +1072,7 @@ namespace discord_core_api {
 		onChannelDeletionEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onChannelPinsUpdate(discord_core_internal::event_delegate<co_routine<void>, on_channel_pins_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onChannelPinsUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_channel_pins_update_data&> handler) {
 		return onChannelPinsUpdateEvent.add(std::move(handler));
 	}
 
@@ -1080,7 +1080,7 @@ namespace discord_core_api {
 		return onChannelPinsUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onThreadCreation(discord_core_internal::event_delegate<co_routine<void>, on_thread_creation_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadCreation(discord_core_internal::event_delegate<co_routine<void>, const on_thread_creation_data&> handler) {
 		return onThreadCreationEvent.add(std::move(handler));
 	}
 
@@ -1088,7 +1088,7 @@ namespace discord_core_api {
 		return onThreadCreationEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onThreadUpdate(discord_core_internal::event_delegate<co_routine<void>, on_thread_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_thread_update_data&> handler) {
 		return onThreadUpdateEvent.add(std::move(handler));
 	}
 
@@ -1096,7 +1096,7 @@ namespace discord_core_api {
 		return onThreadUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onThreadDeletion(discord_core_internal::event_delegate<co_routine<void>, on_thread_deletion_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadDeletion(discord_core_internal::event_delegate<co_routine<void>, const on_thread_deletion_data&> handler) {
 		return onThreadDeletionEvent.add(std::move(handler));
 	}
 
@@ -1104,7 +1104,7 @@ namespace discord_core_api {
 		return onThreadDeletionEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onThreadListSync(discord_core_internal::event_delegate<co_routine<void>, on_thread_list_sync_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadListSync(discord_core_internal::event_delegate<co_routine<void>, const on_thread_list_sync_data&> handler) {
 		return onThreadListSyncEvent.add(std::move(handler));
 	}
 
@@ -1112,7 +1112,7 @@ namespace discord_core_api {
 		return onThreadListSyncEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onThreadMemberUpdate(discord_core_internal::event_delegate<co_routine<void>, on_thread_member_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onThreadMemberUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_thread_member_update_data&> handler) {
 		return onThreadMemberUpdateEvent.add(std::move(handler));
 	}
 
@@ -1121,7 +1121,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onThreadMembersUpdate(
-		discord_core_internal::event_delegate<co_routine<void>, on_thread_members_update_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_thread_members_update_data&> handler) {
 		return onThreadMembersUpdateEvent.add(std::move(handler));
 	}
 
@@ -1129,7 +1129,7 @@ namespace discord_core_api {
 		return onThreadMembersUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onGuildCreation(discord_core_internal::event_delegate<co_routine<void>, on_guild_creation_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildCreation(discord_core_internal::event_delegate<co_routine<void>, const on_guild_creation_data&> handler) {
 		return onGuildCreationEvent.add(std::move(handler));
 	}
 
@@ -1137,7 +1137,7 @@ namespace discord_core_api {
 		onGuildCreationEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onGuildUpdate(discord_core_internal::event_delegate<co_routine<void>, on_guild_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_guild_update_data&> handler) {
 		return onGuildUpdateEvent.add(std::move(handler));
 	}
 
@@ -1145,7 +1145,7 @@ namespace discord_core_api {
 		onGuildUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onGuildDeletion(discord_core_internal::event_delegate<co_routine<void>, on_guild_deletion_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildDeletion(discord_core_internal::event_delegate<co_routine<void>, const on_guild_deletion_data&> handler) {
 		return onGuildDeletionEvent.add(std::move(handler));
 	}
 
@@ -1153,7 +1153,7 @@ namespace discord_core_api {
 		onGuildDeletionEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onGuildBanAdd(discord_core_internal::event_delegate<co_routine<void>, on_guild_ban_add_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildBanAdd(discord_core_internal::event_delegate<co_routine<void>, const on_guild_ban_add_data&> handler) {
 		return onGuildBanAddEvent.add(std::move(handler));
 	}
 
@@ -1161,7 +1161,7 @@ namespace discord_core_api {
 		onGuildBanAddEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onGuildBanRemove(discord_core_internal::event_delegate<co_routine<void>, on_guild_ban_remove_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildBanRemove(discord_core_internal::event_delegate<co_routine<void>, const on_guild_ban_remove_data&> handler) {
 		return onGuildBanRemoveEvent.add(std::move(handler));
 	}
 
@@ -1169,7 +1169,7 @@ namespace discord_core_api {
 		onGuildBanRemoveEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onGuildEmojisUpdate(discord_core_internal::event_delegate<co_routine<void>, on_guild_emojis_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildEmojisUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_guild_emojis_update_data&> handler) {
 		return onGuildEmojisUpdateEvent.add(std::move(handler));
 	}
 
@@ -1178,7 +1178,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onGuildStickersUpdate(
-		discord_core_internal::event_delegate<co_routine<void>, on_guild_stickers_update_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_guild_stickers_update_data&> handler) {
 		return onGuildStickersUpdateEvent.add(std::move(handler));
 	}
 
@@ -1187,7 +1187,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onGuildIntegrationsUpdate(
-		discord_core_internal::event_delegate<co_routine<void>, on_guild_integrations_update_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_guild_integrations_update_data&> handler) {
 		return onGuildIntegrationsUpdateEvent.add(std::move(handler));
 	}
 
@@ -1195,7 +1195,7 @@ namespace discord_core_api {
 		onGuildIntegrationsUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onGuildMembersChunk(discord_core_internal::event_delegate<co_routine<void>, on_guild_members_chunk_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildMembersChunk(discord_core_internal::event_delegate<co_routine<void>, const on_guild_members_chunk_data&> handler) {
 		return onGuildMembersChunkEvent.add(std::move(handler));
 	}
 
@@ -1203,7 +1203,7 @@ namespace discord_core_api {
 		onGuildMembersChunkEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onGuildMemberAdd(discord_core_internal::event_delegate<co_routine<void>, on_guild_member_add_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildMemberAdd(discord_core_internal::event_delegate<co_routine<void>, const on_guild_member_add_data&> handler) {
 		return onGuildMemberAddEvent.add(std::move(handler));
 	}
 
@@ -1211,7 +1211,7 @@ namespace discord_core_api {
 		onGuildMemberAddEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onGuildMemberRemove(discord_core_internal::event_delegate<co_routine<void>, on_guild_member_remove_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildMemberRemove(discord_core_internal::event_delegate<co_routine<void>, const on_guild_member_remove_data&> handler) {
 		return onGuildMemberRemoveEvent.add(std::move(handler));
 	}
 
@@ -1219,7 +1219,7 @@ namespace discord_core_api {
 		onGuildMemberRemoveEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onGuildMemberUpdate(discord_core_internal::event_delegate<co_routine<void>, on_guild_member_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onGuildMemberUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_guild_member_update_data&> handler) {
 		return onGuildMemberUpdateEvent.add(std::move(handler));
 	}
 
@@ -1227,7 +1227,7 @@ namespace discord_core_api {
 		onGuildMemberUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onRoleCreation(discord_core_internal::event_delegate<co_routine<void>, on_role_creation_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onRoleCreation(discord_core_internal::event_delegate<co_routine<void>, const on_role_creation_data&> handler) {
 		return onRoleCreationEvent.add(std::move(handler));
 	}
 
@@ -1235,7 +1235,7 @@ namespace discord_core_api {
 		onRoleCreationEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onRoleUpdate(discord_core_internal::event_delegate<co_routine<void>, on_role_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onRoleUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_role_update_data&> handler) {
 		return onRoleUpdateEvent.add(std::move(handler));
 	}
 
@@ -1243,7 +1243,7 @@ namespace discord_core_api {
 		onRoleUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onRoleDeletion(discord_core_internal::event_delegate<co_routine<void>, on_role_deletion_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onRoleDeletion(discord_core_internal::event_delegate<co_routine<void>, const on_role_deletion_data&> handler) {
 		return onRoleDeletionEvent.add(std::move(handler));
 	}
 
@@ -1252,7 +1252,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onGuildScheduledEventCreation(
-		discord_core_internal::event_delegate<co_routine<void>, on_guild_scheduled_event_creation_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_guild_scheduled_event_creation_data&> handler) {
 		return onGuildScheduledEventCreationEvent.add(std::move(handler));
 	}
 
@@ -1261,7 +1261,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onGuildScheduledEventUpdate(
-		discord_core_internal::event_delegate<co_routine<void>, on_guild_scheduled_event_update_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_guild_scheduled_event_update_data&> handler) {
 		return onGuildScheduledEventUpdateEvent.add(std::move(handler));
 	}
 
@@ -1270,7 +1270,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onGuildScheduledEventDeletion(
-		discord_core_internal::event_delegate<co_routine<void>, on_guild_scheduled_event_deletion_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_guild_scheduled_event_deletion_data&> handler) {
 		return onGuildScheduledEventDeletionEvent.add(std::move(handler));
 	}
 
@@ -1279,7 +1279,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onGuildScheduledEventUserAdd(
-		discord_core_internal::event_delegate<co_routine<void>, on_guild_scheduled_event_user_add_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_guild_scheduled_event_user_add_data&> handler) {
 		return onGuildScheduledEventUserAddEvent.add(std::move(handler));
 	}
 
@@ -1288,7 +1288,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onGuildScheduledEventUserRemove(
-		discord_core_internal::event_delegate<co_routine<void>, on_guild_scheduled_event_user_remove_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_guild_scheduled_event_user_remove_data&> handler) {
 		return onGuildScheduledEventUserRemoveEvent.add(std::move(handler));
 	}
 
@@ -1297,7 +1297,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onIntegrationCreation(
-		discord_core_internal::event_delegate<co_routine<void>, on_integration_creation_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_integration_creation_data&> handler) {
 		return onIntegrationCreationEvent.add(std::move(handler));
 	}
 
@@ -1305,7 +1305,7 @@ namespace discord_core_api {
 		onIntegrationCreationEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onIntegrationUpdate(discord_core_internal::event_delegate<co_routine<void>, on_integration_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onIntegrationUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_integration_update_data&> handler) {
 		return onIntegrationUpdateEvent.add(std::move(handler));
 	}
 
@@ -1314,7 +1314,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onIntegrationDeletion(
-		discord_core_internal::event_delegate<co_routine<void>, on_integration_deletion_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_integration_deletion_data&> handler) {
 		return onIntegrationDeletionEvent.add(std::move(handler));
 	}
 
@@ -1323,7 +1323,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onInteractionCreation(
-		discord_core_internal::event_delegate<co_routine<void>, on_interaction_creation_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_interaction_creation_data&> handler) {
 		return onInteractionCreationEvent.add(std::move(handler));
 	}
 
@@ -1331,7 +1331,7 @@ namespace discord_core_api {
 		onInteractionCreationEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onInviteCreation(discord_core_internal::event_delegate<co_routine<void>, on_invite_creation_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onInviteCreation(discord_core_internal::event_delegate<co_routine<void>, const on_invite_creation_data&> handler) {
 		return onInviteCreationEvent.add(std::move(handler));
 	}
 
@@ -1339,7 +1339,7 @@ namespace discord_core_api {
 		onInviteCreationEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onInviteDeletion(discord_core_internal::event_delegate<co_routine<void>, on_invite_deletion_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onInviteDeletion(discord_core_internal::event_delegate<co_routine<void>, const on_invite_deletion_data&> handler) {
 		return onInviteDeletionEvent.add(std::move(handler));
 	}
 
@@ -1347,7 +1347,7 @@ namespace discord_core_api {
 		onInviteDeletionEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onMessageCreation(discord_core_internal::event_delegate<co_routine<void>, on_message_creation_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onMessageCreation(discord_core_internal::event_delegate<co_routine<void>, const on_message_creation_data&> handler) {
 		return onMessageCreationEvent.add(std::move(handler));
 	}
 
@@ -1355,7 +1355,7 @@ namespace discord_core_api {
 		onMessageCreationEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onMessageUpdate(discord_core_internal::event_delegate<co_routine<void>, on_message_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onMessageUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_message_update_data&> handler) {
 		return onMessageUpdateEvent.add(std::move(handler));
 	}
 
@@ -1363,7 +1363,7 @@ namespace discord_core_api {
 		onMessageUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onMessageDeletion(discord_core_internal::event_delegate<co_routine<void>, on_message_deletion_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onMessageDeletion(discord_core_internal::event_delegate<co_routine<void>, const on_message_deletion_data&> handler) {
 		return onMessageDeletionEvent.add(std::move(handler));
 	}
 
@@ -1371,7 +1371,7 @@ namespace discord_core_api {
 		onMessageDeletionEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onMessageDeleteBulk(discord_core_internal::event_delegate<co_routine<void>, on_message_delete_bulk_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onMessageDeleteBulk(discord_core_internal::event_delegate<co_routine<void>, const on_message_delete_bulk_data&> handler) {
 		return onMessageDeleteBulkEvent.add(std::move(handler));
 	}
 
@@ -1379,7 +1379,7 @@ namespace discord_core_api {
 		onMessageDeleteBulkEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onReactionAdd(discord_core_internal::event_delegate<co_routine<void>, on_reaction_add_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onReactionAdd(discord_core_internal::event_delegate<co_routine<void>, const on_reaction_add_data&> handler) {
 		return onReactionAddEvent.add(std::move(handler));
 	}
 
@@ -1387,7 +1387,7 @@ namespace discord_core_api {
 		onReactionAddEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onReactionRemove(discord_core_internal::event_delegate<co_routine<void>, on_reaction_remove_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onReactionRemove(discord_core_internal::event_delegate<co_routine<void>, const on_reaction_remove_data&> handler) {
 		return onReactionRemoveEvent.add(std::move(handler));
 	}
 
@@ -1395,7 +1395,7 @@ namespace discord_core_api {
 		onReactionRemoveEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onReactionRemoveAll(discord_core_internal::event_delegate<co_routine<void>, on_reaction_remove_all_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onReactionRemoveAll(discord_core_internal::event_delegate<co_routine<void>, const on_reaction_remove_all_data&> handler) {
 		return onReactionRemoveAllEvent.add(std::move(handler));
 	}
 
@@ -1404,7 +1404,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onReactionRemoveEmoji(
-		discord_core_internal::event_delegate<co_routine<void>, on_reaction_remove_emoji_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_reaction_remove_emoji_data&> handler) {
 		return onReactionRemoveEmojiEvent.add(std::move(handler));
 	}
 
@@ -1412,7 +1412,7 @@ namespace discord_core_api {
 		onReactionRemoveEmojiEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onPresenceUpdate(discord_core_internal::event_delegate<co_routine<void>, on_presence_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onPresenceUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_presence_update_data&> handler) {
 		return onPresenceUpdateEvent.add(std::move(handler));
 	}
 
@@ -1421,7 +1421,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onStageInstanceCreation(
-		discord_core_internal::event_delegate<co_routine<void>, on_stage_instance_creation_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_stage_instance_creation_data&> handler) {
 		return onStageInstanceCreationEvent.add(std::move(handler));
 	}
 
@@ -1430,7 +1430,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onStageInstanceUpdate(
-		discord_core_internal::event_delegate<co_routine<void>, on_stage_instance_update_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_stage_instance_update_data&> handler) {
 		return onStageInstanceUpdateEvent.add(std::move(handler));
 	}
 
@@ -1439,7 +1439,7 @@ namespace discord_core_api {
 	}
 
 	discord_core_internal::event_delegate_token event_manager::onStageInstanceDeletion(
-		discord_core_internal::event_delegate<co_routine<void>, on_stage_instance_deletion_data> handler) {
+		discord_core_internal::event_delegate<co_routine<void>, const on_stage_instance_deletion_data&> handler) {
 		return onStageInstanceDeletionEvent.add(std::move(handler));
 	}
 
@@ -1447,7 +1447,7 @@ namespace discord_core_api {
 		onStageInstanceDeletionEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onTypingStart(discord_core_internal::event_delegate<co_routine<void>, on_typing_start_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onTypingStart(discord_core_internal::event_delegate<co_routine<void>, const on_typing_start_data&> handler) {
 		return onTypingStartEvent.add(std::move(handler));
 	}
 
@@ -1455,7 +1455,7 @@ namespace discord_core_api {
 		onTypingStartEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onUserUpdate(discord_core_internal::event_delegate<co_routine<void>, on_user_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onUserUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_user_update_data&> handler) {
 		return onUserUpdateEvent.add(std::move(handler));
 	}
 
@@ -1463,7 +1463,7 @@ namespace discord_core_api {
 		onUserUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onVoiceStateUpdate(discord_core_internal::event_delegate<co_routine<void>, on_voice_state_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onVoiceStateUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_voice_state_update_data&> handler) {
 		return onVoiceStateUpdateEvent.add(std::move(handler));
 	}
 
@@ -1471,7 +1471,7 @@ namespace discord_core_api {
 		onVoiceStateUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onVoiceServerUpdate(discord_core_internal::event_delegate<co_routine<void>, on_voice_server_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onVoiceServerUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_voice_server_update_data&> handler) {
 		return onVoiceServerUpdateEvent.add(std::move(handler));
 	}
 
@@ -1479,7 +1479,7 @@ namespace discord_core_api {
 		onVoiceServerUpdateEvent.erase(token);
 	}
 
-	discord_core_internal::event_delegate_token event_manager::onWebhookUpdate(discord_core_internal::event_delegate<co_routine<void>, on_webhook_update_data> handler) {
+	discord_core_internal::event_delegate_token event_manager::onWebhookUpdate(discord_core_internal::event_delegate<co_routine<void>, const on_webhook_update_data&> handler) {
 		return onWebhookUpdateEvent.add(std::move(handler));
 	}
 
