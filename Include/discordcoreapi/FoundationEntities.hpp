@@ -3095,7 +3095,7 @@ namespace discord_core_api {
 	*/
 
 	struct serializer_value {
-		unordered_map<jsonifier::string, json_string_value> values{};
+		unordered_map<jsonifier::string, jsonifier::raw_json_data> values{};
 	};
 
 	/// @brief Command data, for functions executed by the command_controller.

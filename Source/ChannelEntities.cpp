@@ -36,7 +36,7 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::edit_channel_permission_overwrites_data> {
 		using value_type				 = discord_core_api::edit_channel_permission_overwrites_data;
-		static constexpr auto parseValue = createValue("allow", &value_type::allow, "deny", &value_type::deny, "channel_id", &value_type::channelId, "reason", &value_type::reason,
+		static constexpr auto parseValue = createValue("allow", &value_type::allow, "deny", &value_type::deny, "channel_id", &value_type::channelId,
 			"type", &value_type::type, "id", &value_type::roleOrUserId);
 	};
 
@@ -44,7 +44,7 @@ namespace jsonifier {
 		using value_type				 = discord_core_api::create_channel_invite_data;
 		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "max_uses", &value_type::maxUses, "max_age", &value_type::maxAge, "temporary",
 			&value_type::temporary, "unique", &value_type::unique, "target_type", &value_type::targetType, "target_user_id", &value_type::targetUserId, "target_application_id",
-			&value_type::targetApplicationId, "reason", &value_type::reason);
+			&value_type::targetApplicationId);
 	};
 
 	template<> struct core<discord_core_api::create_guild_channel_data> {
@@ -52,7 +52,7 @@ namespace jsonifier {
 		static constexpr auto parseValue = createValue("name", &value_type::name, "type", &value_type::type, "position", &value_type::position, "parent_id", &value_type::parentId,
 			"permission_overwrites", &value_type::permissionOverwrites, "nsfw", &value_type::nsfw, "rate_limit_per_user", &value_type::rateLimitPerUser, "topic",
 			&value_type::topic, "user_limit", &value_type::userLimit, "bitrate", &value_type::bitrate, "default_auto_archive_duration", &value_type::defaultAutoArchiveDuration,
-			"guild_id", &value_type::guildId, "reason", &value_type::reason);
+			"guild_id", &value_type::guildId);
 	};
 
 	template<> struct core<discord_core_api::modify_guild_channel_position_data> {
@@ -68,7 +68,7 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::modify_channel_data> {
 		using value_type				 = discord_core_api::modify_channel_data;
-		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "channel_data", &value_type::channelData, "reason", &value_type::reason);
+		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "channel_data", &value_type::channelData);
 	};
 
 	template<> struct core<discord_core_api::create_dmchannel_data> {

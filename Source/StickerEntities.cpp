@@ -36,13 +36,13 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::create_guild_sticker_data> {
 		using value_type				 = discord_core_api::create_guild_sticker_data;
-		static constexpr auto parseValue = createValue("description", &value_type::description, "reason", &value_type::reason, "guildId", &value_type::guildId, "file",
+		static constexpr auto parseValue = createValue("description", &value_type::description, "guildId", &value_type::guildId, "file",
 			&value_type::file, "name", &value_type::name, "tags", &value_type::tags);
 	};
 
 	template<> struct core<discord_core_api::modify_guild_sticker_data> {
 		using value_type				 = discord_core_api::modify_guild_sticker_data;
-		static constexpr auto parseValue = createValue("description", &value_type::description, "stickerId", &value_type::stickerId, "reason", &value_type::reason, "guildId",
+		static constexpr auto parseValue = createValue("description", &value_type::description, "stickerId", &value_type::stickerId, "guildId",
 			&value_type::guildId, "name", &value_type::name, "tags", &value_type::tags);
 	};
 

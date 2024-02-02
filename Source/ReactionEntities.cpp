@@ -38,14 +38,14 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::create_guild_emoji_data> {
 		using value_type				 = discord_core_api::create_guild_emoji_data;
-		static constexpr auto parseValue = createValue("roles", &value_type::roles, "image", &value_type::imageDataFinal, "reason", &value_type::reason, "guildId",
+		static constexpr auto parseValue = createValue("roles", &value_type::roles, "image", &value_type::imageDataFinal, "guildId",
 			&value_type::guildId, "name", &value_type::name, "type", &value_type::type);
 	};
 
 	template<> struct core<discord_core_api::modify_guild_emoji_data> {
 		using value_type = discord_core_api::modify_guild_emoji_data;
 		static constexpr auto parseValue =
-			createValue("roles", &value_type::roles, "reason", &value_type::reason, "guildId", &value_type::guildId, "emojiId", &value_type::emojiId, "name", &value_type::name);
+			createValue("roles", &value_type::roles, "guildId", &value_type::guildId, "emojiId", &value_type::emojiId, "name", &value_type::name);
 	};
 
 }

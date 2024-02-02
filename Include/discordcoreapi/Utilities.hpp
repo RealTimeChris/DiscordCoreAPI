@@ -247,11 +247,6 @@ namespace discord_core_api {
 		uint16_t connectionPort{};///< A potentially alternative connection port for the websocket.
 	};
 
-	struct json_string_value {
-		discord_core_internal::json_type type{};
-		jsonifier::raw_json_data value{};
-	};
-
 	class DiscordCoreAPI_Dll config_manager {
 	  public:
 		config_manager() = default;

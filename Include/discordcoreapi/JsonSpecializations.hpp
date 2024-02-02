@@ -71,14 +71,27 @@ namespace jsonifier_internal {
 		template<snowflake_t value_type, jsonifier::concepts::buffer_like iterator_type>
 		inline static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serializer<derived_type>::impl(newString, iter, index);
+			serialize_impl<jsonifier::string, derived_type>::impl(newString, iter, index);
 		}
 	};
 
-	template<snowflake_t value_type_new, typename derived_type> struct parse_impl<value_type_new, derived_type> {
-		template<snowflake_t value_type, jsonifier::concepts::is_fwd_iterator iterator> inline static void impl(value_type&& value, iterator&& iter) {
+	template<snowflake_t value_type_new, typename derived_type> struct simd_parse_impl<value_type_new, derived_type> {
+		template<snowflake_t value_type, jsonifier::concepts::is_fwd_iterator iterator> inline static void simd_impl(value_type&& value, iterator&& iter) {
 			jsonifier::raw_json_data newString{};
-			parser<derived_type>::impl(newString, iter);
+			parser<derived_type>::simd_impl(newString, iter);
+			if (newString.getType() == jsonifier::json_type::String) {
+				value = newString.operator jsonifier::string();
+			} else {
+				value = newString.operator uint64_t();
+			}
+		};
+	};
+
+	template<snowflake_t value_type_new, typename derived_type, typename parser_type> struct serial_parse_impl<value_type_new, derived_type, parser_type> {
+		template<snowflake_t value_type, jsonifier::concepts::is_fwd_iterator iterator_type>
+		JSONIFIER_INLINE static void serial_impl(value_type&& value, iterator_type&& iter, iterator_type&& end, parser_type& parserVal) {
+			jsonifier::raw_json_data newString{};
+			parser<derived_type>::serial_impl(newString, iter, end, parserVal);
 			if (newString.getType() == jsonifier::json_type::String) {
 				value = newString.operator jsonifier::string();
 			} else {
@@ -91,18 +104,34 @@ namespace jsonifier_internal {
 	concept time_stamp_t = std::same_as<discord_core_api::time_stamp, jsonifier::concepts::unwrap_t<value_type>>;
 
 	template<time_stamp_t value_type_new, typename derived_type> struct serialize_impl<value_type_new, derived_type> {
-		template<time_stamp_t value_type, jsonifier::concepts::buffer_like iterator_type>
-		inline static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
+		template<time_stamp_t value_type, jsonifier::concepts::buffer_like iterator_type> inline static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serializer<derived_type>::impl(newString, iter, index);
+			serialize_impl<jsonifier::string, derived_type>::impl(newString, iter, index);
 		}
 	};
 
-	template<time_stamp_t value_type_new, typename derived_type> struct parse_impl<value_type_new, derived_type> {
-		template<time_stamp_t value_type, jsonifier::concepts::is_fwd_iterator iterator> inline static void impl(value_type&& value, iterator&& iter) {
-			jsonifier::string newString{};
-			parser<derived_type>::impl(newString, iter);
-			value = static_cast<jsonifier::string>(newString);
+	template<time_stamp_t value_type_new, typename derived_type> struct simd_parse_impl<value_type_new, derived_type> {
+		template<time_stamp_t value_type, jsonifier::concepts::is_fwd_iterator iterator_type> JSONIFIER_INLINE static void simd_impl(value_type&& value, iterator_type&& iter) {
+			jsonifier::raw_json_data newString{};
+			parser<derived_type>::simd_impl(newString, iter);
+			if (newString.getType() == jsonifier::json_type::String) {
+				value = newString.operator jsonifier::string();
+			} else {
+				value = newString.operator uint64_t();
+			}
+		};
+	};
+
+	template<time_stamp_t value_type_new, typename derived_type, typename parser_type> struct serial_parse_impl<value_type_new, derived_type, parser_type> {
+		template<time_stamp_t value_type, jsonifier::concepts::is_fwd_iterator iterator_type>
+		JSONIFIER_INLINE static void serial_impl(value_type&& value, iterator_type&& iter, iterator_type&& end, parser_type& parserVal) {
+			jsonifier::raw_json_data newString{};
+			parser<derived_type>::serial_impl(newString, iter, end, parserVal);
+			if (newString.getType() == jsonifier::json_type::String) {
+				value = newString.operator jsonifier::string();
+			} else {
+				value = newString.operator uint64_t();
+			}
 		};
 	};
 }
@@ -259,7 +288,7 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::ban_data> {
 		using value_type				 = discord_core_api::ban_data;
-		static constexpr auto parseValue = createValue("failed_due_to_perms", &value_type::failedDueToPerms, "reason", &value_type::reason, "user", &value_type::user);
+		static constexpr auto parseValue = createValue("failed_due_to_perms", &value_type::failedDueToPerms, "user", &value_type::user);
 	};
 
 	template<> struct core<discord_core_api::update_voice_state_data> {
@@ -566,7 +595,7 @@ namespace jsonifier {
 	template<> struct core<discord_core_api::audit_log_entry_data> {
 		using value_type				 = discord_core_api::audit_log_entry_data;
 		static constexpr auto parseValue = createValue("action_type", &value_type::actionType, "changes", &value_type::changes, "created_at", &value_type::createdTimeStamp, "id",
-			&value_type::id, "options", &value_type::options, "reason", &value_type::reason, "target_id", &value_type::targetId, "user_id", &value_type::userId);
+			&value_type::id, "options", &value_type::options, "target_id", &value_type::targetId, "user_id", &value_type::userId);
 	};
 
 	template<> struct core<discord_core_api::component_data> {

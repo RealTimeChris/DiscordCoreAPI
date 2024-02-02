@@ -101,8 +101,8 @@ namespace discord_core_api {
 
 	template<typename... arg_types> using time_elapsed_handler = std::function<void(arg_types...)>;
 
-	template<typename... arg_types>
-	inline static co_routine<void, false> threadFunction(time_elapsed_handler<arg_types...> timeElapsedHandler, bool repeated, int64_t timeInterval, arg_types... args) {
+	template<typename... arg_types, typename function_type>
+	inline static co_routine<void, false> threadFunction(function_type timeElapsedHandler, bool repeated, int64_t timeInterval, arg_types... args) {
 		auto threadHandle = co_await newThreadAwaitable<void, false>();
 		stop_watch<milliseconds> stopWatch{ milliseconds{ timeInterval } };
 		stopWatch.reset();
@@ -128,9 +128,9 @@ namespace discord_core_api {
 		co_return;
 	};
 
-	template<typename... arg_types> inline static void executeFunctionAfterTimePeriod(time_elapsed_handler<arg_types...> timeElapsedHandler, int64_t timeDelay, bool repeated,
-		bool blockForCompletion, arg_types... args) {
-		auto newThread = threadFunction<arg_types...>(timeElapsedHandler, repeated, timeDelay, args...);
+	template<typename... arg_types, typename function_type> inline static void executeFunctionAfterTimePeriod(function_type timeElapsedHandler,
+		int64_t timeDelay, bool repeated, bool blockForCompletion, arg_types... args) {
+		auto newThread = threadFunction(timeElapsedHandler, repeated, timeDelay, args...);
 		if (blockForCompletion) {
 			newThread.get();
 		}

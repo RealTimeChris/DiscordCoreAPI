@@ -36,21 +36,60 @@ namespace discord_core_api {
 
 	namespace discord_core_internal {
 
-		https_connection::https_connection(const jsonifier::string& baseUrlNew, const uint16_t portNew)
-			: tcp_connection<https_connection>{ baseUrlNew, portNew } {
+		inline void rate_limit_queue::initialize() {
+			for (int64_t enumOne = static_cast<int64_t>(https_workload_type::Unset); enumOne != static_cast<int64_t>(https_workload_type::Last); enumOne++) {
+				auto tempBucket = jsonifier::toString(std::chrono::duration_cast<nanoseconds>(sys_clock::now().time_since_epoch()).count());
+				buckets.emplace(static_cast<https_workload_type>(enumOne), tempBucket);
+				rateLimits.emplace(tempBucket, makeUnique<rate_limit_data>())
+					.getRawPtr()
+					->second->sampledTimeInMs.store(std::chrono::duration_cast<milliseconds>(sys_clock::now().time_since_epoch()));
+				std::this_thread::sleep_for(1ms);
+			}
+		}
+
+		inline rate_limit_data* rate_limit_queue::getEndpointAccess(https_workload_type workloadType) {
+			stop_watch<milliseconds> stopWatch{ milliseconds{ 25000 } };
+			stopWatch.reset();
+			auto targetTime =
+				std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(rateLimits[buckets[workloadType]]->sampledTimeInMs.load(std::memory_order_acquire)) +
+				std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(rateLimits[buckets[workloadType]]->sRemain.load(std::memory_order_acquire));
+			if (rateLimits[buckets[workloadType]]->getsRemaining.load(std::memory_order_acquire) <= 0) {
+				auto newNow = std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(sys_clock::now().time_since_epoch());
+				while ((newNow - targetTime).count() <= 0) {
+					if (stopWatch.hasTimeElapsed()) {
+						return nullptr;
+					}
+					newNow = std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(sys_clock::now().time_since_epoch());
+					std::this_thread::sleep_for(1us);
+				}
+			}
+			stopWatch.reset();
+			while (!rateLimits[buckets[workloadType]]->accessMutex.try_lock()) {
+				std::this_thread::sleep_for(1us);
+				if (stopWatch.hasTimeElapsed()) {
+					return nullptr;
+				}
+			}
+			return rateLimits.at(buckets.at(workloadType)).get();
+		}
+
+		inline void rate_limit_queue::releaseEndPointAccess(https_workload_type type) {
+			rateLimits.at(buckets.at(type))->accessMutex.unlock();
+		}
+
+		https_connection::https_connection(const jsonifier::string& baseUrlNew, const uint16_t portNew) : tcp_connection<https_connection>{ baseUrlNew, portNew } {
 		}
 
 		jsonifier::vector<jsonifier::string_view> tokenize(jsonifier::string_view in, const char* sep = "\r\n") {
-			jsonifier::string_view::size_type b = 0;
 			jsonifier::vector<jsonifier::string_view> result{};
-
-			while ((b = in.findFirstNotOf(sep, b)) != jsonifier::string_view::npos) {
-				auto e = in.find(sep, b);
-				if (b + (e - b) > in.size()) {
+			jsonifier::string_view::size_type b = 0;
+			jsonifier::string_view::size_type e = 0;
+			while ((b = in.findFirstNotOf(sep, e)) != jsonifier::string_view::npos) {
+				e = in.findFirstOf(sep, b);
+				if (e == jsonifier::string_view::npos) {
 					break;
 				}
 				result.emplace_back(in.substr(b, e - b));
-				b = e;
 			}
 			return result;
 		}
@@ -76,9 +115,11 @@ namespace discord_core_api {
 
 		void https_connection::handleBuffer() {
 			stop_watch<milliseconds> stopWatch{ 9500 };
+			jsonifier::string_view_base<uint8_t> stringNew{};
 			stopWatch.reset();
 			do {
-				inputBufferReal += getInputBuffer();
+				stringNew = getInputBuffer();
+				inputBufferReal += stringNew;
 				switch (data.currentState) {
 					case https_state::Collecting_Headers: {
 						if (!parseHeaders()) {
@@ -103,7 +144,7 @@ namespace discord_core_api {
 						return;
 					}
 				}
-			} while (inputBufferReal.size() > 0 && !stopWatch.hasTimeElapsed());
+			} while (stringNew.size() > 0 && !stopWatch.hasTimeElapsed());
 			return;
 		}
 
@@ -145,6 +186,10 @@ namespace discord_core_api {
 				}
 			}
 			updateRateLimitData(rateLimitData);
+			if (connection->data.responseCode != 204 && connection->data.responseCode != 200 && connection->data.responseCode != 201) {
+				throw dca_exception{ "Sorry, but that https request threw the following error: " + connection->data.responseCode.operator jsonifier::string() +
+					connection->data.responseData };
+			}
 			return std::move(connection->data);
 		}
 
@@ -216,38 +261,23 @@ namespace discord_core_api {
 								connection->data.responseHeaders.emplace(key, value);
 							}
 						}
-						if (connection->data.responseHeaders.contains("content-length")) {
-							connection->data.contentLength = jsonifier::strToUint64(connection->data.responseHeaders.at("content-length").data());
-						} else {
-							connection->data.contentLength = std::numeric_limits<uint32_t>::max();
-							connection->data.currentState  = https_state::Collecting_Chunked_Contents;
-						}
-						connection->data.isItChunked = false;
-						if (connection->data.responseHeaders.contains("transfer-encoding")) {
-							if (connection->data.responseHeaders.at("transfer-encoding").find("chunked") != jsonifier::string_view::npos) {
-								connection->data.isItChunked   = true;
-								connection->data.contentLength = 0;
-								connection->data.currentState  = https_state::Collecting_Chunked_Contents;
-							}
-						}
 						connection->data.responseCode = parseCodeNew;
 						if (connection->data.responseCode == 302) {
 							connection->workload.baseUrl = connection->data.responseHeaders.at("location");
 							connection->disconnect();
 							return false;
 						}
-						if (connection->data.responseCode != 200 && connection->data.responseCode != 201 && connection->data.responseCode != std::numeric_limits<uint32_t>::max()) {
-							connection->inputBufferReal.erase(connection->inputBufferReal.begin() + static_cast<int64_t>(stringViewNew.find("\r\n\r\n")) + 4);
+						if (connection->data.responseCode == 204) {
 							connection->data.currentState = https_state::complete;
-							return true;
-						} else if (!connection->data.isItChunked) {
-							connection->data.currentState = https_state::Collecting_Contents;
-							connection->inputBufferReal.erase(connection->inputBufferReal.begin() + static_cast<int64_t>(stringViewNew.find("\r\n\r\n")) + 4);
-							return true;
+						} else if (connection->data.responseHeaders.contains("content-length")) {
+							connection->data.contentLength = jsonifier::strToUint64(connection->data.responseHeaders.at("content-length").data());
+							connection->data.currentState  = https_state::Collecting_Contents;
 						} else {
-							connection->inputBufferReal.erase(connection->inputBufferReal.begin() + static_cast<int64_t>(stringViewNew.find("\r\n\r\n")) + 4);
-							return true;
+							connection->data.isItChunked   = true;
+							connection->data.contentLength = std::numeric_limits<uint32_t>::max();
+							connection->data.currentState  = https_state::Collecting_Chunked_Contents;
 						}
+						connection->inputBufferReal.erase(connection->inputBufferReal.begin() + static_cast<int64_t>(stringViewNew.find("\r\n\r\n")) + 4);
 					}
 				}
 				return true;
@@ -260,7 +290,7 @@ namespace discord_core_api {
 			jsonifier::string_view stringViewNew01{ connection->inputBufferReal };
 			if (auto finalPosition = stringViewNew01.find("\r\n0\r\n\r\n"); finalPosition != jsonifier::string_view::npos) {
 				uint64_t pos{ 0 };
-				while (pos < stringViewNew01.size()) {
+				while (pos < stringViewNew01.size() || connection->data.responseData.size() < connection->data.contentLength) {
 					uint64_t lineEnd = stringViewNew01.find("\r\n", pos);
 					if (lineEnd == jsonifier::string_view::npos) {
 						break;
@@ -268,6 +298,7 @@ namespace discord_core_api {
 
 					jsonifier::string_view sizeLine{ stringViewNew01.data() + pos, lineEnd - pos };
 					uint64_t chunkSize = jsonifier::strToUint64<16>(static_cast<jsonifier::string>(sizeLine));
+					connection->data.contentLength += chunkSize;
 
 					if (chunkSize == 0) {
 						break;
@@ -338,7 +369,7 @@ namespace discord_core_api {
 
 		https_connection_stack_holder::https_connection_stack_holder(https_connection_manager& connectionManager, https_workload_data&& workload) {
 			connection		   = &connectionManager.getConnection(workload.getWorkloadType());
-			rateLimitQueue	   = &connectionManager.getRateLimitQueue();
+			rateLimitQueue = &connectionManager.getRateLimitQueue();
 			auto rateLimitData = connectionManager.getRateLimitQueue().getEndpointAccess(workload.getWorkloadType());
 			if (!rateLimitData) {
 				throw dca_exception{ "Failed to gain endpoint access." };
@@ -381,7 +412,7 @@ namespace discord_core_api {
 				return https_response_data{};
 			}
 			if (!connection.areWeConnected()) {
-				connection.currentBaseUrl = connection.workload.baseUrl;
+				connection.currentBaseUrl									 = connection.workload.baseUrl;
 				*static_cast<tcp_connection<https_connection>*>(&connection) = https_connection{ connection.workload.baseUrl, static_cast<uint16_t>(443) };
 				if (connection.currentStatus != connection_status::NO_Error || !connection.areWeConnected()) {
 					++connection.currentReconnectTries;
@@ -425,11 +456,11 @@ namespace discord_core_api {
 			if (connection.currentRateLimitData->areWeASpecialBucket.load(std::memory_order_acquire)) {
 				connection.currentRateLimitData->sRemain.store(seconds{ static_cast<int64_t>(ceil(4.0f / 4.0f)) }, std::memory_order_release);
 				milliseconds targetTime{ connection.currentRateLimitData->sampledTimeInMs.load(std::memory_order_acquire) +
-					connection.currentRateLimitData->sRemain.load(std::memory_order_acquire) };
+					std::chrono::duration_cast<std::chrono::milliseconds>(connection.currentRateLimitData->sRemain.load(std::memory_order_acquire)) };
 				timeRemaining = targetTime - currentTime;
 			} else if (connection.currentRateLimitData->doWeWait.load(std::memory_order_acquire)) {
 				milliseconds targetTime{ connection.currentRateLimitData->sampledTimeInMs.load(std::memory_order_acquire) +
-					connection.currentRateLimitData->sRemain.load(std::memory_order_acquire) };
+					std::chrono::duration_cast<std::chrono::milliseconds>(connection.currentRateLimitData->sRemain.load(std::memory_order_acquire)) };
 				timeRemaining = targetTime - currentTime;
 				connection.currentRateLimitData->doWeWait.store(false, std::memory_order_release);
 			}
@@ -480,9 +511,7 @@ namespace discord_core_api {
 		}
 
 		https_response_data https_client_core::getResponse(https_connection& connection) {
-			stop_watch<milliseconds> stopWatch{ 10000ms };
-			stopWatch.reset();
-			while (connection.data.currentState != https_state::complete && !stopWatch.hasTimeElapsed()) {
+			while (connection.data.currentState != https_state::complete) {
 				if (connection.areWeConnected()) {
 					auto newState = connection.processIO(10);
 					switch (newState) {
