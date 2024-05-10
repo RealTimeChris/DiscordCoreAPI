@@ -29,10 +29,5 @@
 /// \file Index.hpp
 #pragma once
 
-#if defined(JSONIFIER_CPU_INSTRUCTIONS)
-	#undef JSONIFIER_CPU_INSTRUCTIONS
-	#define JSONIFIER_CPU_INSTRUCTIONS 0
-#endif
-
 #include <discordcoreapi/Utilities/UnicodeEmoji.hpp>
 #include <discordcoreapi/ToEntity.hpp>

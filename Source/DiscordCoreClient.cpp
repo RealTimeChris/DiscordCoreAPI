@@ -172,8 +172,9 @@ namespace discord_core_api {
 		}
 	}
 
-	void discord_core_client::registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, unique_ptr<base_function> baseFunction,
-		create_application_command_data commandData, bool alwaysRegister) {
+	void discord_core_client::registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, unique_ptr<base_function>&& baseFunction,
+		const create_application_command_data& commandDataNew, bool alwaysRegister) {
+		create_application_command_data commandData{ commandDataNew };
 		commandData.alwaysRegister = alwaysRegister;
 		commandController.registerFunction(functionNames, std::move(baseFunction));
 		commandsToRegister.emplace_back(commandData);

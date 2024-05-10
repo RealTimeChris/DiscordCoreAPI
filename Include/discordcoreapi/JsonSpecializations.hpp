@@ -67,10 +67,11 @@ namespace jsonifier_internal {
 	template<typename value_type>
 	concept snowflake_t = std::same_as<discord_core_api::snowflake, jsonifier::concepts::unwrap_t<value_type>>;
 
-	template<typename derived_type, snowflake_t value_type_new> struct serialize_impl<derived_type, value_type_new> {
-		template<snowflake_t value_type, jsonifier::concepts::buffer_like iterator_type> DCA_INLINE static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
+	template<jsonifier::serialize_options options, typename derived_type, snowflake_t value_type_new> struct serialize_impl<options, derived_type, value_type_new> {
+		template<snowflake_t value_type, jsonifier::concepts::buffer_like iterator_type>
+		DCA_INLINE static void impl(value_type&& value, iterator_type&& iter, uint64_t& index, prettify_arguments<options.prettifyOptions.maxDepth>* prettifyJsonArgs) {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serializer<derived_type>::impl(newString, iter, index);
+			serializer<derived_type>::impl<options>(newString, iter, index, prettifyJsonArgs);
 		}
 	};
 
@@ -89,10 +90,11 @@ namespace jsonifier_internal {
 	template<typename value_type>
 	concept time_stamp_t = std::same_as<discord_core_api::time_stamp, jsonifier::concepts::unwrap_t<value_type>>;
 
-	template<typename derived_type, time_stamp_t value_type_new> struct serialize_impl<derived_type, value_type_new> {
-		template<time_stamp_t value_type, jsonifier::concepts::buffer_like iterator_type> DCA_INLINE static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
+	template<jsonifier::serialize_options options, typename derived_type, time_stamp_t value_type_new> struct serialize_impl<options, derived_type, value_type_new> {
+		template<time_stamp_t value_type, jsonifier::concepts::buffer_like iterator_type>
+		DCA_INLINE static void impl(value_type&& value, iterator_type&& iter, uint64_t& index, prettify_arguments<options.prettifyOptions.maxDepth>* prettifyJsonArgs) {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serializer<derived_type>::impl(newString, iter, index);
+			serializer<derived_type>::impl<options>(newString, iter, index, prettifyJsonArgs);
 		}
 	};
 
