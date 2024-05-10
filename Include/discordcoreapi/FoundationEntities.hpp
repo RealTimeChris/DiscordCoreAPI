@@ -50,14 +50,14 @@ namespace discord_core_api {
 		};
 
 		struct connect_properties {
-			static constexpr jsonifier::string_view browser{ "DiscordCoreAPI" };
-			static constexpr jsonifier::string_view device{ "DiscordCoreAPI" };
+			jsonifier::string_view browser{ "DiscordCoreAPI" };
+			jsonifier::string_view device{ "DiscordCoreAPI" };
 #if defined _WIN32
-			static constexpr jsonifier::string_view os{ "Windows" };
+			jsonifier::string_view os{ "Windows" };
 #elif __linux__
-			static constexpr jsonifier::string_view os{ "Linux" };
+			jsonifier::string_view os{ "Linux" };
 #else
-			static constexpr jsonifier::string_view os{ "MacOs" };
+			jsonifier::string_view os{ "MacOs" };
 #endif
 		};
 
@@ -79,8 +79,8 @@ namespace discord_core_api {
 		};
 
 		struct voice_socket_protocol_payload_data {
-			static constexpr jsonifier::string_view protocol{ "udp" };
 			voice_socket_protocol_payload_data_data data{};
+			jsonifier::string_view protocol{ "udp" };
 		};
 
 		struct voice_identify_data {
@@ -435,7 +435,7 @@ namespace discord_core_api {
 
 	template<typename value_type> class get_user_image_url {
 	  public:
-		  template<user_image_types type> DCA_INLINE jsonifier::string getUserImageUrl() const {
+		template<user_image_types type> DCA_INLINE jsonifier::string getUserImageUrl() const {
 			jsonifier::string baseUrl{ "https://cdn.discordapp.com/" };
 			switch (type) {
 				case user_image_types::Banner: {
@@ -661,50 +661,50 @@ namespace discord_core_api {
 		/// @param authorName the author's name.
 		/// @param authorAvatarUrl the url to their avatar.
 		/// @return embed_data& A reference to this embed_data instance.
-		embed_data& setAuthor(jsonifier::string_view authorName, jsonifier::string_view authorAvatarUrl = "");
+		embed_data& setAuthor(const jsonifier::string& authorName, const jsonifier::string& authorAvatarUrl = "");
 
 		/// @brief Sets the footer's values for the embed.
 		/// @param footerText the footer's text.
 		/// @param footerIconUrlText url to the footer's icon.
 		/// @return embed_data& A reference to this embed_data instance.
-		embed_data& setFooter(jsonifier::string_view footerText, jsonifier::string_view footerIconUrlText = "");
+		embed_data& setFooter(const jsonifier::string& footerText, const jsonifier::string& footerIconUrlText = "");
 
 		/// @brief Sets the timeStamp on the embed.
 		/// @param timeStamp the timeStamp to be set.
 		/// @return embed_data& A reference to this embed_data instance.
-		embed_data& setTimeStamp(jsonifier::string_view timeStamp);
+		embed_data& setTimeStamp(const jsonifier::string& timeStamp);
 
 		/// @brief Adds a field to the embed.
 		/// @param name the title of the embed field.
 		/// @param value the contents of the embed field.
 		/// @param Inline is it DCA_INLINE with the rest of the fields on the embed?
 		/// @return embed_data& A reference to this embed_data instance.
-		embed_data& addField(jsonifier::string_view name, jsonifier::string_view value, bool Inline = true);
+		embed_data& addField(const jsonifier::string& name, const jsonifier::string& value, bool Inline = true);
 
 		/// @brief Sets the description (the main contents) of the embed.
 		/// @param descriptionNew the contents of the description to set.
 		/// @return embed_data& A reference to this embed_data instance.
-		embed_data& setDescription(jsonifier::string_view descriptionNew);
+		embed_data& setDescription(const jsonifier::string& descriptionNew);
 
 		/// @brief Sets the color of the embed, by applying a hex-color value.
 		/// @param hexColorValueNew a string containing a hex-number value (between 0x00 0xFFFFFF).
 		/// @return embed_data& A reference to this embed_data instance.
-		embed_data& setColor(jsonifier::string_view hexColorValueNew);
+		embed_data& setColor(const jsonifier::string& hexColorValueNew);
 
 		/// @brief Sets the thumbnail of the embed.
 		/// @param thumbnailUrl the url to the thumbnail to be used.
 		/// @return embed_data& A reference to this embed_data instance.
-		embed_data& setThumbnail(jsonifier::string_view thumbnailUrl);
+		embed_data& setThumbnail(const jsonifier::string& thumbnailUrl);
 
 		/// @brief Sets the title of the embed.
 		/// @param titleNew a string containing the desired title.
 		/// @return embed_data& A reference to this embed_data instance.
-		embed_data& setTitle(jsonifier::string_view titleNew);
+		embed_data& setTitle(const jsonifier::string& titleNew);
 
 		/// @brief Sets the image of the embed.
 		/// @param imageUrl the url of the image to be set on the embed.
 		/// @return embed_data& A reference to this embed_data instance.
-		embed_data& setImage(jsonifier::string_view imageUrl);
+		embed_data& setImage(const jsonifier::string& imageUrl);
 	};
 
 	/// @brief Message reference data.
@@ -2728,8 +2728,8 @@ namespace discord_core_api {
 		friend struct delete_follow_up_message_data;
 		friend struct interaction_response_data;
 
-		friend DiscordCoreAPI_Dll move_through_message_pages_data moveThroughMessagePages(jsonifier::string_view userID, input_event_data originalEvent, uint32_t currentPageIndex,
-			const jsonifier::vector<embed_data>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult);
+		friend DiscordCoreAPI_Dll move_through_message_pages_data moveThroughMessagePages(const jsonifier::string& userID, input_event_data originalEvent,
+			uint32_t currentPageIndex, const jsonifier::vector<embed_data>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult);
 
 		friend class create_ephemeral_interaction_response_data;
 		friend class create_deferred_interaction_response_data;
@@ -2764,8 +2764,8 @@ namespace discord_core_api {
 		/// @param emojiId an emoji id, if desired.
 		/// @param url a url, if applicable.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, button_style buttonStyle,
-			jsonifier::string_view emojiName = "", snowflake emojiId = snowflake{}, jsonifier::string_view url = "");
+		respond_to_input_event_data& addButton(bool disabled, const jsonifier::string& customIdNew, const jsonifier::string& buttonLabel, button_style buttonStyle,
+			const jsonifier::string& emojiName = "", snowflake emojiId = snowflake{}, const jsonifier::string& url = "");
 
 		/// @brief Adds a select-menu to the response message_data.
 		/// @param disabled whether the select-menu is active or not.
@@ -2777,8 +2777,8 @@ namespace discord_core_api {
 		/// @param type the type of select-menu that this is.
 		/// @param channelTypes types of channels that can be accepted if this is of the type channel_type.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addSelectMenu(bool disabled, jsonifier::string_view customIdNew, const jsonifier::vector<select_option_data>& options,
-			jsonifier::string_view placeholder, uint64_t maxValues, uint64_t minValues, select_menu_type type,
+		respond_to_input_event_data& addSelectMenu(bool disabled, const jsonifier::string& customIdNew, const jsonifier::vector<select_option_data>& options,
+			const jsonifier::string& placeholder, uint64_t maxValues, uint64_t minValues, select_menu_type type,
 			jsonifier::vector<channel_type> channelTypes = jsonifier::vector<channel_type>{});
 
 		/// @brief Adds a modal to the response message_data.
@@ -2793,9 +2793,9 @@ namespace discord_core_api {
 		/// @param label a label for the modal.
 		/// @param placeholder a placeholder for the modal.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
-			jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, text_input_style inputStyle, jsonifier::string_view label = "",
-			jsonifier::string_view placeholder = "");
+		respond_to_input_event_data& addModal(const jsonifier::string& topTitleNew, const jsonifier::string& topCustomIdNew, const jsonifier::string& titleNew,
+			const jsonifier::string& customIdNew, bool required, uint64_t minLength, uint64_t maxLength, text_input_style inputStyle, const jsonifier::string& label = "",
+			const jsonifier::string& placeholder = "");
 
 		/// @brief Adds a file to the current collection of files for this message response.
 		/// @param theFile the file to be added.
@@ -2805,7 +2805,7 @@ namespace discord_core_api {
 		/// @brief For setting the allowable mentions in a response.
 		/// @param dataPackage an allowed_mentions_data structure.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addAllowedMentions(const allowed_mentions_data dataPackage);
+		respond_to_input_event_data& addAllowedMentions(const allowed_mentions_data& dataPackage);
 
 		/// @brief For setting the type of response to make.
 		/// @param typeNew an input_event_response_type.
@@ -2815,7 +2815,7 @@ namespace discord_core_api {
 		/// @brief For setting the components in a response.
 		/// @param dataPackage an action_row_data structure.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addComponentRow(const action_row_data dataPackage);
+		respond_to_input_event_data& addComponentRow(const action_row_data& dataPackage);
 
 		/// @brief For setting the embeds in a response.
 		/// @param dataPackage an embed_data structure.
@@ -2825,7 +2825,7 @@ namespace discord_core_api {
 		/// @brief For setting the message content in a response.
 		/// @param dataPackage a string, containing the content.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& addContent(jsonifier::string_view dataPackage);
+		respond_to_input_event_data& addContent(const jsonifier::string& dataPackage);
 
 		/// @brief For setting the tts status of a response.
 		/// @param enabledTTs a bool.
@@ -2837,8 +2837,8 @@ namespace discord_core_api {
 		/// @param theName a string for the name of the choice.
 		/// @param theNameLocalizations a unordered_map<jsonifier::string, jsonifier::string> for the name localizations.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		respond_to_input_event_data& setAutoCompleteChoice(discord_core_internal::etf_serializer value, jsonifier::string_view theName,
-			unordered_map<jsonifier::string, jsonifier::string> theNameLocalizations);
+		respond_to_input_event_data& setAutoCompleteChoice(discord_core_internal::etf_serializer value, const jsonifier::string& theName,
+			const unordered_map<jsonifier::string, jsonifier::string>& theNameLocalizations);
 
 		/// @brief For setting the direct-message_data user target of a response.
 		/// @param targetUserIdNew a string, containing the target user_data's id.
@@ -2879,8 +2879,8 @@ namespace discord_core_api {
 		/// @param emojiId an emoji id, if desired.
 		/// @param url a url, if applicable.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, button_style buttonStyle,
-			jsonifier::string_view emojiName = "", snowflake emojiId = snowflake{}, jsonifier::string_view url = "");
+		message_response_base& addButton(bool disabled, const jsonifier::string& customIdNew, const jsonifier::string& buttonLabel, button_style buttonStyle,
+			const jsonifier::string& emojiName = "", snowflake emojiId = snowflake{}, const jsonifier::string& url = "");
 
 		/// @brief Adds a select-menu to the response message_data.
 		/// @param disabled whether the select-menu is active or not.
@@ -2892,8 +2892,9 @@ namespace discord_core_api {
 		/// @param type the type of select-menu that this is.
 		/// @param channelTypes types of channels that can be accepted if this is of the type channel_type.
 		/// @return respond_to_input_event_data& a reference to this data structure.
-		message_response_base& addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<select_option_data> options, jsonifier::string_view placeholder,
-			uint64_t maxValues, uint64_t minValues, select_menu_type type, jsonifier::vector<channel_type> channelTypes = jsonifier::vector<channel_type>{});
+		message_response_base& addSelectMenu(bool disabled, const jsonifier::string& customIdNew, const jsonifier::vector<select_option_data>& options,
+			const jsonifier::string& placeholder, uint64_t maxValues, uint64_t minValues, select_menu_type type,
+			jsonifier::vector<channel_type> channelTypes = jsonifier::vector<channel_type>{});
 
 		/// @brief Adds a modal to the response message_data.
 		/// @param topTitleNew a title for the modal.
@@ -2907,34 +2908,34 @@ namespace discord_core_api {
 		/// @param label a label for the modal.
 		/// @param placeholder a placeholder for the modal.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
-			jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, text_input_style inputStyle, jsonifier::string_view label = "",
-			jsonifier::string_view placeholder = "");
+		message_response_base& addModal(const jsonifier::string& topTitleNew, const jsonifier::string& topCustomIdNew, const jsonifier::string& titleNew,
+			const jsonifier::string& customIdNew, bool required, uint64_t minLength, uint64_t maxLength, text_input_style inputStyle, const jsonifier::string& label = "",
+			const jsonifier::string& placeholder = "");
 
 		/// @brief Adds a file to the current collection of files for this message response.
 		/// @param theFile the file to be added.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addFile(file theFile);
+		message_response_base& addFile(const file& theFile);
 
 		/// @brief For setting the allowable mentions in a response.
 		/// @param dataPackage an allowed_mentions_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addAllowedMentions(const allowed_mentions_data dataPackage);
+		message_response_base& addAllowedMentions(const allowed_mentions_data& dataPackage);
 
 		/// @brief For setting the components in a response.
 		/// @param dataPackage an action_row_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addComponentRow(const action_row_data dataPackage);
+		message_response_base& addComponentRow(const action_row_data& dataPackage);
 
 		/// @brief For setting the embeds in a response.
 		/// @param dataPackage an embed_data structure.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addMessageEmbed(const embed_data dataPackage);
+		message_response_base& addMessageEmbed(const embed_data& dataPackage);
 
 		/// @brief For setting the message content in a response.
 		/// @param dataPackage a string, containing the content.
 		/// @return message_response_base& a reference to this data structure.
-		message_response_base& addContent(jsonifier::string_view dataPackage);
+		message_response_base& addContent(const jsonifier::string& dataPackage);
 
 		/// @brief For setting the tts status of a response.
 		/// @param enabledTTs a bool.

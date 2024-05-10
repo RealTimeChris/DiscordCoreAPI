@@ -45,24 +45,41 @@ namespace discord_core_api {
 	 * ```
 	 */
 
-	template<uint64_t size> struct unicode_emoji {
-		constexpr unicode_emoji& operator=(const char (&str)[size]) {
-			std::copy(str, str + size - 1, stringUnicode);
+	template<uint64_t sizeVal> struct unicode_emoji {
+		static constexpr auto length{ sizeVal > 0 ? sizeVal - 1 : 0 };
+
+		constexpr unicode_emoji() noexcept = default;
+
+		constexpr unicode_emoji& operator=(const char (&str)[sizeVal]) noexcept {
+			std::copy(str, str + sizeVal, values);
 			return *this;
 		}
 
-		constexpr unicode_emoji(const char (&str)[size]) {
+		constexpr unicode_emoji(const char (&str)[sizeVal]) noexcept {
 			*this = str;
 		}
 
-		constexpr operator jsonifier::string_view() const {
-			return stringUnicode;
+		constexpr uint64_t size() const noexcept {
+			return length;
 		}
 
-		constexpr const char* data() const {
-			return stringUnicode;
+		constexpr const char* data() const noexcept {
+			return values;
 		}
-		char stringUnicode[size - 1]{};
+
+		constexpr operator std::string() const noexcept {
+			return { values, length };
+		}
+
+		constexpr operator jsonifier::string_view() const noexcept {
+			return { values, length };
+		}
+
+		constexpr operator jsonifier::string() const noexcept {
+			return { values, length };
+		}
+
+		char values[sizeVal]{};
 	};
 
 	namespace unicode_emojis {

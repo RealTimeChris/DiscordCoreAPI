@@ -88,11 +88,11 @@ find_package(OpenSSL REQUIRED)
 find_package(Opus CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)
 
-if(NOT DEFINED JSONIFIER_CPU_INSTRUCTIONS)
+if(NOT DEFINED DCA_CPU_INSTRUCTIONS)
 	include("DCADetectArchitecture")
 endif()
 
-set(JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS}" CACHE INTERNAL "For the CPU architecture selection.")
+set(DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS}" CACHE INTERNAL "For the CPU architecture selection.")
 set(AVX_FLAG "${AVX_FLAG}" CACHE INTERNAL "For the CPU flag selection.")
 
 target_include_directories(
@@ -114,7 +114,7 @@ target_link_libraries(
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:DiscordCoreAPI_EXPORTS_NOPE>"
-	"JSONIFIER_CPU_INSTRUCTIONS=${JSONIFIER_CPU_INSTRUCTIONS}"
+	"DCA_CPU_INSTRUCTIONS=${DCA_CPU_INSTRUCTIONS}"
 )
 
 include(ProcessorCount)

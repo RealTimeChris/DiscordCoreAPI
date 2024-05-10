@@ -65,47 +65,50 @@ namespace discord_core_api {
 namespace jsonifier_internal {
 
 	template<typename value_type>
-	concept snowflake_t = std::same_as<discord_core_api::snowflake, jsonifier::concepts::unwrap_t<value_type>>;
+	concept snowflake_t = std::same_as<discord_core_api::snowflake, jsonifier_internal::unwrap_t<value_type>>;
 
-	template<typename derived_type, snowflake_t value_type_new> struct serialize_impl<derived_type, value_type_new> {
-		template<snowflake_t value_type, jsonifier::concepts::buffer_like iterator_type> DCA_INLINE static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
+	template<jsonifier::serialize_options options, snowflake_t value_type, jsonifier::concepts::buffer_like buffer_type, typename serialize_context_type>
+	struct serialize_impl<options, value_type, buffer_type, serialize_context_type> {
+		template<typename value_type_new> JSONIFIER_ALWAYS_INLINE static void impl(value_type_new&& value, buffer_type& buffer, serialize_context_type& serializePair) noexcept {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serializer<derived_type>::impl(newString, iter, index);
+			serialize<options>::impl(newString, buffer, serializePair);
 		}
 	};
 
-	template<typename derived_type, snowflake_t value_type_new> struct parse_impl<derived_type, value_type_new> {
-		template<snowflake_t value_type, jsonifier::concepts::is_fwd_iterator iterator> DCA_INLINE static void impl(value_type&& value, iterator&& iter) {
+	template<bool minified, jsonifier::parse_options options, snowflake_t value_type, typename parse_context_type> struct parse_impl<minified, options, value_type, parse_context_type> {
+		JSONIFIER_ALWAYS_INLINE static void impl(value_type& value, parse_context_type& context) noexcept {
 			jsonifier::raw_json_data newString{};
-			parser<derived_type>::impl(newString, iter);
+			parse<minified, options>::impl(newString, context);
 			if (newString.getType() == jsonifier::json_type::String) {
 				value = newString.operator jsonifier::string();
 			} else {
 				value = newString.operator uint64_t();
 			}
-		};
+		}
 	};
 
 	template<typename value_type>
-	concept time_stamp_t = std::same_as<discord_core_api::time_stamp, jsonifier::concepts::unwrap_t<value_type>>;
+	concept time_stamp_t = std::same_as<discord_core_api::time_stamp, jsonifier_internal::unwrap_t<value_type>>;
 
-	template<typename derived_type, time_stamp_t value_type_new> struct serialize_impl<derived_type, value_type_new> {
-		template<time_stamp_t value_type, jsonifier::concepts::buffer_like iterator_type> DCA_INLINE static void impl(value_type&& value, iterator_type&& iter, uint64_t& index) {
+	template<jsonifier::serialize_options options, time_stamp_t value_type, jsonifier::concepts::buffer_like buffer_type, typename serialize_context_type>
+	struct serialize_impl<options, value_type, buffer_type, serialize_context_type> {
+		template<typename value_type_new> JSONIFIER_ALWAYS_INLINE static void impl(value_type_new&& value, buffer_type& buffer, serialize_context_type& serializePair) noexcept {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serializer<derived_type>::impl(newString, iter, index);
+			serialize<options>::impl(newString, buffer, serializePair);
 		}
 	};
 
-	template<typename derived_type, time_stamp_t value_type_new> struct parse_impl<derived_type, value_type_new> {
-		template<time_stamp_t value_type, jsonifier::concepts::is_fwd_iterator iterator_type> DCA_INLINE static void impl(value_type&& value, iterator_type&& iter) {
+	template<bool minified, jsonifier::parse_options options, time_stamp_t value_type, typename parse_context_type>
+	struct parse_impl<minified, options, value_type, parse_context_type> {
+		JSONIFIER_ALWAYS_INLINE static void impl(value_type& value, parse_context_type& context) noexcept {
 			jsonifier::raw_json_data newString{};
-			parser<derived_type>::impl(newString, iter);
+			parse<minified, options>::impl(newString, context);
 			if (newString.getType() == jsonifier::json_type::String) {
 				value = newString.operator jsonifier::string();
 			} else {
 				value = newString.operator uint64_t();
 			}
-		};
+		}
 	};
 }
 
