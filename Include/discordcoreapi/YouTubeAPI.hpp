@@ -75,14 +75,14 @@ namespace discord_core_api {
 		};
 
 		struct you_tube_request_client {
-			static constexpr jsonifier::string_view clientVersion{ "17.13.3" };
-			static constexpr jsonifier::string_view androidSdkVersion{ "31" };
-			static constexpr jsonifier::string_view clientName{ "android" };
-			static constexpr jsonifier::string_view platform{ "mobile" };
-			static constexpr jsonifier::string_view osName{ "android" };
-			static constexpr jsonifier::string_view osVersion{ "12" };
-			static constexpr jsonifier::string_view hl{ "en-gb" };
-			static constexpr jsonifier::string_view gl{ "us" };
+			jsonifier::string_view clientVersion{ "17.13.3" };
+			jsonifier::string_view androidSdkVersion{ "31" };
+			jsonifier::string_view clientName{ "android" };
+			jsonifier::string_view platform{ "mobile" };
+			jsonifier::string_view osName{ "android" };
+			jsonifier::string_view osVersion{ "12" };
+			jsonifier::string_view hl{ "en-gb" };
+			jsonifier::string_view gl{ "us" };
 		};
 
 		struct request {

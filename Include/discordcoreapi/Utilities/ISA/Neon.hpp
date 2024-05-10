@@ -31,71 +31,71 @@
 
 #include <discordcoreapi/Utilities/Base.hpp>
 
-#if DCA_CHECK_FOR_INSTRUCTION(DCA_AVX) && !DCA_CHECK_FOR_INSTRUCTION(DCA_AVX2) && !DCA_CHECK_FOR_INSTRUCTION(DCA_AVX512)
+#if DCA_CHECK_FOR_INSTRUCTION(DCA_NEON)
 
-	#include <immintrin.h>
-	#include <numeric>
+#include <arm_neon.h>
 
 namespace discord_core_api {
 
 	namespace discord_core_internal {
 
-		using avx_float = __m128;
+		using neon_float = float32x4_t ;
 
-		// @brief A class for audio mixing operations using AVX2 instructions.
+		// @brief A class for audio mixing operations using ARM NEON instructions.
 		class audio_mixer {
 		  public:
 			// @brief The number of 32-bit values per cpu register.
 			static constexpr int32_t byteBlocksPerRegister{ 4 };
 
-			// @brief Collect a single register worth of data from dataIn, apply gain and increment, and store the result in dataOut. this version uses AVX instructions.
+			// @brief Collect a single register worth of data from dataIn, apply gain and increment, and store the result in dataOut. This version uses NEON instructions.
 			// @param dataIn pointer to the input array of int32_t values.
 			// @param dataOut pointer to the output array of int16_t values.
 			// @param currentGain the gain to be applied to the elements.
 			// @param increment the increment value to be added to each element.
-			DCA_INLINE void collectSingleRegister(const int32_t* dataIn, int16_t* dataOut, const float currentGain, const float increment) {
-				currentSamples = _mm_mul_ps(gatherValues(dataIn), _mm_add_ps(_mm_set1_ps(currentGain), _mm_mul_ps(_mm_set1_ps(increment), _mm_set_ps(0.0f, 1.0f, 2.0f, 3.0f))));
+			inline void collectSingleRegister(const int32_t* dataIn, int16_t* dataOut, const float currentGain, const float increment) {
+				neon_float currentSamples =
+					vmulq_f32(gatherValues(dataIn), vmlaq_f32(vdupq_n_f32(currentGain), vdupq_n_f32(increment), vcombine_f32(vcreate_f32(0x00000001), vcreate_f32(0x00000002))));
 
-				currentSamples = _mm_blendv_ps(_mm_max_ps(currentSamples, _mm_set1_ps(static_cast<float>(std::numeric_limits<int16_t>::min()))),
-					_mm_min_ps(currentSamples, _mm_set1_ps(static_cast<float>(std::numeric_limits<int16_t>::max()))),
-					_mm_cmp_ps(currentSamples, _mm_set1_ps(0.0f), _CMP_GE_OQ));
+				currentSamples =
+					vbslq_f32(vcgeq_f32(currentSamples, vdupq_n_f32(0.0f)), vminq_f32(currentSamples, vdupq_n_f32(static_cast<float>(std::numeric_limits<int16_t>::max()))),
+						vmaxq_f32(currentSamples, vdupq_n_f32(static_cast<float>(std::numeric_limits<int16_t>::min()))));
 
 				storeValues(currentSamples, dataOut);
 			}
 
-			// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. this version uses AVX instructions.
+			// @brief Combine a register worth of elements from decodedData and store the result in upSampledVector. This version uses NEON instructions.
 			// @param upSampledVector pointer to the array of int32_t values.
 			// @param decodedData pointer to the array of int16_t values.
-			DCA_INLINE void combineSamples(const int16_t* decodedData, int32_t* upSampledVector) {
-				storeValues(_mm_add_ps(gatherValues(upSampledVector), gatherValues(decodedData)), upSampledVector);
+			inline void combineSamples(const int16_t* decodedData, int32_t* upSampledVector) {
+				storeValues(vaddq_f32(gatherValues(upSampledVector), gatherValues(decodedData)), upSampledVector);
 			}
 
 		  protected:
 			alignas(16) float newArray[byteBlocksPerRegister]{};
-			avx_float currentSamples{};
+			neon_float currentSamples{};
 
-			// @brief Stores values from a 128-bit AVX vector to a storage location.
+			// @brief Stores values from a 128-bit NEON vector to a storage location.
 			// @tparam value_type the target value type for storage.
-			// @param valuesToStore the 128-bit AVX vector containing values to store.
+			// @param valuesToStore the 128-bit NEON vector containing values to store.
 			// @param storageLocation pointer to the storage location.
-			template<typename value_type> DCA_INLINE void storeValues(const avx_float& valuesToStore, value_type* storageLocation) {
-				_mm_store_ps(newArray, valuesToStore);
+			template<typename value_type> inline void storeValues(const float32x4_t& valuesToStore, value_type* storageLocation) {
+				vst1q_f32(newArray, valuesToStore);
 				for (int64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					storageLocation[x] = static_cast<value_type>(newArray[x]);
 				}
 			}
 
-			// @brief Specialization for gathering non-float values into an AVX register.
+			// @brief Specialization for gathering non-float values into a NEON register.
 			// @tparam value_type the type of values being gathered.
-			// @tparam indices parameter pack of indices for gathering values.
-			// @return an AVX register containing gathered values.
-			template<typename value_type> DCA_INLINE avx_float gatherValues(const value_type* values) {
+			// @return a NEON register containing gathered values.
+			template<typename value_type> inline neon_float gatherValues(const value_type* values) {
 				for (uint64_t x = 0; x < byteBlocksPerRegister; ++x) {
 					newArray[x] = static_cast<float>(values[x]);
 				}
-				return _mm_load_ps(newArray);
+				return vld1q_f32(newArray);
 			}
 		};
+
 
 	}
 }

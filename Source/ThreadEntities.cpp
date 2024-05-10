@@ -30,6 +30,7 @@
 
 #include <discordcoreapi/ThreadEntities.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
+#include <discordcoreapi/JsonSpecializations.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
 
 namespace jsonifier {
@@ -38,7 +39,7 @@ namespace jsonifier {
 		using value_type = discord_core_api::forum_thread_message_data;
 		static constexpr auto parseValue =
 			createValue("attachments", &value_type::attachments, "components", &value_type::components, "allowedMentions", &value_type::allowedMentions, "stickerIds",
-				&value_type::stickerIds, "embeds", &value_type::embeds, "files", &value_type::files, "content", &value_type::content, "flags", &value_type::flags);
+				&value_type::stickerIds, "embeds", &value_type::embeds, "content", &value_type::content, "flags", &value_type::flags);
 	};
 
 	template<> struct core<discord_core_api::start_thread_with_message_data> {

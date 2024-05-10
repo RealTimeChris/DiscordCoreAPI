@@ -29,9 +29,10 @@
 /// \file ISADetection.hpp
 #pragma once
 
-#include <jsonifier/ISA/ISADetectionBase.hpp>
+#include <jsonifier/Index.hpp>
 
 #include <discordcoreapi/Utilities/ISA/AVX512.hpp>
 #include <discordcoreapi/Utilities/ISA/AVX2.hpp>
 #include <discordcoreapi/Utilities/ISA/AVX.hpp>
+#include <discordcoreapi/Utilities/ISA/Neon.hpp>
 #include <discordcoreapi/Utilities/ISA/Fallback.hpp>

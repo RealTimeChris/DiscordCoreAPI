@@ -40,6 +40,11 @@ namespace jsonifier {
 			"type", &value_type::type, "id", &value_type::roleOrUserId);
 	};
 
+	template<> struct core<discord_core_api::modify_guild_channel_positions_data> {
+		using value_type				 = discord_core_api::modify_guild_channel_positions_data;
+		static constexpr auto parseValue = createValue("reason", &value_type::reason, "guild_id", &value_type::guildId, "modify_channel_data", &value_type::modifyChannelData);
+	};
+
 	template<> struct core<discord_core_api::create_channel_invite_data> {
 		using value_type				 = discord_core_api::create_channel_invite_data;
 		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "max_uses", &value_type::maxUses, "max_age", &value_type::maxAge, "temporary",
@@ -59,11 +64,6 @@ namespace jsonifier {
 		using value_type = discord_core_api::modify_guild_channel_position_data;
 		static constexpr auto parseValue =
 			createValue("id", &value_type::id, "position", &value_type::position, "parent_id", &value_type::parentId, "lock_permissions", &value_type::lockPermissions);
-	};
-
-	template<> struct core<discord_core_api::modify_guild_channel_positions_data> {
-		using value_type				 = discord_core_api::modify_guild_channel_positions_data;
-		static constexpr auto parseValue = createValue(&value_type::modifyChannelData);
 	};
 
 	template<> struct core<discord_core_api::modify_channel_data> {

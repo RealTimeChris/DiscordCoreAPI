@@ -1,120 +1,115 @@
-# 	MIT License
-# 
-# 	Copyright (c) 2023 RealTimeChris
-# 
-# 	Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# 	software and associated documentation files (the "Software"), to deal in the Software
-# 	without restriction, including without limitation the rights to use, copy, modify, merge,
-# 	publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-# 	persons to whom the Software is furnished to do so, subject to the following conditions:
-# 
-# 	The above copyright notice and this permission notice shall be included in all copies or
-# 	substantial portions of the Software.
-# 
-# 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# 	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-# 	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-# 	FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-# 	OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# 	DEALINGS IN THE SOFTWARE.
-# DCADetectArchitecture.cmake - Script for detecting the CPU architecture.
-# Sept 18, 2023
+# JsonifierDetectArchitecture.cmake - Script for detecting the CPU architecture.
+# MIT License
+# Copyright (c) 2023 RealTimeChris
 # https://discordcoreapi.com
-include(CheckCXXSourceRuns)
 
-function(jsonifier_check_instruction_set INSTRUCTION_SET_NAME INSTRUCTION_SET_IN_FLAG INSTRUCTION_SET_OUT_FLAG INSTRUCTION_SET_INTRINSIC)
-    set(INSTRUCTION_SET_CODE "
-    #include <immintrin.h>
-    #include <stdint.h>
-        
-    int32_t main()
-    {
-        ${INSTRUCTION_SET_INTRINSIC};
-        return 0;
-    }")
+if (UNIX OR APPLE)
+    file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/../CMake/BuildFeatureTester.sh" "#!/bin/bash
+\"${CMAKE_COMMAND}\" -S ./ -B ./Build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+\"${CMAKE_COMMAND}\" --build ./Build --config=Release")
+    execute_process(
+        COMMAND chmod +x "${CMAKE_CURRENT_SOURCE_DIR}/../CMake/BuildFeatureTester.sh"
+        RESULT_VARIABLE CHMOD_RESULT
+    )
+    if(NOT ${CHMOD_RESULT} EQUAL 0)
+        message(FATAL_ERROR "Failed to set executable permissions for BuildFeatureTester.sh")
+    endif()
+    execute_process(
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../CMake/BuildFeatureTester.sh"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../CMake"
+    )
+    set(FEATURE_TESTER_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../CMake/Build/feature_detector")
+elseif(WIN32)
+    file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/../CMake/BuildFeatureTester.bat" "\"${CMAKE_COMMAND}\" -S ./ -B ./Build -DCMAKE_BUILD_TYPE=Release
+\"${CMAKE_COMMAND}\" --build ./Build --config=Release")
+    execute_process(
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../CMake/BuildFeatureTester.bat"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../CMake"
+    )
+    set(FEATURE_TESTER_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../CMake/Build/Release/feature_detector.exe")
+endif()
 
-    set(CMAKE_REQUIRED_FLAGS "${INSTRUCTION_SET_IN_FLAG}")
-    set(CHECK_RESULT_VAR "${INSTRUCTION_SET_NAME}")
-    CHECK_CXX_SOURCE_RUNS("${INSTRUCTION_SET_CODE}" "DiscordCoreAPI-${CHECK_RESULT_VAR}")
-    if(DiscordCoreAPI-${CHECK_RESULT_VAR})
-        set(${INSTRUCTION_SET_NAME} "${INSTRUCTION_SET_OUT_FLAG}" PARENT_SCOPE)
-        list(APPEND JSONIFIER_CPU_INSTRUCTIONS "${INSTRUCTION_SET_NAME}")
-        string(REPLACE ";" "," JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS}")
-        set(JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS}" PARENT_SCOPE)
+execute_process(
+    COMMAND "${FEATURE_TESTER_FILE}"
+    RESULT_VARIABLE DCA_CPU_INSTRUCTIONS_NEW
+)
+
+function(is_numeric value result_var)
+    string(REGEX MATCH "^[0-9]+(\\.[0-9]+)?$" is_numeric_match "${value}")
+    if(is_numeric_match)
+        set(${result_var} TRUE PARENT_SCOPE)
     else()
-        message(STATUS "Instruction set ${INSTRUCTION_SET_NAME} not supported.")
-        return()
+        set(${result_var} FALSE PARENT_SCOPE)
     endif()
 endfunction()
 
-set(INSTRUCTION_SET_NAMES "POPCNT" "LZCNT" "BMI" "BMI2" "AVX" "AVX2" "AVX512")
-set(INSTRUCTION_SET_CODE
-    "auto result = _mm_popcnt_u64(uint64_t{})"
-    "auto result = _lzcnt_u64(int64_t{})"
-    "auto result = _blsr_u64(uint64_t{}).result = _tzcnt_u32(uint16_t{})"
-    "auto result = _pdep_u64(uint64_t{}, uint64_t{})"
-    "auto result = _mm_castsi128_pd(__m128i{}).auto result01 = _mm_setzero_si128()"
-    "auto result = _mm256_add_epi32(__m256i{}, __m256i{})"
-    "auto result = _mm_abs_epi64 (__m128i{}).auto result01 = _mm512_abs_epi16(__m512i{})"
-)
+is_numeric("${DCA_CPU_INSTRUCTIONS_NEW}" is_numeric_result)
 
-set(INDEX_SET "0" "1" "2" "3" "4" "5" "6")
+set(AVX_FLAG "")
+if (is_numeric_result)
+math(EXPR DCA_CPU_INSTRUCTIONS_NUMERIC "${DCA_CPU_INSTRUCTIONS_NEW}")
+math(EXPR DCA_CPU_INSTRUCTIONS 0)
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    set(INSTRUCTION_SET_IN_FLAGS "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX2" "/arch:AVX512")
-    set(INSTRUCTION_SET_OUT_FLAGS "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX" "/arch:AVX2" "/arch:AVX512")
+function(check_instruction_set INSTRUCTION_SET_NAME INSTRUCTION_SET_FLAG INSTRUCTION_SET_NUMERIC_VALUE)
+    math(EXPR INSTRUCTION_PRESENT "( ${DCA_CPU_INSTRUCTIONS_NUMERIC} & ${INSTRUCTION_SET_NUMERIC_VALUE} )")
+    if(INSTRUCTION_PRESENT)
+        message(STATUS "Instruction Set Found: ${INSTRUCTION_SET_NAME}")
+        math(EXPR DCA_CPU_INSTRUCTIONS "( ${DCA_CPU_INSTRUCTIONS} | ${INSTRUCTION_SET_NUMERIC_VALUE} )")
+        set(AVX_FLAG "${AVX_FLAG};${INSTRUCTION_SET_FLAG}" PARENT_SCOPE)
+    endif()
+endfunction()
+
+math(EXPR INSTRUCTION_PRESENT "( ${DCA_CPU_INSTRUCTIONS_NUMERIC} & 0x1 )")
+if(INSTRUCTION_PRESENT)
+    math(EXPR DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS} | 1 << 0" OUTPUT_FORMAT DECIMAL)
+endif()
+math(EXPR INSTRUCTION_PRESENT "( ${DCA_CPU_INSTRUCTIONS_NUMERIC} & 0x2 )")
+if(INSTRUCTION_PRESENT)
+    math(EXPR DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS} | 1 << 1" OUTPUT_FORMAT DECIMAL)
+endif()
+math(EXPR INSTRUCTION_PRESENT "( ${DCA_CPU_INSTRUCTIONS_NUMERIC} & 0x4 )")
+if(INSTRUCTION_PRESENT)
+    math(EXPR DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS} | 1 << 2" OUTPUT_FORMAT DECIMAL)
+endif()
+math(EXPR INSTRUCTION_PRESENT "( ${DCA_CPU_INSTRUCTIONS_NUMERIC} & 0x8 )")
+if(INSTRUCTION_PRESENT)
+    math(EXPR DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS} | 1 << 3" OUTPUT_FORMAT DECIMAL)
+endif()
+
+math(EXPR INSTRUCTION_PRESENT "( ${DCA_CPU_INSTRUCTIONS_NUMERIC} & 0x10 )")
+if(INSTRUCTION_PRESENT)
+    math(EXPR DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS} | 1 << 4" OUTPUT_FORMAT DECIMAL)
+endif()
+math(EXPR INSTRUCTION_PRESENT128 "( ${DCA_CPU_INSTRUCTIONS_NUMERIC} & 0x20 )")
+math(EXPR INSTRUCTION_PRESENT256 "( ${DCA_CPU_INSTRUCTIONS_NUMERIC} & 0x40 )")
+math(EXPR INSTRUCTION_PRESENT512 "( ${DCA_CPU_INSTRUCTIONS_NUMERIC} & 0x80 )")
+if(INSTRUCTION_PRESENT512)
+    math(EXPR DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS} | 1 << 7" OUTPUT_FORMAT DECIMAL)
+elseif(INSTRUCTION_PRESENT256)
+    math(EXPR DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS} | 1 << 6" OUTPUT_FORMAT DECIMAL)
+elseif(INSTRUCTION_PRESENT128)
+    math(EXPR DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS} | 1 << 5" OUTPUT_FORMAT DECIMAL)
+endif() 
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    check_instruction_set("LzCnt" "" 0x1)
+    check_instruction_set("PopCnt" "" 0x2)
+    check_instruction_set("Bmi" "" 0x4)
+    check_instruction_set("Bmi2" "" 0x8)
+    check_instruction_set("Neon" "" 0x10)
+    check_instruction_set("Avx" "/arch:AVX" 0x20)
+    check_instruction_set("Avx2" "/arch:AVX2" 0x40)
+    check_instruction_set("Avx512" "/arch:AVX512" 0x80)
 else()
-    set(INSTRUCTION_SET_IN_FLAGS "-march=native" "-march=native" "-march=native" "-march=native" "-march=native" "-march=native" "-march=native")
-    set(INSTRUCTION_SET_OUT_FLAGS "-mpopcnt" "-mlzcnt" "-mbmi" "-mbmi2" "-mavx.-mpclmul" "-mavx2.-mpclmul" "-mavx512f.-mavx512bw.-mavx512vl.-mpclmul")
+    check_instruction_set("LzCnt" "-mlzcnt" 0x1)
+    check_instruction_set("PopCnt" "-mpopcnt" 0x2)
+    check_instruction_set("Bmi" "-mbmi" 0x4)
+    check_instruction_set("Bmi2" "-mbmi2" 0x8)
+    check_instruction_set("Neon" "" 0x10)
+    check_instruction_set("Avx" "-mavx;-mlzcnt;-mpopcnt;-mbmi;-mbmi2" 0x20)
+    check_instruction_set("Avx2" "-mavx2;-mavx;-mlzcnt;-mpopcnt;-mbmi;-mbmi2" 0x40)
+    check_instruction_set("Avx512" "-mavx512f;-mavx2;-mavx;-mlzcnt;-mpopcnt;-mbmi;-mbmi2" 0x80)
 endif()
-
-set(CMAKE_REQUIRED_FLAGS_SAVE "${CMAKE_REQUIRED_FLAGS}")
-
-if(("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64") OR ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386") OR ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "AMD64"))
-
-	foreach(CURRENT_INDEX IN LISTS INDEX_SET)
-		list(GET INSTRUCTION_SET_NAMES "${CURRENT_INDEX}" INSTRUCTION_SET_NAME)
-        list(GET INSTRUCTION_SET_CODE "${CURRENT_INDEX}" INSTRUCTION_SET_INTRINSIC)
-        list(GET INSTRUCTION_SET_IN_FLAGS "${CURRENT_INDEX}" INSTRUCTION_SET_IN_FLAG)
-        list(GET INSTRUCTION_SET_OUT_FLAGS "${CURRENT_INDEX}" INSTRUCTION_SET_OUT_FLAG)
-        string(REPLACE "." ";" INSTRUCTION_SET_OUT_FLAG "${INSTRUCTION_SET_OUT_FLAG}")
-        string(REPLACE "." ";" INSTRUCTION_SET_INTRINSIC "${INSTRUCTION_SET_INTRINSIC}")
-		jsonifier_check_instruction_set("${INSTRUCTION_SET_NAME}" "${INSTRUCTION_SET_IN_FLAG}" "${INSTRUCTION_SET_OUT_FLAG}" "${INSTRUCTION_SET_INTRINSIC}")
-	endforeach()
-
-	message(STATUS "Detected CPU Architecture: ${JSONIFIER_CPU_INSTRUCTIONS}")
-else()
-	message(STATUS "SSE not supported by architecture ${CMAKE_SYSTEM_PROCESSOR}")
 endif()
-
-set(AVX_FLAG)
-set(JSONIFIER_CPU_INSTRUCTIONS 0)
-
-if(NOT "${POPCNT}" STREQUAL "")
-    list(APPEND AVX_FLAG "${POPCNT}")
-    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 0" OUTPUT_FORMAT DECIMAL)
-endif()
-if(NOT "${LZCNT}" STREQUAL "")
-    list(APPEND AVX_FLAG "${LZCNT}")
-    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 1" OUTPUT_FORMAT DECIMAL)
-endif()
-if(NOT "${BMI}" STREQUAL "")
-    list(APPEND AVX_FLAG "${BMI}")
-    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 2" OUTPUT_FORMAT DECIMAL)
-endif()
-if(NOT "${BMI2}" STREQUAL "")
-    list(APPEND AVX_FLAG "${BMI2}")
-    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 3" OUTPUT_FORMAT DECIMAL)
-endif()
-if(NOT "${AVX512}" STREQUAL "")
-    list(APPEND AVX_FLAG "${AVX512}")
-    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 6" OUTPUT_FORMAT DECIMAL)
-elseif(NOT "${AVX2}" STREQUAL "")
-    list(APPEND AVX_FLAG "${AVX2}")
-    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 5" OUTPUT_FORMAT DECIMAL)
-elseif(NOT "${AVX}" STREQUAL "")
-    list(APPEND AVX_FLAG "${AVX}")
-    math(EXPR JSONIFIER_CPU_INSTRUCTIONS "${JSONIFIER_CPU_INSTRUCTIONS} | 1 << 4" OUTPUT_FORMAT DECIMAL)
-endif()
-
-set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS_SAVE}")
+set(AVX_FLAG "${AVX_FLAG}" CACHE STRING "AVX flags" FORCE)
+set(DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS}" CACHE STRING "CPU Instruction Sets" FORCE)

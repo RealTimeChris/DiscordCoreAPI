@@ -1,0 +1,76 @@
+name: Build-and-Test-MSVC-Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    - dev
+
+jobs:
+  Build:
+    runs-on: windows-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        msvc: [2022]
+        build_type: [Debug, Release]
+        std: [20]
+
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: Update Vcpkg and install other dependencies
+      run: | 
+            cd C:/vcpkg
+            ./bootstrap-vcpkg.bat
+            git stash
+            git pull
+            vcpkg update
+           
+    - name: Install the dependencies
+      run: |
+           vcpkg install opus:x64-windows
+           vcpkg install libsodium:x64-windows
+           vcpkg install openssl:x64-windows
+
+    - name: Configure CMake
+      working-directory: ./
+      run: |
+           cmake -S . -B ./Build -DDEV=true -DVCPKG_ROOT_DIR=C:/vcpkg
+
+    - name: Build the Test
+      working-directory: ./Build
+      run: |
+           cmake --build . --config=${{matrix.build_type}}
+
+    - name: Install the Test
+      working-directory: ./Build/Tests
+      run: |
+           cmake --install ./ --config=${{matrix.build_type}}
+
+    - name: Run the Test
+      working-directory: ./Tests/Install/${{matrix.build_type}}
+      run: |
+            ./DiscordCoreAPITest.exe
+      continue-on-error: true
+
+    - name: Clone DiscordCoreAPI-Binaries repository
+      run: |
+        git clone https://github.com/RealTimeChris/DiscordCoreAPI-Binaries.git ./DiscordCoreAPI-Binaries
+        cd DiscordCoreAPI-Binaries
+        git config user.name "GitHub Action"
+        git config user.email "action@github.com"
+
+    - name: Copy build artifacts to DiscordCoreAPI-Binaries
+      run: |
+        cp -r ./Tests/Install/${{matrix.build_type}}/* ./DiscordCoreAPI-Binaries/${{matrix.build_type}}
+
+    - name: Commit and push changes to DiscordCoreAPI-Binaries
+      working-directory: ./DiscordCoreAPI-Binaries
+      run: |
+        git add .
+        git commit -m "Update binaries for ${{matrix.build_type}} build"
+        git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/RealTimeChris/DiscordCoreAPI-Binaries.git main
+      continue-on-error: true

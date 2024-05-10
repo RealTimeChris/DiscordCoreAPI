@@ -52,6 +52,31 @@
 	#define DCA_INLINE inline
 #endif
 
+#if !defined(DCA_CPU_INSTRUCTIONS)
+	#define DCA_CPU_INSTRUCTIONS 0
+#endif
+
+#if !defined(DCA_CHECK_FOR_INSTRUCTION)
+	#define DCA_CHECK_FOR_INSTRUCTION(x) (DCA_CPU_INSTRUCTIONS & x)
+#endif
+
+#if !defined(DCA_CHECK_FOR_AVX)
+	#define DCA_CHECK_FOR_AVX(x) (DCA_CPU_INSTRUCTIONS >= x)
+#endif
+
+#if !defined(DCA_NEON)
+	#define DCA_NEON (1 << 4)
+#endif
+#if !defined(DCA_AVX)
+	#define DCA_AVX (1 << 5)
+#endif
+#if !defined(DCA_AVX2)
+	#define DCA_AVX2 (1 << 6)
+#endif
+#if !defined(DCA_AVX512)
+	#define DCA_AVX512 (1 << 7)
+#endif
+
 #if defined _WIN32
 	#if !defined DiscordCoreAPI_EXPORTS_NOPE
 		#if defined DiscordCoreAPI_EXPORTS
@@ -414,9 +439,8 @@ namespace discord_core_api {
 		/// @return true if the specified time has elapsed, otherwise false.
 		DCA_INLINE bool hasTimeElapsed(int64_t days, int64_t hours, int64_t minutes) const {
 			int64_t startTimeRaw{ static_cast<int64_t>(convertTimeStampToTimeUnits(static_cast<jsonifier::string>(*static_cast<const value_type*>(this)))) };
-			startTimeRaw =
-				std::chrono::current_zone()->to_sys(std::chrono::local_time<std::chrono::milliseconds>(std::chrono::milliseconds{ startTimeRaw })).time_since_epoch().count();
-			auto currentTime						  = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			startTimeRaw	 = std::chrono::local_time<std::chrono::milliseconds>(std::chrono::milliseconds{ startTimeRaw }).time_since_epoch().count();
+			auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			auto targetElapsedTime =
 				((static_cast<int64_t>(days) * secondsPerDay) + ((static_cast<int64_t>(hours)) * secondsPerHour) + (static_cast<int64_t>(minutes) * secondsPerMinute)) * 1000LL;
 			auto actualElapsedTime = currentTime - startTimeRaw;

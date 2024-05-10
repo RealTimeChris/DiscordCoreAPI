@@ -167,12 +167,6 @@ namespace discord_core_api {
 
 	template<typename value_Type> struct key_accessor;
 
-	template<guild_member_t value_type> struct key_accessor<value_type> {
-		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
-			return key_hasher<value_type>::getHashKey(other);
-		}
-	};
-
 	template<voice_state_t value_type> struct key_accessor<value_type> {
 		DCA_INLINE static uint64_t getHashKey(const value_type& other) {
 			return key_hasher<value_type>::getHashKey(other);
