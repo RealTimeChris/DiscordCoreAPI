@@ -128,6 +128,12 @@ namespace discord_core_api {
 		snowflake userId{};
 	};
 
+	/// @brief The voice data for a given user, as raw PCM data, along with their Id.
+	struct voice_user_payload {
+		jsonifier::string_view_base<uint8_t> voiceData{};
+		snowflake userId{};
+	};
+
 	struct DiscordCoreAPI_Dll voice_user {
 		voice_user() = default;
 
@@ -153,10 +159,10 @@ namespace discord_core_api {
 		snowflake userId{};
 	};
 
-	struct DiscordCoreAPI_Dll rtppacket_encrypter {
-		rtppacket_encrypter() = default;
+	struct DiscordCoreAPI_Dll rtp_packet_encrypter {
+		rtp_packet_encrypter() = default;
 
-		rtppacket_encrypter(uint32_t ssrcNew, const jsonifier::string_base<uint8_t>& keysNew);
+		rtp_packet_encrypter(uint32_t ssrcNew, const jsonifier::string_base<uint8_t>& keysNew);
 
 		jsonifier::string_view_base<uint8_t> encryptPacket(discord_core_internal::encoder_return_data& audioData);
 
@@ -243,6 +249,7 @@ namespace discord_core_api {
 		std::array<opus_int32, 23040> upSampledVector{};
 		jsonifier::vector<uint8_t> resampleVector{};
 		moving_averager voiceUserCountAverage{ 25 };
+		bool doWeKeepAudioData{ false };
 		snowflake guildId{};
 		float currentGain{};
 		float increment{};
@@ -292,6 +299,10 @@ namespace discord_core_api {
 		/// @return snowflake a snowflake containing the channel_data's id.
 		snowflake getChannelId();
 
+		/// @brief Collects some voice data for a given user.
+		/// @return voice_user_payload The raw PCM audio data, along with that user's id.
+		voice_user_payload extractVoicePayload();
+
 		/// @brief Connects to a currently held voice channel.
 		/// @param initData a discord_coer_api::voice_connect_init_dat structure.
 		void connect(const voice_connect_init_data& initData);
@@ -313,7 +324,7 @@ namespace discord_core_api {
 		jsonifier::string_base<uint8_t> encryptionKey{};
 		voice_connect_init_data voiceConnectInitData{};
 		jsonifier::string audioEncryptionMode{};
-		rtppacket_encrypter packetEncrypter{};
+		rtp_packet_encrypter packetEncrypter{};
 		int64_t sampleRatePerSecond{ 48000 };
 		co_routine<void, false> taskThread{};
 		voice_udpconnection udpConnection{};

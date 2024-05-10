@@ -1,0 +1,79 @@
+name: Build-and-Test-GCC-MacOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    - dev
+
+jobs:
+  Build:
+    runs-on: macos-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        gnucxx: [14]
+        build_type: [Debug, Release]
+        std: [20]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install the latest GnuCXX compiler.
+      run: |
+            brew install gcc --force-bottle
+
+    - name: Update Vcpkg and install other dependencies.
+      run: | 
+            brew update 
+            brew upgrade
+            brew install nasm
+            brew install nano
+            brew install autoconf
+            brew install automake
+            brew install libtool
+            which autoconf
+            export PATH="/opt/homebrew/bin/autoconf:$PATH"
+            git clone https://github.com/Microsoft/Vcpkg ./vcpkg2
+            cd ./vcpkg2
+            ./bootstrap-vcpkg.sh
+            git stash
+            git pull
+            ./vcpkg update
+
+    - name: Install the dependencies.
+      run: |
+           which g++
+           ./vcpkg2/vcpkg install opus:x64-osx
+           ./vcpkg2/vcpkg install libsodium:x64-osx
+           ./vcpkg2/vcpkg install openssl:x64-osx
+
+    - name: Check if file exists (for debugging)
+      if: failure()
+      run: |
+        if [ -f /Users/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg2/buildtrees/libsodium/autoconf-x64-osx-err.log ]; then echo "File exists"; else echo "File does not exist"; fi
+
+    - name: Print file contents upon failure
+      if: failure()
+      run: |
+        echo "Command failed. Printing /Users/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg2/buildtrees/libsodium/autoconf-x64-osx-err.log contents:"
+        cat /Users/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg2/buildtrees/libsodium/autoconf-x64-osx-err.log || echo "File not found or empty"
+
+    - name: Configure CMake
+      working-directory: ./
+      run: |
+           cmake -S . -B ./Build -DCMAKE_CXX_COMPILER=/usr/bin/g++-14 -DDEV=true -DDISCORDCOREAPI_TEST=true -DVCPKG_ROOT_DIR=/usr/local/share/vcpkg
+
+    - name: Build the Test
+      working-directory: ./Build
+      run: |
+           cmake --build . --config=${{matrix.build_type}}
+
+    - name: Run the Test
+      working-directory: ./Build/Tests
+      run: |
+            chmod u+x ./DiscordCoreAPITest
+            ./DiscordCoreAPITest
+      continue-on-error: true

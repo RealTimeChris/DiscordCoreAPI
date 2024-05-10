@@ -1,6 +1,7 @@
 name: Build-and-Test-MSVC-Windows
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - main
@@ -18,8 +19,8 @@ jobs:
         std: [20]
 
     steps:
-    - uses: actions/checkout@v3
-
+    - uses: actions/checkout@v4
+      
     - name: Update Vcpkg and install other dependencies.
       run: | 
             cd C:/vcpkg
