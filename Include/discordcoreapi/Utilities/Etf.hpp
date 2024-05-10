@@ -208,7 +208,7 @@ namespace discord_core_api {
 						writeCharacters("null");
 						return;
 					} else if (length == 4 && stringNew[0] == 't' && stringNew[1] == 'r' && stringNew[2] == 'u' && stringNew[3] == 'e') {
-						writeCharacters("True");
+						writeCharacters("true");
 						return;
 					} else if (length == 5 && stringNew[0] == 'f' && stringNew[1] == 'a' && stringNew[2] == 'l' && stringNew[3] == 's' && stringNew[4] == 'e') {
 						writeCharacters("false");
@@ -454,8 +454,8 @@ namespace discord_core_api {
 
 		/// @brief Concept for array types excluding etf_serializer.
 		template<typename value_type>
-		concept array_t = jsonifier::concepts::range<value_type> && jsonifier::concepts::has_resize<jsonifier::concepts::unwrap_t<value_type>> &&
-			jsonifier::concepts::has_emplace_back<jsonifier::concepts::unwrap_t<value_type>> && jsonifier::concepts::vector_subscriptable<jsonifier::concepts::unwrap_t<value_type>> &&
+		concept array_t = jsonifier::concepts::range<value_type> && jsonifier::concepts::has_resize<jsonifier_internal::unwrap_t<value_type>> &&
+			jsonifier::concepts::has_emplace_back<jsonifier_internal::unwrap_t<value_type>> && jsonifier::concepts::vector_subscriptable<jsonifier_internal::unwrap_t<value_type>> &&
 			requires(value_type&& data) { typename value_type::value_type; };
 
 		/// @brief Concept for object (associative container) types excluding etf_serializer.
@@ -609,12 +609,12 @@ namespace discord_core_api {
 				*this = str;
 			}
 
-			template<jsonifier::concepts::float_t value_type> DCA_INLINE etf_serializer& operator=(value_type&& data) {
+			template<jsonifier::concepts::float_type value_type> DCA_INLINE etf_serializer& operator=(value_type&& data) {
 				setValue<json_type::float_t>(std::forward<value_type>(data));
 				return *this;
 			}
 
-			template<jsonifier::concepts::float_t value_type> DCA_INLINE etf_serializer(value_type&& data) {
+			template<jsonifier::concepts::float_type value_type> DCA_INLINE etf_serializer(value_type&& data) {
 				*this = std::forward<value_type>(data);
 			}
 
@@ -1083,49 +1083,49 @@ namespace discord_core_api {
 					case json_type::object_t: {
 						allocator<object_type> alloc{};
 						alloc.destroy(objectValue);
-						alloc.deallocate(static_cast<object_type*>(objectValue), 1);
+						alloc.deallocate(static_cast<object_type*>(objectValue));
 						objectValue = nullptr;
 						break;
 					}
 					case json_type::array_t: {
 						allocator<array_type> alloc{};
 						alloc.destroy(arrayValue);
-						alloc.deallocate(static_cast<array_type*>(arrayValue), 1);
+						alloc.deallocate(static_cast<array_type*>(arrayValue));
 						arrayValue = nullptr;
 						break;
 					}
 					case json_type::string_t: {
 						allocator<string_type> alloc{};
 						alloc.destroy(stringValue);
-						alloc.deallocate(static_cast<string_type*>(stringValue), 1);
+						alloc.deallocate(static_cast<string_type*>(stringValue));
 						stringValue = nullptr;
 						break;
 					}
 					case json_type::float_t: {
 						allocator<float_type> alloc{};
 						alloc.destroy(floatValue);
-						alloc.deallocate(static_cast<float_type*>(floatValue), 1);
+						alloc.deallocate(static_cast<float_type*>(floatValue));
 						floatValue = nullptr;
 						break;
 					}
 					case json_type::uint_t: {
 						allocator<uint_type> alloc{};
 						alloc.destroy(uintValue);
-						alloc.deallocate(static_cast<uint_type*>(uintValue), 1);
+						alloc.deallocate(static_cast<uint_type*>(uintValue));
 						uintValue = nullptr;
 						break;
 					}
 					case json_type::int_t: {
 						allocator<int_type> alloc{};
 						alloc.destroy(intValue);
-						alloc.deallocate(static_cast<int_type*>(intValue), 1);
+						alloc.deallocate(static_cast<int_type*>(intValue));
 						intValue = nullptr;
 						break;
 					}
 					case json_type::bool_t: {
 						allocator<bool_type> alloc{};
 						alloc.destroy(boolValue);
-						alloc.deallocate(static_cast<bool_type*>(boolValue), 1);
+						alloc.deallocate(static_cast<bool_type*>(boolValue));
 						boolValue = nullptr;
 						break;
 					}

@@ -171,8 +171,8 @@ namespace discord_core_api {
 		/// @param commandData a create_application_command_data structure describing the current function.
 		/// @param alwaysRegister whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of
 		/// registered commands.
-		void registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, unique_ptr<base_function> baseFunction, create_application_command_data commandData,
-			bool alwaysRegister = false);
+		void registerFunction(const jsonifier::vector<jsonifier::string>& functionNames, unique_ptr<base_function>&& baseFunction,
+			const create_application_command_data& commandData, bool alwaysRegister = false);
 
 		/// @brief For collecting a reference to the command_controller.
 		/// @return command_controller& a reference to the command_controller.

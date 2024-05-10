@@ -34,7 +34,7 @@
 namespace discord_core_api {
 
 	template<typename value_type>
-	concept copyable_or_movable = std::copyable<jsonifier::concepts::unwrap_t<value_type>> || std::movable<jsonifier::concepts::unwrap_t<value_type>>;
+	concept copyable_or_movable = std::copyable<jsonifier_internal::unwrap_t<value_type>> || std::movable<jsonifier_internal::unwrap_t<value_type>>;
 
 	/// @brief A thread-safe messaging block for data-structures.
 	/// @tparam value_type the type of object that will be sent over the message block.
@@ -87,7 +87,7 @@ namespace discord_core_api {
 		std::mutex accessMutex{};
 	};
 
-	template<typename value_type> DCA_INLINE bool waitForTimeToPass(unbounded_message_block<jsonifier::concepts::unwrap_t<value_type>>& outBuffer, value_type& argOne, uint64_t timeInMsNew) {
+	template<typename value_type> DCA_INLINE bool waitForTimeToPass(unbounded_message_block<jsonifier_internal::unwrap_t<value_type>>& outBuffer, value_type& argOne, uint64_t timeInMsNew) {
 		stop_watch<milliseconds> stopWatch{ milliseconds{ timeInMsNew } };
 		stopWatch.reset();
 		while (!outBuffer.tryReceive(argOne)) {

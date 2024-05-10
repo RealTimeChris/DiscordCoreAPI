@@ -1,0 +1,64 @@
+name: Build-and-Test-CLANG-Ubuntu
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    - dev
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        clang: [19]
+        build_type: [Debug, Release]
+        std: [20]
+
+    steps:
+    - uses: actions/checkout@v4
+  
+    - name: Install the latest Clang compiler.
+      working-directory: Tests
+      run:  |
+            sudo apt update && sudo apt upgrade
+            wget https://apt.llvm.org/llvm.sh
+            chmod u+x llvm.sh
+            sudo ./llvm.sh 19
+
+    - name: Update Vcpkg and install other dependencies.
+      run: |
+            sudo apt-get update
+            sudo apt-get upgrade
+            sudo apt-get install nasm
+            /usr/local/share/vcpkg/vcpkg update
+
+    - name: Set TERM environment variable
+      run: echo "export TERM=xterm" >> $GITHUB_ENV
+
+    - name: Install the dependencies.
+      working-directory: ./
+      run: |
+            /usr/local/share/vcpkg/vcpkg install opus:x64-linux
+            /usr/local/share/vcpkg/vcpkg install libsodium:x64-linux
+            /usr/local/share/vcpkg/vcpkg install openssl:x64-linux
+
+    - name: Configure CMake
+      working-directory: ./
+      run: |
+           cmake -S . -B ./Build -DCMAKE_CXX_COMPILER=/usr/bin/clang++-19 -DDEV=true -DDISCORDCOREAPI_TEST=true -DVCPKG_ROOT_DIR="/usr/local/share/vcpkg/"
+
+    - name: Build the Test
+      working-directory: ./Build
+      run: |
+           cmake --build . --config=${{matrix.build_type}}
+
+    - name: Run the Test
+      working-directory: ./Build/Tests
+      run: |
+            sudo chmod u+x ./DiscordCoreAPITest
+            ./DiscordCoreAPITest
+      continue-on-error: true

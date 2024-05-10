@@ -51,9 +51,8 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::discord_core_internal::you_tube_request_client> {
 		using value_type = discord_core_api::discord_core_internal::you_tube_request_client;
-		static constexpr auto parseValue =
-			createValue("clientName", &value_type::clientName, "androidSdkVersion", &value_type::androidSdkVersion, "clientVersion", &value_type::clientVersion, "hl",
-				&value_type::hl, "gl", &value_type::gl, "osName", &value_type::osName, "osVersion", &value_type::osVersion, "platform", &value_type::platform);
+		static constexpr auto parseValue = createValue<&value_type::clientName, &value_type::androidSdkVersion, &value_type::clientVersion, &value_type::hl, &value_type::gl,
+			&value_type::osName, &value_type::osVersion, &value_type::platform>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::you_tube_request_context> {
@@ -145,7 +144,7 @@ namespace jsonifier {
 		static constexpr auto parseValue = createValue("contents", &value_type::contents);
 	};
 }
-
+ 
 namespace discord_core_api {
 
 	namespace discord_core_internal {
@@ -197,12 +196,12 @@ namespace discord_core_api {
 				jsonifier::string newString		 = returnData.responseData.substr(varInitFind + newString00.size());
 				jsonifier::string stringSequence = ";</script><script nonce=";
 				newString						 = newString.substr(0, newString.find(stringSequence));
-				you_tube_search_results youtubeSearchResults{};
-				parser.parseJson<true>(youtubeSearchResults, newString);
+				you_tube_search_results you_tubeSearchResults{};
+				parser.parseJson(you_tubeSearchResults, newString);
 				for (auto& value: parser.getErrors()) {
 					message_printer::printError<print_message_type::https>(value.reportError());
 				}
-				for (auto& value: youtubeSearchResults.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents) {
+				for (auto& value: you_tubeSearchResults.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents) {
 					for (auto& value02: value.itemSectionRendererContents.contents) {
 						if (value02.videoRenderer.videoId != "") {
 							song songNew{};
@@ -222,14 +221,19 @@ namespace discord_core_api {
 		song you_tube_request_builder::constructDownloadInfo(const song& songNew, uint64_t currentRecursionDepth) {
 			https_response_data responseData{};
 			try {
-				you_tube_request requestData{};
+				discord_core_api::discord_core_internal::you_tube_request requestData{};
 				requestData.videoId = songNew.songId;
 				https_workload_data dataPackage02{ https_workload_type::YouTube_Get_Search_Results };
-				dataPackage02.baseUrl						= "https://music.youtube.com/";
-				dataPackage02.headersToInsert["User-Agent"] = "com.google.android.youtube/17.10.35 (Linux; U; Android 12; US) gzip";
-				dataPackage02.headersToInsert["Origin"]		= "https://music.youtube.com";
-				dataPackage02.relativePath					= "/youtubei/v1/player?key=AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w";
+				dataPackage02.baseUrl						= "https://music.you_tube.com";
+				dataPackage02.headersToInsert["User-Agent"] = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36";
+				dataPackage02.headersToInsert["Origin"]		= "https://music.you_tube.com";
+				dataPackage02.headersToInsert["Content-Type"] = "application/json; charset=utf-8";
+				dataPackage02.relativePath					= "/you_tubei/v1/player?key=AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w";
 				parser.serializeJson(requestData, dataPackage02.content);
+				dataPackage02.content =
+					"{\"context\":{\"client\":{\"clientName\":\"IOS\",\"clientVersion\":\"17.13.3\",\"hl\":\"en\"},\"user\":{\"lockedSafetyMode\":false},\"request\":{\"useSsl\":"
+					"true},\"captionParams\":{}},\"params\":{}}";
+				std::cout << "REQUEST CONTENT: " << dataPackage02.content << std::endl;
 				dataPackage02.workloadClass = https_workload_class::Post;
 				responseData				= submitWorkloadAndGetResult(std::move(dataPackage02));
 				if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200) {
@@ -238,7 +242,7 @@ namespace discord_core_api {
 				}
 				data dataNew{};
 				jsonifier::vector<format> potentialFormats{};
-				parser.parseJson<true>(dataNew, responseData.responseData);
+				parser.parseJson(dataNew, responseData.responseData);
 				for (auto& value: parser.getErrors()) {
 					message_printer::printError<print_message_type::https>(value.reportError());
 				}
@@ -296,7 +300,7 @@ namespace discord_core_api {
 					newerSong.finalDownloadUrls.at(1) = downloadUrl02;
 					newerSong.viewUrl				  = newerSong.firstDownloadUrl;
 					newerSong.duration				  = time_stamp::convertMsToDurationString(jsonifier::strToUint64(dataNew.videoDetails.lengthSeconds) * 1000);
-					newerSong.viewUrl				  = "https://www.youtube.com/watch?v=" + songNew.songId;
+					newerSong.viewUrl				  = "https://www.you_tube.com/watch?v=" + songNew.songId;
 					newerSong.contentLength			  = downloadUrl02.contentSize;
 					newerSong.thumbnailUrl			  = thumbnailUrl;
 					newerSong.songTitle				  = dataNew.videoDetails.title;
@@ -364,10 +368,10 @@ namespace discord_core_api {
 						co_return;
 					}
 					workloadData.workloadClass				   = https_workload_class::Get;
-					workloadData.headersToInsert["User-Agent"] = "com.google.android.youtube/17.10.35 (Linux; U; Android 12; US) gzip";
+					workloadData.headersToInsert["User-Agent"] = "com.google.android.you_tube/17.10.35 (Linux; U; Android 12; US) gzip";
 					workloadData.headersToInsert["Connection"] = "Keep-Alive";
 					workloadData.headersToInsert["Host"]	   = songNew.finalDownloadUrls.at(0).urlPath;
-					workloadData.headersToInsert["Origin"]	   = "https://music.youtube.com";
+					workloadData.headersToInsert["Origin"]	   = "https://music.you_tube.com";
 					workloadData.relativePath = songNew.finalDownloadUrls.at(1).urlPath + "&range=" + jsonifier::toString(currentStart) + "-" + jsonifier::toString(currentEnd);
 					workloadVector.emplace_back(std::move(workloadData));
 					currentStart = currentEnd;
