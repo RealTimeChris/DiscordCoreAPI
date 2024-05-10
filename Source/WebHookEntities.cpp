@@ -30,6 +30,7 @@
 
 #include <discordcoreapi/WebHookEntities.hpp>
 #include <discordcoreapi/Utilities/HttpsClient.hpp>
+#include <discordcoreapi/JsonSpecializations.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
@@ -38,7 +39,7 @@ namespace jsonifier {
 	template<> struct core<discord_core_api::execute_web_hook_data> {
 		using value_type				 = discord_core_api::execute_web_hook_data;
 		static constexpr auto parseValue = createValue("threadId", &value_type::threadId, "wait", &value_type::wait, "attachments", &value_type::attachments, "components",
-			&value_type::components, "allowedMentions", &value_type::allowedMentions, "embeds", &value_type::embeds, "files", &value_type::files, "webhookToken",
+			&value_type::components, "allowedMentions", &value_type::allowedMentions, "embeds", &value_type::embeds, "webhookToken",
 			&value_type::webhookToken, "avatarUrl", &value_type::avatarUrl, "username", &value_type::userName, "customId", &value_type::customId, "webHookId",
 			&value_type::webHookId, "content", &value_type::content, "title", &value_type::title, "flags", &value_type::flags, "tts", &value_type::tts);
 	};
@@ -64,7 +65,7 @@ namespace jsonifier {
 		using value_type = discord_core_api::edit_web_hook_data;
 		static constexpr auto parseValue =
 			createValue("threadId", &value_type::threadId, "wait", &value_type::wait, "attachments", &value_type::attachments, "components", &value_type::components,
-				"allowedMentions", &value_type::allowedMentions, "embeds", &value_type::embeds, "files", &value_type::files, "webhookToken", &value_type::webhookToken, "avatarUrl",
+				"allowedMentions", &value_type::allowedMentions, "embeds", &value_type::embeds, "webhookToken", &value_type::webhookToken, "avatarUrl",
 				&value_type::avatarUrl, "username", &value_type::userName, "customId", &value_type::customId, "webHookId", &value_type::webHookId, "content", &value_type::content,
 				"title", &value_type::title, "flags", &value_type::flags, "tts", &value_type::tts, "message_id", &value_type::messageId, "thread_id", &value_type::threadId);
 	};
@@ -214,9 +215,9 @@ namespace discord_core_api {
 		for (auto& value: embeds) {
 			value.generateExcludedKeys();
 		}
-		if (files.size() == 0) {
-			jsonifierExcludedKeys.emplace("files");
-		}
+		//if (files.size() == 0) {
+		//jsonifierExcludedKeys.emplace("files");
+		//}
 		if (avatarUrl == "") {
 			jsonifierExcludedKeys.emplace("avatar_url");
 		}

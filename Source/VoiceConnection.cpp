@@ -98,12 +98,12 @@ namespace discord_core_api {
 		return userId;
 	}
 
-	rtppacket_encrypter::rtppacket_encrypter(uint32_t ssrcNew, const jsonifier::string_base<uint8_t>& keysNew) {
+	rtp_packet_encrypter::rtp_packet_encrypter(uint32_t ssrcNew, const jsonifier::string_base<uint8_t>& keysNew) {
 		keys = keysNew;
 		ssrc = ssrcNew;
 	}
 
-	jsonifier::string_view_base<uint8_t> rtppacket_encrypter::encryptPacket(discord_core_internal::encoder_return_data& audioData) {
+	jsonifier::string_view_base<uint8_t> rtp_packet_encrypter::encryptPacket(discord_core_internal::encoder_return_data& audioData) {
 		if (keys.size() > 0) {
 			++sequence;
 			timeStamp += static_cast<uint32_t>(audioData.sampleCount);
@@ -433,7 +433,7 @@ namespace discord_core_api {
 				for (auto& value: dataNew.d.secretKey) {
 					encryptionKey.emplace_back(static_cast<uint8_t>(value));
 				}
-				packetEncrypter = rtppacket_encrypter{ audioSSRC, encryptionKey };
+				packetEncrypter = rtp_packet_encrypter{ audioSSRC, encryptionKey };
 				connectionState.store(voice_connection_state::Collecting_Init_Data, std::memory_order_release);
 				break;
 			}
