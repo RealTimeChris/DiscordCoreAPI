@@ -243,24 +243,24 @@ namespace discord_core_api {
 		return true;
 	}
 
-	embed_data& embed_data::setAuthor(jsonifier::string_view authorName, jsonifier::string_view authorAvatarUrl) {
+	embed_data& embed_data::setAuthor(const jsonifier::string& authorName, const jsonifier::string& authorAvatarUrl) {
 		author.name	   = authorName;
 		author.iconUrl = authorAvatarUrl;
 		return *this;
 	}
 
-	embed_data& embed_data::setFooter(jsonifier::string_view footerText, jsonifier::string_view footerIconUrlText) {
+	embed_data& embed_data::setFooter(const jsonifier::string& footerText, const jsonifier::string& footerIconUrlText) {
 		footer.text	   = footerText;
 		footer.iconUrl = footerIconUrlText;
 		return *this;
 	}
 
-	embed_data& embed_data::setTimeStamp(jsonifier::string_view timeStampNew) {
+	embed_data& embed_data::setTimeStamp(const jsonifier::string& timeStampNew) {
 		timeStamp = static_cast<jsonifier::string>(timeStampNew);
 		return *this;
 	}
 
-	embed_data& embed_data::addField(jsonifier::string_view name, jsonifier::string_view value, bool Inline) {
+	embed_data& embed_data::addField(const jsonifier::string& name, const jsonifier::string& value, bool Inline) {
 		embed_field_data field{};
 		field.Inline = Inline;
 		field.value	 = value;
@@ -269,27 +269,27 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	embed_data& embed_data::setDescription(jsonifier::string_view descriptionNew) {
+	embed_data& embed_data::setDescription(const jsonifier::string& descriptionNew) {
 		description = descriptionNew;
 		return *this;
 	}
 
-	embed_data& embed_data::setColor(jsonifier::string_view hexColorValueNew) {
+	embed_data& embed_data::setColor(const jsonifier::string& hexColorValueNew) {
 		hexColorValue = jsonifier::strToUint64<16>(static_cast<jsonifier::string>(hexColorValueNew));
 		return *this;
 	}
 
-	embed_data& embed_data::setThumbnail(jsonifier::string_view thumbnailUrl) {
+	embed_data& embed_data::setThumbnail(const jsonifier::string& thumbnailUrl) {
 		thumbnail.url = thumbnailUrl;
 		return *this;
 	}
 
-	embed_data& embed_data::setTitle(jsonifier::string_view titleNew) {
+	embed_data& embed_data::setTitle(const jsonifier::string& titleNew) {
 		title = titleNew;
 		return *this;
 	}
 
-	embed_data& embed_data::setImage(jsonifier::string_view imageUrl) {
+	embed_data& embed_data::setImage(const jsonifier::string& imageUrl) {
 		image.url = imageUrl;
 		return *this;
 	}
@@ -768,8 +768,8 @@ namespace discord_core_api {
 		*this = dataPackage;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel,
-		button_style buttonStyle, jsonifier::string_view emojiName, snowflake emojiId, jsonifier::string_view url) {
+	respond_to_input_event_data& respond_to_input_event_data::addButton(bool disabled, const jsonifier::string& customIdNew, const jsonifier::string& buttonLabel,
+		button_style buttonStyle, const jsonifier::string& emojiName, snowflake emojiId, const jsonifier::string& url) {
 		if (components.size() == 0) {
 			action_row_data actionRowData;
 			components.emplace_back(actionRowData);
@@ -794,8 +794,8 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addSelectMenu(bool disabled, jsonifier::string_view customIdNew, const jsonifier::vector<select_option_data>& options,
-		jsonifier::string_view placeholder, uint64_t maxValues, uint64_t minValues, select_menu_type typeNew, jsonifier::vector<channel_type> channelTypes) {
+	respond_to_input_event_data& respond_to_input_event_data::addSelectMenu(bool disabled, const jsonifier::string& customIdNew, const jsonifier::vector<select_option_data>& options,
+		const jsonifier::string& placeholder, uint64_t maxValues, uint64_t minValues, select_menu_type typeNew, jsonifier::vector<channel_type> channelTypes) {
 		if (components.size() == 0) {
 			action_row_data actionRowData;
 			components.emplace_back(actionRowData);
@@ -820,9 +820,9 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
-		jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, text_input_style inputStyle, jsonifier::string_view label,
-		jsonifier::string_view placeholder) {
+	respond_to_input_event_data& respond_to_input_event_data::addModal(const jsonifier::string& topTitleNew, const jsonifier::string& topCustomIdNew, const jsonifier::string& titleNew,
+		const jsonifier::string& customIdNew, bool required, uint64_t minLength, uint64_t maxLength, text_input_style inputStyle, const jsonifier::string& label,
+		const jsonifier::string& placeholder) {
 		title	 = topTitleNew;
 		customId = topCustomIdNew;
 		if (components.size() == 0) {
@@ -855,7 +855,7 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addAllowedMentions(const allowed_mentions_data dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::addAllowedMentions(const allowed_mentions_data& dataPackage) {
 		allowedMentions = dataPackage;
 		return *this;
 	}
@@ -865,7 +865,7 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addComponentRow(const action_row_data dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::addComponentRow(const action_row_data& dataPackage) {
 		components.emplace_back(dataPackage);
 		return *this;
 	}
@@ -875,7 +875,7 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::addContent(jsonifier::string_view dataPackage) {
+	respond_to_input_event_data& respond_to_input_event_data::addContent(const jsonifier::string& dataPackage) {
 		content = dataPackage;
 		return *this;
 	}
@@ -885,8 +885,8 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	respond_to_input_event_data& respond_to_input_event_data::setAutoCompleteChoice(discord_core_internal::etf_serializer value, jsonifier::string_view theName,
-		unordered_map<jsonifier::string, jsonifier::string> theNameLocalizations) {
+	respond_to_input_event_data& respond_to_input_event_data::setAutoCompleteChoice(discord_core_internal::etf_serializer value, const jsonifier::string& theName,
+		const unordered_map<jsonifier::string, jsonifier::string>& theNameLocalizations) {
 		application_command_option_choice_data choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name				 = theName;
@@ -900,8 +900,8 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	message_response_base& message_response_base::addButton(bool disabled, jsonifier::string_view customIdNew, jsonifier::string_view buttonLabel, button_style buttonStyle,
-		jsonifier::string_view emojiName, snowflake emojiId, jsonifier::string_view url) {
+	message_response_base& message_response_base::addButton(bool disabled, const jsonifier::string& customIdNew, const jsonifier::string& buttonLabel, button_style buttonStyle,
+		const jsonifier::string& emojiName, snowflake emojiId, const jsonifier::string& url) {
 		if (components.size() == 0) {
 			action_row_data actionRowData;
 			components.emplace_back(actionRowData);
@@ -926,8 +926,8 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	message_response_base& message_response_base::addSelectMenu(bool disabled, jsonifier::string_view customIdNew, jsonifier::vector<select_option_data> options,
-		jsonifier::string_view placeholder, uint64_t maxValues, uint64_t minValues, select_menu_type type, jsonifier::vector<channel_type> channelTypes) {
+	message_response_base& message_response_base::addSelectMenu(bool disabled, const jsonifier::string& customIdNew, const jsonifier::vector<select_option_data>& options,
+		const jsonifier::string& placeholder, uint64_t maxValues, uint64_t minValues, select_menu_type type, jsonifier::vector<channel_type> channelTypes) {
 		if (components.size() == 0) {
 			action_row_data actionRowData;
 			components.emplace_back(actionRowData);
@@ -952,9 +952,9 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	message_response_base& message_response_base::addModal(jsonifier::string_view topTitleNew, jsonifier::string_view topCustomIdNew, jsonifier::string_view titleNew,
-		jsonifier::string_view customIdNew, bool required, uint64_t minLength, uint64_t maxLength, text_input_style inputStyle, jsonifier::string_view label,
-		jsonifier::string_view placeholder) {
+	message_response_base& message_response_base::addModal(const jsonifier::string& topTitleNew, const jsonifier::string& topCustomIdNew, const jsonifier::string& titleNew,
+		const jsonifier::string& customIdNew, bool required, uint64_t minLength, uint64_t maxLength, text_input_style inputStyle, const jsonifier::string& label,
+		const jsonifier::string& placeholder) {
 		title	 = topTitleNew;
 		customId = topCustomIdNew;
 		if (components.size() == 0) {
@@ -982,27 +982,27 @@ namespace discord_core_api {
 		return *this;
 	}
 
-	message_response_base& message_response_base::addFile(file theFile) {
+	message_response_base& message_response_base::addFile(const file& theFile) {
 		files.emplace_back(theFile);
 		return *this;
 	}
 
-	message_response_base& message_response_base::addAllowedMentions(const allowed_mentions_data dataPackage) {
+	message_response_base& message_response_base::addAllowedMentions(const allowed_mentions_data& dataPackage) {
 		allowedMentions = dataPackage;
 		return *this;
 	}
 
-	message_response_base& message_response_base::addComponentRow(const action_row_data dataPackage) {
+	message_response_base& message_response_base::addComponentRow(const action_row_data& dataPackage) {
 		components.emplace_back(dataPackage);
 		return *this;
 	}
 
-	message_response_base& message_response_base::addMessageEmbed(const embed_data dataPackage) {
+	message_response_base& message_response_base::addMessageEmbed(const embed_data& dataPackage) {
 		embeds.emplace_back(dataPackage);
 		return *this;
 	}
 
-	message_response_base& message_response_base::addContent(jsonifier::string_view dataPackage) {
+	message_response_base& message_response_base::addContent(const jsonifier::string& dataPackage) {
 		content = dataPackage;
 		return *this;
 	}

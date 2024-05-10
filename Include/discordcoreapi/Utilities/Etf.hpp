@@ -208,7 +208,7 @@ namespace discord_core_api {
 						writeCharacters("null");
 						return;
 					} else if (length == 4 && stringNew[0] == 't' && stringNew[1] == 'r' && stringNew[2] == 'u' && stringNew[3] == 'e') {
-						writeCharacters("True");
+						writeCharacters("true");
 						return;
 					} else if (length == 5 && stringNew[0] == 'f' && stringNew[1] == 'a' && stringNew[2] == 'l' && stringNew[3] == 's' && stringNew[4] == 'e') {
 						writeCharacters("false");

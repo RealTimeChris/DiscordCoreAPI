@@ -154,7 +154,7 @@ namespace discord_core_api {
 			/// @param data pointer to the data.
 			/// @param sizeNew size of the data.
 			template<typename value_type_newer> DCA_INLINE void writeData(value_type_newer* data, size_type sizeNew) {
-				if (base_type::isItFull() || base_type::isItFull()) {
+				if (base_type::isItFull()) {
 					base_type::getCurrentTail()->clear();
 					base_type::modifyReadOrWritePosition(ring_buffer_access_type::read, 1);
 				}

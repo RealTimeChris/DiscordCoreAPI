@@ -465,7 +465,7 @@ namespace discord_core_api {
 					if (configManager->getTextFormat() == text_format::etf) {
 						try {
 							dataNew = etfParser.parseEtfToJson(dataNew);
-							parser.parseJson(message, parser.minify(parser.prettify(dataNew)));
+							parser.parseJson(message, dataNew);
 							for (auto& valueNew: parser.getErrors()) {
 								message_printer::printError<print_message_type::websocket>(valueNew.reportError() + ", for data:" + dataNew);
 							}
@@ -476,7 +476,7 @@ namespace discord_core_api {
 							return false;
 						}
 					} else {
-						parser.parseJson(message, parser.minify(parser.prettify(dataNew)));
+						parser.parseJson(message, dataNew);
 						if (auto result = parser.getErrors(); result.size() > 0) {
 							for (auto& valueNew: result) {
 								message_printer::printError<print_message_type::websocket>(valueNew.reportError() + ", for data:" + dataNew);
@@ -1018,12 +1018,13 @@ namespace discord_core_api {
 									}
 								}
 								dataNewer.op = 2;
+								jsonifier::string_base<char> stringNew{};
 								jsonifier::string_base<uint8_t> string{};
 								if (dataOpCode == websocket_op_code::Op_Binary) {
 									auto serializer = dataNewer.operator etf_serializer();
 									string			= serializer.operator jsonifier::string_base<uint8_t>();
 								} else {
-									parser.serializeJson(dataNewer, string);
+									parser.serializeJson(dataNewer, stringNew);
 								}
 								createHeader(string, dataOpCode);
 								currentState.store(websocket_state::Sending_Identify, std::memory_order_release);

@@ -55,8 +55,8 @@ namespace discord_core_api {
 			*this = str;
 		}
 
-		constexpr operator jsonifier::string_view() const {
-			return stringUnicode;
+		constexpr operator jsonifier::string() const {
+			return { stringUnicode, size - 1 };
 		}
 
 		constexpr const char* data() const {
