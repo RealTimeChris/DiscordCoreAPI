@@ -55,3 +55,22 @@ jobs:
       run: |
             ./DiscordCoreAPITest.exe
       continue-on-error: true
+
+    - name: Clone DiscordCoreAPI-Binaries repository
+      run: |
+        git clone https://github.com/RealTimeChris/DiscordCoreAPI-Binaries.git ./DiscordCoreAPI-Binaries
+        cd DiscordCoreAPI-Binaries
+        git config user.name "GitHub Action"
+        git config user.email "action@github.com"
+
+    - name: Copy build artifacts to DiscordCoreAPI-Binaries
+      run: |
+        mkdir -p ./DiscordCoreAPI-Binaries/${{matrix.build_type}}
+        cp -r ./Build/Tests/Install/${{matrix.build_type}}/* ./DiscordCoreAPI-Binaries/${{matrix.build_type}}
+
+    - name: Commit and push changes to DiscordCoreAPI-Binaries
+      working-directory: ./DiscordCoreAPI-Binaries
+      run: |
+        git add .
+        git commit -m "Update binaries for ${{matrix.build_type}} build"
+        git push origin main
