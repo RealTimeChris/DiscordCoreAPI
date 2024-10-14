@@ -59,7 +59,9 @@ jobs:
 
     - name: Copy build artifacts to DiscordCoreAPI-Binaries
       run: |
-        cp -r ./Install/${{matrix.build_type}}/* ./DiscordCoreAPI-Binaries/${{matrix.build_type}}
+        cp -r "C:/Program Files (x86)/DiscordCoreAPI/*" ./DiscordCoreAPI-Binaries/${{matrix.build_type}} -v
+        cd ./DiscordCoreAPI-Binaries/${{matrix.build_type}}
+        Remove-Item -Force ./bin/discordcoreapi.pdb
 
     - name: Commit and push changes to DiscordCoreAPI-Binaries
       working-directory: ./DiscordCoreAPI-Binaries
