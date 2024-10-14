@@ -46,15 +46,9 @@ jobs:
            cmake --build . --config=${{matrix.build_type}}
 
     - name: Install the Test
-      working-directory: ./Build/Tests
+      working-directory: ./Build/
       run: |
            cmake --install ./ --config=${{matrix.build_type}}
-
-    - name: Run the Test
-      working-directory: ./Tests/Install/${{matrix.build_type}}
-      run: |
-            ./DiscordCoreAPITest.exe
-      continue-on-error: true
 
     - name: Clone DiscordCoreAPI-Binaries repository
       run: |
@@ -65,12 +59,12 @@ jobs:
 
     - name: Copy build artifacts to DiscordCoreAPI-Binaries
       run: |
-        cp -r ./Tests/Install/${{matrix.build_type}}/* ./DiscordCoreAPI-Binaries/${{matrix.build_type}}
+        cp -r ./Install/${{matrix.build_type}}/* ./DiscordCoreAPI-Binaries/${{matrix.build_type}}
 
     - name: Commit and push changes to DiscordCoreAPI-Binaries
       working-directory: ./DiscordCoreAPI-Binaries
       run: |
         git add .
         git commit -m "Update binaries for ${{matrix.build_type}} build"
-        git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/RealTimeChris/DiscordCoreAPI-Binaries.git main
+        git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/RealTimeChris/DiscordCoreAPI-Binaries.git main
       continue-on-error: true

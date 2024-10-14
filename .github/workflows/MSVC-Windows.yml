@@ -72,5 +72,5 @@ jobs:
       run: |
         git add .
         git commit -m "Update binaries for ${{matrix.build_type}} build"
-        git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/RealTimeChris/DiscordCoreAPI-Binaries.git main
+        git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/RealTimeChris/DiscordCoreAPI-Binaries.git main
       continue-on-error: true
