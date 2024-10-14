@@ -234,7 +234,7 @@ namespace discord_core_api {
 		};
 
 		/// @brief A websocket client, for communication via a tcp-connection.
-		class websocket_client : public websocket_core {
+		class DiscordCoreAPI_Dll websocket_client : public websocket_core {
 		  public:
 			friend struct discord_core_api::on_voice_server_update_data;
 			friend struct discord_core_api::on_voice_state_update_data;
@@ -275,7 +275,7 @@ namespace discord_core_api {
 			snowflake userId{};
 		};
 
-		class base_socket_agent {
+		class DiscordCoreAPI_Dll base_socket_agent {
 		  public:
 			friend class discord_core_api::discord_core_client;
 			friend class discord_core_api::bot_user;

@@ -64,7 +64,7 @@ jobs:
     - name: Configure CMake
       working-directory: ./
       run: |
-           cmake -S . -B ./Build -DCMAKE_CXX_COMPILER=/usr/bin/g++-14 -DDEV=true -DDISCORDCOREAPI_TEST=true -DVCPKG_ROOT_DIR=/usr/local/share/vcpkg
+           cmake -S . -B ./Build -DCMAKE_CXX_COMPILER=/usr/bin/g++-14 -DDISCORDCOREAPI_TEST=true -DVCPKG_ROOT_DIR=/usr/local/share/vcpkg
 
     - name: Build the Test
       working-directory: ./Build

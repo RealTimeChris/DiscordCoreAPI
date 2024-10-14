@@ -88,12 +88,9 @@ find_package(OpenSSL REQUIRED)
 find_package(Opus CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)
 
-if(NOT DEFINED DCA_CPU_INSTRUCTIONS)
-	include("DCADetectArchitecture")
-endif()
-
-set(DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS}" CACHE INTERNAL "For the CPU architecture selection.")
-set(AVX_FLAG "${AVX_FLAG}" CACHE INTERNAL "For the CPU flag selection.")
+set(DCA_CPU_INSTRUCTIONS
+    "$<IF:$<BOOL:${DCA_CPU_FLAGS}>,${DCA_CPU_FLAGS},$<IF:$<CXX_COMPILER_ID:MSVC>,/arch:AVX512,-march=native>>"
+)
 
 target_include_directories(
 	"${LIB_NAME}" PUBLIC
@@ -111,20 +108,10 @@ target_link_libraries(
 	"$<$<TARGET_EXISTS:Opus::opus>:Opus::opus>"
 )
 
-target_compile_definitions(
-	"${LIB_NAME}" PUBLIC 
-	"$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:DiscordCoreAPI_EXPORTS_NOPE>"
-	"DCA_CPU_INSTRUCTIONS=${DCA_CPU_INSTRUCTIONS}"
-)
-
-include(ProcessorCount)
-ProcessorCount(N)
-MATH(EXPR THREAD_COUNT "${N} / 3")
-
 target_compile_options(
 	"${LIB_NAME}" PUBLIC
+	"$<IF:$<BOOL:${DCA_CPU_INSTRUCTIONS}>,${DCA_CPU_INSTRUCTIONS},$<IF:$<CXX_COMPILER_ID:MSVC>,/arch:AVX512,-march=native>>"
 	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:/fsanitize=address>>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/MP${THREAD_COUNT}>"
 	"$<$<CXX_COMPILER_ID:CLANG>:-fcoroutines>"
 	"$<$<CXX_COMPILER_ID:GNU>:-fcoroutines>"
 	"$<$<CXX_COMPILER_ID:CLANG>:-Wextra>"
@@ -134,8 +121,14 @@ target_compile_options(
 	"$<$<CXX_COMPILER_ID:MSVC>:/Wall>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
 	"$<$<CXX_COMPILER_ID:GNU>:-Wall>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/MP1>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
-	"${AVX_FLAG}"
+	"${DCA_CPU_FLAGS}"
+)
+
+target_compile_definitions(
+	"${LIB_NAME}" PUBLIC 
+	"$<IF:$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>,DiscordCoreAPI_EXPORTS_NOPE,>"
 )
 
 target_link_options(

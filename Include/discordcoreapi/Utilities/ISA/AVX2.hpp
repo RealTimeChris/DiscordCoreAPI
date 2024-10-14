@@ -29,9 +29,9 @@
 /// \file AVX2.hpp
 #pragma once
 
-#include <discordcoreapi/Utilities/Base.hpp>
+#include <discordcoreapi/Utilities/ISA/ISADetectionBase.hpp>
 
-#if DCA_CHECK_FOR_INSTRUCTION(DCA_AVX2) && !DCA_CHECK_FOR_INSTRUCTION(DCA_AVX) && !DCA_CHECK_FOR_INSTRUCTION(DCA_AVX512)
+#if DCA_CHECK_FOR_INSTRUCTION(DCA_AVX2) && !DCA_CHECK_FOR_INSTRUCTION(DCA_AVX512)
 
 	#include <immintrin.h>
 	#include <numeric>

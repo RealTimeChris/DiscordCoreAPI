@@ -36,7 +36,7 @@ namespace discord_core_api {
 	template<typename value_type> class unordered_set;
 
 	template<typename set_iterator, typename value_type>
-	concept set_container_iterator_t = std::same_as<typename unordered_set<value_type>::iterator, jsonifier_internal::unwrap_t<set_iterator>>;
+	concept set_container_iterator_t = std::same_as<typename unordered_set<value_type>::iterator, std::remove_cvref_t<set_iterator>>;
 
 	template<typename value_type_new>
 	class unordered_set : protected hash_policy<unordered_set<value_type_new>>, protected jsonifier_internal::alloc_wrapper<value_type_new>, protected object_compare {
@@ -309,7 +309,7 @@ namespace discord_core_api {
 		}
 
 		template<typename value_type_newer> DCA_INLINE uint64_t getKey(value_type_newer&& keyValue) const {
-			return key_accessor<jsonifier_internal::unwrap_t<value_type_newer>>::getHashKey(std::forward<value_type_newer>(keyValue));
+			return key_accessor<std::remove_cvref_t<value_type_newer>>::getHashKey(std::forward<value_type_newer>(keyValue));
 		}
 
 		DCA_INLINE void resize(size_type capacityNew) {

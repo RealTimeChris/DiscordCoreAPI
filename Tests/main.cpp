@@ -21,6 +21,8 @@ discord_core_api::co_routine<void, true> onGuildCreation(const discord_core_api:
 }
 
 int32_t main() {
+
+	std::cout << "CURRENT DCA-INSTRUCTION_TYPE: " << DCA_CPU_INSTRUCTIONS << std::endl;
 	jsonifier::string botToken = "";
 	jsonifier::vector<discord_core_api::repeated_function_data> functionVector{};
 	functionVector.reserve(5);

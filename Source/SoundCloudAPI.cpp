@@ -118,23 +118,23 @@ namespace discord_core_api {
 							(returnData.responseData.find("window.__sc_hydration = ") + jsonifier::string{ "window.__sc_hydration = " }.size()));
 				}
 				welcome resultsNew{};
-				parser.parseJson(resultsNew, returnData.responseData);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(resultsNew, returnData.responseData);
 				jsonifier::string avatarUrl{};
 				jsonifier::string collectionString{ "tracks?ids=" };
 				for (auto& value: resultsNew.data) {
 					if (value.data.getType() == jsonifier::json_type::Object) {
-						auto newObject = value.data.operator jsonifier::raw_json_data::object_type();
-						avatarUrl	   = newObject["avatar_url"].operator jsonifier::string();
+						auto newObject = value.data.get<jsonifier::raw_json_data::object_type>();
+						avatarUrl	   = newObject["avatar_url"].get<jsonifier::string>();
 						if (value.hydratable == "playlist") {
-							auto newerObject = value.data.operator jsonifier::raw_json_data::object_type();
+							auto newerObject = value.data.get<jsonifier::raw_json_data::object_type>();
 							for (auto& [key, valueNew]: newerObject) {
 								if (key == "tracks") {
-									auto newArray = valueNew.operator jsonifier::raw_json_data::array_type();
+									auto newArray = valueNew.get<jsonifier::raw_json_data::array_type>();
 									uint32_t currentIndex{};
 									auto arraySize = newArray.size();
 									for (auto& newValue: newArray) {
-										newObject = newValue.operator jsonifier::raw_json_data::object_type();
-										collectionString += jsonifier::toString(newValue.operator jsonifier::raw_json_data::object_type()["id"].operator uint64_t());
+										newObject = newValue.get<jsonifier::raw_json_data::object_type>();
+										collectionString += jsonifier::toString(newValue.get<jsonifier::raw_json_data::object_type>()["id"].get<uint64_t>());
 										if (currentIndex < arraySize - 1) {
 											collectionString += "%2C";
 										}
@@ -153,32 +153,32 @@ namespace discord_core_api {
 				dataPackage02.workloadClass					= https_workload_class::Get;
 				returnData									= submitWorkloadAndGetResult(std::move(dataPackage02));
 				jsonifier::vector<jsonifier::raw_json_data> resultsNewer{};
-				parser.parseJson(resultsNewer, returnData.responseData);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(resultsNewer, returnData.responseData);
 				for (auto& value: resultsNewer) {
 					song results{};
 					if (value.getType() == jsonifier::json_type::Object) {
-						auto newObject = value.operator jsonifier::raw_json_data::object_type();
-						avatarUrl	   = newObject["avatar_url"].operator jsonifier::string();
-						if (newObject["title"].operator jsonifier::string() == "") {
+						auto newObject = value.get<jsonifier::raw_json_data::object_type>();
+						avatarUrl	   = newObject["avatar_url"].get<jsonifier::string>();
+						if (newObject["title"].get<jsonifier::string>() == "") {
 							continue;
 						}
 						bool isItFound{};
-						for (auto& valueNew: newObject["media"].operator jsonifier::raw_json_data::object_type()["transcodings"].operator jsonifier::raw_json_data::array_type()) {
-							if (valueNew.operator jsonifier::raw_json_data::object_type()["preset"].operator jsonifier::string() == "opus_0_0") {
+						for (auto& valueNew: newObject["media"].get<jsonifier::raw_json_data::object_type>()["transcodings"].get<jsonifier::raw_json_data::array_type>()) {
+							if (valueNew.get<jsonifier::raw_json_data::object_type>()["preset"].get<jsonifier::string>() == "opus_0_0") {
 								isItFound				 = true;
-								results.firstDownloadUrl = valueNew.operator jsonifier::raw_json_data::object_type()["url"].operator jsonifier::string();
-								results.songId			 = valueNew.operator jsonifier::raw_json_data::object_type()["url"].operator jsonifier::string();
+								results.firstDownloadUrl = valueNew.get<jsonifier::raw_json_data::object_type>()["url"].get<jsonifier::string>();
+								results.songId			 = valueNew.get<jsonifier::raw_json_data::object_type>()["url"].get<jsonifier::string>();
 							}
 						}
 						if (isItFound) {
-							jsonifier::string newString = newObject["title"].operator jsonifier::string();
+							jsonifier::string newString = newObject["title"].get<jsonifier::string>();
 							if (newString.size() > 0) {
 								if (newString.size() > 256) {
 									newString = newString.substr(0, 256);
 								}
 								results.songTitle = utf8MakeValid(newString);
 							}
-							newString = newObject["description"].operator jsonifier::string();
+							newString = newObject["description"].get<jsonifier::string>();
 							if (newString.size() > 0) {
 								if (newString.size() > 256) {
 									newString = newString.substr(0, 256);
@@ -186,17 +186,17 @@ namespace discord_core_api {
 								results.description = utf8MakeValid(newString);
 								results.description += "...";
 							}
-							newString = newObject["artwork_url"].operator jsonifier::string();
+							newString = newObject["artwork_url"].get<jsonifier::string>();
 							if (newString.size() > 0) {
 								results.thumbnailUrl = utf8MakeValid(newString);
 							}
-							results.viewUrl	 = newObject["permalink_url"].operator jsonifier::string();
-							results.duration = time_stamp::convertMsToDurationString(static_cast<uint64_t>(newObject["duration"].operator uint64_t()));
+							results.viewUrl	 = newObject["permalink_url"].get<jsonifier::string>();
+							results.duration = time_stamp::convertMsToDurationString(static_cast<uint64_t>(newObject["duration"].get<uint64_t>()));
 							results.firstDownloadUrl +=
-								"?client_id=" + sound_cloud_request_builder::clientId + "&track_authorization=" + newObject["track_authorization"].operator jsonifier::string();
-							if (newObject["artwork_url"].operator jsonifier::string().find("-") != jsonifier::string::npos) {
+								"?client_id=" + sound_cloud_request_builder::clientId + "&track_authorization=" + newObject["track_authorization"].get<jsonifier::string>();
+							if (newObject["artwork_url"].get<jsonifier::string>().find("-") != jsonifier::string::npos) {
 								jsonifier::string newerString =
-									newObject["artwork_url"].operator jsonifier::string().substr(0, newObject["artwork_url"].operator jsonifier::string().findLastOf("-") + 1);
+									newObject["artwork_url"].get<jsonifier::string>().substr(0, newObject["artwork_url"].get<jsonifier::string>().findLastOf("-") + 1);
 								newerString += "t500x500.jpg";
 								results.thumbnailUrl = newerString;
 							} else if (avatarUrl.find("-") != jsonifier::string::npos) {
@@ -235,35 +235,34 @@ namespace discord_core_api {
 							(returnData.responseData.find("window.__sc_hydration = ") + jsonifier::string{ "window.__sc_hydration = " }.size()));
 				}
 				welcome resultsNew{};
-				parser.parseJson(resultsNew, returnData.responseData);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(resultsNew, returnData.responseData);
 				jsonifier::string avatarUrl{};
 
 				for (auto& value: resultsNew.data) {
 					if (value.data.getType() == jsonifier::json_type::Object) {
-						auto newObject = value.data.operator jsonifier::raw_json_data::object_type();
-						avatarUrl	   = newObject["avatar_url"].operator jsonifier::string();
+						auto newObject = value.data.get<jsonifier::raw_json_data::object_type>();
+						avatarUrl	   = newObject["avatar_url"].get<jsonifier::string>();
 						if (value.hydratable == "sound") {
-							if (newObject["title"].operator jsonifier::string() == "") {
+							if (newObject["title"].get<jsonifier::string>() == "") {
 								continue;
 							}
 							bool isItFound{};
-							for (auto& valueNew:
-								newObject["media"].operator jsonifier::raw_json_data::object_type()["transcodings"].operator jsonifier::raw_json_data::array_type()) {
-								if (valueNew.operator jsonifier::raw_json_data::object_type()["preset"].operator jsonifier::string() == "opus_0_0") {
+							for (auto& valueNew: newObject["media"].get<jsonifier::raw_json_data::object_type>()["transcodings"].get<jsonifier::raw_json_data::array_type>()) {
+								if (valueNew.get<jsonifier::raw_json_data::object_type>()["preset"].get<jsonifier::string>() == "opus_0_0") {
 									isItFound				 = true;
-									results.firstDownloadUrl = valueNew.operator jsonifier::raw_json_data::object_type()["url"].operator jsonifier::string();
-									results.songId			 = valueNew.operator jsonifier::raw_json_data::object_type()["url"].operator jsonifier::string();
+									results.firstDownloadUrl = valueNew.get<jsonifier::raw_json_data::object_type>()["url"].get<jsonifier::string>();
+									results.songId			 = valueNew.get<jsonifier::raw_json_data::object_type>()["url"].get<jsonifier::string>();
 								}
 							}
 							if (isItFound) {
-								jsonifier::string newString = newObject["title"].operator jsonifier::string();
+								jsonifier::string newString = newObject["title"].get<jsonifier::string>();
 								if (newString.size() > 0) {
 									if (newString.size() > 256) {
 										newString = newString.substr(0, 256);
 									}
 									results.songTitle = utf8MakeValid(newString);
 								}
-								newString = newObject["description"].operator jsonifier::string();
+								newString = newObject["description"].get<jsonifier::string>();
 								if (newString.size() > 0) {
 									if (newString.size() > 256) {
 										newString = newString.substr(0, 256);
@@ -271,17 +270,17 @@ namespace discord_core_api {
 									results.description = utf8MakeValid(newString);
 									results.description += "...";
 								}
-								newString = newObject["artwork_url"].operator jsonifier::string();
+								newString = newObject["artwork_url"].get<jsonifier::string>();
 								if (newString.size() > 0) {
 									results.thumbnailUrl = utf8MakeValid(newString);
 								}
-								results.viewUrl	 = newObject["permalink_url"].operator jsonifier::string();
-								results.duration = time_stamp::convertMsToDurationString(static_cast<uint64_t>(newObject["duration"].operator uint64_t()));
+								results.viewUrl	 = newObject["permalink_url"].get<jsonifier::string>();
+								results.duration = time_stamp::convertMsToDurationString(static_cast<uint64_t>(newObject["duration"].get<uint64_t>()));
 								results.firstDownloadUrl +=
-									"?client_id=" + sound_cloud_request_builder::clientId + "&track_authorization=" + newObject["track_authorization"].operator jsonifier::string();
-								if (newObject["artwork_url"].operator jsonifier::string().find("-") != jsonifier::string::npos) {
+									"?client_id=" + sound_cloud_request_builder::clientId + "&track_authorization=" + newObject["track_authorization"].get<jsonifier::string>();
+								if (newObject["artwork_url"].get<jsonifier::string>().find("-") != jsonifier::string::npos) {
 									jsonifier::string newerString =
-										newObject["artwork_url"].operator jsonifier::string().substr(0, newObject["artwork_url"].operator jsonifier::string().findLastOf("-") + 1);
+										newObject["artwork_url"].get<jsonifier::string>().substr(0, newObject["artwork_url"].get<jsonifier::string>().findLastOf("-") + 1);
 									newerString += "t500x500.jpg";
 									results.thumbnailUrl = newerString;
 								} else if (avatarUrl.find("-") != jsonifier::string::npos) {
@@ -325,7 +324,7 @@ namespace discord_core_api {
 				dataPackage.workloadClass				  = https_workload_class::Get;
 				https_response_data returnData			  = submitWorkloadAndGetResult(std::move(dataPackage));
 				sound_cloud_search_results resultsNew{};
-				parser.parseJson(resultsNew, returnData.responseData);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(resultsNew, returnData.responseData);
 				for (auto& value: resultsNew.collection) {
 					song songNew{};
 					if (value.title == "") {
@@ -396,7 +395,7 @@ namespace discord_core_api {
 				https_response_data results					= submitWorkloadAndGetResult(std::move(dataPackage01));
 				second_download_url downloadUrl{};
 				song newerSong{ songNew };
-				parser.parseJson(downloadUrl, results.responseData);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(downloadUrl, results.responseData);
 				newerSong.secondDownloadUrl = downloadUrl.url;
 				if (newerSong.secondDownloadUrl.find("/playlist") != jsonifier::string::npos) {
 					https_workload_data dataPackage{ https_workload_type::SoundCloud_Get_Download_Links };

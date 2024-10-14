@@ -446,7 +446,8 @@ namespace discord_core_api {
 			/// @brief Constructor for etf_serialize_error.
 			/// @param message the error message.
 			/// @param location source location where the error occurred.
-			DCA_INLINE etf_serialize_error(const jsonifier::string_view& message, std::source_location location = std::source_location::current()) : dca_exception{ message, location } {};
+			DCA_INLINE etf_serialize_error(const jsonifier::string_view& message, std::source_location location = std::source_location::current())
+				: dca_exception{ message, location } {};
 		};
 
 		/// @brief Enumeration for different json value types.
@@ -454,8 +455,8 @@ namespace discord_core_api {
 
 		/// @brief Concept for array types excluding etf_serializer.
 		template<typename value_type>
-		concept array_t = jsonifier::concepts::range<value_type> && jsonifier::concepts::has_resize<jsonifier_internal::unwrap_t<value_type>> &&
-			jsonifier::concepts::has_emplace_back<jsonifier_internal::unwrap_t<value_type>> && jsonifier::concepts::vector_subscriptable<jsonifier_internal::unwrap_t<value_type>> &&
+		concept array_t = jsonifier::concepts::has_range<value_type> && jsonifier::concepts::has_resize<std::remove_cvref_t<value_type>> &&
+			jsonifier::concepts::has_emplace_back<std::remove_cvref_t<value_type>> && jsonifier::concepts::vector_subscriptable<std::remove_cvref_t<value_type>> &&
 			requires(value_type&& data) { typename value_type::value_type; };
 
 		/// @brief Concept for object (associative container) types excluding etf_serializer.
@@ -463,7 +464,7 @@ namespace discord_core_api {
 		concept object_t = requires(value_type data) {
 			typename value_type::mapped_type;
 			typename value_type::key_type;
-		} && jsonifier::concepts::range<value_type>;
+		} && jsonifier::concepts::has_range<value_type>;
 
 		class etf_serializer {
 		  public:
@@ -476,53 +477,13 @@ namespace discord_core_api {
 			using int_type								  = int64_t;
 			using bool_type								  = bool;
 
-			DCA_INLINE etf_serializer() = default;
+			DCA_INLINE etf_serializer(){
+				value = std::nullptr_t{};
+			};
 
 			DCA_INLINE etf_serializer& operator=(etf_serializer&& data) noexcept {
-				destroy();
-				stringReal = std::move(data.stringReal);
-				type	   = data.type;
-				data.type  = json_type::null_t;
-				switch (type) {
-					case json_type::object_t: {
-						objectValue		 = data.objectValue;
-						data.objectValue = nullptr;
-						break;
-					}
-					case json_type::array_t: {
-						arrayValue		= data.arrayValue;
-						data.arrayValue = nullptr;
-						break;
-					}
-					case json_type::string_t: {
-						stringValue		 = data.stringValue;
-						data.stringValue = nullptr;
-						break;
-					}
-					case json_type::float_t: {
-						floatValue		= data.floatValue;
-						data.floatValue = nullptr;
-						break;
-					}
-					case json_type::int_t: {
-						intValue	  = data.intValue;
-						data.intValue = nullptr;
-						break;
-					}
-					case json_type::uint_t: {
-						uintValue	   = data.uintValue;
-						data.uintValue = nullptr;
-						break;
-					}
-					case json_type::bool_t: {
-						boolValue	   = data.boolValue;
-						data.boolValue = nullptr;
-						break;
-					}
-					case json_type::null_t: {
-						break;
-					}
-				}
+				stringReal.swap(data.stringReal);
+				value.swap(data.value);
 				return *this;
 			}
 
@@ -531,40 +492,7 @@ namespace discord_core_api {
 			}
 
 			DCA_INLINE etf_serializer& operator=(const etf_serializer& data) {
-				destroy();
-				switch (data.type) {
-					case json_type::object_t: {
-						setValue<json_type::object_t>(data.getObject());
-						break;
-					}
-					case json_type::array_t: {
-						setValue<json_type::array_t>(data.getArray());
-						break;
-					}
-					case json_type::string_t: {
-						setValue<json_type::string_t>(data.getString());
-						break;
-					}
-					case json_type::float_t: {
-						setValue<json_type::float_t>(data.getFloat());
-						break;
-					}
-					case json_type::uint_t: {
-						setValue<json_type::uint_t>(data.getUint());
-						break;
-					}
-					case json_type::int_t: {
-						setValue<json_type::int_t>(data.getInt());
-						break;
-					}
-					case json_type::bool_t: {
-						setValue<json_type::bool_t>(data.getBool());
-						break;
-					}
-					case json_type::null_t: {
-						break;
-					}
-				}
+				value	   = data.value;
 				stringReal = data.stringReal;
 				return *this;
 			}
@@ -574,7 +502,7 @@ namespace discord_core_api {
 			}
 
 			template<object_t value_type> DCA_INLINE etf_serializer& operator=(value_type&& data) noexcept {
-				setValue<json_type::object_t>(std::forward<value_type>(data));
+				value = std::forward<value_type>(data);
 				return *this;
 			}
 
@@ -583,7 +511,7 @@ namespace discord_core_api {
 			}
 
 			template<array_t value_type> DCA_INLINE etf_serializer& operator=(value_type&& data) noexcept {
-				setValue<json_type::array_t>(std::forward<value_type>(data));
+				value = std::forward<value_type>(data);
 				return *this;
 			}
 
@@ -592,7 +520,7 @@ namespace discord_core_api {
 			}
 
 			template<jsonifier::concepts::string_t value_type> DCA_INLINE etf_serializer& operator=(value_type&& data) noexcept {
-				setValue<json_type::string_t>(std::forward<value_type>(data));
+				value = std::forward<value_type>(data);
 				return *this;
 			}
 
@@ -601,7 +529,7 @@ namespace discord_core_api {
 			}
 
 			template<uint_type str_length> DCA_INLINE etf_serializer& operator=(const char (&str)[str_length]) {
-				setValue<json_type::string_t>(str);
+				value = str;
 				return *this;
 			}
 
@@ -609,20 +537,20 @@ namespace discord_core_api {
 				*this = str;
 			}
 
-			template<jsonifier::concepts::float_type value_type> DCA_INLINE etf_serializer& operator=(value_type&& data) {
-				setValue<json_type::float_t>(std::forward<value_type>(data));
+			template<jsonifier::concepts::float_t value_type> DCA_INLINE etf_serializer& operator=(value_type&& data) {
+				value = std::forward<value_type>(data);
 				return *this;
 			}
 
-			template<jsonifier::concepts::float_type value_type> DCA_INLINE etf_serializer(value_type&& data) {
+			template<jsonifier::concepts::float_t value_type> DCA_INLINE etf_serializer(value_type&& data) {
 				*this = std::forward<value_type>(data);
 			}
 
 			template<jsonifier::concepts::integer_t value_type> DCA_INLINE etf_serializer& operator=(value_type&& data) {
-				if constexpr (jsonifier::concepts::signed_type<value_type>) {
-					setValue<json_type::int_t>(std::forward<value_type>(data));
-				} else if constexpr (jsonifier::concepts::unsigned_type<value_type>) {
-					setValue<json_type::uint_t>(std::forward<value_type>(data));
+				if constexpr (jsonifier::concepts::signed_t<value_type>) {
+					value = static_cast<int64_t>(std::forward<value_type>(data));
+				} else if constexpr (jsonifier::concepts::unsigned_t<value_type>) {
+					value = static_cast<uint64_t>(std::forward<value_type>(data));
 				}
 				return *this;
 			}
@@ -632,7 +560,7 @@ namespace discord_core_api {
 			}
 
 			template<jsonifier::concepts::bool_t value_type> DCA_INLINE etf_serializer& operator=(value_type&& data) {
-				setValue<json_type::bool_t>(std::forward<value_type>(data));
+				value = std::forward<value_type>(data);
 				return *this;
 			}
 
@@ -641,7 +569,7 @@ namespace discord_core_api {
 			}
 
 			template<jsonifier::concepts::enum_t value_type> DCA_INLINE etf_serializer& operator=(value_type&& data) noexcept {
-				setValue<json_type::int_t>(static_cast<int_type>(std::forward<value_type>(data)));
+				value = static_cast<int_type>(std::forward<value_type>(data));
 				return *this;
 			}
 
@@ -650,38 +578,37 @@ namespace discord_core_api {
 			}
 
 			DCA_INLINE etf_serializer& operator=(json_type data) {
-				destroy();
 				switch (data) {
 					case json_type::object_t: {
-						setValue<json_type::object_t>();
+						value = object_type{};
 						break;
 					}
 					case json_type::array_t: {
-						setValue<json_type::array_t>();
+						value = array_type{};
 						break;
 					}
 					case json_type::string_t: {
-						setValue<json_type::string_t>();
+						value = string_type{};
 						break;
 					}
 					case json_type::float_t: {
-						setValue<json_type::float_t>();
+						value = float_type{};
 						break;
 					}
 					case json_type::uint_t: {
-						setValue<json_type::uint_t>();
+						value = uint_type{};
 						break;
 					}
 					case json_type::int_t: {
-						setValue<json_type::int_t>();
+						value = int_type{};
 						break;
 					}
 					case json_type::bool_t: {
-						setValue<json_type::bool_t>();
+						value = bool_type{};
 						break;
 					}
 					case json_type::null_t: {
-						setValue<json_type::null_t>();
+						value = nullptr_t{};
 						break;
 					}
 				}
@@ -693,7 +620,23 @@ namespace discord_core_api {
 			}
 
 			DCA_INLINE json_type getType() const {
-				return type;
+				if (std::holds_alternative<object_type>(value)) {
+					return json_type::object_t;
+				} else if (std::holds_alternative<array_type>(value)) { 
+					return json_type::array_t;
+				} else if (std::holds_alternative<string_type>(value)) {
+					return json_type::string_t;
+				} else if (std::holds_alternative<float_type>(value)) {
+					return json_type::float_t;
+				} else if (std::holds_alternative<uint_type>(value)) {
+					return json_type::uint_t;
+				} else if (std::holds_alternative<int_type>(value)) {
+					return json_type::int_t;
+				} else if (std::holds_alternative<bool_type>(value)) {
+					return json_type::bool_t;
+				} else {
+					return json_type::null_t;
+				}
 			}
 
 			DCA_INLINE operator jsonifier::string_base<uint8_t>() {
@@ -704,22 +647,22 @@ namespace discord_core_api {
 			}
 
 			DCA_INLINE etf_serializer& operator[](typename object_type::key_type&& key) {
-				if (type == json_type::null_t) {
-					setValue<json_type::object_t>();
+				if (getType() == json_type::null_t) {
+					value = object_type{};
 				}
 
-				if (type == json_type::object_t) {
+				if (getType() == json_type::object_t) {
 					return getObject().operator[](std::forward<typename object_type::key_type>(key));
 				}
 				throw etf_serialize_error{ "Sorry, but this value's type is not object." };
 			}
 
 			DCA_INLINE etf_serializer& operator[](uint_type index) {
-				if (type == json_type::null_t) {
-					setValue<json_type::array_t>();
+				if (getType() == json_type::null_t) {
+					value = array_type{};
 				}
 
-				if (type == json_type::array_t) {
+				if (getType() == json_type::array_t) {
 					if (index >= getArray().size()) {
 						getArray().resize(index + 1);
 					}
@@ -730,11 +673,11 @@ namespace discord_core_api {
 			}
 
 			DCA_INLINE void emplaceBack(etf_serializer&& data) {
-				if (type == json_type::null_t) {
-					setValue<json_type::array_t>();
+				if (getType() == json_type::null_t) {
+					value = array_type{};
 				}
 
-				if (type == json_type::array_t) {
+				if (getType() == json_type::array_t) {
 					getArray().emplace_back(std::move(data));
 					return;
 				}
@@ -742,11 +685,11 @@ namespace discord_core_api {
 			}
 
 			DCA_INLINE void emplaceBack(const etf_serializer& rhs) {
-				if (type == json_type::null_t) {
-					setValue<json_type::array_t>();
+				if (getType() == json_type::null_t) {
+					value = array_type{};
 				}
 
-				if (type == json_type::array_t) {
+				if (getType() == json_type::array_t) {
 					getArray().emplace_back(rhs);
 					return;
 				}
@@ -754,106 +697,118 @@ namespace discord_core_api {
 			}
 
 			DCA_INLINE bool_type operator==(const etf_serializer& rhs) const {
-				if (rhs.type != type) {
+				if (rhs.getType() != getType()) {
 					return false;
 				}
-				switch (type) {
-					case json_type::object_t: {
-						return *objectValue == *rhs.objectValue;
-					}
-					case json_type::array_t: {
-						return *arrayValue == *rhs.arrayValue;
-					}
-					case json_type::string_t: {
-						return *stringValue == *rhs.stringValue;
-					}
-					case json_type::float_t: {
-						return *floatValue == *rhs.floatValue;
-					}
-					case json_type::uint_t: {
-						return *uintValue == *rhs.uintValue;
-					}
-					case json_type::int_t: {
-						return *intValue == *rhs.intValue;
-					}
-					case json_type::bool_t: {
-						return *boolValue == *rhs.boolValue;
-					}
-					case json_type::null_t: {
-						break;
-					}
-				}
-				return true;
+				return value == rhs.value;
 			}
 
-			DCA_INLINE object_type& getObject() const {
-				if (type != json_type::object_t) {
+			DCA_INLINE object_type& getObject() {
+				if (getType() != json_type::object_t) {
 					throw etf_serialize_error{ "Sorry, but this value's type is not object!" };
 				}
-				return *objectValue;
+				return std::get<object_type>(value);
 			}
 
-			DCA_INLINE array_type& getArray() const {
-				if (type != json_type::array_t) {
+			DCA_INLINE array_type& getArray() {
+				if (getType() != json_type::array_t) {
 					throw etf_serialize_error{ "Sorry, but this value's type is not array!" };
 				}
-				return *arrayValue;
+				return std::get<array_type>(value);
 			}
 
-			DCA_INLINE string_type& getString() const {
-				if (type != json_type::string_t) {
+			DCA_INLINE string_type& getString() {
+				if (getType() != json_type::string_t) {
 					throw etf_serialize_error{ "Sorry, but this value's type is not string!" };
 				}
-				return *stringValue;
+				return std::get<string_type>(value);
 			}
 
-			DCA_INLINE float_type& getFloat() const {
-				if (type != json_type::float_t) {
+			DCA_INLINE float_type& getFloat() {
+				if (getType() != json_type::float_t) {
 					throw etf_serialize_error{ "Sorry, but this value's type is not float!" };
 				}
-				return *floatValue;
+				return std::get<float_type>(value);
 			}
 
-			DCA_INLINE uint_type& getUint() const {
-				if (type != json_type::uint_t) {
+			DCA_INLINE uint_type& getUint() {
+				if (getType() != json_type::uint_t) {
 					throw etf_serialize_error{ "Sorry, but this value's type is not uint!" };
 				}
-				return *uintValue;
+				return std::get<uint_type>(value);
 			}
 
-			DCA_INLINE int_type& getInt() const {
-				if (type != json_type::int_t) {
+			DCA_INLINE int_type& getInt() {
+				if (getType() != json_type::int_t) {
 					throw etf_serialize_error{ "Sorry, but this value's type is not int!" };
 				}
-				return *intValue;
+				return std::get<int_type>(value);
 			}
 
-			DCA_INLINE bool_type& getBool() const {
-				if (type != json_type::bool_t) {
+			DCA_INLINE bool_type& getBool() {
+				if (getType() != json_type::bool_t) {
 					throw etf_serialize_error{ "Sorry, but this value's type is not bool!" };
 				}
-				return *boolValue;
+				return std::get<bool_type>(value);
 			}
 
-			DCA_INLINE ~etf_serializer() {
-				destroy();
+			DCA_INLINE const object_type& getObject() const {
+				if (getType() != json_type::object_t) {
+					throw etf_serialize_error{ "Sorry, but this value's type is not object!" };
+				}
+				return std::get<object_type>(value);
 			}
+
+			DCA_INLINE const array_type& getArray() const {
+				if (getType() != json_type::array_t) {
+					throw etf_serialize_error{ "Sorry, but this value's type is not array!" };
+				}
+				return std::get<array_type>(value);
+			}
+
+			DCA_INLINE const string_type& getString() const {
+				if (getType() != json_type::string_t) {
+					throw etf_serialize_error{ "Sorry, but this value's type is not string!" };
+				}
+				return std::get<string_type>(value);
+			}
+
+			DCA_INLINE const float_type& getFloat() const {
+				if (getType() != json_type::float_t) {
+					throw etf_serialize_error{ "Sorry, but this value's type is not float!" };
+				}
+				return std::get<float_type>(value);
+			}
+
+			DCA_INLINE const uint_type& getUint() const {
+				if (getType() != json_type::uint_t) {
+					throw etf_serialize_error{ "Sorry, but this value's type is not uint!" };
+				}
+				return std::get<uint_type>(value);
+			}
+
+			DCA_INLINE const int_type& getInt() const {
+				if (getType() != json_type::int_t) {
+					throw etf_serialize_error{ "Sorry, but this value's type is not int!" };
+				}
+				return std::get<int_type>(value);
+			}
+
+			DCA_INLINE const bool_type& getBool() const {
+				if (getType() != json_type::bool_t) {
+					throw etf_serialize_error{ "Sorry, but this value's type is not bool!" };
+				}
+				return std::get<bool_type>(value);
+			}
+
+			DCA_INLINE ~etf_serializer() = default;
 
 		  protected:
 			jsonifier::string_base<uint8_t> stringReal{};
-			json_type type{ json_type::null_t };
-			union {
-				object_type* objectValue;
-				array_type* arrayValue;
-				string_type* stringValue;
-				float_type* floatValue;
-				uint_type* uintValue;
-				int_type* intValue;
-				bool_type* boolValue;
-			};
+			std::variant<object_type, array_type, string_type, float_type, uint_type, int_type, bool_type, std::nullptr_t> value{};
 
 			DCA_INLINE void serializeJsonToEtfString(const etf_serializer& dataToParse) {
-				switch (dataToParse.type) {
+				switch (dataToParse.getType()) {
 					case json_type::object_t: {
 						return writeEtfObject(dataToParse.getObject());
 					}
@@ -1042,101 +997,6 @@ namespace discord_core_api {
 			DCA_INLINE void appendNil() {
 				uint8_t newBuffer[5]{ static_cast<uint8_t>(etf_type::Small_Atom_Ext), static_cast<uint8_t>(3), 'n', 'i', 'l' };
 				writeString(newBuffer, std::size(newBuffer));
-			}
-
-			template<json_type typeNew, typename... value_types> DCA_INLINE void setValue(value_types&&... args) {
-				destroy();
-				type = typeNew;
-				if constexpr (typeNew == json_type::object_t) {
-					allocator<object_type> alloc{};
-					objectValue = alloc.allocate(1);
-					alloc.construct(objectValue, std::forward<value_types>(args)...);
-				} else if constexpr (typeNew == json_type::array_t) {
-					allocator<array_type> alloc{};
-					arrayValue = alloc.allocate(1);
-					alloc.construct(arrayValue, std::forward<value_types>(args)...);
-				} else if constexpr (typeNew == json_type::string_t) {
-					allocator<string_type> alloc{};
-					stringValue = alloc.allocate(1);
-					alloc.construct(stringValue, std::forward<value_types>(args)...);
-				} else if constexpr (typeNew == json_type::float_t) {
-					allocator<float_type> alloc{};
-					floatValue = alloc.allocate(1);
-					alloc.construct(floatValue, std::forward<value_types>(args)...);
-				} else if constexpr (typeNew == json_type::uint_t) {
-					allocator<uint_type> alloc{};
-					uintValue = alloc.allocate(1);
-					alloc.construct(uintValue, std::forward<value_types>(args)...);
-				} else if constexpr (typeNew == json_type::int_t) {
-					allocator<int_type> alloc{};
-					intValue = alloc.allocate(1);
-					alloc.construct(intValue, std::forward<value_types>(args)...);
-				} else if constexpr (typeNew == json_type::bool_t) {
-					allocator<bool_type> alloc{};
-					boolValue = alloc.allocate(1);
-					alloc.construct(boolValue, std::forward<value_types>(args)...);
-				}
-			}
-
-			DCA_INLINE void destroy() {
-				switch (type) {
-					case json_type::object_t: {
-						allocator<object_type> alloc{};
-						alloc.destroy(objectValue);
-						alloc.deallocate(static_cast<object_type*>(objectValue));
-						objectValue = nullptr;
-						break;
-					}
-					case json_type::array_t: {
-						allocator<array_type> alloc{};
-						alloc.destroy(arrayValue);
-						alloc.deallocate(static_cast<array_type*>(arrayValue));
-						arrayValue = nullptr;
-						break;
-					}
-					case json_type::string_t: {
-						allocator<string_type> alloc{};
-						alloc.destroy(stringValue);
-						alloc.deallocate(static_cast<string_type*>(stringValue));
-						stringValue = nullptr;
-						break;
-					}
-					case json_type::float_t: {
-						allocator<float_type> alloc{};
-						alloc.destroy(floatValue);
-						alloc.deallocate(static_cast<float_type*>(floatValue));
-						floatValue = nullptr;
-						break;
-					}
-					case json_type::uint_t: {
-						allocator<uint_type> alloc{};
-						alloc.destroy(uintValue);
-						alloc.deallocate(static_cast<uint_type*>(uintValue));
-						uintValue = nullptr;
-						break;
-					}
-					case json_type::int_t: {
-						allocator<int_type> alloc{};
-						alloc.destroy(intValue);
-						alloc.deallocate(static_cast<int_type*>(intValue));
-						intValue = nullptr;
-						break;
-					}
-					case json_type::bool_t: {
-						allocator<bool_type> alloc{};
-						alloc.destroy(boolValue);
-						alloc.deallocate(static_cast<bool_type*>(boolValue));
-						boolValue = nullptr;
-						break;
-					}
-					case json_type::null_t: {
-						break;
-					}
-					default: {
-						break;
-					}
-				}
-				type = json_type::null_t;
 			}
 		};
 

@@ -410,11 +410,11 @@ namespace discord_core_api {
 	bool voice_connection::onMessageReceived(jsonifier::string_view_base<uint8_t> data) {
 		discord_core_internal::websocket_message message{};
 		message_printer::printSuccess<print_message_type::websocket>("message received from voice websocket: " + jsonifier::string{ data });
-		parser.parseJson(message, data);
+		parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(message, data);
 		switch (static_cast<voice_socket_op_codes>(message.op)) {
 			case voice_socket_op_codes::Ready_Server: {
 				discord_core_internal::websocket_message_data<voice_socket_ready_data> dataNew{};
-				parser.parseJson(dataNew, data);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(dataNew, data);
 				audioSSRC = dataNew.d.ssrc;
 				voiceIp	  = dataNew.d.ip;
 				port	  = dataNew.d.port;
@@ -429,7 +429,7 @@ namespace discord_core_api {
 			case voice_socket_op_codes::Session_Description: {
 				discord_core_internal::websocket_message_data<voice_session_description_data> dataNew{};
 				encryptionKey.clear();
-				parser.parseJson(dataNew, data);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(dataNew, data);
 				for (auto& value: dataNew.d.secretKey) {
 					encryptionKey.emplace_back(static_cast<uint8_t>(value));
 				}
@@ -439,7 +439,7 @@ namespace discord_core_api {
 			}
 			case voice_socket_op_codes::speaking: {
 				discord_core_internal::websocket_message_data<speaking_data> dataNew{};
-				parser.parseJson(dataNew, data);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(dataNew, data);
 				const uint32_t ssrc = dataNew.d.ssrc;
 				auto userId			= dataNew.d.userId;
 				unique_ptr<voice_user> user{ makeUnique<voice_user>(userId) };
@@ -457,7 +457,7 @@ namespace discord_core_api {
 			}
 			case voice_socket_op_codes::hello: {
 				discord_core_internal::websocket_message_data<voice_connection_hello_data> dataNew{};
-				parser.parseJson(dataNew, data);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(dataNew, data);
 				heartBeatStopWatch = stop_watch<milliseconds>{ dataNew.d.heartBeatInterval };
 				heartBeatStopWatch.reset();
 				areWeHeartBeating = true;
@@ -472,7 +472,7 @@ namespace discord_core_api {
 			}
 			case voice_socket_op_codes::Client_Disconnect: {
 				discord_core_internal::websocket_message_data<voice_user_disconnect_data> dataNew{};
-				parser.parseJson(dataNew, data);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(dataNew, data);
 				const auto userId = dataNew.d.userId;
 				for (auto& [key, value]: voiceUsers) {
 					if (userId == value->getUserId()) {
