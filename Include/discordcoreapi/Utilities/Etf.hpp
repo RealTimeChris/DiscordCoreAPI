@@ -454,8 +454,8 @@ namespace discord_core_api {
 
 		/// @brief Concept for array types excluding etf_serializer.
 		template<typename value_type>
-		concept array_t = jsonifier::concepts::range<value_type> && jsonifier::concepts::has_resize<jsonifier_internal::unwrap_t<value_type>> &&
-			jsonifier::concepts::has_emplace_back<jsonifier_internal::unwrap_t<value_type>> && jsonifier::concepts::vector_subscriptable<jsonifier_internal::unwrap_t<value_type>> &&
+		concept array_t = jsonifier::concepts::range<value_type> && jsonifier::concepts::has_resize<std::remove_cvref_t<value_type>> &&
+			jsonifier::concepts::has_emplace_back<std::remove_cvref_t<value_type>> && jsonifier::concepts::vector_subscriptable<std::remove_cvref_t<value_type>> &&
 			requires(value_type&& data) { typename value_type::value_type; };
 
 		/// @brief Concept for object (associative container) types excluding etf_serializer.

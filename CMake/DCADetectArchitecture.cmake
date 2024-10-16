@@ -34,8 +34,19 @@ execute_process(
     RESULT_VARIABLE DCA_CPU_INSTRUCTIONS_NEW
 )
 
-set(AVX_FLAG "")
+function(is_numeric value result_var)
+    string(REGEX MATCH "^[0-9]+(\\.[0-9]+)?$" is_numeric_match "${value}")
+    if(is_numeric_match)
+        set(${result_var} TRUE PARENT_SCOPE)
+    else()
+        set(${result_var} FALSE PARENT_SCOPE)
+    endif()
+endfunction()
 
+is_numeric("${DCA_CPU_INSTRUCTIONS_NEW}" is_numeric_result)
+
+set(AVX_FLAG "")
+if (is_numeric_result)
 math(EXPR DCA_CPU_INSTRUCTIONS_NUMERIC "${DCA_CPU_INSTRUCTIONS_NEW}")
 math(EXPR DCA_CPU_INSTRUCTIONS 0)
 
@@ -99,6 +110,8 @@ else()
     check_instruction_set("Avx2" "-mavx2;-mavx;-mlzcnt;-mpopcnt;-mbmi;-mbmi2" 0x40)
     check_instruction_set("Avx512" "-mavx512f;-mavx2;-mavx;-mlzcnt;-mpopcnt;-mbmi;-mbmi2" 0x80)
 endif()
-
+else()
+set(DCA_CPU_INSTRUCTIONS "0")
+endif()
 set(AVX_FLAG "${AVX_FLAG}" CACHE STRING "AVX flags" FORCE)
 set(DCA_CPU_INSTRUCTIONS "${DCA_CPU_INSTRUCTIONS}" CACHE STRING "CPU Instruction Sets" FORCE)
