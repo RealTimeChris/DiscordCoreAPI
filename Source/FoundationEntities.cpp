@@ -890,7 +890,7 @@ namespace discord_core_api {
 		application_command_option_choice_data choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name				 = theName;
-		choiceData.value			 = jsonifier::string{ value.operator jsonifier::string_base<uint8_t>() };
+		choiceData.value			 = jsonifier::raw_json_data{ parser, value.operator jsonifier::string_base<uint8_t>() };
 		choices.emplace_back(choiceData);
 		return *this;
 	}
@@ -1061,13 +1061,13 @@ namespace discord_core_api {
 			commandName = inputEventData.interactionData->data.name;
 		}
 		if (inputEventData.interactionData->data.targetId != 0) {
-			optionsArgs.values.emplace("target_id", jsonifier::raw_json_data{ inputEventData.interactionData->data.targetId.operator jsonifier::string() });
+			optionsArgs.values.emplace("target_id", jsonifier::raw_json_data{ parser, inputEventData.interactionData->data.targetId.operator jsonifier::string() });
 		} else if (inputEventData.interactionData->data.targetId != 0) {
-			optionsArgs.values.emplace("target_id", jsonifier::raw_json_data{ inputEventData.interactionData->data.targetId.operator jsonifier::string() });
+			optionsArgs.values.emplace("target_id", jsonifier::raw_json_data{ parser, inputEventData.interactionData->data.targetId.operator jsonifier::string() });
 		}
 		eventData = makeUnique<input_event_data>(inputEventData);
 		for (auto& value: eventData->interactionData->data.options) {
-			jsonifier::raw_json_data serializer{ value.value.operator jsonifier::string() };
+			jsonifier::raw_json_data serializer{ parser, value.value.get<jsonifier::string>() };
 			optionsArgs.values[value.name] = serializer;
 			parseCommandDataOption(optionsArgs.values, value);
 		}

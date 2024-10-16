@@ -164,27 +164,29 @@ namespace discord_core_api {
 
 	/// @brief Gateway intents.
 	enum class gateway_intents : uint32_t {
-		guilds						  = 1 << 0,///< Intent for receipt of guild information.
-		Guild_Members				  = 1 << 1,///< Intent for receipt of guild members.
-		Guild_Bans					  = 1 << 2,///< Intent for receipt of guild bans.
-		Guild_Emojis				  = 1 << 3,///< Intent for receipt of guild emojis.
-		Guild_Integrations			  = 1 << 4,///< Intent for receipt of guild integrations.
-		Guild_Webhooks				  = 1 << 5,///< Intent for receipt of guild webhooks.
-		Guild_Invites				  = 1 << 6,///< Intent for receipt of guild invites.
-		Guild_VoiceStates			  = 1 << 7,///< Intent for receipt of guild voice states.
-		Guild_Presences				  = 1 << 8,///< Intent for receipt of guild presences.
-		Guild_Messages				  = 1 << 9,///< Intent for receipt of guild messages.
-		Guild_Message_Reactions		  = 1 << 10,///< Intent for receipt of guild message reactions.
-		Guild_Message_Typing		  = 1 << 11,///< Intent for receipt of guild message typing notifications.
-		Direct_Messages				  = 1 << 12,///< Intent for receipt of direct messages (dms).
-		Direct_Message_Reactions	  = 1 << 13,///< Intent for receipt of direct message reactions.
-		Direct_Message_Typing		  = 1 << 14,///< Intent for receipt of direct message typing notifications.
-		Message_Content				  = 1 << 15,///< Intent for receipt of message content.
-		Guild_Scheduled_Events		  = 1 << 16,///< Scheduled events.
-		Auto_Moderation_Configuration = 1 << 20,/// auto moderation configuration.
-		Auto_Moderation_Execution	  = 1 << 21,///< Auto moderation execution.
-		Default_Intents = guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates | Guild_Messages | Guild_Message_Reactions |
-			Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events | Auto_Moderation_Configuration |
+		Guilds						  = 1 << 0,
+		Guild_Members				  = 1 << 1,
+		Guild_Moderation			  = 1 << 2,
+		Guild_Expressions			  = 1 << 3,
+		Guild_Integrations			  = 1 << 4,
+		Guild_Webhooks				  = 1 << 5,
+		Guild_Invites				  = 1 << 6,
+		Guild_Voice_States			  = 1 << 7,
+		Guild_Presences				  = 1 << 8,
+		Guild_Messages				  = 1 << 9,
+		Guild_Message_Reactions		  = 1 << 10,
+		Guild_Message_Typing		  = 1 << 11,
+		Direct_Messages				  = 1 << 12,
+		Direct_Message_Reactions	  = 1 << 13,
+		Direct_Message_Typing		  = 1 << 14,
+		Message_Content				  = 1 << 15,
+		Guild_Scheduled_Events		  = 1 << 16,
+		Auto_Moderation_Configuration = 1 << 20,
+		Auto_Moderation_Execution	  = 1 << 21,
+		Guild_Message_Polls			  = 1 << 24,
+		Direct_Message_Polls		  = 1 << 25,///< Auto moderation execution.
+		Default_Intents = Guilds | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_Voice_States | Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing |
+			Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events | Auto_Moderation_Configuration |
 			Auto_Moderation_Execution,///< Default intents (all non-privileged intents).
 		Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring id.
 		All_Intents		   = Default_Intents | Privileged_Intents///< Every single intent.
@@ -534,7 +536,6 @@ namespace discord_core_api {
 	/// @brief Permissions_base class, for representing and manipulating permission values.
 	template<typename value_type> class permissions_base {
 	  public:
-
 		/// @brief Returns a string containing all of a given user's permissions_base for a given channel.
 		/// @param guildMember the guild_member_data who's permissions_base to analyze.
 		/// @param channel the channel_data withint which to check for permissions_base.

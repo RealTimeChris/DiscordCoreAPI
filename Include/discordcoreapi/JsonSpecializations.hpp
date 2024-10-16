@@ -41,8 +41,8 @@ namespace discord_core_api {
 			websocket_message_data(const update_voice_state_data& data);
 			unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 			using type = update_voice_state_data;
+			std::optional<jsonifier::string> t{};
 			int64_t op{ -1 };
-			jsonifier::string t{};
 			int32_t s{};
 			type d{};
 			operator etf_serializer();
@@ -53,8 +53,8 @@ namespace discord_core_api {
 			websocket_message_data(const update_voice_state_data& data);
 			unordered_set<jsonifier::string> jsonifierExcludedKeys{};
 			using type = update_voice_state_data_dc;
+			std::optional<jsonifier::string> t{};
 			int64_t op{ -1 };
-			jsonifier::string t{};
 			int32_t s{};
 			type d{};
 			operator etf_serializer();
@@ -65,13 +65,13 @@ namespace discord_core_api {
 namespace jsonifier_internal {
 
 	template<typename value_type>
-	concept snowflake_t = std::same_as<discord_core_api::snowflake, jsonifier_internal::unwrap_t<value_type>>;
+	concept snowflake_t = std::same_as<discord_core_api::snowflake, std::remove_cvref_t<value_type>>;
 
-	template<jsonifier::serialize_options options, snowflake_t value_type, jsonifier::concepts::buffer_like buffer_type, typename serialize_context_type>
-	struct serialize_impl<options, value_type, buffer_type, serialize_context_type> {
-		template<typename value_type_new> JSONIFIER_ALWAYS_INLINE static void impl(value_type_new&& value, buffer_type& buffer, serialize_context_type& serializePair) noexcept {
+	template<jsonifier::serialize_options options, snowflake_t value_type, jsonifier::concepts::buffer_like buffer_type, typename index_type, typename indent_type>
+	struct serialize_impl<options, value_type, buffer_type, index_type, indent_type> {
+		template<typename value_type_new> JSONIFIER_ALWAYS_INLINE static void impl(value_type_new&& value, buffer_type& buffer, index_type&index, indent_type& indent) noexcept {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serialize<options>::impl(newString, buffer, serializePair);
+			serialize<options>::impl(newString, buffer, index, indent);
 		}
 	};
 
@@ -80,21 +80,21 @@ namespace jsonifier_internal {
 			jsonifier::raw_json_data newString{};
 			parse<minified, options>::impl(newString, context);
 			if (newString.getType() == jsonifier::json_type::String) {
-				value = newString.operator jsonifier::string();
+				value = newString.get<jsonifier::string>();
 			} else {
-				value = newString.operator uint64_t();
+				value = newString.get<uint64_t>();
 			}
 		}
 	};
 
 	template<typename value_type>
-	concept time_stamp_t = std::same_as<discord_core_api::time_stamp, jsonifier_internal::unwrap_t<value_type>>;
+	concept time_stamp_t = std::same_as<discord_core_api::time_stamp, std::remove_cvref_t<value_type>>;
 
-	template<jsonifier::serialize_options options, time_stamp_t value_type, jsonifier::concepts::buffer_like buffer_type, typename serialize_context_type>
-	struct serialize_impl<options, value_type, buffer_type, serialize_context_type> {
-		template<typename value_type_new> JSONIFIER_ALWAYS_INLINE static void impl(value_type_new&& value, buffer_type& buffer, serialize_context_type& serializePair) noexcept {
+	template<jsonifier::serialize_options options, time_stamp_t value_type, jsonifier::concepts::buffer_like buffer_type, typename index_type, typename indent_type>
+	struct serialize_impl<options, value_type, buffer_type, index_type, indent_type> {
+		template<typename value_type_new> JSONIFIER_ALWAYS_INLINE static void impl(value_type_new&& value, buffer_type& buffer, index_type& index, indent_type& indent) noexcept {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
-			serialize<options>::impl(newString, buffer, serializePair);
+			serialize<options>::impl(newString, buffer, index, indent);
 		}
 	};
 
@@ -104,9 +104,9 @@ namespace jsonifier_internal {
 			jsonifier::raw_json_data newString{};
 			parse<minified, options>::impl(newString, context);
 			if (newString.getType() == jsonifier::json_type::String) {
-				value = newString.operator jsonifier::string();
+				value = newString.get<jsonifier::string>();
 			} else {
-				value = newString.operator uint64_t();
+				value = newString.get<uint64_t>();
 			}
 		}
 	};

@@ -162,7 +162,7 @@ namespace discord_core_api {
 				if (trackNumber >= song_api::getPlaylist(guild_data.id).songQueue.size()) {
 					unique_ptr<embed_data> newEmbed{ makeUnique<embed_data>() };
 					newEmbed->setAuthor(newEvent.getUserName(), newEvent.getAvatarUrl());
-					newEmbed->setDescription("------\n__**sorry, but that number is out of the range of the current track list!**__\n------");
+					newEmbed->setDescription("------\n__**sorry, but that number is out of the has_range of the current track list!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**playing issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
