@@ -38,7 +38,7 @@ jobs:
     - name: Configure CMake
       working-directory: ./
       run: |
-           cmake -S . -B ./Build -DDEV=true -DDISCORDCOREAPI_TEST=true -DVCPKG_ROOT_DIR=C:/vcpkg
+           cmake -S . -B ./Build -DDEV=true -DVCPKG_ROOT_DIR=C:/vcpkg
 
     - name: Build the Test
       working-directory: ./Build
@@ -46,15 +46,9 @@ jobs:
            cmake --build . --config=${{matrix.build_type}}
 
     - name: Install the Test
-      working-directory: ./Build/Tests
+      working-directory: ./Build/
       run: |
            cmake --install ./ --config=${{matrix.build_type}}
-
-    - name: Run the Test
-      working-directory: ./Tests/Install/${{matrix.build_type}}
-      run: |
-            ./DiscordCoreAPITest.exe
-      continue-on-error: true
 
     - name: Clone DiscordCoreAPI-Binaries repository
       run: |
@@ -65,7 +59,9 @@ jobs:
 
     - name: Copy build artifacts to DiscordCoreAPI-Binaries
       run: |
-        cp -r ./Tests/Install/${{matrix.build_type}}/* ./DiscordCoreAPI-Binaries/${{matrix.build_type}}
+        cp -r -Force "C:/Program Files (x86)/DiscordCoreAPI/*" ./DiscordCoreAPI-Binaries/${{matrix.build_type}} -v
+        cd ./DiscordCoreAPI-Binaries/${{matrix.build_type}}
+        Remove-Item -Force ./bin/discordcoreapi.pdb
 
     - name: Commit and push changes to DiscordCoreAPI-Binaries
       working-directory: ./DiscordCoreAPI-Binaries

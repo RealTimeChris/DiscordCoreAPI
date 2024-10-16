@@ -63,10 +63,10 @@ namespace discord_core_api {
 				arrayValue.resize(size);
 			}
 
-			DCA_INLINE ring_buffer_interface& operator=(ring_buffer_interface&&) noexcept		= default;
-			DCA_INLINE ring_buffer_interface(ring_buffer_interface&&) noexcept					= default;
-			DCA_INLINE ring_buffer_interface& operator=(const ring_buffer_interface&) noexcept	= default;
-			DCA_INLINE ring_buffer_interface(const ring_buffer_interface&) noexcept				= default;
+			DCA_INLINE ring_buffer_interface& operator=(ring_buffer_interface&&) noexcept	   = default;
+			DCA_INLINE ring_buffer_interface(ring_buffer_interface&&) noexcept				   = default;
+			DCA_INLINE ring_buffer_interface& operator=(const ring_buffer_interface&) noexcept = default;
+			DCA_INLINE ring_buffer_interface(const ring_buffer_interface&) noexcept			   = default;
 
 			// forward declaration to grant friendship to the ring_buffer class.
 			template<typename value_type2, size_type slice_count> friend class ring_buffer;
@@ -125,7 +125,7 @@ namespace discord_core_api {
 			}
 
 		  protected:
-			jsonifier::vector<jsonifier_internal::unwrap_t<value_type>> arrayValue{};///< The underlying data array.
+			jsonifier::vector<std::remove_cvref_t<value_type>> arrayValue{};///< The underlying data array.
 			size_type tail{};///< The tail position in the buffer.
 			size_type head{};///< The head position in the buffer.
 		};
@@ -134,18 +134,18 @@ namespace discord_core_api {
 		/// @tparam value_type the type of data stored in the buffer.
 		/// @tparam slice_count the number of slices.
 		template<typename value_type_new, uint64_t slice_count> class ring_buffer
-			: public ring_buffer_interface<ring_buffer_interface<jsonifier_internal::unwrap_t<value_type_new>, 1024 * 16>, slice_count> {
+			: public ring_buffer_interface<ring_buffer_interface<std::remove_cvref_t<value_type_new>, 1024 * 16>, slice_count> {
 		  public:
-			using base_type		= ring_buffer_interface<ring_buffer_interface<jsonifier_internal::unwrap_t<value_type_new>, 1024 * 16>, slice_count>;
-			using value_type	= typename ring_buffer_interface<jsonifier_internal::unwrap_t<value_type_new>, 1024 * 16>::value_type;
+			using base_type		= ring_buffer_interface<ring_buffer_interface<std::remove_cvref_t<value_type_new>, 1024 * 16>, slice_count>;
+			using value_type	= typename ring_buffer_interface<std::remove_cvref_t<value_type_new>, 1024 * 16>::value_type;
 			using const_pointer = const value_type*;
 			using pointer		= value_type*;
 			using size_type		= uint64_t;
 
 			/// @brief Default constructor. initializes the buffer size.
-			DCA_INLINE ring_buffer() noexcept						= default;
-			DCA_INLINE ring_buffer& operator=(ring_buffer&&) noexcept = default;
-			DCA_INLINE ring_buffer(ring_buffer&&) noexcept			  = default;
+			DCA_INLINE ring_buffer() noexcept							   = default;
+			DCA_INLINE ring_buffer& operator=(ring_buffer&&) noexcept	   = default;
+			DCA_INLINE ring_buffer(ring_buffer&&) noexcept				   = default;
 			DCA_INLINE ring_buffer& operator=(const ring_buffer&) noexcept = default;
 			DCA_INLINE ring_buffer(const ring_buffer&) noexcept			   = default;
 
@@ -166,11 +166,11 @@ namespace discord_core_api {
 
 			/// @brief Read data from the buffer.
 			/// @return a string view containing the read data.
-			DCA_INLINE jsonifier::string_view_base<jsonifier_internal::unwrap_t<value_type>> readData() {
-				jsonifier::string_view_base<jsonifier_internal::unwrap_t<value_type>> returnData{};
+			DCA_INLINE jsonifier::string_view_base<std::remove_cvref_t<value_type>> readData() {
+				jsonifier::string_view_base<std::remove_cvref_t<value_type>> returnData{};
 				if (base_type::getCurrentTail()->getUsedSpace() > 0) {
-					returnData = jsonifier::string_view_base<jsonifier_internal::unwrap_t<value_type>>{ base_type::getCurrentTail()->getCurrentTail(),
-						base_type::getCurrentTail()->getUsedSpace() };
+					returnData =
+						jsonifier::string_view_base<std::remove_cvref_t<value_type>>{ base_type::getCurrentTail()->getCurrentTail(), base_type::getCurrentTail()->getUsedSpace() };
 					base_type::getCurrentTail()->clear();
 					base_type::modifyReadOrWritePosition(ring_buffer_access_type::read, 1);
 				}

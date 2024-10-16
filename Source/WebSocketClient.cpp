@@ -484,15 +484,15 @@ namespace discord_core_api {
 						}
 					}
 
-					if (message.s != 0) {
-						lastNumberReceived = static_cast<uint32_t>(message.s);
+					if (message.s.value() != 0) {
+						lastNumberReceived = static_cast<uint32_t>(message.s.value());
 					}
 					message_printer::printSuccess<print_message_type::websocket>("Message received from websocket [" + jsonifier::toString(shard.at(0)) + "," +
 						jsonifier::toString(shard.at(1)) + jsonifier::string("]: ") + jsonifier::string{ dataNew });
 					switch (static_cast<websocket_op_codes>(message.op)) {
 						case websocket_op_codes::dispatch: {
-							if (message.t != "") {
-								switch (event_converter{ message.t }) {
+							if (message.t.value() != "") {
+								switch (event_converter{ message.t.value() }) {
 									case 1: {
 										websocket_message_data<ready_data> data{};
 										if (dataOpCode == websocket_op_code::Op_Text) {

@@ -30,6 +30,7 @@
 #pragma once
 
 #include <discordcoreapi/Utilities.hpp>
+#include <optional>
 
 namespace discord_core_api {
 
@@ -321,23 +322,27 @@ namespace discord_core_api {
 		};
 
 		struct websocket_message {
-			jsonifier::string t{};
+			std::optional<jsonifier::string> t{};
+			std::optional<int64_t> s{};
 			int64_t op{ -1 };
-			int64_t s{};
 		};
 
 		template<typename value_type> struct websocket_message_data {
 			unordered_set<jsonifier::string> jsonifierExcludedKeys{};
-			jsonifier::string t{};
+			std::optional<jsonifier::string> t{};
+			std::optional<int64_t> s{};
 			value_type d{};
 			int64_t op{};
-			int64_t s{};
 
 			DCA_INLINE operator discord_core_internal::etf_serializer() {
 				etf_serializer data{};
 				data["op"] = op;
-				data["s"]  = s;
-				data["t"]  = t;
+				if (s.has_value()) {
+					data["s"] = s.value();
+				}
+				if (t.has_value()) {
+					data["t"] = t.value();
+				}
 				data["d"]  = d.operator discord_core_internal::etf_serializer();
 				return data;
 			}
@@ -407,24 +412,27 @@ namespace discord_core_api {
 
 	template<typename value_type> class flag_entity {
 	  public:
-		template<jsonifier::concepts::enum_t value_type02> DCA_INLINE auto setFlagValue(value_type02 theFlagToSet, bool enabled) {
-			auto newValue = static_cast<int64_t>(static_cast<value_type*>(this)->flags);
+		template<jsonifier::concepts::enum_t flag_type> DCA_INLINE void setFlagValue(flag_type theFlagToSet, bool enabled) {
+			using underlying_type = std::underlying_type_t<flag_type>;
+			auto newValue		  = static_cast<underlying_type>(static_cast<value_type*>(this)->flags);
 			if (enabled) {
-				newValue |= static_cast<int64_t>(theFlagToSet);
+				newValue |= static_cast<underlying_type>(theFlagToSet);
 			} else {
-				newValue &= ~static_cast<int64_t>(theFlagToSet);
+				newValue &= ~static_cast<underlying_type>(theFlagToSet);
 			}
-			static_cast<value_type*>(this)->flags = static_cast<value_type02>(newValue);
+			static_cast<value_type*>(this)->flags = static_cast<flag_type>(newValue);
 		}
 
-		template<jsonifier::concepts::enum_t value_type02> DCA_INLINE bool getFlagValue(value_type02 theFlagToCheckFor) const {
-			return static_cast<int64_t>(static_cast<const value_type*>(this)->flags) & static_cast<int64_t>(theFlagToCheckFor);
+		template<jsonifier::concepts::enum_t flag_type> DCA_INLINE bool getFlagValue(flag_type theFlagToCheckFor) const {
+			using underlying_type = std::underlying_type_t<flag_type>;
+			return static_cast<underlying_type>(static_cast<const value_type*>(this)->flags) & static_cast<underlying_type>(theFlagToCheckFor);
 		}
 
 	  protected:
 		DCA_INLINE flag_entity()  = default;
 		DCA_INLINE ~flag_entity() = default;
 	};
+
 
 	enum class user_image_types {
 		Banner			  = 0,
