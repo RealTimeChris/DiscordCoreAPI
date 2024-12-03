@@ -69,16 +69,17 @@ namespace jsonifier_internal {
 
 	template<jsonifier::serialize_options options, snowflake_t value_type, jsonifier::concepts::buffer_like buffer_type, typename index_type, typename indent_type>
 	struct serialize_impl<options, value_type, buffer_type, index_type, indent_type> {
-		template<typename value_type_new> JSONIFIER_ALWAYS_INLINE static void impl(value_type_new&& value, buffer_type& buffer, index_type&index, indent_type& indent) noexcept {
+		template<typename value_type_new> DCA_ALWAYS_INLINE static void impl(value_type_new&& value, buffer_type& buffer, index_type&index, indent_type& indent) noexcept {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
 			serialize<options>::impl(newString, buffer, index, indent);
 		}
 	};
 
-	template<bool minified, jsonifier::parse_options options, snowflake_t value_type, typename parse_context_type> struct parse_impl<minified, options, value_type, parse_context_type> {
-		JSONIFIER_ALWAYS_INLINE static void impl(value_type& value, parse_context_type& context) noexcept {
+	template<bool minified, jsonifier::parse_options options, snowflake_t value_type, typename buffer_type, typename parse_context_type>
+	struct parse_impl<minified, options, value_type, buffer_type, parse_context_type> {
+		DCA_ALWAYS_INLINE static void impl(value_type& value, parse_context_type& context) noexcept {
 			jsonifier::raw_json_data newString{};
-			parse<minified, options>::impl(newString, context);
+			parse<minified, options>::template impl<buffer_type>(newString, context);
 			if (newString.getType() == jsonifier::json_type::String) {
 				value = newString.get<jsonifier::string>();
 			} else {
@@ -92,17 +93,17 @@ namespace jsonifier_internal {
 
 	template<jsonifier::serialize_options options, time_stamp_t value_type, jsonifier::concepts::buffer_like buffer_type, typename index_type, typename indent_type>
 	struct serialize_impl<options, value_type, buffer_type, index_type, indent_type> {
-		template<typename value_type_new> JSONIFIER_ALWAYS_INLINE static void impl(value_type_new&& value, buffer_type& buffer, index_type& index, indent_type& indent) noexcept {
+		template<typename value_type_new> DCA_ALWAYS_INLINE static void impl(value_type_new&& value, buffer_type& buffer, index_type& index, indent_type& indent) noexcept {
 			jsonifier::string newString{ static_cast<jsonifier::string>(value) };
 			serialize<options>::impl(newString, buffer, index, indent);
 		}
 	};
 
-	template<bool minified, jsonifier::parse_options options, time_stamp_t value_type, typename parse_context_type>
-	struct parse_impl<minified, options, value_type, parse_context_type> {
-		JSONIFIER_ALWAYS_INLINE static void impl(value_type& value, parse_context_type& context) noexcept {
+	template<bool minified, jsonifier::parse_options options, time_stamp_t value_type, typename buffer_type, typename parse_context_type>
+	struct parse_impl<minified, options, value_type, buffer_type, parse_context_type> {
+		DCA_ALWAYS_INLINE static void impl(value_type& value, parse_context_type& context) noexcept {
 			jsonifier::raw_json_data newString{};
-			parse<minified, options>::impl(newString, context);
+			parse<minified, options>::template impl<buffer_type>(newString, context);
 			if (newString.getType() == jsonifier::json_type::String) {
 				value = newString.get<jsonifier::string>();
 			} else {

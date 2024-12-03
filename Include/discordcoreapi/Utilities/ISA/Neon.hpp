@@ -29,7 +29,7 @@
 /// \file AVX.hpp
 #pragma once
 
-#include <discordcoreapi/Utilities/Base.hpp>
+#include <discordcoreapi/Utilities/ISA/ISADetectionBase.hpp>
 
 #if DCA_CHECK_FOR_INSTRUCTION(DCA_NEON)
 
