@@ -135,7 +135,7 @@ target_link_options(
 	"${LIB_NAME}" PUBLIC
 	"$<$<CXX_COMPILER_ID:GNU>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:-fsanitize=address>>"
 	"$<$<CXX_COMPILER_ID:CLANG>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:-fsanitize=address>>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/DEBUG>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/OPT:REF>"
 )
 
 set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")
