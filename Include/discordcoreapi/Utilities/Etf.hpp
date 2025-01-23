@@ -121,10 +121,10 @@ namespace discord_core_api {
 		constexpr uint8_t formatVersion{ 131 };
 
 		/// @brief Class for parsing etf data into json format.
-		class DiscordCoreAPI_Dll etf_parser : public jsonifier_internal::alloc_wrapper<uint8_t> {
+		class DiscordCoreAPI_Dll etf_parser : public jsonifier::internal::alloc_wrapper<uint8_t> {
 		  public:
 			friend class websocket_client;
-			using allocator = jsonifier_internal::alloc_wrapper<uint8_t>;
+			using allocator = jsonifier::internal::alloc_wrapper<uint8_t>;
 
 			/// @brief Parse etf data to json format.
 			/// @param dataToParse the etf data to be parsed.
@@ -468,7 +468,7 @@ namespace discord_core_api {
 
 		class etf_serializer {
 		  public:
-			template<typename value_type> using allocator = jsonifier_internal::alloc_wrapper<value_type>;
+			template<typename value_type> using allocator = jsonifier::internal::alloc_wrapper<value_type>;
 			using object_type							  = unordered_map<jsonifier::string, etf_serializer>;
 			using array_type							  = jsonifier::vector<etf_serializer>;
 			using string_type							  = jsonifier::string;

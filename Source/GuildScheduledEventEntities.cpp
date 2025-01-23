@@ -36,17 +36,20 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::modify_guild_scheduled_event_data> {
 		using value_type				 = discord_core_api::modify_guild_scheduled_event_data;
-		static constexpr auto parseValue = createValue("privacy_level", &value_type::privacyLevel, "status", &value_type::status, "entity_metadata", &value_type::entityMetadata,
-			"entity_type", &value_type::entityType, "guild_scheduled_event_id", &value_type::guildScheduledEventId, "scheduled_start_time", &value_type::scheduledStartTime,
-			"scheduled_end_time", &value_type::scheduledEndTime, "description", &value_type::description, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId,
-			"name", &value_type::name);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::privacyLevel, "privacy_level">(), makeJsonEntity<&value_type::status, "status">(),
+			makeJsonEntity<&value_type::entityMetadata, "entity_metadata">(), makeJsonEntity<&value_type::entityType, "entity_type">(),
+			makeJsonEntity<&value_type::guildScheduledEventId, "guild_scheduled_event_id">(), makeJsonEntity<&value_type::scheduledStartTime, "scheduled_start_time">(),
+			makeJsonEntity<&value_type::scheduledEndTime, "scheduled_end_time">(), makeJsonEntity<&value_type::description, "description">(),
+			makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::name, "name">()>();
 	};
 
 	template<> struct core<discord_core_api::create_guild_scheduled_event_data> {
-		using value_type				 = discord_core_api::create_guild_scheduled_event_data;
-		static constexpr auto parseValue = createValue("privacy_level", &value_type::privacyLevel, "entity_metadata", &value_type::entityMetadata, "entity_type",
-			&value_type::entityType, "scheduled_start_time", &value_type::scheduledStartTime, "scheduled_end_time", &value_type::scheduledEndTime, "description",
-			&value_type::description, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "name", &value_type::name);
+		using value_type = discord_core_api::create_guild_scheduled_event_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::privacyLevel, "privacy_level">(), makeJsonEntity<&value_type::entityMetadata, "entity_metadata">(),
+				makeJsonEntity<&value_type::entityType, "entity_type">(), makeJsonEntity<&value_type::scheduledStartTime, "scheduled_start_time">(),
+				makeJsonEntity<&value_type::scheduledEndTime, "scheduled_end_time">(), makeJsonEntity<&value_type::description, "description">(),
+				makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::name, "name">()>();
 	};
 
 }

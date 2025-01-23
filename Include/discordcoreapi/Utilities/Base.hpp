@@ -98,7 +98,7 @@ namespace discord_core_api {
 
 	DCA_INLINE thread_local jsonifier::jsonifier_core<false> parser{};
 
-	template<typename value_type> using stop_watch = jsonifier_internal::stop_watch<value_type>;
+	template<typename value_type> using stop_watch = jsonifier::internal::stop_watch<value_type>;
 	using sys_clock								   = std::chrono::system_clock;
 	using hrclock								   = std::chrono::high_resolution_clock;
 	using milliseconds							   = std::chrono::duration<int64_t, std::milli>;

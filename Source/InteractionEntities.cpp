@@ -38,39 +38,43 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::interaction_callback_data> {
 		using value_type				 = discord_core_api::interaction_callback_data;
-		static constexpr auto parseValue = createValue("attachments", &value_type::attachments, "choices", &value_type::choices, "components", &value_type::components, "content",
-			&value_type::content, "custom_id", &value_type::customId, "embeds", &value_type::embeds, "flags", &value_type::flags, "tts",
-			&value_type::tts, "allowed_mentions", &value_type::allowedMentions, "title", &value_type::title);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::attachments, "attachments">(), makeJsonEntity<&value_type::choices, "choices">(),
+			makeJsonEntity<&value_type::components, "components">(), makeJsonEntity<&value_type::content, "content">(), makeJsonEntity<&value_type::customId, "custom_id">(),
+			makeJsonEntity<&value_type::embeds, "embeds">(), makeJsonEntity<&value_type::flags, "flags">(), makeJsonEntity<&value_type::tts, "tts">(),
+			makeJsonEntity<&value_type::allowedMentions, "allowed_mentions">(), makeJsonEntity<&value_type::title, "title">()>();
 	};
 
 	template<> struct core<discord_core_api::interaction_response_base> {
 		using value_type				 = discord_core_api::interaction_response_base;
-		static constexpr auto parseValue = createValue("type", &value_type::type, "data", &value_type::data);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::type, "type">(), makeJsonEntity<&value_type::data, "data">()>();
 	};
 
 	template<> struct core<discord_core_api::create_interaction_response_data> {
 		using value_type				 = discord_core_api::create_interaction_response_data;
-		static constexpr auto parseValue = createValue("type", &value_type::type, "data", &value_type::data);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::type, "type">(), makeJsonEntity<&value_type::data, "data">()>();
 	};
 
 	template<> struct core<discord_core_api::edit_interaction_response_data> {
 		using value_type				 = discord_core_api::edit_interaction_response_data;
-		static constexpr auto parseValue = createValue("content", &value_type::content, "embeds", &value_type::embeds, "allowed_mentions", &value_type::allowedMentions,
-			"components", &value_type::components, "attachments", &value_type::attachments);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::content, "content">(), makeJsonEntity<&value_type::embeds, "embeds">(),
+			makeJsonEntity<&value_type::allowedMentions, "allowed_mentions">(), makeJsonEntity<&value_type::components, "components">(),
+			makeJsonEntity<&value_type::attachments, "attachments">()>();
 	};
 
 	template<> struct core<discord_core_api::create_follow_up_message_data> {
 		using value_type				 = discord_core_api::create_follow_up_message_data;
-		static constexpr auto parseValue = createValue("content", &value_type::content, "username", &value_type::userName, "avatar_url", &value_type::avatarUrl, "tts",
-			&value_type::tts, "embeds", &value_type::embeds, "allowed_mentions", &value_type::allowedMentions, "components", &value_type::components,
-			"attachments", &value_type::attachments, "flags", &value_type::flags);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::content, "content">(), makeJsonEntity<&value_type::userName, "username">(),
+			makeJsonEntity<&value_type::avatarUrl, "avatar_url">(), makeJsonEntity<&value_type::tts, "tts">(), makeJsonEntity<&value_type::embeds, "embeds">(),
+			makeJsonEntity<&value_type::allowedMentions, "allowed_mentions">(), makeJsonEntity<&value_type::components, "components">(),
+			makeJsonEntity<&value_type::attachments, "attachments">(), makeJsonEntity<&value_type::flags, "flags">()>();
 	};
 
 	template<> struct core<discord_core_api::edit_follow_up_message_data> {
 		using value_type				 = discord_core_api::edit_follow_up_message_data;
-		static constexpr auto parseValue = createValue("content", &value_type::content, "username", &value_type::userName, "avatar_url", &value_type::avatarUrl, "tts",
-			&value_type::tts, "embeds", &value_type::embeds, "allowed_mentions", &value_type::allowedMentions, "components", &value_type::components,
-			"attachments", &value_type::attachments, "flags", &value_type::flags);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::content, "content">(), makeJsonEntity<&value_type::userName, "username">(),
+			makeJsonEntity<&value_type::avatarUrl, "avatar_url">(), makeJsonEntity<&value_type::tts, "tts">(), makeJsonEntity<&value_type::embeds, "embeds">(),
+			makeJsonEntity<&value_type::allowedMentions, "allowed_mentions">(), makeJsonEntity<&value_type::components, "components">(),
+			makeJsonEntity<&value_type::attachments, "attachments">(), makeJsonEntity<&value_type::flags, "flags">()>();
 	};
 
 }

@@ -41,67 +41,74 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::create_guild_data> {
 		using value_type				 = discord_core_api::create_guild_data;
-		static constexpr auto parseValue = createValue("default_message_notifications", &value_type::defaultMessageNotifications, "explicit_content_filter",
-			&value_type::explicitContentFilter, "system_channel_flags", &value_type::systemChannelFlags, "verification_level", &value_type::verificationLevel, "afk_timeout",
-			&value_type::afkTimeout, "region", &value_type::region, "name", &value_type::name, "icon", &value_type::icon, "channels", &value_type::channels, "system_channel_id",
-			&value_type::systemChannelId, "roles", &value_type::roles, "afk_channel_id", &value_type::afkChannelId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::defaultMessageNotifications, "default_message_notifications">(),
+			makeJsonEntity<&value_type::explicitContentFilter, "explicit_content_filter">(), makeJsonEntity<&value_type::systemChannelFlags, "system_channel_flags">(),
+			makeJsonEntity<&value_type::verificationLevel, "verification_level">(), makeJsonEntity<&value_type::afkTimeout, "afk_timeout">(),
+			makeJsonEntity<&value_type::region, "region">(), makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::icon, "icon">(),
+			makeJsonEntity<&value_type::channels, "channels">(), makeJsonEntity<&value_type::systemChannelId, "system_channel_id">(), makeJsonEntity<&value_type::roles, "roles">(),
+			makeJsonEntity<&value_type::afkChannelId, "afk_channel_id">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_guild_data> {
-		using value_type = discord_core_api::modify_guild_data;
-		static constexpr auto parseValue =
-			createValue("default_message_notifications", &value_type::defaultMessageNotifications, "explicit_content_filter", &value_type::explicitContentFilter,
-				"system_channel_flags", &value_type::systemChannelFlags, "verification_level", &value_type::verificationLevel, "features", &value_type::features,
-				"public_updates_channel_id", &value_type::publicUpdatesChannelId, "afk_timeout", &value_type::afkTimeout, "preferred_locale", &value_type::preferredLocale,
-				"discovery_splash", &value_type::discoverySplash, "system_channel_id", &value_type::systemChannelId, "rules_channel_id", &value_type::rulesChannelId, "description",
-				&value_type::description, "afk_channel_id", &value_type::afkChannelId, "banner", &value_type::banner, "splash", &value_type::splash,
-				"owner_id", &value_type::ownerId, "guild_id", &value_type::guildId, "icon", &value_type::icon, "name", &value_type::name);
+		using value_type				 = discord_core_api::modify_guild_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::defaultMessageNotifications, "default_message_notifications">(),
+			makeJsonEntity<&value_type::explicitContentFilter, "explicit_content_filter">(), makeJsonEntity<&value_type::systemChannelFlags, "system_channel_flags">(),
+			makeJsonEntity<&value_type::verificationLevel, "verification_level">(), makeJsonEntity<&value_type::features, "features">(),
+			makeJsonEntity<&value_type::publicUpdatesChannelId, "public_updates_channel_id">(), makeJsonEntity<&value_type::afkTimeout, "afk_timeout">(),
+			makeJsonEntity<&value_type::preferredLocale, "preferred_locale">(), makeJsonEntity<&value_type::discoverySplash, "discovery_splash">(),
+			makeJsonEntity<&value_type::systemChannelId, "system_channel_id">(), makeJsonEntity<&value_type::rulesChannelId, "rules_channel_id">(),
+			makeJsonEntity<&value_type::description, "description">(), makeJsonEntity<&value_type::afkChannelId, "afk_channel_id">(),
+			makeJsonEntity<&value_type::banner, "banner">(), makeJsonEntity<&value_type::splash, "splash">(), makeJsonEntity<&value_type::ownerId, "owner_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::icon, "icon">(), makeJsonEntity<&value_type::name, "name">()>();
 	};
 
 	template<> struct core<discord_core_api::create_guild_ban_data> {
 		using value_type				 = discord_core_api::create_guild_ban_data;
-		static constexpr auto parseValue = createValue("delete_message_days", &value_type::deleteMessageDays, "member", &value_type::guildMemberId,
-			"guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::deleteMessageDays, "delete_message_days">(),
+			makeJsonEntity<&value_type::guildMemberId, "member">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_guild_welcome_screen_data> {
 		using value_type				 = discord_core_api::modify_guild_welcome_screen_data;
-		static constexpr auto parseValue = createValue("welcome_channels", &value_type::welcomeChannels, "description", &value_type::description, "guild_id", &value_type::guildId,
-			"enabled", &value_type::enabled);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::welcomeChannels, "welcome_channels">(),
+			makeJsonEntity<&value_type::description, "description">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::enabled, "enabled">()>();
 	};
 
 	template<> struct core<discord_core_api::get_guild_prune_count_data> {
 		using value_type				 = discord_core_api::get_guild_prune_count_data;
-		static constexpr auto parseValue = createValue("include_roles", &value_type::includeRoles, "guild_id", &value_type::guildId, "days", &value_type::days);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::includeRoles, "include_roles">(), makeJsonEntity<&value_type::guildId, "guild_id">(),
+			makeJsonEntity<&value_type::days, "days">()>();
 	};
 
 	template<> struct core<discord_core_api::begin_guild_prune_data> {
-		using value_type				 = discord_core_api::begin_guild_prune_data;
-		static constexpr auto parseValue = createValue("include_roles", &value_type::includeRoles, "compute_prune_count", &value_type::computePruneCount, "reason",
-			&value_type::reason, "guild_id", &value_type::guildId, "days", &value_type::days);
+		using value_type = discord_core_api::begin_guild_prune_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::includeRoles, "include_roles">(), makeJsonEntity<&value_type::computePruneCount, "compute_prune_count">(),
+				makeJsonEntity<&value_type::reason, "reason">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::days, "days">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_guild_template_data> {
-		using value_type = discord_core_api::modify_guild_template_data;
-		static constexpr auto parseValue =
-			createValue("template_code", &value_type::templateCode, "description", &value_type::description, "guild_id", &value_type::guildId, "name", &value_type::name);
+		using value_type				 = discord_core_api::modify_guild_template_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::templateCode, "template_code">(), makeJsonEntity<&value_type::description, "description">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::name, "name">()>();
 	};
 
 	template<> struct core<discord_core_api::create_guild_template_data> {
 		using value_type				 = discord_core_api::create_guild_template_data;
-		static constexpr auto parseValue = createValue("description", &value_type::description, "guild_id", &value_type::guildId, "name", &value_type::name);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::description, "description">(), makeJsonEntity<&value_type::guildId, "guild_id">(),
+			makeJsonEntity<&value_type::name, "name">()>();
 	};
 
 	template<> struct core<discord_core_api::create_guild_from_guild_template_data> {
 		using value_type				 = discord_core_api::create_guild_from_guild_template_data;
-		static constexpr auto parseValue = createValue("template_code", &value_type::templateCode, "image_data", &value_type::imageData, "name", &value_type::name);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::templateCode, "template_code">(), makeJsonEntity<&value_type::imageData, "image_data">(),
+			makeJsonEntity<&value_type::name, "name">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_guild_widget_data> {
 		using value_type				 = discord_core_api::modify_guild_widget_data;
-		static constexpr auto parseValue = createValue("widget_data", &value_type::widgetData, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::widgetData, "widget_data">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
-
 
 }
 

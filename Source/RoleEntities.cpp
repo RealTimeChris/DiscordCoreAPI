@@ -36,27 +36,29 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::modify_guild_role_positions_data> {
 		using value_type				 = discord_core_api::modify_guild_role_positions_data;
-		static constexpr auto parseValue = createValue("guild_id", &value_type::guildId, "id", &value_type::roleId, "positions", &value_type::rolePositions, "reason",
-			&value_type::reason, "position", &value_type::newPosition);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::roleId, "role_id">(),
+			makeJsonEntity<&value_type::rolePositions, "role_positions">(), makeJsonEntity<&value_type::reason, "reason">(), makeJsonEntity<&value_type::newPosition, "new_position">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_guild_role_data> {
-		using value_type				 = discord_core_api::modify_guild_role_data;
-		static constexpr auto parseValue = createValue("color", &value_type::hexColorValue, "hoist", &value_type::hoist, "id", &value_type::roleId, "mentionable",
-			&value_type::mentionable, "name", &value_type::name, "permissions", &value_type::permissions, "unicode_emoji", &value_type::unicodeEmoji,
-			"guild_id", &value_type::guildId, "icon", &value_type::icon);
+		using value_type = discord_core_api::modify_guild_role_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::hexColorValue, "color">(), makeJsonEntity<&value_type::hoist, "hoist">(), makeJsonEntity<&value_type::roleId, "role_id">(),
+				makeJsonEntity<&value_type::mentionable, "mentionable">(), makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::permissions, "permissions">(),
+				makeJsonEntity<&value_type::unicodeEmoji, "unicode_emoji">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::icon, "icon">()>();
 	};
 
 	template<> struct core<discord_core_api::create_guild_role_data> {
-		using value_type				 = discord_core_api::create_guild_role_data;
-		static constexpr auto parseValue = createValue("color", &value_type::hexColorValue, "hoist", &value_type::hoist, "id", &value_type::guildId, "mentionable",
-			&value_type::mentionable, "name", &value_type::name, "permissions", &value_type::permissions, "position", &value_type::position,
-			"unicode_emoji", &value_type::unicodeEmoji, "icon", &value_type::icon);
+		using value_type = discord_core_api::create_guild_role_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::hexColorValue, "color">(), makeJsonEntity<&value_type::hoist, "hoist">(), makeJsonEntity<&value_type::guildId, "guild_id">(),
+				makeJsonEntity<&value_type::mentionable, "mentionable">(), makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::permissions, "permissions">(),
+				makeJsonEntity<&value_type::position, "position">(), makeJsonEntity<&value_type::unicodeEmoji, "unicode_emoji">(), makeJsonEntity<&value_type::icon, "icon">()>();
 	};
 
 	template<> struct core<discord_core_api::role_position_data> {
 		using value_type				 = discord_core_api::role_position_data;
-		static constexpr auto parseValue = createValue("position", &value_type::rolePosition, "id", &value_type::roleId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::rolePosition, "position">(), makeJsonEntity<&value_type::roleId, "role_id">()>();
 	};
 }
 

@@ -48,12 +48,12 @@ namespace discord_core_api {
 	concept map_container_iterator_t = std::same_as<typename unordered_map<key_type, value_type>::iterator, std::decay_t<map_iterator>>;
 
 	template<typename key_type_new, typename value_type_new> class unordered_map : protected hash_policy<unordered_map<key_type_new, value_type_new>>,
-																				   protected jsonifier_internal::alloc_wrapper<std::pair<key_type_new, value_type_new>>,
+																				   protected jsonifier::internal::alloc_wrapper<std::pair<key_type_new, value_type_new>>,
 																				   protected object_compare {
 	  public:
 		using key_type			= key_type_new;
 		using value_type		= std::pair<key_type_new, value_type_new>;
-		using allocator_type	= jsonifier_internal::alloc_wrapper<value_type>;
+		using allocator_type	= jsonifier::internal::alloc_wrapper<value_type>;
 		using allocator_traits	= std::allocator_traits<allocator_type>;
 		using size_type			= uint64_t;
 		using difference_type	= int64_t;

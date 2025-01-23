@@ -36,14 +36,14 @@
 namespace jsonifier {
 
 	template<> struct core<discord_core_api::add_recipient_to_group_dmdata> {
-		using value_type = discord_core_api::add_recipient_to_group_dmdata;
-		static constexpr auto parseValue =
-			createValue("channel_id", &value_type::channelId, "access_token", &value_type::token, "nick", &value_type::nick, "user_id", &value_type::userId);
+		using value_type				 = discord_core_api::add_recipient_to_group_dmdata;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::token, "access_token">(),
+			makeJsonEntity<&value_type::nick, "nick">(), makeJsonEntity<&value_type::userId, "user_id">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_current_user_data> {
 		using value_type				 = discord_core_api::modify_current_user_data;
-		static constexpr auto parseValue = createValue("username", &value_type::userName, "avatar", &value_type::avatar);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::userName, "username">(), makeJsonEntity<&value_type::avatar, "avatar">()>();
 	};
 }
 namespace discord_core_api {

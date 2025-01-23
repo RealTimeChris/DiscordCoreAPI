@@ -37,144 +37,164 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::auto_moderation_action_execution_event_data> {
 		using value_type				 = discord_core_api::auto_moderation_action_execution_event_data;
-		static constexpr auto parseValue = createValue("alert_system_message_id", &value_type::alertSystemMessageId, "rule_trigger_type", &value_type::ruleTriggerType,
-			"matched_keyword", &value_type::matchedKeyword, "matched_content", &value_type::matchedContent, "content", &value_type::content, "channel_id", &value_type::channelId,
-			"message_id", &value_type::messageId, "action", &value_type::action, "guild_id", &value_type::guildId, "rule_id", &value_type::ruleId, "user_id", &value_type::userId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::alertSystemMessageId, "alert_system_message_id">(),
+			makeJsonEntity<&value_type::ruleTriggerType, "rule_trigger_type">(), makeJsonEntity<&value_type::matchedKeyword, "matched_keyword">(),
+			makeJsonEntity<&value_type::matchedContent, "matched_content">(), makeJsonEntity<&value_type::content, "content">(),
+			makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::messageId, "message_id">(), makeJsonEntity<&value_type::action, "action">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::ruleId, "rule_id">(), makeJsonEntity<&value_type::userId, "user_id">()>();
 	};
 
 	template<> struct core<discord_core_api::voice_state_data> {
-		using value_type2 = discord_core_api::voice_state_data;
-		static constexpr auto parseValue =
-			createValue("request_to_speak_timestamp", &value_type2::requestToSpeakTimestamp, "session_id", &value_type2::sessionId, "self_stream", &value_type2::selfStream,
-				"self_video", &value_type2::selfVideo, "self_deaf", &value_type2::selfDeaf, "self_mute", &value_type2::selfMute, "suppress", &value_type2::suppress, "deaf",
-				&value_type2::deaf, "mute", &value_type2::mute, "user_id", &value_type2::userId, "channel_id", &value_type2::channelId, "guild_id", &value_type2::guildId);
+		using value_type2				 = discord_core_api::voice_state_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type2::requestToSpeakTimestamp, "request_to_speak_timestamp">(),
+			makeJsonEntity<&value_type2::sessionId, "session_id">(), makeJsonEntity<&value_type2::selfStream, "self_stream">(),
+			makeJsonEntity<&value_type2::selfVideo, "self_video">(), makeJsonEntity<&value_type2::selfDeaf, "self_deaf">(), makeJsonEntity<&value_type2::selfMute, "self_mute">(),
+			makeJsonEntity<&value_type2::suppress, "suppress">(), makeJsonEntity<&value_type2::deaf, "deaf">(), makeJsonEntity<&value_type2::mute, "mute">(),
+			makeJsonEntity<&value_type2::userId, "user_id">(), makeJsonEntity<&value_type2::channelId, "channel_id">(), makeJsonEntity<&value_type2::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::guild_emojis_update_event_data> {
 		using value_type				 = discord_core_api::guild_emojis_update_event_data;
-		static constexpr auto parseValue = createValue("emojis", &value_type::emojis, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::emojis, "emojis">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::channel_pins_update_event_data> {
-		using value_type = discord_core_api::channel_pins_update_event_data;
-		static constexpr auto parseValue =
-			createValue("last_pin_timestamp", &value_type::lastPinTimeStamp, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId);
+		using value_type				 = discord_core_api::channel_pins_update_event_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::lastPinTimeStamp, "last_pin_timestamp">(),
+			makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::typing_start_data> {
 		using value_type				 = discord_core_api::typing_start_data;
-		static constexpr auto parseValue = createValue("member", &value_type::member, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "timestamp",
-			&value_type::timeStamp, "user_id", &value_type::userId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::member, "member">(), makeJsonEntity<&value_type::channelId, "channel_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::timeStamp, "timestamp">(), makeJsonEntity<&value_type::userId, "user_id">()>();
 	};
 
 	template<> struct core<discord_core_api::reaction_remove_data> {
 		using value_type				 = discord_core_api::reaction_remove_data;
-		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "message_id", &value_type::messageId, "guild_id", &value_type::guildId, "user_id",
-			&value_type::userId, "emoji", &value_type::emoji);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::messageId, "message_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::userId, "user_id">(), makeJsonEntity<&value_type::emoji, "emoji">()>();
 	};
 
 	template<> struct core<discord_core_api::guild_stickers_update_event_data> {
 		using value_type				 = discord_core_api::guild_stickers_update_event_data;
-		static constexpr auto parseValue = createValue("stickers", &value_type::stickers, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::stickers, "stickers">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::voice_server_update_data> {
-		using value_type				 = discord_core_api::voice_server_update_data;
-		static constexpr auto parseValue = createValue("endpoint", &value_type::endpoint, "guild_id", &value_type::guildId, "token", &value_type::token);
+		using value_type = discord_core_api::voice_server_update_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::endpoint, "endpoint">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::token, "token">()>();
 	};
 
 	template<> struct core<discord_core_api::guild_members_chunk_event_data> {
 		using value_type				 = discord_core_api::guild_members_chunk_event_data;
-		static constexpr auto parseValue = createValue("presences", &value_type::presences, "members", &value_type::members, "not_found", &value_type::notFound, "chunk_index",
-			&value_type::chunkIndex, "chunk_count", &value_type::chunkCount, "guild_id", &value_type::guildId, "nonce", &value_type::nonce);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::presences, "presences">(), makeJsonEntity<&value_type::members, "members">(),
+			makeJsonEntity<&value_type::notFound, "not_found">(), makeJsonEntity<&value_type::chunkIndex, "chunk_index">(),
+			makeJsonEntity<&value_type::chunkCount, "chunk_count">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::nonce, "nonce">()>();
 	};
 
 	template<> struct core<discord_core_api::guild_member_remove_data> {
 		using value_type				 = discord_core_api::guild_member_remove_data;
-		static constexpr auto parseValue = createValue("guild_id", &value_type::guildId, "user", &value_type::user);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::user, "user">()>();
 	};
 
 	template<> struct core<discord_core_api::guild_ban_add_data> {
 		using value_type				 = discord_core_api::guild_ban_add_data;
-		static constexpr auto parseValue = createValue("guild_id", &value_type::guildId, "user", &value_type::user);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::user, "user">()>();
 	};
 
 	template<> struct core<discord_core_api::guild_ban_remove_data> {
 		using value_type				 = discord_core_api::guild_ban_remove_data;
-		static constexpr auto parseValue = createValue("guild_id", &value_type::guildId, "user", &value_type::user);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::user, "user">()>();
 	};
 
 	template<> struct core<discord_core_api::role_creation_data> {
 		using value_type				 = discord_core_api::role_creation_data;
-		static constexpr auto parseValue = createValue("guild_id", &value_type::guildId, "role", &value_type::role);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::role, "role">()>();
 	};
 
 	template<> struct core<discord_core_api::role_update_data> {
 		using value_type				 = discord_core_api::role_update_data;
-		static constexpr auto parseValue = createValue("guild_id", &value_type::guildId, "role", &value_type::role);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::role, "role">()>();
 	};
 
 	template<> struct core<discord_core_api::role_deletion_data> {
 		using value_type				 = discord_core_api::role_deletion_data;
-		static constexpr auto parseValue = createValue("guild_id", &value_type::guildId, "role", &value_type::role);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::role, "role">()>();
 	};
 
 	template<> struct core<discord_core_api::guild_scheduled_event_user_add_data> {
-		using value_type = discord_core_api::guild_scheduled_event_user_add_data;
-		static constexpr auto parseValue =
-			createValue("guild_scheduled_event_id", &value_type::guildScheduledEventId, "guild_id", &value_type::guildId, "user_id", &value_type::userId);
+		using value_type				 = discord_core_api::guild_scheduled_event_user_add_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::guildScheduledEventId, "guild_scheduled_event_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::userId, "user_id">()>();
 	};
 
 	template<> struct core<discord_core_api::guild_scheduled_event_user_remove_data> {
-		using value_type = discord_core_api::guild_scheduled_event_user_remove_data;
-		static constexpr auto parseValue =
-			createValue("guild_scheduled_event_id", &value_type::guildScheduledEventId, "guild_id", &value_type::guildId, "user_id", &value_type::userId);
+		using value_type				 = discord_core_api::guild_scheduled_event_user_remove_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::guildScheduledEventId, "guild_scheduled_event_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::userId, "user_id">()>();
 	};
 
 	template<> struct core<discord_core_api::integration_creation_data> {
 		using value_type				 = discord_core_api::integration_creation_data;
-		static constexpr auto parseValue = createValue("integration_data", &value_type::integrationData, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::integrationData, "integration_data">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::integration_update_data> {
 		using value_type				 = discord_core_api::integration_update_data;
-		static constexpr auto parseValue = createValue("integration_data", &value_type::integrationData, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::integrationData, "integration_data">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::integration_deletion_data> {
 		using value_type				 = discord_core_api::integration_deletion_data;
-		static constexpr auto parseValue = createValue("application_id", &value_type::applicationId, "guild_id", &value_type::guildId, "id", &value_type::id);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::applicationId, "application_id">(), makeJsonEntity<&value_type::guildId, "guild_id">(),
+			makeJsonEntity<&value_type::id, "id">()>();
 	};
 
 	template<> struct core<discord_core_api::invite_deletion_data> {
-		using value_type				 = discord_core_api::invite_deletion_data;
-		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "code", &value_type::code);
+		using value_type = discord_core_api::invite_deletion_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::code, "code">()>();
 	};
 
 	template<> struct core<discord_core_api::message_deletion_data> {
 		using value_type				 = discord_core_api::message_deletion_data;
-		static constexpr auto parseValue = createValue("message_id", &value_type::messageId, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::messageId, "message_id">(), makeJsonEntity<&value_type::channelId, "channel_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::message_deletion_bulk_data> {
-		using value_type				 = discord_core_api::message_deletion_bulk_data;
-		static constexpr auto parseValue = createValue("ids", &value_type::ids, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId);
+		using value_type = discord_core_api::message_deletion_bulk_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::ids, "ids">(), makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::reaction_remove_all_data> {
 		using value_type				 = discord_core_api::reaction_remove_all_data;
-		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "message_id", &value_type::messageId, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::messageId, "message_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::reaction_remove_emoji_data> {
-		using value_type = discord_core_api::reaction_remove_emoji_data;
-		static constexpr auto parseValue =
-			createValue("message_id", &value_type::messageId, "channel_id", &value_type::channelId, "guild_id", &value_type::guildId, "emoji", &value_type::emoji);
+		using value_type				 = discord_core_api::reaction_remove_emoji_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::messageId, "message_id">(), makeJsonEntity<&value_type::channelId, "channel_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::emoji, "emoji">()>();
 	};
 
 	template<> struct core<discord_core_api::web_hook_update_data> {
 		using value_type				 = discord_core_api::web_hook_update_data;
-		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
+	};
+
+	template<typename value_type> struct core<discord_core_api::event_data<value_type>> {
+		using value_type02				 = discord_core_api::event_data<value_type>;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type02::value, "d">()>();
+	};
+
+	template<typename value_type, typename value_type01> struct core<discord_core_api::updated_event_data<value_type, value_type01>> {
+		using value_type02				 = discord_core_api::updated_event_data<value_type, value_type01>;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type02::value, "d">()>();
 	};
 
 }
@@ -185,8 +205,8 @@ namespace discord_core_api {
 
 	template<> unordered_map<jsonifier::string, unbounded_message_block<reaction_data>*> object_collector<reaction_data>::objectsBuffersMap;
 
-	on_input_event_creation_data::on_input_event_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_input_event_creation_data::on_input_event_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -195,8 +215,8 @@ namespace discord_core_api {
 	}
 
 	on_application_command_permissions_update_data::on_application_command_permissions_update_data(jsonifier::jsonifier_core<false>& parserNew,
-		jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+		jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -204,8 +224,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_auto_moderation_rule_creation_data::on_auto_moderation_rule_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_auto_moderation_rule_creation_data::on_auto_moderation_rule_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -213,8 +233,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_auto_moderation_rule_update_data::on_auto_moderation_rule_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_auto_moderation_rule_update_data::on_auto_moderation_rule_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -222,8 +242,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_auto_moderation_rule_deletion_data::on_auto_moderation_rule_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_auto_moderation_rule_deletion_data::on_auto_moderation_rule_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -231,8 +251,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_auto_moderation_action_execution_data::on_auto_moderation_action_execution_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_auto_moderation_action_execution_data::on_auto_moderation_action_execution_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -240,8 +260,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_channel_creation_data::on_channel_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_channel_creation_data::on_channel_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -257,16 +277,16 @@ namespace discord_core_api {
 		}
 	}
 
-	on_channel_update_data::on_channel_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<updated_event_data*>(this), dataToParse);
+	on_channel_update_data::on_channel_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<updated_event_data*>(this), dataToParse);
 		if (channels::doWeCacheChannels()) {
 			oldValue = channels::getCachedChannel({ .channelId = value.id });
 			channels::insertChannel(static_cast<channel_cache_data>(value));
 		}
 	}
 
-	on_channel_deletion_data::on_channel_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_channel_deletion_data::on_channel_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -286,8 +306,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_channel_pins_update_data::on_channel_pins_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_channel_pins_update_data::on_channel_pins_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -295,8 +315,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_thread_creation_data::on_thread_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_thread_creation_data::on_thread_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -304,8 +324,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_thread_update_data::on_thread_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_thread_update_data::on_thread_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -313,8 +333,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_thread_deletion_data::on_thread_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_thread_deletion_data::on_thread_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -322,8 +342,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_thread_list_sync_data::on_thread_list_sync_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_thread_list_sync_data::on_thread_list_sync_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -331,8 +351,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_thread_member_update_data::on_thread_member_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_thread_member_update_data::on_thread_member_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -340,8 +360,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_thread_members_update_data::on_thread_members_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_thread_members_update_data::on_thread_members_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -349,8 +369,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_creation_data::on_guild_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_creation_data::on_guild_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -415,16 +435,16 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_update_data::on_guild_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<updated_event_data*>(this), dataToParse);
+	on_guild_update_data::on_guild_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<updated_event_data*>(this), dataToParse);
 		if (guilds::doWeCacheGuilds()) {
 			oldValue = guilds::getCachedGuild({ value.id });
 			guilds::insertGuild(static_cast<guild_cache_data>(value));
 		}
 	}
 
-	on_guild_deletion_data::on_guild_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_deletion_data::on_guild_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -444,8 +464,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_ban_add_data::on_guild_ban_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_ban_add_data::on_guild_ban_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -461,8 +481,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_ban_remove_data::on_guild_ban_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_ban_remove_data::on_guild_ban_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -470,8 +490,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_emojis_update_data::on_guild_emojis_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_emojis_update_data::on_guild_emojis_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -485,8 +505,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_stickers_update_data::on_guild_stickers_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_stickers_update_data::on_guild_stickers_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -494,8 +514,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_integrations_update_data::on_guild_integrations_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_integrations_update_data::on_guild_integrations_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -503,8 +523,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_member_add_data::on_guild_member_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_member_add_data::on_guild_member_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -521,8 +541,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_member_remove_data::on_guild_member_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_member_remove_data::on_guild_member_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -544,16 +564,16 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_member_update_data::on_guild_member_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<updated_event_data*>(this), dataToParse);
+	on_guild_member_update_data::on_guild_member_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<updated_event_data*>(this), dataToParse);
 		if (guild_members::doWeCacheGuildMembers()) {
 			oldValue = guild_members::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 			guild_members::insertGuildMember(static_cast<guild_member_cache_data>(value));
 		}
 	}
 
-	on_guild_members_chunk_data::on_guild_members_chunk_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_members_chunk_data::on_guild_members_chunk_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -561,8 +581,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_role_creation_data::on_role_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_role_creation_data::on_role_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -578,16 +598,16 @@ namespace discord_core_api {
 		}
 	}
 
-	on_role_update_data::on_role_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<updated_event_data*>(this), dataToParse);
+	on_role_update_data::on_role_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<updated_event_data*>(this), dataToParse);
 		if (roles::doWeCacheRoles()) {
 			oldValue = roles::getCachedRole({ .guildId = value.guildId, .roleId = value.role.id });
 			roles::insertRole(static_cast<role_cache_data>(value.role));
 		}
 	}
 
-	on_role_deletion_data::on_role_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_role_deletion_data::on_role_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -607,9 +627,9 @@ namespace discord_core_api {
 		}
 	}
 
-	on_voice_server_update_data::on_voice_server_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse,
+	on_voice_server_update_data::on_voice_server_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse,
 		discord_core_internal::websocket_client* sslShard) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -632,8 +652,8 @@ namespace discord_core_api {
 		}
 	};
 
-	on_guild_scheduled_event_creation_data::on_guild_scheduled_event_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_scheduled_event_creation_data::on_guild_scheduled_event_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -641,8 +661,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_scheduled_event_update_data::on_guild_scheduled_event_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_scheduled_event_update_data::on_guild_scheduled_event_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -650,8 +670,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_scheduled_event_deletion_data::on_guild_scheduled_event_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_scheduled_event_deletion_data::on_guild_scheduled_event_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -659,8 +679,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_scheduled_event_user_add_data::on_guild_scheduled_event_user_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_scheduled_event_user_add_data::on_guild_scheduled_event_user_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -668,8 +688,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_guild_scheduled_event_user_remove_data::on_guild_scheduled_event_user_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_guild_scheduled_event_user_remove_data::on_guild_scheduled_event_user_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -677,8 +697,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_integration_creation_data::on_integration_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_integration_creation_data::on_integration_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -686,8 +706,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_integration_update_data::on_integration_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_integration_update_data::on_integration_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -695,8 +715,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_integration_deletion_data::on_integration_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_integration_deletion_data::on_integration_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -704,8 +724,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_interaction_creation_data::on_interaction_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_interaction_creation_data::on_interaction_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -788,8 +808,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_invite_creation_data::on_invite_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_invite_creation_data::on_invite_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -797,8 +817,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_invite_deletion_data::on_invite_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_invite_deletion_data::on_invite_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -806,20 +826,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_message_creation_data::on_message_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
-		if (auto result = parserNew.getErrors(); result.size() > 0) {
-			for (auto& valueNew: result) {
-				message_printer::printError<print_message_type::general>(valueNew.reportError());
-			}
-		}
-		for (auto& [key, valueNew]: message_collector::objectsBuffersMap) {
-			valueNew->send(value);
-		}
-	}
-
-	on_message_update_data::on_message_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_message_creation_data::on_message_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -830,8 +838,20 @@ namespace discord_core_api {
 		}
 	}
 
-	on_message_deletion_data::on_message_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_message_update_data::on_message_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
+		if (auto result = parserNew.getErrors(); result.size() > 0) {
+			for (auto& valueNew: result) {
+				message_printer::printError<print_message_type::general>(valueNew.reportError());
+			}
+		}
+		for (auto& [key, valueNew]: message_collector::objectsBuffersMap) {
+			valueNew->send(value);
+		}
+	}
+
+	on_message_deletion_data::on_message_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -839,8 +859,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_message_delete_bulk_data::on_message_delete_bulk_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_message_delete_bulk_data::on_message_delete_bulk_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -848,8 +868,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_reaction_add_data::on_reaction_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_reaction_add_data::on_reaction_add_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -860,8 +880,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_reaction_remove_data::on_reaction_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_reaction_remove_data::on_reaction_remove_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -869,8 +889,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_reaction_remove_all_data::on_reaction_remove_all_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_reaction_remove_all_data::on_reaction_remove_all_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -878,8 +898,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_reaction_remove_emoji_data::on_reaction_remove_emoji_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_reaction_remove_emoji_data::on_reaction_remove_emoji_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -887,8 +907,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_presence_update_data::on_presence_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_presence_update_data::on_presence_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -896,8 +916,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_stage_instance_creation_data::on_stage_instance_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_stage_instance_creation_data::on_stage_instance_creation_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -905,8 +925,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_stage_instance_update_data::on_stage_instance_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_stage_instance_update_data::on_stage_instance_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -914,8 +934,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_stage_instance_deletion_data::on_stage_instance_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_stage_instance_deletion_data::on_stage_instance_deletion_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -923,8 +943,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_typing_start_data::on_typing_start_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_typing_start_data::on_typing_start_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -932,17 +952,17 @@ namespace discord_core_api {
 		}
 	}
 
-	on_user_update_data::on_user_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<updated_event_data*>(this), dataToParse);
+	on_user_update_data::on_user_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<updated_event_data*>(this), dataToParse);
 		oldValue = users::getCachedUser({ value.id });
 		if (users::doWeCacheUsers()) {
 			users::insertUser(static_cast<user_cache_data>(value));
 		}
 	}
 
-	on_voice_state_update_data::on_voice_state_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse,
+	on_voice_state_update_data::on_voice_state_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse,
 		discord_core_internal::websocket_client* sslShard) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -969,8 +989,8 @@ namespace discord_core_api {
 		guild_members::insertVoiceState(std::move(voiceDataNew));
 	}
 
-	on_webhook_update_data::on_webhook_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_webhook_update_data::on_webhook_update_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());
@@ -978,8 +998,8 @@ namespace discord_core_api {
 		}
 	}
 
-	on_auto_complete_entry_data::on_auto_complete_entry_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<uint8_t> dataToParse) {
-		parserNew.parseJson<jsonifier::parse_options{ .partialRead = true }>(*static_cast<event_data*>(this), dataToParse);
+	on_auto_complete_entry_data::on_auto_complete_entry_data(jsonifier::jsonifier_core<false>& parserNew, jsonifier::string_view_base<char> dataToParse) {
+		parserNew.parseJson<jsonifier::parse_options{ .partialRead = false }>(*static_cast<event_data*>(this), dataToParse);
 		if (auto result = parserNew.getErrors(); result.size() > 0) {
 			for (auto& valueNew: result) {
 				message_printer::printError<print_message_type::general>(valueNew.reportError());

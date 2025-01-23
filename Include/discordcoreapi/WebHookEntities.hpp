@@ -323,3 +323,45 @@ namespace discord_core_api {
 	/**@}*/
 
 }
+
+namespace jsonifier {
+
+	template<> struct core<discord_core_api::execute_web_hook_data> {
+		using value_type				 = discord_core_api::execute_web_hook_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::attachments, "attachments">(), makeJsonEntity<&value_type::components, "components">(),
+			makeJsonEntity<&value_type::allowedMentions, "allowed_mentions">(), makeJsonEntity<&value_type::embeds, "embeds">(), makeJsonEntity<&value_type::files, "files">(),
+			makeJsonEntity<&value_type::webhookToken, "webhook_token">(), makeJsonEntity<&value_type::avatarUrl, "avatar_url">(),
+			makeJsonEntity<&value_type::userName, "username">(), makeJsonEntity<&value_type::customId, "custom_id">(), makeJsonEntity<&value_type::webHookId, "webhook_id">(),
+			makeJsonEntity<&value_type::content, "content">(), makeJsonEntity<&value_type::title, "title">(), makeJsonEntity<&value_type::flags, "flags">(),
+			makeJsonEntity<&value_type::tts, "tts">()>();
+	};
+
+	template<> struct core<discord_core_api::create_web_hook_data> {
+		using value_type = discord_core_api::create_web_hook_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::channelId, "channelId">(), makeJsonEntity<&value_type::avatar, "avatar">(), makeJsonEntity<&value_type::name, "name">()>();
+	};
+
+	template<> struct core<discord_core_api::modify_web_hook_data> {
+		using value_type				 = discord_core_api::modify_web_hook_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::channelId, "channelId">(), makeJsonEntity<&value_type::webHookId, "webHookId">(),
+			makeJsonEntity<&value_type::avatar, "avatar">(), makeJsonEntity<&value_type::name, "name">()>();
+	};
+
+	template<> struct core<discord_core_api::modify_web_hook_with_token_data> {
+		using value_type				 = discord_core_api::modify_web_hook_with_token_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::webhookToken, "webhookToken">(), makeJsonEntity<&value_type::channelId, "channelId">(),
+			makeJsonEntity<&value_type::webHookId, "webHookId">(), makeJsonEntity<&value_type::avatar, "avatar">(), makeJsonEntity<&value_type::name, "name">()>();
+	};
+
+	template<> struct core<discord_core_api::edit_web_hook_data> {
+		using value_type = discord_core_api::edit_web_hook_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::threadId, "threadId">(), makeJsonEntity<&value_type::wait, "wait">(), makeJsonEntity<&value_type::attachments, "attachments">(),
+				makeJsonEntity<&value_type::components, "components">(), makeJsonEntity<&value_type::allowedMentions, "allowedMentions">(),
+				makeJsonEntity<&value_type::embeds, "embeds">(), makeJsonEntity<&value_type::webhookToken, "webhookToken">(), makeJsonEntity<&value_type::avatarUrl, "avatarUrl">(),
+				makeJsonEntity<&value_type::userName, "username">(), makeJsonEntity<&value_type::customId, "customId">(), makeJsonEntity<&value_type::webHookId, "webHookId">(),
+				makeJsonEntity<&value_type::content, "content">(), makeJsonEntity<&value_type::title, "title">(), makeJsonEntity<&value_type::flags, "flags">(),
+				makeJsonEntity<&value_type::tts, "tts">(), makeJsonEntity<&value_type::messageId, "message_id">(), makeJsonEntity<&value_type::threadId, "thread_id">()>();
+	};
+}

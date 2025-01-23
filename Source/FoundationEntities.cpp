@@ -1067,7 +1067,7 @@ namespace discord_core_api {
 		}
 		eventData = makeUnique<input_event_data>(inputEventData);
 		for (auto& value: eventData->interactionData->data.options) {
-			jsonifier::raw_json_data serializer{ parser, value.value.get<jsonifier::string>() };
+			jsonifier::raw_json_data serializer{ parser, value.value.getString() };
 			optionsArgs.values[value.name] = serializer;
 			parseCommandDataOption(optionsArgs.values, value);
 		}

@@ -38,54 +38,72 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::create_global_application_command_data> {
 		using value_type				 = discord_core_api::create_global_application_command_data;
-		static constexpr auto parseValue = createValue("id", &value_type::id, "application_id", &value_type::applicationId, "name", &value_type::name, "description",
-			&value_type::description, "type", &value_type::type, "default_permission", &value_type::defaultMemberPermissions, "options", &value_type::options, "version",
-			&value_type::version, "guild_id", &value_type::guildId, "dm_permission", &value_type::dmPermission, "name_localizations", &value_type::nameLocalizations,
-			"description_localizations", &value_type::descriptionLocalizations);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::id, "id">(), makeJsonEntity<&value_type::applicationId, "application_id">(),
+			makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::description, "description">(), makeJsonEntity<&value_type::type, "type">(),
+			makeJsonEntity<&value_type::defaultMemberPermissions, "default_permission">(), makeJsonEntity<&value_type::options, "options">(),
+			makeJsonEntity<&value_type::version, "version">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::dmPermission, "dm_permission">(),
+			makeJsonEntity<&value_type::nameLocalizations, "name_localizations">(), makeJsonEntity<&value_type::descriptionLocalizations, "description_localizations">()>();
 	};
 
 	template<> struct core<discord_core_api::create_guild_application_command_data> {
 		using value_type				 = discord_core_api::create_guild_application_command_data;
-		static constexpr auto parseValue = createValue("id", &value_type::id, "application_id", &value_type::applicationId, "name", &value_type::name, "description",
-			&value_type::description, "type", &value_type::type, "default_permission", &value_type::defaultMemberPermissions, "options", &value_type::options, "version",
-			&value_type::version, "guild_id", &value_type::guildId, "dm_permission", &value_type::dmPermission, "name_localizations", &value_type::nameLocalizations,
-			"description_localizations", &value_type::descriptionLocalizations);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::id, "id">(), makeJsonEntity<&value_type::applicationId, "application_id">(),
+			makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::description, "description">(), makeJsonEntity<&value_type::type, "type">(),
+			makeJsonEntity<&value_type::defaultMemberPermissions, "default_permission">(), makeJsonEntity<&value_type::options, "options">(),
+			makeJsonEntity<&value_type::version, "version">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::dmPermission, "dm_permission">(),
+			makeJsonEntity<&value_type::nameLocalizations, "name_localizations">(), makeJsonEntity<&value_type::descriptionLocalizations, "description_localizations">()>();
 	};
 
 	template<> struct core<discord_core_api::bulk_overwrite_global_application_commands_data> {
 		using value_type				 = discord_core_api::bulk_overwrite_global_application_commands_data;
-		static constexpr auto parseValue = createValue("commands", &value_type::responseData, "application_id", &value_type::applicationId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::responseData, "commands">(), makeJsonEntity<&value_type::applicationId, "application_id">()>();
 	};
 
 	template<> struct core<discord_core_api::edit_global_application_command_data> {
 		using value_type				 = discord_core_api::edit_global_application_command_data;
-		static constexpr auto parseValue = createValue("name", &value_type::name, "description", &value_type::description, "options", &value_type::options, "default_permission",
-			&value_type::defaultMemberPermissions, "name_localization", &value_type::nameLocalizations, "description_localization", &value_type::descriptionLocalizations,
-			"application_id", &value_type::applicationId, "dm_permission", &value_type::dmPermission);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::description, "description">(),
+			makeJsonEntity<&value_type::options, "options">(), makeJsonEntity<&value_type::defaultMemberPermissions, "default_permission">(),
+			makeJsonEntity<&value_type::nameLocalizations, "name_localization">(), makeJsonEntity<&value_type::descriptionLocalizations, "description_localization">(),
+			makeJsonEntity<&value_type::applicationId, "application_id">(), makeJsonEntity<&value_type::dmPermission, "dm_permission">()>();
 	};
 
 	template<> struct core<discord_core_api::edit_guild_application_command_data> {
 		using value_type				 = discord_core_api::edit_guild_application_command_data;
-		static constexpr auto parseValue = createValue("description_localizations", &value_type::descriptionLocalizations, "name_localizations", &value_type::nameLocalizations,
-			"options", &value_type::options, "default_permission", &value_type::defaultMemberPermissions, "description", &value_type::description, "application_id",
-			&value_type::applicationId, "guild_id", &value_type::guildId, "name", &value_type::name);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::descriptionLocalizations, "description_localizations">(),
+			makeJsonEntity<&value_type::nameLocalizations, "name_localizations">(), makeJsonEntity<&value_type::options, "options">(),
+			makeJsonEntity<&value_type::defaultMemberPermissions, "default_permission">(), makeJsonEntity<&value_type::description, "description">(),
+			makeJsonEntity<&value_type::applicationId, "application_id">(), makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::name, "name">()>();
 	};
 
 	template<> struct core<discord_core_api::bulk_overwrite_guild_application_commands_data> {
 		using value_type				 = discord_core_api::bulk_overwrite_guild_application_commands_data;
-		static constexpr auto parseValue = createValue("commands", &value_type::responseData, "application_id", &value_type::applicationId, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::responseData, "commands">(), makeJsonEntity<&value_type::applicationId, "application_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::edit_guild_application_command_permissions_data> {
 		using value_type				 = discord_core_api::edit_guild_application_command_permissions_data;
-		static constexpr auto parseValue = createValue("permissions", &value_type::permissions, "command", &value_type::commandName, "application_id", &value_type::applicationId,
-			"id", &value_type::commandId, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::permissions, "permissions">(), makeJsonEntity<&value_type::commandName, "command">(),
+			makeJsonEntity<&value_type::applicationId, "application_id">(), makeJsonEntity<&value_type::commandId, "id">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::batch_edit_guild_application_command_permissions_data> {
 		using value_type				 = discord_core_api::batch_edit_guild_application_command_permissions_data;
-		static constexpr auto parseValue = createValue("permissions", &value_type::permissions, "application_id", &value_type::applicationId, "guild_id", &value_type::guildId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::permissions, "permissions">(), makeJsonEntity<&value_type::applicationId, "application_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
+
+	template<> struct core<discord_core_api::application_command_data> {
+		using value_type				 = discord_core_api::application_command_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::descriptionLocalizations, "description_localizations">(),
+			makeJsonEntity<&value_type::nameLocalizations, "name_localizations">(), makeJsonEntity<&value_type::options, "options">(),
+			makeJsonEntity<&value_type::defaultMemberPermissions, "default_member_permissions">(), makeJsonEntity<&value_type::description, "description">(),
+			makeJsonEntity<&value_type::type, "type">(), makeJsonEntity<&value_type::version, "version">(), makeJsonEntity<&value_type::applicationId, "application_id">(),
+			makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::dmPermission, "dm_permission">(), makeJsonEntity<&value_type::guildId, "guild_id">(),
+			makeJsonEntity<&value_type::id, "id">()>();
+	};
+
+
 }
 
 namespace discord_core_api {

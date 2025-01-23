@@ -39,13 +39,13 @@ namespace discord_core_api {
 	concept set_container_iterator_t = std::same_as<typename unordered_set<value_type>::iterator, std::remove_cvref_t<set_iterator>>;
 
 	template<typename value_type_new>
-	class unordered_set : protected hash_policy<unordered_set<value_type_new>>, protected jsonifier_internal::alloc_wrapper<value_type_new>, protected object_compare {
+	class unordered_set : protected hash_policy<unordered_set<value_type_new>>, protected jsonifier::internal::alloc_wrapper<value_type_new>, protected object_compare {
 	  public:
 		template<typename value_type_newer> using key_accessor = key_accessor<value_type_newer>;
 		using key_type										   = value_type_new;
 		using value_type									   = value_type_new;
 		using mapped_type									   = value_type;
-		using allocator_type								   = jsonifier_internal::alloc_wrapper<value_type>;
+		using allocator_type								   = jsonifier::internal::alloc_wrapper<value_type>;
 		using allocator_traits								   = std::allocator_traits<allocator_type>;
 		using size_type										   = uint64_t;
 		using difference_type								   = int64_t;

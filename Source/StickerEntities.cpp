@@ -36,14 +36,14 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::create_guild_sticker_data> {
 		using value_type				 = discord_core_api::create_guild_sticker_data;
-		static constexpr auto parseValue = createValue("description", &value_type::description, "guildId", &value_type::guildId, "file",
-			&value_type::file, "name", &value_type::name, "tags", &value_type::tags);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::description, "description">(), makeJsonEntity<&value_type::guildId, "guild_id">(),
+			makeJsonEntity<&value_type::file, "file">(), makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::tags, "tags">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_guild_sticker_data> {
 		using value_type				 = discord_core_api::modify_guild_sticker_data;
-		static constexpr auto parseValue = createValue("description", &value_type::description, "stickerId", &value_type::stickerId, "guildId",
-			&value_type::guildId, "name", &value_type::name, "tags", &value_type::tags);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::description, "description">(), makeJsonEntity<&value_type::stickerId, "sticker_id">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::tags, "tags">()>();
 	};
 
 }

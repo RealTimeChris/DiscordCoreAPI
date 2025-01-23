@@ -37,29 +37,29 @@
 namespace jsonifier {
 
 	template<> struct core<discord_core_api::message_response_base> {
-		using value_type = discord_core_api::message_response_base;
-		static constexpr auto parseValue =
-			createValue("components", &value_type::components, "allowed_mentions", &value_type::allowedMentions, "embeds", &value_type::embeds,
-				"custom_id", &value_type::customId, "content", &value_type::content, "title", &value_type::title, "flags", &value_type::flags, "tts", &value_type::tts);
+		using value_type				 = discord_core_api::message_response_base;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::components, "components">(), makeJsonEntity<&value_type::allowedMentions, "allowed_mentions">(),
+			makeJsonEntity<&value_type::embeds, "embeds">(), makeJsonEntity<&value_type::customId, "custom_id">(), makeJsonEntity<&value_type::content, "content">(),
+			makeJsonEntity<&value_type::title, "title">(), makeJsonEntity<&value_type::flags, "flags">(), makeJsonEntity<&value_type::tts, "tts">()>();
 	};
 
 	template<> struct core<discord_core_api::create_message_data> {
-		using value_type = discord_core_api::create_message_data;
-		static constexpr auto parseValue =
-			createValue("components", &value_type::components, "allowed_mentions", &value_type::allowedMentions, "embeds", &value_type::embeds,
-				"custom_id", &value_type::customId, "content", &value_type::content, "title", &value_type::title, "flags", &value_type::flags, "tts", &value_type::tts);
+		using value_type				 = discord_core_api::create_message_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::components, "components">(), makeJsonEntity<&value_type::allowedMentions, "allowed_mentions">(),
+			makeJsonEntity<&value_type::embeds, "embeds">(), makeJsonEntity<&value_type::customId, "custom_id">(), makeJsonEntity<&value_type::content, "content">(),
+			makeJsonEntity<&value_type::title, "title">(), makeJsonEntity<&value_type::flags, "flags">(), makeJsonEntity<&value_type::tts, "tts">()>();
 	};
 
 	template<> struct core<discord_core_api::edit_message_data> {
-		using value_type = discord_core_api::edit_message_data;
-		static constexpr auto parseValue =
-			createValue("components", &value_type::components, "allowed_mentions", &value_type::allowedMentions, "embeds", &value_type::embeds,
-				"custom_id", &value_type::customId, "content", &value_type::content, "title", &value_type::title, "flags", &value_type::flags, "tts", &value_type::tts);
+		using value_type				 = discord_core_api::edit_message_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::components, "components">(), makeJsonEntity<&value_type::allowedMentions, "allowed_mentions">(),
+			makeJsonEntity<&value_type::embeds, "embeds">(), makeJsonEntity<&value_type::customId, "custom_id">(), makeJsonEntity<&value_type::content, "content">(),
+			makeJsonEntity<&value_type::title, "title">(), makeJsonEntity<&value_type::flags, "flags">(), makeJsonEntity<&value_type::tts, "tts">()>();
 	};
 
 	template<> struct core<discord_core_api::delete_messages_bulk_data> {
 		using value_type				 = discord_core_api::delete_messages_bulk_data;
-		static constexpr auto parseValue = createValue("messages", &value_type::messageIds);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::messageIds, "messages">()>();
 	};
 }
 

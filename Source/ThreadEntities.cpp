@@ -36,29 +36,31 @@
 namespace jsonifier {
 
 	template<> struct core<discord_core_api::forum_thread_message_data> {
-		using value_type = discord_core_api::forum_thread_message_data;
-		static constexpr auto parseValue =
-			createValue("attachments", &value_type::attachments, "components", &value_type::components, "allowedMentions", &value_type::allowedMentions, "stickerIds",
-				&value_type::stickerIds, "embeds", &value_type::embeds, "content", &value_type::content, "flags", &value_type::flags);
+		using value_type				 = discord_core_api::forum_thread_message_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::attachments, "attachments">(), makeJsonEntity<&value_type::components, "components">(),
+			makeJsonEntity<&value_type::allowedMentions, "allowed_mentions">(), makeJsonEntity<&value_type::stickerIds, "sticker_ids">(),
+			makeJsonEntity<&value_type::embeds, "embeds">(), makeJsonEntity<&value_type::content, "content">(), makeJsonEntity<&value_type::flags, "flags">()>();
 	};
 
 	template<> struct core<discord_core_api::start_thread_with_message_data> {
 		using value_type				 = discord_core_api::start_thread_with_message_data;
-		static constexpr auto parseValue = createValue("autoArchiveDuration", &value_type::autoArchiveDuration, "rateLimitPerUser", &value_type::rateLimitPerUser, "threadName",
-			&value_type::threadName, "messageId", &value_type::messageId, "channelId", &value_type::channelId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::autoArchiveDuration, "auto_archive_duration">(),
+			makeJsonEntity<&value_type::rateLimitPerUser, "rate_limit_per_user">(), makeJsonEntity<&value_type::threadName, "thread_name">(),
+			makeJsonEntity<&value_type::messageId, "message_id">(), makeJsonEntity<&value_type::channelId, "channel_id">()>();
 	};
 
 	template<> struct core<discord_core_api::start_thread_without_message_data> {
-		using value_type = discord_core_api::start_thread_without_message_data;
-		static constexpr auto parseValue =
-			createValue("autoArchiveDuration", &value_type::autoArchiveDuration, "type", &value_type::type, "rateLimitPerUser", &value_type::rateLimitPerUser, "threadName",
-				&value_type::threadName, "channelId", &value_type::channelId, "invitable", &value_type::invitable);
+		using value_type				 = discord_core_api::start_thread_without_message_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::autoArchiveDuration, "auto_archive_duration">(), makeJsonEntity<&value_type::type, "type">(),
+			makeJsonEntity<&value_type::rateLimitPerUser, "rate_limit_per_user">(), makeJsonEntity<&value_type::threadName, "thread_name">(),
+			makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::invitable, "invitable">()>();
 	};
 
 	template<> struct core<discord_core_api::start_thread_in_forum_channel_data> {
 		using value_type				 = discord_core_api::start_thread_in_forum_channel_data;
-		static constexpr auto parseValue = createValue("autoArchiveDuration", &value_type::autoArchiveDuration, "message", &value_type::message, "rateLimitPerUser",
-			&value_type::rateLimitPerUser, "channelId", &value_type::channelId, "name", &value_type::name);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::autoArchiveDuration, "auto_archive_duration">(),
+			makeJsonEntity<&value_type::message, "message">(), makeJsonEntity<&value_type::rateLimitPerUser, "rate_limit_per_user">(),
+			makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::name, "name">()>();
 	};
 
 }

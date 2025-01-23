@@ -36,57 +36,70 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::edit_channel_permission_overwrites_data> {
 		using value_type				 = discord_core_api::edit_channel_permission_overwrites_data;
-		static constexpr auto parseValue = createValue("allow", &value_type::allow, "deny", &value_type::deny, "channel_id", &value_type::channelId,
-			"type", &value_type::type, "id", &value_type::roleOrUserId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::allow, "allow">(), makeJsonEntity<&value_type::deny, "deny">(),
+			makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::type, "type">(), makeJsonEntity<&value_type::roleOrUserId, "id">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_guild_channel_positions_data> {
 		using value_type				 = discord_core_api::modify_guild_channel_positions_data;
-		static constexpr auto parseValue = createValue("reason", &value_type::reason, "guild_id", &value_type::guildId, "modify_channel_data", &value_type::modifyChannelData);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::reason, "reason">(), makeJsonEntity<&value_type::guildId, "guild_id">(),
+			makeJsonEntity<&value_type::modifyChannelData, "modify_channel_data">()>();
 	};
 
 	template<> struct core<discord_core_api::create_channel_invite_data> {
 		using value_type				 = discord_core_api::create_channel_invite_data;
-		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "max_uses", &value_type::maxUses, "max_age", &value_type::maxAge, "temporary",
-			&value_type::temporary, "unique", &value_type::unique, "target_type", &value_type::targetType, "target_user_id", &value_type::targetUserId, "target_application_id",
-			&value_type::targetApplicationId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::maxUses, "max_uses">(),
+			makeJsonEntity<&value_type::maxAge, "max_age">(), makeJsonEntity<&value_type::temporary, "temporary">(), makeJsonEntity<&value_type::unique, "unique">(),
+			makeJsonEntity<&value_type::targetType, "target_type">(), makeJsonEntity<&value_type::targetUserId, "target_user_id">(),
+			makeJsonEntity<&value_type::targetApplicationId, "target_application_id">()>();
 	};
 
 	template<> struct core<discord_core_api::create_guild_channel_data> {
-		using value_type				 = discord_core_api::create_guild_channel_data;
-		static constexpr auto parseValue = createValue("name", &value_type::name, "type", &value_type::type, "position", &value_type::position, "parent_id", &value_type::parentId,
-			"permission_overwrites", &value_type::permissionOverwrites, "nsfw", &value_type::nsfw, "rate_limit_per_user", &value_type::rateLimitPerUser, "topic",
-			&value_type::topic, "user_limit", &value_type::userLimit, "bitrate", &value_type::bitrate, "default_auto_archive_duration", &value_type::defaultAutoArchiveDuration,
-			"guild_id", &value_type::guildId);
+		using value_type = discord_core_api::create_guild_channel_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::type, "type">(), makeJsonEntity<&value_type::position, "position">(),
+				makeJsonEntity<&value_type::parentId, "parent_id">(), makeJsonEntity<&value_type::permissionOverwrites, "permission_overwrites">(),
+				makeJsonEntity<&value_type::nsfw, "nsfw">(), makeJsonEntity<&value_type::rateLimitPerUser, "rate_limit_per_user">(), makeJsonEntity<&value_type::topic, "topic">(),
+				makeJsonEntity<&value_type::userLimit, "user_limit">(), makeJsonEntity<&value_type::bitrate, "bitrate">(),
+				makeJsonEntity<&value_type::defaultAutoArchiveDuration, "default_auto_archive_duration">(), makeJsonEntity<&value_type::guildId, "guild_id">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_guild_channel_position_data> {
-		using value_type = discord_core_api::modify_guild_channel_position_data;
-		static constexpr auto parseValue =
-			createValue("id", &value_type::id, "position", &value_type::position, "parent_id", &value_type::parentId, "lock_permissions", &value_type::lockPermissions);
+		using value_type				 = discord_core_api::modify_guild_channel_position_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::id, "id">(), makeJsonEntity<&value_type::position, "position">(),
+			makeJsonEntity<&value_type::parentId, "parent_id">(), makeJsonEntity<&value_type::lockPermissions, "lock_permissions">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_channel_data> {
 		using value_type				 = discord_core_api::modify_channel_data;
-		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "channel_data", &value_type::channelData);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::channelData, "channel_data">()>();
 	};
 
 	template<> struct core<discord_core_api::create_dmchannel_data> {
 		using value_type				 = discord_core_api::create_dmchannel_data;
-		static constexpr auto parseValue = createValue("user_id", &value_type::userId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::userId, "user_id">()>();
 	};
 
 	template<> struct core<discord_core_api::follow_news_channel_data> {
-		using value_type				 = discord_core_api::follow_news_channel_data;
-		static constexpr auto parseValue = createValue("channel_id", &value_type::channelId, "target_channel_id", &value_type::targetChannelId);
+		using value_type = discord_core_api::follow_news_channel_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::targetChannelId, "target_channel_id">()>();
 	};
 
 	template<> struct core<discord_core_api::update_channel_data> {
 		using value_type				 = discord_core_api::update_channel_data;
-		static constexpr auto parseValue = createValue("permission_overwrites", &value_type::permissionOverwrites, "default_auto_archive_duration",
-			&value_type::defaultAutoArchiveDuration, "video_quality_mode", &value_type::videoQualityMode, "rate_limit_per_user", &value_type::rateLimitPerUser, "bitrate",
-			&value_type::bitrate, "parent_id", &value_type::parentId, "rtc_region", &value_type::rtcRgion, "user_limit", &value_type::userLimit, "topic", &value_type::topic,
-			"position", &value_type::position, "type", &value_type::type, "name", &value_type::name, "nsfw", &value_type::nsfw);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::permissionOverwrites, "permission_overwrites">(),
+			makeJsonEntity<&value_type::defaultAutoArchiveDuration, "default_auto_archive_duration">(), makeJsonEntity<&value_type::videoQualityMode, "video_quality_mode">(),
+			makeJsonEntity<&value_type::rateLimitPerUser, "rate_limit_per_user">(), makeJsonEntity<&value_type::bitrate, "bitrate">(),
+			makeJsonEntity<&value_type::parentId, "parent_id">(), makeJsonEntity<&value_type::rtcRgion, "rtc_region">(), makeJsonEntity<&value_type::userLimit, "user_limit">(),
+			makeJsonEntity<&value_type::topic, "topic">(), makeJsonEntity<&value_type::position, "position">(), makeJsonEntity<&value_type::type, "type">(),
+			makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::nsfw, "nsfw">()>();
+	};
+
+	template<> struct core<discord_core_api::voice_region_data> {
+		using value_type				 = discord_core_api::voice_region_data;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::deprecated, "deprecated">(),
+			makeJsonEntity<&value_type::id, "id">(), makeJsonEntity<&value_type::optimal, "optimal">(), makeJsonEntity<&value_type::custom, "custom">()>();
 	};
 }
 

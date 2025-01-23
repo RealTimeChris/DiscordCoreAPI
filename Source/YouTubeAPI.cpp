@@ -41,107 +41,112 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::discord_core_internal::user> {
 		using value_type				 = discord_core_api::discord_core_internal::user;
-		static constexpr auto parseValue = createValue("lockedSafetyMode", &value_type::lockedSafetyMode);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::lockedSafetyMode, "lockedSafetyMode">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::request> {
 		using value_type				 = discord_core_api::discord_core_internal::request;
-		static constexpr auto parseValue = createValue("useSsl", &value_type::useSsl);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::useSsl, "useSsl">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::you_tube_request_client> {
 		using value_type = discord_core_api::discord_core_internal::you_tube_request_client;
-		static constexpr auto parseValue = createValue<&value_type::clientName, &value_type::androidSdkVersion, &value_type::clientVersion, &value_type::hl, &value_type::gl,
-			&value_type::osName, &value_type::osVersion, &value_type::platform>();
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::clientName, "clientName">(), makeJsonEntity<&value_type::androidSdkVersion, "androidSdkVersion">(),
+				makeJsonEntity<&value_type::clientVersion, "clientVersion">(), makeJsonEntity<&value_type::hl, "hl">(), makeJsonEntity<&value_type::gl, "gl">(),
+				makeJsonEntity<&value_type::osName, "osName">(), makeJsonEntity<&value_type::osVersion, "osVersion">(), makeJsonEntity<&value_type::platform, "platform">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::you_tube_request_context> {
-		using value_type = discord_core_api::discord_core_internal::you_tube_request_context;
-		static constexpr auto parseValue =
-			createValue("client", &value_type::client, "captionParams", &value_type::captionParams, "request", &value_type::requestVal, "user", &value_type::userVal);
+		using value_type				 = discord_core_api::discord_core_internal::you_tube_request_context;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::client, "client">(), makeJsonEntity<&value_type::captionParams, "captionParams">(),
+			makeJsonEntity<&value_type::requestVal, "request">(), makeJsonEntity<&value_type::userVal, "user">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::you_tube_request> {
 		using value_type				 = discord_core_api::discord_core_internal::you_tube_request;
-		static constexpr auto parseValue = createValue("videoId", &value_type::videoId, "contentCheckOk", &value_type::contentCheckOk, "racyCheckOk", &value_type::racyCheckOk,
-			"context", &value_type::context, "playlistId", &value_type::playlistId, "params", &value_type::params);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::videoId, "videoId">(), makeJsonEntity<&value_type::contentCheckOk, "contentCheckOk">(),
+			makeJsonEntity<&value_type::racyCheckOk, "racyCheckOk">(), makeJsonEntity<&value_type::context, "context">(), makeJsonEntity<&value_type::playlistId, "playlistId">(),
+			makeJsonEntity<&value_type::params, "params">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::thumbnail_element> {
 		using value_type				 = discord_core_api::discord_core_internal::thumbnail_element;
-		static constexpr auto parseValue = createValue("url", &value_type::url, "width", &value_type::width);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::url, "url">(), makeJsonEntity<&value_type::width, "width">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::video_details_thumbnail> {
 		using value_type				 = discord_core_api::discord_core_internal::video_details_thumbnail;
-		static constexpr auto parseValue = createValue("thumbnails", &value_type::thumbnails);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::thumbnails, "thumbnails">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::video_details> {
-		using value_type				 = discord_core_api::discord_core_internal::video_details;
-		static constexpr auto parseValue = createValue("title", &value_type::title, "videoId", &value_type::videoId, "thumbnail", &value_type::thumbnail, "shortDescription",
-			&value_type::shortDescription, "lengthSeconds", &value_type::lengthSeconds);
+		using value_type = discord_core_api::discord_core_internal::video_details;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::title, "title">(), makeJsonEntity<&value_type::videoId, "videoId">(), makeJsonEntity<&value_type::thumbnail, "thumbnail">(),
+				makeJsonEntity<&value_type::shortDescription, "shortDescription">(), makeJsonEntity<&value_type::lengthSeconds, "lengthSeconds">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::format> {
-		using value_type = discord_core_api::discord_core_internal::format;
-		static constexpr auto parseValue =
-			createValue("url", &value_type::url, "mimeType", &value_type::mimeType, "bitrate", &value_type::bitrate, "contentLength", &value_type::contentLength);
+		using value_type				 = discord_core_api::discord_core_internal::format;
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::url, "url">(), makeJsonEntity<&value_type::mimeType, "mimeType">(),
+			makeJsonEntity<&value_type::bitrate, "bitrate">(), makeJsonEntity<&value_type::contentLength, "contentLength">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::streaming_data> {
 		using value_type				 = discord_core_api::discord_core_internal::streaming_data;
-		static constexpr auto parseValue = createValue("adaptiveFormats", &value_type::adaptiveFormats);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::adaptiveFormats, "adaptiveFormats">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::data> {
-		using value_type				 = discord_core_api::discord_core_internal::data;
-		static constexpr auto parseValue = createValue("streamingData", &value_type::streamingData, "videoDetails", &value_type::videoDetails);
+		using value_type = discord_core_api::discord_core_internal::data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::streamingData, "streamingData">(), makeJsonEntity<&value_type::videoDetails, "videoDetails">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::video_renderer> {
 		using value_type				 = discord_core_api::discord_core_internal::video_renderer;
-		static constexpr auto parseValue = createValue("videoId", &value_type::videoId);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::videoId, "videoId">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::video_renderer_type> {
 		using value_type				 = discord_core_api::discord_core_internal::video_renderer_type;
-		static constexpr auto parseValue = createValue("videoRenderer", &value_type::videoRenderer);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::videoRenderer, "videoRenderer">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::item_section_renderer_contents> {
 		using value_type				 = discord_core_api::discord_core_internal::item_section_renderer_contents;
-		static constexpr auto parseValue = createValue("contents", &value_type::contents);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::contents, "contents">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::item_section_renderer> {
 		using value_type				 = discord_core_api::discord_core_internal::item_section_renderer;
-		static constexpr auto parseValue = createValue("itemSectionRenderer", &value_type::itemSectionRendererContents);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::itemSectionRendererContents, "itemSectionRenderer">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::section_list_renderer> {
 		using value_type				 = discord_core_api::discord_core_internal::section_list_renderer;
-		static constexpr auto parseValue = createValue("contents", &value_type::contents);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::contents, "contents">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::primary_contents> {
 		using value_type				 = discord_core_api::discord_core_internal::primary_contents;
-		static constexpr auto parseValue = createValue("sectionListRenderer", &value_type::sectionListRenderer);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::sectionListRenderer, "sectionListRenderer">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::two_column_search_results_renderer> {
 		using value_type				 = discord_core_api::discord_core_internal::two_column_search_results_renderer;
-		static constexpr auto parseValue = createValue("primaryContents", &value_type::primaryContents);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::primaryContents, "primaryContents">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::contents01> {
 		using value_type				 = discord_core_api::discord_core_internal::contents01;
-		static constexpr auto parseValue = createValue("twoColumnSearchResultsRenderer", &value_type::twoColumnSearchResultsRenderer);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::twoColumnSearchResultsRenderer, "twoColumnSearchResultsRenderer">()>();
 	};
 
 	template<> struct core<discord_core_api::discord_core_internal::you_tube_search_results> {
 		using value_type				 = discord_core_api::discord_core_internal::you_tube_search_results;
-		static constexpr auto parseValue = createValue("contents", &value_type::contents);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::contents, "contents">()>();
 	};
 }
  
@@ -197,7 +202,7 @@ namespace discord_core_api {
 				jsonifier::string stringSequence = ";</script><script nonce=";
 				newString						 = newString.substr(0, newString.find(stringSequence));
 				you_tube_search_results you_tubeSearchResults{};
-				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(you_tubeSearchResults, newString);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = false }>(you_tubeSearchResults, newString);
 				for (auto& value: parser.getErrors()) {
 					message_printer::printError<print_message_type::https>(value.reportError());
 				}
@@ -242,7 +247,7 @@ namespace discord_core_api {
 				}
 				data dataNew{};
 				jsonifier::vector<format> potentialFormats{};
-				parser.parseJson<jsonifier::parse_options{ .partialRead = true }>(dataNew, responseData.responseData);
+				parser.parseJson<jsonifier::parse_options{ .partialRead = false }>(dataNew, responseData.responseData);
 				for (auto& value: parser.getErrors()) {
 					message_printer::printError<print_message_type::https>(value.reportError());
 				}

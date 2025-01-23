@@ -34,44 +34,6 @@
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
-namespace jsonifier {
-
-	template<> struct core<discord_core_api::execute_web_hook_data> {
-		using value_type				 = discord_core_api::execute_web_hook_data;
-		static constexpr auto parseValue = createValue("threadId", &value_type::threadId, "wait", &value_type::wait, "attachments", &value_type::attachments, "components",
-			&value_type::components, "allowedMentions", &value_type::allowedMentions, "embeds", &value_type::embeds, "webhookToken",
-			&value_type::webhookToken, "avatarUrl", &value_type::avatarUrl, "username", &value_type::userName, "customId", &value_type::customId, "webHookId",
-			&value_type::webHookId, "content", &value_type::content, "title", &value_type::title, "flags", &value_type::flags, "tts", &value_type::tts);
-	};
-
-	template<> struct core<discord_core_api::create_web_hook_data> {
-		using value_type				 = discord_core_api::create_web_hook_data;
-		static constexpr auto parseValue = createValue("channelId", &value_type::channelId, "avatar", &value_type::avatar, "name", &value_type::name);
-	};
-
-	template<> struct core<discord_core_api::modify_web_hook_data> {
-		using value_type = discord_core_api::modify_web_hook_data;
-		static constexpr auto parseValue =
-			createValue("channelId", &value_type::channelId, "webHookId", &value_type::webHookId, "avatar", &value_type::avatar, "name", &value_type::name);
-	};
-
-	template<> struct core<discord_core_api::modify_web_hook_with_token_data> {
-		using value_type				 = discord_core_api::modify_web_hook_with_token_data;
-		static constexpr auto parseValue = createValue("webhookToken", &value_type::webhookToken, "channelId", &value_type::channelId, "webHookId", &value_type::webHookId,
-			"avatar", &value_type::avatar, "name", &value_type::name);
-	};
-
-	template<> struct core<discord_core_api::edit_web_hook_data> {
-		using value_type = discord_core_api::edit_web_hook_data;
-		static constexpr auto parseValue =
-			createValue("threadId", &value_type::threadId, "wait", &value_type::wait, "attachments", &value_type::attachments, "components", &value_type::components,
-				"allowedMentions", &value_type::allowedMentions, "embeds", &value_type::embeds, "webhookToken", &value_type::webhookToken, "avatarUrl",
-				&value_type::avatarUrl, "username", &value_type::userName, "customId", &value_type::customId, "webHookId", &value_type::webHookId, "content", &value_type::content,
-				"title", &value_type::title, "flags", &value_type::flags, "tts", &value_type::tts, "message_id", &value_type::messageId, "thread_id", &value_type::threadId);
-	};
-}
-
-
 namespace discord_core_api {
 
 	execute_web_hook_data::execute_web_hook_data(const web_hook_data& dataNew) {

@@ -35,19 +35,20 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::create_auto_moderation_rule_data> {
 		using value_type				 = discord_core_api::create_auto_moderation_rule_data;
-		static constexpr auto parseValue = createValue("exemptChannels", &value_type::exemptChannels, "exemptRoles", &value_type::exemptRoles, "triggerMetadata",
-			&value_type::triggerMetadata, "actions", &value_type::actions, "triggerType", &value_type::triggerType, "eventType", &value_type::eventType, "guildId",
-			&value_type::guildId, "name", &value_type::name, "enabled", &value_type::enabled);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::exemptChannels, "exempt_channels">(), makeJsonEntity<&value_type::exemptRoles, "exempt_roles">(),
+			makeJsonEntity<&value_type::triggerMetadata, "trigger_metadata">(), makeJsonEntity<&value_type::actions, "actions">(),
+			makeJsonEntity<&value_type::triggerType, "trigger_type">(), makeJsonEntity<&value_type::eventType, "event_type">(), makeJsonEntity<&value_type::guildId, "guild_id">(),
+			makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::enabled, "enabled">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_auto_moderation_rule_data> {
 		using value_type				 = discord_core_api::modify_auto_moderation_rule_data;
-		static constexpr auto parseValue = createValue("exemptChannels", &value_type::exemptChannels, "exemptRoles", &value_type::exemptRoles, "triggerMetadata",
-			&value_type::triggerMetadata, "actions", &value_type::actions, "autoModerationRuleId", &value_type::autoModerationRuleId, "eventType", &value_type::eventType,
-			"guildId", &value_type::guildId, "name", &value_type::name, "enabled", &value_type::enabled);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::exemptChannels, "exempt_channels">(), makeJsonEntity<&value_type::exemptRoles, "exempt_roles">(),
+			makeJsonEntity<&value_type::triggerMetadata, "trigger_metadata">(), makeJsonEntity<&value_type::actions, "actions">(),
+			makeJsonEntity<&value_type::autoModerationRuleId, "autoModeration_rule_id">(), makeJsonEntity<&value_type::eventType, "event_type">(),
+			makeJsonEntity<&value_type::guildId, "guild_it">(), makeJsonEntity<&value_type::name, "name">(), makeJsonEntity<&value_type::enabled, "enabled">()>();
 	};
-
-}
+};
 
 namespace discord_core_api {
 

@@ -37,19 +37,21 @@ namespace jsonifier {
 
 	template<> struct core<discord_core_api::add_guild_member_data> {
 		using value_type				 = discord_core_api::add_guild_member_data;
-		static constexpr auto parseValue = createValue("roles", &value_type::roles, "access_token", &value_type::accessToken, "guild_id", &value_type::guildId, "user_id",
-			&value_type::userId, "nick", &value_type::nick, "mute", &value_type::mute, "deaf", &value_type::deaf);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::roles, "roles">(), makeJsonEntity<&value_type::accessToken, "access_token">(),
+			makeJsonEntity<&value_type::guildId, "guild_id">(), makeJsonEntity<&value_type::userId, "user_id">(), makeJsonEntity<&value_type::nick, "nick">(),
+			makeJsonEntity<&value_type::mute, "mute">(), makeJsonEntity<&value_type::deaf, "deaf">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_current_guild_member_data> {
 		using value_type				 = discord_core_api::modify_current_guild_member_data;
-		static constexpr auto parseValue = createValue("nick", &value_type::nick);
+		static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::nick, "nick">()>();
 	};
 
 	template<> struct core<discord_core_api::modify_guild_member_data> {
-		using value_type				 = discord_core_api::modify_guild_member_data;
-		static constexpr auto parseValue = createValue("deaf", &value_type::deaf, "mute", &value_type::mute, "nick", &value_type::nick, "roles", &value_type::roleIds, "channel_id",
-			&value_type::channelId, "flags", &value_type::flags);
+		using value_type = discord_core_api::modify_guild_member_data;
+		static constexpr auto parseValue =
+			createValue<makeJsonEntity<&value_type::deaf, "deaf">(), makeJsonEntity<&value_type::mute, "mute">(), makeJsonEntity<&value_type::nick, "nick">(),
+				makeJsonEntity<&value_type::roleIds, "roles">(), makeJsonEntity<&value_type::channelId, "channel_id">(), makeJsonEntity<&value_type::flags, "flags">()>();
 	};
 }
 
